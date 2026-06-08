@@ -31,6 +31,15 @@ assert(adapter.includes('type === "page_gap" || type === "existing_page"'), "ada
 assert(adapter.includes('type.startsWith("gsc") || type === "query_cluster"'), "adapter must map search evidence");
 assert(adapter.includes("mapApiPlanningToBoard"), "adapter must expose board-level mapping");
 assert(adapter.includes("planningRun"), "adapter must produce frontend planning run state");
+assert(adapter.includes("mapApiIntegrationsToIntegrationHealth"), "adapter must expose integration status DTO conversion");
+assert(adapter.includes("mapApiSyncRunsToSyncRunPreviews"), "adapter must expose sync run DTO conversion");
+assert(adapter.includes("mapApiAuditLogsToEvidenceRows"), "adapter must expose audit log DTO conversion");
+assert(adapter.includes('type: "audit"'), "audit log DTO conversion must produce audit evidence rows");
+assert(adapter.includes('status === "connected_stub"'), "integration adapter must handle connected_stub status");
+assert(adapter.includes('status === "not_connected"'), "integration adapter must handle not_connected status");
+assert(adapter.includes("blocked_capabilities"), "adapter must preserve blocked capability context for safety copy");
+assert(adapter.includes("external_write_allowed"), "adapter must inspect backend external write flags");
+assert(adapter.includes("externalWriteAllowed: false"), "sync preview adapter must clamp external write state to false");
 
 assert(apiClient.includes("VITE_USE_API_BOARD"), "API board loading must be explicitly gated");
 assert(apiClient.includes("VITE_API_BASE_URL"), "API base URL must be configurable");
@@ -39,6 +48,12 @@ assert(apiClient.includes("import.meta.env.VITE_API_BASE_URL"), "API base URL mu
 assert(apiClient.includes("ApiVisibleTaskStatus"), "API client must type Sprint 1 visible task status updates");
 assert(apiClient.includes("encodeURIComponent"), "API client must encode store and task path segments");
 assert(apiClient.includes("updateTaskStatus"), "API client must expose task status mutation for the demo API");
+assert(apiClient.includes("ApiIntegrationsResponse"), "API client must type integration status responses");
+assert(apiClient.includes("ApiSyncRunsResponse"), "API client must type sync run responses");
+assert(apiClient.includes("ApiAuditLogsResponse"), "API client must type audit log responses");
+assert(apiClient.includes("getIntegrations"), "API client must expose integration status reads");
+assert(apiClient.includes("getSyncRuns"), "API client must expose sync run reads");
+assert(apiClient.includes("getAuditLogs"), "API client must expose audit log reads");
 assert(apiClient.includes('method: "PATCH"'), "Task status mutation must use PATCH");
 assert(apiClient.includes("JSON.stringify({ status })"), "Task status mutation must send only the selected review status");
 assert(apiClient.includes("encodeURIComponent(taskId)"), "Task status mutation must encode the selected task id");

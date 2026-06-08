@@ -138,6 +138,7 @@ Sprint 2 capabilities completed so far:
 9. Imported task preview foundation: `GET /api/stores/{store_id}/imported-tasks` converts imported opportunity previews into recommend-only action plans with evidence, acceptance criteria, safe `new` status, and no draft or external write path.
 10. Integration status and sync run tracking foundation: `GET /integrations`, stub connect endpoints, `POST /sync`, and sync run list/detail reads track safe local state without OAuth, publishing, drafts, or commerce writes.
 11. Audit log foundation: integration stub connects and sync tracking actions record sanitized local audit events, with `GET /audit-logs` list/detail reads and no secret, publishing, draft, or commerce write path.
+12. Stable frontend DTO conversion foundation: the API client and view-model adapters now type and safely convert integration status, sync run, and audit log payloads without changing the visible Sprint 1 UI.
 
 Current product/engineering ownership:
 

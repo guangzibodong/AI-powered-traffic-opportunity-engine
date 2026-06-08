@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 audit log foundation completed; next safe Sprint 2 task will be selected from the roadmap. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 stable frontend DTO conversion completed; Sprint 2 safe local roadmap is complete. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -23,9 +23,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Role | Person/Agent | Current assignment |
 |---|---|---|
 | Product Manager | Main thread | Keep Sprint 1 review actions state-only and draft-safe. |
-| Backend/API Engineer | Main thread | Add local audit log service and read APIs for safe system events. |
-| Frontend Product Engineer | Main thread | No UI audit panel in this slice; keep existing Sprint 1 UI stable. |
-| QA Lead | Main thread | Add service and API tests for audit event sanitization, connect events, sync events, and no secret leakage. |
+| Backend/API Engineer | Main thread | Keep Sprint 2 API contracts stable while frontend DTO conversion is added. |
+| Frontend Product Engineer | Main thread | Add stable API client DTOs and safe adapters for integrations, sync runs, and audit logs. |
+| QA Lead | Main thread | Add contract tests for DTO conversion boundaries, safe status fallback, and no unsafe execution terms. |
 | UI Systems Engineer | Banach | Reserved for later Sync run UI. |
 
 ## Task Queue
@@ -53,12 +53,15 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-TASK-007 | 19 | done | Backend/API Engineer / QA Lead | Add imported task preview foundation. | `GET /imported-tasks` and detail reads convert imported opportunity previews into deterministic recommend-only task previews with evidence, action plans, acceptance criteria, safe `new` status, and no review mutation, draft, or external write path. |
 | TASK-S2-SYNC-008 | 20 | done | Backend/API Engineer / QA Lead | Add integration status and sync run tracking foundation. | `GET /integrations`, stub connect endpoints, `POST /sync`, and sync run list/detail reads record local safe connection/sync state without real GSC OAuth, WooCommerce writes, WordPress writes, draft creation, or live publishing. |
 | TASK-S2-AUDIT-009 | 21 | done | Backend/API Engineer / QA Lead | Add audit log foundation. | Integration connect and sync tracking actions record sanitized local audit events, `GET /audit-logs` and detail reads expose them, raw secrets are never stored or returned, and audit logging does not create drafts, publish, or write commerce data. |
+| TASK-S2-DTO-010 | 22 | done | Frontend Product Engineer / QA Lead | Add stable frontend DTO conversion foundation. | API client and view-model adapters expose typed integrations, sync runs, and audit log reads/conversions that clamp unsafe external-write signals, map unknown statuses to safe UI states, and keep Sprint 1 UI behavior stable. |
+| TASK-S2-LIVE-011 | 23 | blocked | Product Manager / Backend/API Engineer | Plan real read-only credential handshake for live WooCommerce, WordPress, and GSC sources. | Blocked on explicit credentials and boundary approval; current sprint rules still forbid real GSC OAuth, WooCommerce writes, WordPress writes, draft creation, and live publishing. |
 
 ## Blockers
 
 | Blocker | Status | Notes |
 |---|---|---|
 | GitHub HTTPS push | resolved | Commit `7e86560` was pushed to `codex/sprint1-v3-ui`; future pushes may need the repo proxy override cleared if `127.0.0.1:7897` is not running. |
+| Live integration credentials and boundary approval | blocked | The next non-local Sprint 2 step needs user-approved credentials and a revised boundary for real read-only connection work; current safe loop remains local/import-only. |
 
 ## Agent Findings
 
@@ -92,6 +95,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Integration status and sync run tracking is verified by service/API tests plus the existing full backend, frontend contract, lint, build, and browser smoke gates.
 - Audit logs are next because safe local connection and sync state need a human-readable event trail before any future write action is introduced.
 - Audit logs are verified by service/API tests plus the existing full backend, frontend contract, lint, build, and browser smoke gates.
+- Stable frontend DTO conversion is next because Sprint 2 backend payloads need typed client contracts before the UI starts rendering imported sync and audit panels.
+- Stable frontend DTO conversion is verified by backend tests plus the existing frontend contract, lint, build, and browser smoke gates.
+- The remaining Sprint 2 roadmap step that is not purely local is live read-only credential work, which is blocked until credentials and boundary approval are provided.
 
 ## Completion Rule
 

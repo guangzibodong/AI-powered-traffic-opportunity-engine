@@ -138,6 +138,14 @@ Sprint 2 audit logs create a safe event trail for those local actions:
 - Audit entries are read-only and carry `safety_scope: local_tracking_only`.
 - Audit logging records what happened, but it does not create drafts, publish content, write commerce data, or execute external jobs.
 
+Sprint 2 frontend DTO conversion keeps those backend surfaces safe before UI panels are connected:
+
+- The API client owns typed response contracts for integration status, sync runs, and audit logs.
+- View-model adapters map provider status into existing `IntegrationHealth` rows.
+- Unknown integration and sync run statuses fall back to safe UI states.
+- Backend `external_write_allowed` flags are inspected but frontend sync previews clamp `externalWriteAllowed` to `false`.
+- Audit logs can be converted into `audit` evidence rows without exposing metadata secrets or execution controls.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.

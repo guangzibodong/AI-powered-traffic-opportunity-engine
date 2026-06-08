@@ -69,6 +69,67 @@ export type ApiTaskResponse = {
   task: ApiTask;
 };
 
+export type ApiIntegrationStatus = {
+  blocked_capabilities?: string[];
+  connection_mode?: string;
+  external_write_allowed?: boolean;
+  key: string;
+  last_sync_run_id?: string | null;
+  name: string;
+  safe_operations?: string[];
+  status: string;
+};
+
+export type ApiIntegrationsResponse = {
+  integrations: ApiIntegrationStatus[];
+  mode: "integration_status";
+  store_id: string;
+  summary?: Record<string, number>;
+};
+
+export type ApiSyncRunStep = {
+  blocked_capabilities?: string[];
+  external_write_allowed?: boolean;
+  provider: string;
+  status: string;
+  step_name: string;
+};
+
+export type ApiSyncRun = {
+  blocked_capabilities?: string[];
+  execution_mode?: string;
+  id: string;
+  requested_by?: string;
+  run_type?: string;
+  status: string;
+  steps?: ApiSyncRunStep[];
+};
+
+export type ApiSyncRunsResponse = {
+  mode: "sync_run_tracking";
+  store_id: string;
+  summary?: Record<string, number>;
+  sync_runs: ApiSyncRun[];
+};
+
+export type ApiAuditLog = {
+  action: string;
+  actor?: string;
+  external_write_allowed?: boolean;
+  id: string;
+  metadata?: Record<string, unknown>;
+  safety_scope?: string;
+  target_id: string;
+  target_type: string;
+};
+
+export type ApiAuditLogsResponse = {
+  audit_logs: ApiAuditLog[];
+  mode: "audit_logs";
+  store_id: string;
+  summary?: Record<string, number>;
+};
+
 declare global {
   interface ImportMetaEnv {
     readonly VITE_API_BASE_URL?: string;
@@ -96,6 +157,18 @@ export async function getOpportunities(storeId: string, apiBaseUrl = getApiBaseU
 
 export async function getTasks(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiTasksResponse>(`${storeApiPath(apiBaseUrl, storeId)}/tasks`);
+}
+
+export async function getIntegrations(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiIntegrationsResponse>(`${storeApiPath(apiBaseUrl, storeId)}/integrations`);
+}
+
+export async function getSyncRuns(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiSyncRunsResponse>(`${storeApiPath(apiBaseUrl, storeId)}/sync-runs`);
+}
+
+export async function getAuditLogs(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiAuditLogsResponse>(`${storeApiPath(apiBaseUrl, storeId)}/audit-logs`);
 }
 
 export async function updateTaskStatus(

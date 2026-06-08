@@ -110,6 +110,24 @@ export type IntegrationHealth = {
   action: string;
 };
 
+export type SyncRunPreview = {
+  id: string;
+  status: "queued" | "running" | "completed" | "failed";
+  executionMode: string;
+  providerSteps: string[];
+  blockedCapabilities: string[];
+  externalWriteAllowed: false;
+};
+
+export type AuditLogPreview = {
+  id: string;
+  action: string;
+  actor: string;
+  target: string;
+  safetyScope: string;
+  externalWriteAllowed: false;
+};
+
 export type PlanningRunViewModel = {
   runId: string;
   lastSuccessfulAt: string;

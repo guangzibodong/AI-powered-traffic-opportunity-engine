@@ -1,15 +1,28 @@
 import type {
   BoardViewModel,
+  AuditLogPreview,
   EvidenceRow,
   IntegrationHealth,
   Opportunity,
   ScoreComponent,
   SprintOneRuleId,
+  SyncRunPreview,
   Task,
   TaskCategory,
   VisibleTaskStatus
 } from "./types";
-import type { ApiEvidence, ApiOpportunitiesResponse, ApiOpportunity, ApiTask, ApiTasksResponse } from "./api-client";
+import type {
+  ApiAuditLogsResponse,
+  ApiEvidence,
+  ApiIntegrationStatus,
+  ApiIntegrationsResponse,
+  ApiOpportunitiesResponse,
+  ApiOpportunity,
+  ApiSyncRun,
+  ApiSyncRunsResponse,
+  ApiTask,
+  ApiTasksResponse
+} from "./api-client";
 
 const sprintOneRules = new Set<SprintOneRuleId>([
   "collection_page_gap",
@@ -83,6 +96,56 @@ export function mapApiOpportunityToOpportunity(opportunity: ApiOpportunity): Opp
   };
 }
 
+export function mapApiIntegrationsToIntegrationHealth(response: ApiIntegrationsResponse): IntegrationHealth[] {
+  return response.integrations.map((integration) => ({
+    action: integration.status === "connected_stub" ? "Details" : "Connect later",
+    errors: mapIntegrationErrors(integration.status),
+    freshness: mapIntegrationFreshness(integration.status),
+    lastSync: integration.last_sync_run_id ?? "not synced",
+    mode: integration.connection_mode ?? "not_connected",
+    name: integration.name || integration.key,
+    permissionBoundary: mapIntegrationPermissionBoundary(integration)
+  }));
+}
+
+export function mapApiSyncRunsToSyncRunPreviews(response: ApiSyncRunsResponse): SyncRunPreview[] {
+  return response.sync_runs.map((run) => {
+    const backendExternalWriteFlag = Boolean(run.steps?.some((step) => step.external_write_allowed));
+    return {
+      blockedCapabilities: backendExternalWriteFlag
+        ? [...(run.blocked_capabilities ?? []), "frontend_external_write_clamp"]
+        : run.blocked_capabilities ?? [],
+      executionMode: run.execution_mode ?? "tracking_only",
+      externalWriteAllowed: false,
+      id: run.id,
+      providerSteps: (run.steps ?? []).map((step) => `${step.provider}:${step.step_name}`),
+      status: mapSyncRunStatus(run.status)
+    };
+  });
+}
+
+export function mapApiAuditLogsToEvidenceRows(response: ApiAuditLogsResponse): EvidenceRow[] {
+  return response.audit_logs.map((entry) => ({
+    entity: `${entry.target_type}:${entry.target_id}`,
+    metric: entry.action,
+    reason: entry.safety_scope ?? "local_tracking_only",
+    source: "Audit",
+    type: "audit",
+    window: "local"
+  }));
+}
+
+export function mapApiAuditLogsToPreviews(response: ApiAuditLogsResponse): AuditLogPreview[] {
+  return response.audit_logs.map((entry) => ({
+    action: entry.action,
+    actor: entry.actor ?? "system",
+    externalWriteAllowed: false,
+    id: entry.id,
+    safetyScope: entry.safety_scope ?? "local_tracking_only",
+    target: `${entry.target_type}:${entry.target_id}`
+  }));
+}
+
 function mapApiEvidenceToEvidenceRow(evidence: ApiEvidence): EvidenceRow {
   return {
     confidence: readNumberMetric(evidence, "confidence"),
@@ -133,6 +196,34 @@ function mapEvidenceSource(evidence: ApiEvidence) {
   if (evidence.type === "page_gap" || evidence.type === "existing_page") return "WordPress";
   if (evidence.type.startsWith("gsc") || evidence.type === "query_cluster") return "GSC";
   return "TrafScope";
+}
+
+function mapIntegrationFreshness(status: string): IntegrationHealth["freshness"] {
+  if (status === "connected_stub") return "degraded";
+  if (status === "not_connected") return "stale";
+  return "stale";
+}
+
+function mapIntegrationErrors(status: string) {
+  if (status === "connected_stub") return "No external writes enabled";
+  if (status === "not_connected") return "Demo mode, real credentials not connected";
+  return "Unknown integration status mapped to safe fallback";
+}
+
+function mapIntegrationPermissionBoundary(integration: ApiIntegrationStatus) {
+  const backendExternalWriteFlag = integration.external_write_allowed === true;
+  const blockedCapabilities = integration.blocked_capabilities ?? [];
+  const safeOperations = integration.safe_operations ?? [];
+  const blockedCopy = blockedCapabilities.length ? `Blocked: ${blockedCapabilities.join(", ")}` : "Blocked: external writes";
+  const safeCopy = safeOperations.length ? `Allowed: ${safeOperations.join(", ")}` : "Allowed: read-only status";
+  return backendExternalWriteFlag ? `${safeCopy}; ${blockedCopy}; external writes disabled by UI adapter` : `${safeCopy}; ${blockedCopy}`;
+}
+
+function mapSyncRunStatus(status: string): SyncRunPreview["status"] {
+  if (status === "queued" || status === "running" || status === "completed" || status === "failed") {
+    return status;
+  }
+  return "queued";
 }
 
 function countObjects(evidence: ApiEvidence[]): Task["objects"] {

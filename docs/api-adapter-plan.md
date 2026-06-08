@@ -63,6 +63,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | Imported task preview foundation | Done | `GET /imported-tasks` converts imported opportunity previews into recommend-only action plans with evidence, acceptance criteria, safe `new` status, and no review, draft, or write path. |
 | Integration status and sync run tracking foundation | Done | Stub connect endpoints record local `connected_stub` state, `/sync` creates queued tracking-only runs, and sync run list/detail reads expose safe local status without real external execution. |
 | Audit log foundation | Done | Integration stub connects and sync queue tracking write sanitized local audit events, with audit list/detail reads and no secret storage, publishing, drafts, commerce writes, or external execution. |
+| Stable frontend DTO conversion foundation | Done | API client and view-model adapters type and safely convert integration status, sync run, and audit log payloads while preserving Sprint 1 UI behavior. |
 
 ## Local Smoke Run
 
@@ -97,7 +98,7 @@ Expected behavior:
 | File | Responsibility |
 |---|---|
 | `apps/web/lib/api-client.ts` | Fetch typed raw API payloads from `VITE_API_BASE_URL` or `http://localhost:8000`. |
-| `apps/web/lib/view-model-adapters.ts` | Convert backend snake_case demo payloads into frontend `BoardViewModel`, `Task`, and `Opportunity` shapes. |
+| `apps/web/lib/view-model-adapters.ts` | Convert backend snake_case demo payloads into frontend `BoardViewModel`, `Task`, `Opportunity`, integration health, sync preview, and audit evidence shapes. |
 | `apps/web/lib/task-state.ts` | Keep local review-state fallback for mock mode and API failure paths. |
 | `apps/web/app/App.tsx` | Calls `updateTaskStatus` for API-backed task review actions, falls back to local review-state persistence when the API is unavailable, and lets users retry sync or keep the local state. |
 | `apps/web/tests/api-action-browser-smoke.mjs` | Runs the automated browser smoke for API-backed review mutations. |
@@ -139,6 +140,7 @@ Expected behavior:
 - Imported task previews must stay recommend-only and read-only; no approve/reject/snooze routes, task persistence, asset generation, WordPress draft creation, publishing, WooCommerce writes, or external calls are allowed.
 - Integration status and sync run tracking must not store raw secrets, perform real OAuth, execute external sync jobs, create WordPress drafts, publish content, or write WooCommerce data.
 - Audit logs must redact sensitive metadata and stay read-only; logging must not become an execution, draft, publishing, OAuth, or commerce write path.
+- Frontend DTO adapters must clamp unsafe or unknown backend states to safe UI defaults and must not expose `one_click_apply`, `guarded_autopilot`, live publish, applied, or external-write controls.
 
 ## Remaining API-backed Task Action UX
 
