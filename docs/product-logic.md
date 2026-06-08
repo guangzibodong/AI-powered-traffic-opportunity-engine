@@ -107,6 +107,13 @@ Sprint 2 imported signal graph matching connects those imported signals:
 
 This graph layer is deterministic and read-only. It does not call embeddings, LLMs, GSC, WooCommerce, or WordPress.
 
+Sprint 2 imported opportunity previews apply a small rule set to the imported graph:
+
+- `high_impression_low_ctr`: best existing imported page exists, impressions are at least 1,000, CTR is 3% or lower, and average position is 20 or better.
+- `collection_page_gap`: no best existing imported page exists and at least three imported products match the cluster.
+
+Preview opportunities include rule metadata, dedupe keys, TrafScore components, evidence, related products/pages, and status `new`. They do not create tasks, drafts, assets, sync jobs, or external writes.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.

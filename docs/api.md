@@ -201,8 +201,46 @@ Product matches require at least three meaningful token overlaps. Page matches f
 
 - `GET /api/stores/:storeId/opportunities`
 - `GET /api/stores/:storeId/opportunities/:opportunityId`
+- `GET /api/stores/:storeId/imported-opportunities`
 - `POST /api/stores/:storeId/opportunities/:opportunityId/approve`
 - `POST /api/stores/:storeId/opportunities/:opportunityId/reject`
+
+### Imported opportunity preview contract
+
+`GET /api/stores/:storeId/imported-opportunities` returns deterministic opportunity previews from the imported graph:
+
+```json
+{
+  "mode": "imported_opportunities",
+  "store_id": "store-demo-outdoor-coffee",
+  "summary": {
+    "opportunities": 1,
+    "source_query_clusters": 1,
+    "by_rule": { "high_impression_low_ctr": 1 }
+  },
+  "opportunities": [
+    {
+      "id": "impopp_abc123def456",
+      "rule_id": "high_impression_low_ctr",
+      "rule_version": 1,
+      "recommended_task_type": "ctr_refresh",
+      "status": "new",
+      "dedupe_key": "store-demo-outdoor-coffee:imported:high_impression_low_ctr:...",
+      "source_cluster": { "primary_query": "portable espresso maker camping" },
+      "related_page": { "url": "https://example.com/camping-espresso" },
+      "related_products": [],
+      "evidence": []
+    }
+  ]
+}
+```
+
+Current imported preview rules:
+
+- `high_impression_low_ctr`: imported cluster has an indexable existing page, at least 1,000 impressions, CTR at or below 3%, and average position of 20 or better.
+- `collection_page_gap`: imported cluster has no best existing page and at least three matched imported products.
+
+This endpoint is read-only. It does not create tasks, assets, WordPress drafts, WooCommerce changes, or external sync jobs.
 
 ## Tasks
 

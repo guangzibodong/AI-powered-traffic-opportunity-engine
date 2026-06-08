@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.services.demo_planning_service import build_demo_planning_payload, get_demo_opportunity
+from app.services.imported_opportunity_service import generate_imported_opportunities
 
 
 router = APIRouter()
@@ -15,6 +16,11 @@ async def list_opportunities(store_id: str) -> dict:
         "planning_run": payload["planning_run"],
         "opportunities": payload["opportunities"],
     }
+
+
+@router.get("/{store_id}/imported-opportunities")
+async def list_imported_opportunities(store_id: str) -> dict:
+    return generate_imported_opportunities(store_id)
 
 
 @router.get("/{store_id}/opportunities/{opportunity_id}")
