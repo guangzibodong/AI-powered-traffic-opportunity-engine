@@ -1,0 +1,1714 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrafScope UI Concept V3</title>
+    <style>
+      :root {
+        --bg: #0f1216;
+        --nav: #11151a;
+        --panel: #171b21;
+        --panel-raised: #1d232b;
+        --panel-soft: #14181e;
+        --line: rgba(214, 224, 236, 0.12);
+        --line-strong: rgba(214, 224, 236, 0.22);
+        --text: #f4f7f8;
+        --text-soft: #d1d9df;
+        --muted: #9aa8b5;
+        --subtle: #687584;
+        --action: #f4f7f8;
+        --health: #57d0b2;
+        --search: #8fb8ff;
+        --commerce: #f5bd5b;
+        --risk: #f07878;
+        --violet: #b5a7ff;
+        --shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+        font-family:
+          Inter, "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, -apple-system,
+          BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 236px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        background: var(--nav);
+        border-right: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        padding: 22px 16px;
+      }
+
+      .brand {
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 16px;
+        padding-bottom: 18px;
+      }
+
+      .brand strong {
+        display: block;
+        font-size: 21px;
+        font-weight: 650;
+        letter-spacing: 0;
+      }
+
+      .brand span {
+        color: var(--muted);
+        display: block;
+        font-size: 12px;
+        line-height: 1.45;
+        margin-top: 6px;
+      }
+
+      .nav-list {
+        display: grid;
+        gap: 4px;
+      }
+
+      .nav-link {
+        align-items: center;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: var(--muted);
+        display: flex;
+        gap: 10px;
+        min-height: 38px;
+        padding: 8px 10px;
+        text-decoration: none;
+      }
+
+      .nav-link.active {
+        background: var(--panel-raised);
+        border-color: var(--line);
+        color: var(--text);
+        box-shadow: inset 2px 0 0 var(--action);
+      }
+
+      .nav-key {
+        align-items: center;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        color: var(--text-soft);
+        display: inline-flex;
+        font-family: "JetBrains Mono", Consolas, monospace;
+        font-size: 11px;
+        height: 22px;
+        justify-content: center;
+        min-width: 22px;
+      }
+
+      .side-note {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+        margin-top: auto;
+        padding: 12px;
+      }
+
+      .side-note strong {
+        color: var(--health);
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .main {
+        min-width: 0;
+        padding: 22px 28px 42px;
+      }
+
+      .topbar {
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        padding-bottom: 16px;
+      }
+
+      .crumb {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .mono {
+        font-family: "JetBrains Mono", "IBM Plex Mono", Consolas, monospace;
+        font-size: 12px;
+      }
+
+      .language {
+        align-items: center;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        display: inline-flex;
+        padding: 3px;
+      }
+
+      .language a {
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+        min-width: 36px;
+        padding: 7px 9px;
+        text-align: center;
+        text-decoration: none;
+      }
+
+      .language a.active {
+        background: var(--action);
+        color: var(--bg);
+      }
+
+      .screen {
+        display: none;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      .title-row {
+        align-items: flex-end;
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        color: var(--text);
+        font-size: 28px;
+        font-weight: 650;
+        line-height: 1.18;
+      }
+
+      h2 {
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 650;
+        line-height: 1.35;
+      }
+
+      h3 {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 650;
+        line-height: 1.38;
+      }
+
+      .subtitle,
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .subtitle {
+        margin-top: 6px;
+      }
+
+      .actions {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .button {
+        align-items: center;
+        background: var(--panel-raised);
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        color: var(--text);
+        display: inline-flex;
+        font-size: 13px;
+        font-weight: 650;
+        min-height: 36px;
+        justify-content: center;
+        padding: 0 12px;
+        white-space: nowrap;
+        width: max-content;
+      }
+
+      .button.primary {
+        background: var(--action);
+        border-color: var(--action);
+        color: var(--bg);
+      }
+
+      .button.danger {
+        border-color: rgba(240, 120, 120, 0.44);
+        color: var(--risk);
+      }
+
+      .button.disabled {
+        color: var(--subtle);
+        opacity: 0.7;
+        pointer-events: none;
+      }
+
+      .banner {
+        align-items: flex-start;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--health);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        display: grid;
+        gap: 10px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        margin-bottom: 16px;
+        padding: 12px 14px;
+      }
+
+      .banner.rule {
+        border-left-color: var(--search);
+      }
+
+      .banner.blocked {
+        border-left-color: var(--risk);
+      }
+
+      .banner strong {
+        display: block;
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      .banner span {
+        color: var(--muted);
+        display: block;
+        font-size: 12px;
+        line-height: 1.5;
+        margin-top: 3px;
+      }
+
+      .pill,
+      .status {
+        align-items: center;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        color: var(--muted);
+        display: inline-flex;
+        font-size: 11px;
+        font-weight: 650;
+        gap: 5px;
+        min-height: 22px;
+        padding: 3px 8px;
+        white-space: nowrap;
+        width: max-content;
+      }
+
+      .safe {
+        border-color: rgba(87, 208, 178, 0.42);
+        color: var(--health);
+      }
+
+      .search {
+        border-color: rgba(143, 184, 255, 0.38);
+        color: var(--search);
+      }
+
+      .commerce {
+        border-color: rgba(245, 189, 91, 0.42);
+        color: var(--commerce);
+      }
+
+      .risk {
+        border-color: rgba(240, 120, 120, 0.42);
+        color: var(--risk);
+      }
+
+      .violet {
+        border-color: rgba(181, 167, 255, 0.42);
+        color: var(--violet);
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .panel-head {
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        padding: 12px 14px;
+      }
+
+      .panel-body {
+        padding: 14px;
+      }
+
+      .planning {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1.2fr 0.85fr 0.78fr auto;
+        margin-bottom: 14px;
+      }
+
+      .run-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        min-height: 94px;
+        padding: 13px;
+      }
+
+      .label {
+        color: var(--muted);
+        display: block;
+        font-size: 11px;
+        font-weight: 650;
+        line-height: 1.35;
+        margin-bottom: 8px;
+      }
+
+      .value {
+        color: var(--text);
+        display: block;
+        font-size: 18px;
+        font-weight: 650;
+        line-height: 1.24;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 7px;
+      }
+
+      .metric-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-bottom: 16px;
+      }
+
+      .metric {
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 13px;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 24px;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.1;
+        margin-bottom: 6px;
+      }
+
+      .metric span {
+        color: var(--muted);
+        display: block;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .workbench,
+      .detail-grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: minmax(0, 1fr) 348px;
+      }
+
+      .screen-gap {
+        display: grid;
+        gap: 16px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      .queue-table {
+        table-layout: fixed;
+      }
+
+      .queue-table th:nth-child(1),
+      .queue-table td:nth-child(1) {
+        width: 76px;
+      }
+
+      .queue-table th:nth-child(2),
+      .queue-table td:nth-child(2) {
+        width: 228px;
+      }
+
+      .queue-table th:nth-child(4),
+      .queue-table td:nth-child(4) {
+        width: 86px;
+      }
+
+      .queue-table th:nth-child(5),
+      .queue-table td:nth-child(5) {
+        width: 96px;
+      }
+
+      .queue-table th:nth-child(6),
+      .queue-table td:nth-child(6) {
+        width: 118px;
+      }
+
+      .queue-table td:nth-child(4) .mono {
+        white-space: nowrap;
+      }
+
+      th {
+        background: var(--panel-soft);
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 650;
+        line-height: 1.3;
+        padding: 9px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      td {
+        border-bottom: 1px solid var(--line);
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.42;
+        overflow-wrap: anywhere;
+        padding: 11px 10px;
+        vertical-align: top;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .score {
+        align-items: center;
+        background: var(--panel-soft);
+        border: 1px solid var(--line-strong);
+        border-left: 3px solid var(--health);
+        border-radius: 6px;
+        color: var(--text);
+        display: inline-flex;
+        font-size: 17px;
+        font-weight: 700;
+        height: 38px;
+        justify-content: center;
+        min-width: 48px;
+        width: 48px;
+      }
+
+      .score.mid {
+        border-left-color: var(--commerce);
+      }
+
+      .score.risk-score {
+        border-left-color: var(--risk);
+      }
+
+      .task-title {
+        color: var(--text);
+        display: block;
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1.35;
+        margin-bottom: 6px;
+      }
+
+      .task-meta {
+        color: var(--muted);
+        display: block;
+        line-height: 1.5;
+      }
+
+      .evidence-mini {
+        display: grid;
+        gap: 4px;
+        min-width: 0;
+      }
+
+      .evidence-mini span {
+        color: var(--text-soft);
+        display: block;
+      }
+
+      .rail-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .rail-item {
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      .rail-item h3 {
+        margin-bottom: 6px;
+      }
+
+      .kv {
+        display: grid;
+        gap: 9px;
+      }
+
+      .kv-row {
+        align-items: flex-start;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: minmax(106px, 0.75fr) minmax(0, 1fr);
+      }
+
+      .kv-row span {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .kv-row strong {
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1.35;
+      }
+
+      .decision {
+        align-items: flex-start;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 64px minmax(0, 1fr);
+        margin-bottom: 16px;
+        padding: 14px;
+      }
+
+      .check-list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+      }
+
+      .check-list li {
+        color: var(--text-soft);
+        display: grid;
+        font-size: 13px;
+        gap: 8px;
+        grid-template-columns: 18px minmax(0, 1fr);
+        line-height: 1.45;
+        list-style: none;
+      }
+
+      .check-list li::before {
+        background: rgba(87, 208, 178, 0.12);
+        border: 1px solid rgba(87, 208, 178, 0.42);
+        border-radius: 999px;
+        content: "";
+        height: 9px;
+        margin-top: 6px;
+        width: 9px;
+      }
+
+      .step-list {
+        counter-reset: step;
+        display: grid;
+        gap: 10px;
+      }
+
+      .step {
+        border-bottom: 1px solid var(--line);
+        counter-increment: step;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 28px minmax(0, 1fr);
+        padding-bottom: 10px;
+      }
+
+      .step:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .step::before {
+        align-items: center;
+        background: var(--panel-raised);
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        color: var(--text);
+        content: counter(step);
+        display: inline-flex;
+        font-size: 11px;
+        font-weight: 700;
+        height: 24px;
+        justify-content: center;
+        width: 24px;
+      }
+
+      .step strong {
+        color: var(--text);
+        display: block;
+        font-size: 13px;
+        margin-bottom: 3px;
+      }
+
+      .step span {
+        color: var(--muted);
+        display: block;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .score-breakdown {
+        display: grid;
+        gap: 10px;
+      }
+
+      .score-line {
+        display: grid;
+        gap: 6px;
+      }
+
+      .score-line div:first-child {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .score-line span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .score-line strong {
+        color: var(--text);
+        font-size: 12px;
+      }
+
+      .bar {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        height: 6px;
+        overflow: hidden;
+      }
+
+      .bar i {
+        background: var(--health);
+        display: block;
+        height: 100%;
+      }
+
+      .control-grid,
+      .state-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .state-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .control-item,
+      .state-card {
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        min-height: 88px;
+        padding: 12px;
+      }
+
+      .control-item strong,
+      .state-card strong {
+        color: var(--text);
+        display: block;
+        font-size: 13px;
+        margin-bottom: 5px;
+      }
+
+      .safety-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .lock-row {
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        min-height: 98px;
+        padding: 12px;
+      }
+
+      .lock-row strong {
+        color: var(--text);
+        display: block;
+        font-size: 13px;
+        margin-bottom: 7px;
+      }
+
+      .small-gap {
+        margin-top: 12px;
+      }
+
+      .spinner {
+        animation: spin 1s linear infinite;
+        border: 2px solid rgba(143, 184, 255, 0.24);
+        border-top-color: var(--search);
+        border-radius: 999px;
+        display: inline-block;
+        height: 16px;
+        width: 16px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 1120px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          display: block;
+          padding: 16px;
+        }
+
+        .brand {
+          margin-bottom: 12px;
+        }
+
+        .nav-list {
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        .side-note {
+          margin-top: 10px;
+        }
+
+        .main {
+          padding: 18px;
+        }
+
+        .planning,
+        .workbench,
+        .detail-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .metric-grid,
+        .safety-grid,
+        .state-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 760px) {
+        .topbar,
+        .title-row,
+        .banner {
+          align-items: flex-start;
+          grid-template-columns: 1fr;
+          flex-direction: column;
+        }
+
+        .main {
+          padding: 18px 16px 36px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        .actions {
+          justify-content: flex-start;
+        }
+
+        .metric-grid,
+        .control-grid,
+        .safety-grid,
+        .state-grid {
+          grid-template-columns: 1fr;
+        }
+
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+
+        thead {
+          display: none;
+        }
+
+        tr {
+          border-bottom: 1px solid var(--line);
+          padding: 12px 0;
+        }
+
+        tr:last-child {
+          border-bottom: 0;
+        }
+
+        td {
+          border-bottom: 0;
+          display: grid;
+          gap: 6px;
+          grid-template-columns: minmax(88px, 0.38fr) minmax(0, 1fr);
+          padding: 6px 12px;
+        }
+
+        td::before {
+          color: var(--muted);
+          content: attr(data-label);
+          font-size: 11px;
+          font-weight: 650;
+          line-height: 1.35;
+        }
+
+        .decision {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <strong>TrafScope</strong>
+          <span data-en="Evidence-driven traffic workspace">证据驱动流量运营工作台</span>
+        </div>
+        <nav class="nav-list">
+          <a class="nav-link active" href="?screen=board&lang=zh" data-screen-link="board">
+            <span class="nav-key">B</span><span data-en="Board">工作台</span>
+          </a>
+          <a class="nav-link" href="?screen=opportunity&lang=zh" data-screen-link="opportunity">
+            <span class="nav-key">O</span><span data-en="Opportunities">机会</span>
+          </a>
+          <a class="nav-link" href="?screen=task&lang=zh" data-screen-link="task">
+            <span class="nav-key">T</span><span data-en="Tasks">任务</span>
+          </a>
+          <a class="nav-link" href="?screen=integrations&lang=zh" data-screen-link="integrations">
+            <span class="nav-key">S</span><span data-en="Safety">安全</span>
+          </a>
+          <a class="nav-link" href="?screen=states&lang=zh" data-screen-link="states">
+            <span class="nav-key">Q</span><span data-en="QA states">验收态</span>
+          </a>
+        </nav>
+        <div class="side-note">
+          <strong data-en="Execution boundary">执行边界</strong>
+          <span data-en="GSC import is read-only. WooCommerce is read-only. WordPress draft creation is future-gated.">
+            GSC 导入只读。WooCommerce 只读。WordPress 草稿创建为后续能力。
+          </span>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <div>
+            <div class="crumb" data-en="Outdoor Coffee Gear Demo Store / GSC demo fixture">
+              Outdoor Coffee Gear Demo Store / GSC 演示数据
+            </div>
+            <div class="crumb mono">2026-06-08 13:42 / planning-run-042</div>
+          </div>
+          <div class="language" aria-label="Language switcher">
+            <a href="?screen=board&lang=zh" data-lang-link="zh">中文</a>
+            <a href="?screen=board&lang=en" data-lang-link="en">EN</a>
+          </div>
+        </div>
+
+        <section class="screen active" id="board">
+          <div class="title-row">
+            <div>
+              <h1 data-en="Traffic operations">流量运营台</h1>
+              <p class="subtitle" data-en="This week's evidence-backed review queue. Sprint 1 only covers deterministic planning and task review.">
+                本周有证据支撑的审核队列。Sprint 1 只覆盖确定性规划和任务审核。
+              </p>
+            </div>
+            <div class="actions">
+              <span class="status safe" data-en="No live publishing">无线上发布</span>
+              <button class="button" data-en="View sync">查看同步</button>
+              <button class="button primary" data-en="Run planning">运行规划</button>
+            </div>
+          </div>
+
+          <div class="banner rule">
+            <div>
+              <strong data-en="Scoring boundary">评分边界</strong>
+              <span data-en="Scores and ranking come from deterministic rules. AI does not calculate scores or rank tasks; it can only assist later explanations and drafts.">
+                分数和排序来自确定性规则引擎。AI 不参与打分或排序，只能在后续解释和草稿环节辅助。
+              </span>
+            </div>
+            <span class="pill search" data-en="rule engine">规则引擎</span>
+          </div>
+
+          <div class="planning">
+            <div class="run-card">
+              <span class="label" data-en="Input readiness">输入就绪度</span>
+              <span class="value" data-en="GSC 56 rows / Woo 128 products / WP 12 pages">
+                GSC 56 行 / Woo 128 商品 / WP 12 页面
+              </span>
+              <div class="tag-row">
+                <span class="pill search">GSC 28d</span>
+                <span class="pill commerce" data-en="WooCommerce read-only">WooCommerce 只读</span>
+                <span class="pill safe" data-en="WordPress draft future">WordPress 草稿后续</span>
+              </div>
+            </div>
+            <div class="run-card">
+              <span class="label" data-en="Last successful planning">最近成功规划</span>
+              <span class="value mono">2026-06-08 13:42</span>
+              <p class="muted" data-en="Generated 10 evidence-backed tasks">生成 10 条有证据任务</p>
+            </div>
+            <div class="run-card">
+              <span class="label" data-en="Current state">当前状态</span>
+              <span class="value" data-en="Ready for review">待审核</span>
+              <p class="muted" data-en="No background job is running">没有后台任务正在运行</p>
+            </div>
+            <div class="run-card">
+              <span class="label" data-en="Next step">下一步</span>
+              <button class="button primary" data-en="Run planning">运行规划</button>
+              <p class="muted" data-en="Suggestions only. No product or page writes.">只生成建议，不改商品或页面。</p>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric">
+              <strong>82</strong>
+              <span data-en="Average priority score">平均优先级分</span>
+            </div>
+            <div class="metric">
+              <strong>37</strong>
+              <span data-en="Query gaps, 12 unmapped to pages">查询缺口，12 个未映射页面</span>
+            </div>
+            <div class="metric">
+              <strong>128</strong>
+              <span data-en="Analyzed products, 5 high-fit candidates">已分析商品，5 个高匹配候选</span>
+            </div>
+            <div class="metric">
+              <strong>9</strong>
+              <span data-en="Tracked assets, 3 gaining clicks">追踪资产，3 个点击增长</span>
+            </div>
+          </div>
+
+          <div class="workbench">
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2 data-en="Sprint 1 work queue">Sprint 1 工作队列</h2>
+                  <p class="muted" data-en="Only high CTR gap, ranking push, and collection page gap tasks are shown.">
+                    仅展示 CTR 缺口、排名推动、集合页缺口三类任务。
+                  </p>
+                </div>
+                <span class="status">10</span>
+              </div>
+              <table class="queue-table">
+                <thead>
+                  <tr>
+                    <th data-en="Priority">优先级</th>
+                    <th data-en="Task">任务</th>
+                    <th data-en="Evidence">证据</th>
+                    <th data-en="Objects">对象</th>
+                    <th data-en="Status">状态</th>
+                    <th data-en="Action">动作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-label="优先级" data-label-en="Priority"><span class="score">91</span></td>
+                    <td data-label="任务" data-label-en="Task">
+                      <span class="task-title" data-en="Create camping portable espresso collection page">创建露营便携咖啡机集合页</span>
+                      <span class="task-meta mono">collection_page_gap / rule v1</span>
+                      <div class="tag-row">
+                        <span class="pill search">14 queries</span>
+                        <span class="pill commerce">7 SKUs</span>
+                        <span class="pill">0 pages</span>
+                      </div>
+                    </td>
+                    <td data-label="证据" data-label-en="Evidence">
+                      <div class="evidence-mini">
+                        <span data-en="GSC: 18.4K impressions, CTR 1.9%, avg position 4.8">GSC：18.4K 曝光，CTR 1.9%，均排 4.8</span>
+                        <span data-en="WooCommerce: 7 in-stock products match category and attributes">WooCommerce：7 个在售商品匹配类目和属性</span>
+                        <span data-en="WordPress: no matching collection page">WordPress：没有匹配集合页</span>
+                      </div>
+                    </td>
+                    <td data-label="对象" data-label-en="Objects"><span class="mono">Q14/P7/WP0</span></td>
+                    <td data-label="状态" data-label-en="Status"><span class="status safe" data-en="New">新任务</span></td>
+                    <td data-label="动作" data-label-en="Action"><button class="button" data-en="Review">审核</button></td>
+                  </tr>
+                  <tr>
+                    <td data-label="优先级" data-label-en="Priority"><span class="score mid">84</span></td>
+                    <td data-label="任务" data-label-en="Task">
+                      <span class="task-title" data-en="Refresh rechargeable portable espresso product page">刷新充电式便携咖啡机商品页</span>
+                      <span class="task-meta mono">ranking_push / rule v1</span>
+                      <div class="tag-row">
+                        <span class="pill search">9 queries</span>
+                        <span class="pill commerce">1 SKU</span>
+                        <span class="pill">1 page</span>
+                      </div>
+                    </td>
+                    <td data-label="证据" data-label-en="Evidence">
+                      <div class="evidence-mini">
+                        <span data-en="GSC: avg position 6.8, impressions rising">GSC：平均排名 6.8，曝光上涨</span>
+                        <span data-en="Page: stale title, missing FAQ, weak internal links">页面：标题陈旧，FAQ 缺失，内链弱</span>
+                        <span data-en="Rule: ranking_push threshold passed">规则：ranking_push 阈值通过</span>
+                      </div>
+                    </td>
+                    <td data-label="对象" data-label-en="Objects"><span class="mono">Q9/P1/WP1</span></td>
+                    <td data-label="状态" data-label-en="Status"><span class="status safe" data-en="Approved">已批准</span></td>
+                    <td data-label="动作" data-label-en="Action">
+                      <button class="button disabled" data-en="Draft later">草稿后续</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td data-label="优先级" data-label-en="Priority"><span class="score mid">79</span></td>
+                    <td data-label="任务" data-label-en="Task">
+                      <span class="task-title" data-en="Improve CTR for manual espresso maker query cluster">优化手压咖啡机查询组点击率</span>
+                      <span class="task-meta mono">high_impression_low_ctr / rule v1</span>
+                      <div class="tag-row">
+                        <span class="pill search">11 queries</span>
+                        <span class="pill">1 page</span>
+                      </div>
+                    </td>
+                    <td data-label="证据" data-label-en="Evidence">
+                      <div class="evidence-mini">
+                        <span data-en="GSC: 11.2K impressions, CTR 1.6%, avg position 4.9">GSC：11.2K 曝光，CTR 1.6%，均排 4.9</span>
+                        <span data-en="Page: title does not match commercial intent">页面：标题没有匹配商业意图</span>
+                        <span data-en="Rule: high_impression_low_ctr threshold passed">规则：high_impression_low_ctr 阈值通过</span>
+                      </div>
+                    </td>
+                    <td data-label="对象" data-label-en="Objects"><span class="mono">Q11/P0/WP1</span></td>
+                    <td data-label="状态" data-label-en="Status"><span class="status commerce" data-en="Snoozed">已稍后处理</span></td>
+                    <td data-label="动作" data-label-en="Action"><button class="button" data-en="Inspect">查看</button></td>
+                  </tr>
+                  <tr>
+                    <td data-label="优先级" data-label-en="Priority"><span class="score risk-score">68</span></td>
+                    <td data-label="任务" data-label-en="Task">
+                      <span class="task-title" data-en="Create under-$100 manual grinder collection page">创建 100 美元以下手动磨豆机集合页</span>
+                      <span class="task-meta mono">collection_page_gap / rule v1</span>
+                      <div class="tag-row">
+                        <span class="pill search">8 queries</span>
+                        <span class="pill commerce">5 SKUs</span>
+                        <span class="pill">0 pages</span>
+                      </div>
+                    </td>
+                    <td data-label="证据" data-label-en="Evidence">
+                      <div class="evidence-mini">
+                        <span data-en="GSC: 8.6K impressions, CTR 2.1%">GSC：8.6K 曝光，CTR 2.1%</span>
+                        <span data-en="WooCommerce: 5 products match price and category">WooCommerce：5 个商品匹配价格和类目</span>
+                        <span data-en="Review: rejected once for possible intent mismatch">审核：曾因意图不确定被拒绝</span>
+                      </div>
+                    </td>
+                    <td data-label="对象" data-label-en="Objects"><span class="mono">Q8/P5/WP0</span></td>
+                    <td data-label="状态" data-label-en="Status"><span class="status risk" data-en="Rejected">已拒绝</span></td>
+                    <td data-label="动作" data-label-en="Action"><button class="button" data-en="View reason">查看原因</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <aside class="screen-gap">
+              <section class="panel">
+                <div class="panel-head">
+                  <h2 data-en="Data health">数据健康</h2>
+                  <span class="status safe" data-en="Safe">安全</span>
+                </div>
+                <div class="panel-body">
+                  <div class="kv">
+                    <div class="kv-row"><span>GSC</span><strong data-en="Demo import, 28-day window">演示导入，28 天窗口</strong></div>
+                    <div class="kv-row"><span>WooCommerce</span><strong data-en="Read products, categories, stock attributes">只读商品、分类、库存属性</strong></div>
+                    <div class="kv-row"><span>WordPress</span><strong data-en="Draft creation future-gated">草稿创建为后续能力</strong></div>
+                    <div class="kv-row"><span data-en="Last sync">最近同步</span><strong>2026-06-08 13:42</strong></div>
+                  </div>
+                </div>
+              </section>
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Top opportunities">顶部机会</h2></div>
+                <div class="panel-body rail-list">
+                  <div class="rail-item">
+                    <h3 data-en="Collection page gap">集合页缺口</h3>
+                    <p class="muted" data-en="14 queries, 7 in-stock products, 0 matching pages.">
+                      14 个查询，7 个在售商品，0 个匹配页面。
+                    </p>
+                    <div class="tag-row">
+                      <span class="pill safe" data-en="confidence 0.87">置信度 0.87</span>
+                      <span class="pill mono">rule v1</span>
+                    </div>
+                  </div>
+                  <div class="rail-item">
+                    <h3 data-en="Ranking push">排名推动</h3>
+                    <p class="muted" data-en="Page ranks 6.8 with rising impressions and stale content.">
+                      页面排名 6.8，曝光上涨，内容陈旧。
+                    </p>
+                    <div class="tag-row">
+                      <span class="pill commerce" data-en="confidence 0.79">置信度 0.79</span>
+                      <span class="pill mono">rule v1</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section class="screen" id="task">
+          <div class="title-row">
+            <div>
+              <h1 data-en="Approve this collection-page task?">是否批准集合页任务？</h1>
+              <p class="subtitle" data-en="Approval changes task state only. Sprint 1 does not create WordPress drafts.">
+                批准只改变任务状态。Sprint 1 不创建 WordPress 草稿。
+              </p>
+            </div>
+            <div class="actions">
+              <button class="button" data-en="Snooze">稍后处理</button>
+              <button class="button danger" data-en="Reject">拒绝</button>
+              <button class="button primary" data-en="Approve task">批准任务</button>
+            </div>
+          </div>
+
+          <div class="banner">
+            <div>
+              <strong data-en="After approval">批准后发生什么</strong>
+              <span data-en="Owner: content operator. ETA: 1 working day. Success check: baseline GSC snapshot then post-change comparison in a later sprint.">
+                负责人：内容运营。预计：1 个工作日。效果判断：后续 Sprint 用 GSC 基线快照和执行后快照对比。
+              </span>
+            </div>
+            <span class="pill safe" data-en="state change only">仅状态流转</span>
+          </div>
+
+          <div class="decision">
+            <span class="score">91</span>
+            <div>
+              <h2 data-en="Create camping portable espresso collection page">创建露营便携咖啡机集合页</h2>
+              <p class="subtitle" data-en="This task exists because search demand, product readiness, and page gap thresholds all passed.">
+                该任务成立，因为搜索需求、商品就绪度、页面缺口三个阈值均通过。
+              </p>
+              <div class="tag-row">
+                <span class="pill mono">collection_page_gap</span>
+                <span class="pill search">14 queries</span>
+                <span class="pill commerce">7 SKUs</span>
+                <span class="pill">WP0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="screen-gap">
+              <section class="panel">
+                <div class="panel-head">
+                  <h2 data-en="Evidence">证据</h2>
+                  <span class="status safe" data-en="Complete">完整</span>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th data-en="Source">来源</th>
+                      <th data-en="Entity">对象</th>
+                      <th data-en="Metric">指标</th>
+                      <th data-en="Window">时间窗</th>
+                      <th data-en="Reason">原因</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td data-label="来源" data-label-en="Source"><span class="pill search">GSC</span></td>
+                      <td data-label="对象" data-label-en="Entity">portable espresso maker camping</td>
+                      <td data-label="指标" data-label-en="Metric" data-en="18.4K impressions / 352 clicks / CTR 1.9% / avg position 4.8">
+                        18.4K 曝光 / 352 点击 / CTR 1.9% / 均排 4.8
+                      </td>
+                      <td data-label="时间窗" data-label-en="Window" class="mono">2026-05-11 - 2026-06-08</td>
+                      <td data-label="原因" data-label-en="Reason" data-en="Collection/commercial intent exceeds threshold">
+                        集合页商业意图超过阈值
+                      </td>
+                    </tr>
+                    <tr>
+                      <td data-label="来源" data-label-en="Source"><span class="pill commerce">Woo</span></td>
+                      <td data-label="对象" data-label-en="Entity" data-en="7 in-stock SKUs">7 个在售商品</td>
+                      <td data-label="指标" data-label-en="Metric" data-en="match confidence 0.84 / readiness 86">
+                        匹配置信度 0.84 / 就绪度 86
+                      </td>
+                      <td data-label="时间窗" data-label-en="Window" class="mono">2026-06-08</td>
+                      <td data-label="原因" data-label-en="Reason" data-en="Category, stock, attributes, and image checks passed">
+                        类目、库存、属性、图片检查通过
+                      </td>
+                    </tr>
+                    <tr>
+                      <td data-label="来源" data-label-en="Source"><span class="pill">WP</span></td>
+                      <td data-label="对象" data-label-en="Entity" data-en="Page graph">页面图谱</td>
+                      <td data-label="指标" data-label-en="Metric" data-en="0 matching collection pages / 2 adjacent guides">
+                        0 个匹配集合页 / 2 个相邻指南
+                      </td>
+                      <td data-label="时间窗" data-label-en="Window" class="mono">2026-06-08</td>
+                      <td data-label="原因" data-label-en="Reason" data-en="Gap is real and internal links are available">
+                        页面缺口成立，且有内链来源
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Action plan">行动计划</h2></div>
+                <div class="panel-body step-list">
+                  <div class="step">
+                    <div>
+                      <strong data-en="Approve task state">批准任务状态</strong>
+                      <span data-en="Move task from new to approved. No page, product, or WordPress draft is created in Sprint 1.">
+                        将任务从新任务改为已批准。Sprint 1 不创建页面、商品或 WordPress 草稿。
+                      </span>
+                    </div>
+                  </div>
+                  <div class="step">
+                    <div>
+                      <strong data-en="Prepare structured draft plan">准备结构化草稿计划</strong>
+                      <span data-en="Record title intent, product set, FAQ intent, and internal link targets for later draft review.">
+                        记录标题意图、商品集合、FAQ 意图和内链目标，供后续草稿审核使用。
+                      </span>
+                    </div>
+                  </div>
+                  <div class="step">
+                    <div>
+                      <strong data-en="Create measurement baseline later">后续创建效果基线</strong>
+                      <span data-en="A later sprint will capture GSC baseline and compare after execution.">
+                        后续 Sprint 记录 GSC 基线，并在执行后对比效果。
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Acceptance criteria">验收标准</h2></div>
+                <div class="panel-body">
+                  <ul class="check-list">
+                    <li data-en="Evidence table includes source, metric, window, entity, and rule reason.">
+                      证据表包含来源、指标、时间窗、对象和规则原因。
+                    </li>
+                    <li data-en="Approved state persists after refresh and suppresses duplicate planning output.">
+                      已批准状态刷新后保留，并抑制重复规划结果。
+                    </li>
+                    <li data-en="No Sprint 1 action implies live publishing or product writes.">
+                      Sprint 1 没有任何动作暗示线上发布或商品写入。
+                    </li>
+                  </ul>
+                </div>
+              </section>
+            </div>
+
+            <aside class="screen-gap">
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Score breakdown">评分拆解</h2></div>
+                <div class="panel-body score-breakdown">
+                  <div class="score-line"><div><span data-en="Search potential">搜索潜力</span><strong>92 / 100 · 35%</strong></div><div class="bar"><i style="width:92%"></i></div></div>
+                  <div class="score-line"><div><span data-en="Product readiness">商品就绪度</span><strong>86 / 100 · 25%</strong></div><div class="bar"><i style="width:86%"></i></div></div>
+                  <div class="score-line"><div><span data-en="Page gap">页面缺口</span><strong>94 / 100 · 25%</strong></div><div class="bar"><i style="width:94%"></i></div></div>
+                  <div class="score-line"><div><span data-en="Execution ease">执行难度</span><strong>78 / 100 · 15%</strong></div><div class="bar"><i style="width:78%"></i></div></div>
+                </div>
+              </section>
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Rule trace">规则追踪</h2></div>
+                <div class="panel-body kv">
+                  <div class="kv-row"><span>Rule</span><strong class="mono">collection_page_gap</strong></div>
+                  <div class="kv-row"><span>Version</span><strong class="mono">v1</strong></div>
+                  <div class="kv-row"><span>Dedupe</span><strong class="mono">colgap-camping-espresso</strong></div>
+                  <div class="kv-row"><span>Run</span><strong class="mono">planning-run-042</strong></div>
+                  <div class="kv-row"><span data-en="Scoring">评分</span><strong data-en="deterministic">确定性规则</strong></div>
+                </div>
+              </section>
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Related entities">相关对象</h2></div>
+                <div class="panel-body rail-list">
+                  <div class="rail-item"><h3 class="mono">portable espresso maker camping</h3><p class="muted" data-en="Core query cluster">查询组核心词</p></div>
+                  <div class="rail-item"><h3>TrailBrew Pro 450ml</h3><p class="muted">SKU TB-450 / in stock</p></div>
+                  <div class="rail-item"><h3>Outdoor coffee guide</h3><p class="muted">WP page / internal link candidate</p></div>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section class="screen" id="opportunity">
+          <div class="title-row">
+            <div>
+              <h1 data-en="Collection page gap: camping espresso makers">集合页缺口：露营咖啡机</h1>
+              <p class="subtitle" data-en="Opportunity explains whether the signal is real. Task explains how to execute.">
+                机会页回答“信号是否真实”，任务页回答“如何执行”。
+              </p>
+            </div>
+            <div class="actions">
+              <button class="button danger" data-en="Reject opportunity">拒绝机会</button>
+              <button class="button primary" data-en="Create task">创建任务</button>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="screen-gap">
+              <section class="panel">
+                <div class="panel-head">
+                  <h2 data-en="Why now">为什么现在</h2>
+                  <span class="status safe" data-en="confidence 0.87">置信度 0.87</span>
+                </div>
+                <div class="panel-body">
+                  <ul class="check-list">
+                    <li data-en="Search demand is visible: 14 related query clusters and 18.4K impressions in 28 days.">
+                      搜索需求已出现：14 个相关查询组，28 天曝光 18.4K。
+                    </li>
+                    <li data-en="Product supply can support the page: 7 in-stock products match category and attributes.">
+                      商品供给能支撑页面：7 个在售商品匹配类目和属性。
+                    </li>
+                    <li data-en="The page graph has a gap: no matching collection page, only adjacent guides.">
+                      页面图谱存在空缺：没有匹配集合页，只有相邻指南。
+                    </li>
+                  </ul>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Evidence rows">证据行</h2></div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th data-en="Evidence type">证据类型</th>
+                      <th data-en="Claim">结论</th>
+                      <th data-en="Metric">指标</th>
+                      <th data-en="Confidence">置信度</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td data-label="证据类型" data-label-en="Evidence type"><span class="pill search" data-en="Search">搜索</span></td>
+                      <td data-label="结论" data-label-en="Claim" data-en="Camping portable espresso queries show collection intent">
+                        露营便携咖啡机查询存在集合页意图
+                      </td>
+                      <td data-label="指标" data-label-en="Metric">18.4K / CTR 1.9%</td>
+                      <td data-label="置信度" data-label-en="Confidence">0.88</td>
+                    </tr>
+                    <tr>
+                      <td data-label="证据类型" data-label-en="Evidence type"><span class="pill commerce" data-en="Commerce">商品</span></td>
+                      <td data-label="结论" data-label-en="Claim" data-en="The product pool is sufficient for a collection page">
+                        商品池足够支撑集合页
+                      </td>
+                      <td data-label="指标" data-label-en="Metric">7 SKUs / readiness 86</td>
+                      <td data-label="置信度" data-label-en="Confidence">0.84</td>
+                    </tr>
+                    <tr>
+                      <td data-label="证据类型" data-label-en="Evidence type"><span class="pill" data-en="Page graph">页面图谱</span></td>
+                      <td data-label="结论" data-label-en="Claim" data-en="WordPress has no equivalent collection page">
+                        WordPress 没有等价集合页
+                      </td>
+                      <td data-label="指标" data-label-en="Metric">0 target pages / 2 guides</td>
+                      <td data-label="置信度" data-label-en="Confidence">0.90</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Recommended task preview">推荐任务预览</h2></div>
+                <div class="panel-body decision" style="margin-bottom:0">
+                  <span class="score">91</span>
+                  <div>
+                    <h3 data-en="Create camping portable espresso collection page">创建露营便携咖啡机集合页</h3>
+                    <p class="subtitle" data-en="Creates a reviewable task. It does not create or publish a page in Sprint 1.">
+                      创建可审核任务。Sprint 1 不创建或发布页面。
+                    </p>
+                    <div class="tag-row">
+                      <span class="pill safe" data-en="acceptance preview">验收预览</span>
+                      <span class="pill mono">acceptance: 3</span>
+                      <span class="pill mono">evidence: 3</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="False positive controls">误判控制</h2></div>
+                <div class="panel-body control-grid">
+                  <div class="control-item"><strong data-en="Intent mismatch">意图不匹配</strong><p class="muted" data-en="Queries may be tutorial intent, not collection intent.">查询可能是教程意图，不是集合页意图。</p></div>
+                  <div class="control-item"><strong data-en="Product mismatch">商品不匹配</strong><p class="muted" data-en="Products may not support the page scope.">商品可能无法支撑页面范围。</p></div>
+                  <div class="control-item"><strong data-en="Seasonality">季节性</strong><p class="muted" data-en="Demand may come from a short-term seasonal spike.">需求可能来自短期季节波动。</p></div>
+                  <div class="control-item"><strong data-en="Existing page found">已有页面</strong><p class="muted" data-en="A human confirms another page already covers the intent.">人工确认已有页面覆盖该意图。</p></div>
+                </div>
+              </section>
+            </div>
+
+            <aside class="screen-gap">
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Trigger thresholds">触发阈值</h2></div>
+                <div class="panel-body kv">
+                  <div class="kv-row"><span>ready products</span><strong>&gt;= 5 / actual 7</strong></div>
+                  <div class="kv-row"><span>matching pages</span><strong>= 0 / actual 0</strong></div>
+                  <div class="kv-row"><span>query impressions</span><strong>&gt;= 10K / actual 18.4K</strong></div>
+                  <div class="kv-row"><span>confidence</span><strong>&gt;= 0.75 / actual 0.87</strong></div>
+                </div>
+              </section>
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Related entities">相关对象</h2></div>
+                <div class="panel-body rail-list">
+                  <div class="rail-item"><h3>14 queries</h3><p class="muted">portable espresso maker camping / camping espresso maker</p></div>
+                  <div class="rail-item"><h3>7 products</h3><p class="muted">TrailBrew Pro, CampPress Mini, AeroTrail 350...</p></div>
+                  <div class="rail-item"><h3>2 pages</h3><p class="muted">Outdoor coffee guide / Camp brewing checklist</p></div>
+                </div>
+              </section>
+              <section class="panel">
+                <div class="panel-head"><h2 data-en="Rule trace">规则追踪</h2></div>
+                <div class="panel-body kv">
+                  <div class="kv-row"><span>Rule ID</span><strong class="mono">collection_page_gap</strong></div>
+                  <div class="kv-row"><span>Rule version</span><strong class="mono">v1</strong></div>
+                  <div class="kv-row"><span>Dedupe key</span><strong class="mono">colgap-camping</strong></div>
+                  <div class="kv-row"><span>Generated by</span><strong class="mono">planning-run-042</strong></div>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section class="screen" id="integrations">
+          <div class="title-row">
+            <div>
+              <h1 data-en="Data trust and safety">数据信任与安全</h1>
+              <p class="subtitle" data-en="This page confirms what TrafScope can read, what it cannot write, and whether sync data is trustworthy.">
+                这里确认 TrafScope 能读什么、不能写什么、最近同步是否可信。
+              </p>
+            </div>
+            <div class="actions">
+              <button class="button" data-en="View audit">查看审计</button>
+              <button class="button primary" data-en="Retry sync">重试同步</button>
+            </div>
+          </div>
+
+          <div class="banner">
+            <div>
+              <strong data-en="Demo mode active">演示模式已启用</strong>
+              <span data-en="Real credentials are not connected. External writes are disabled. WordPress draft creation is future-gated.">
+                真实凭证未连接。所有外部写入动作关闭。WordPress 草稿创建是后续能力。
+              </span>
+            </div>
+            <span class="pill safe">demo-fixture</span>
+          </div>
+
+          <section class="panel">
+            <div class="panel-head"><h2 data-en="Permission matrix">权限矩阵</h2></div>
+            <table>
+              <thead>
+                <tr>
+                  <th data-en="Integration">集成</th>
+                  <th data-en="Mode">模式</th>
+                  <th data-en="Permission boundary">权限边界</th>
+                  <th data-en="Last sync">最近同步</th>
+                  <th data-en="Freshness">新鲜度</th>
+                  <th data-en="Errors">错误</th>
+                  <th data-en="Action">动作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="集成" data-label-en="Integration">Google Search Console</td>
+                  <td data-label="模式" data-label-en="Mode"><span class="pill search" data-en="Demo import">演示导入</span></td>
+                  <td data-label="权限边界" data-label-en="Permission boundary" data-en="Read queries, pages, impressions, clicks, and positions">
+                    只读查询、页面、曝光、点击、排名
+                  </td>
+                  <td data-label="最近同步" data-label-en="Last sync" class="mono">2026-06-08 13:35</td>
+                  <td data-label="新鲜度" data-label-en="Freshness"><span class="status safe" data-en="Fresh">新鲜</span></td>
+                  <td data-label="错误" data-label-en="Errors" data-en="None">无</td>
+                  <td data-label="动作" data-label-en="Action"><button class="button" data-en="Details">详情</button></td>
+                </tr>
+                <tr>
+                  <td data-label="集成" data-label-en="Integration">WooCommerce</td>
+                  <td data-label="模式" data-label-en="Mode"><span class="pill commerce" data-en="Read-only">只读</span></td>
+                  <td data-label="权限边界" data-label-en="Permission boundary" data-en="Read products, categories, and stock attributes; no price or stock writes">
+                    读商品、分类、库存属性；不写价格和库存
+                  </td>
+                  <td data-label="最近同步" data-label-en="Last sync" class="mono">2026-06-08 13:39</td>
+                  <td data-label="新鲜度" data-label-en="Freshness"><span class="status safe" data-en="Fresh">新鲜</span></td>
+                  <td data-label="错误" data-label-en="Errors" data-en="None">无</td>
+                  <td data-label="动作" data-label-en="Action"><button class="button" data-en="Details">详情</button></td>
+                </tr>
+                <tr>
+                  <td data-label="集成" data-label-en="Integration">WordPress</td>
+                  <td data-label="模式" data-label-en="Mode"><span class="pill safe" data-en="Draft future">草稿后续</span></td>
+                  <td data-label="权限边界" data-label-en="Permission boundary" data-en="Draft creation is future-gated; publishing, overwrite, and delete are blocked">
+                    草稿创建为后续能力；发布、覆盖、删除被禁止
+                  </td>
+                  <td data-label="最近同步" data-label-en="Last sync" class="mono">2026-06-08 13:32</td>
+                  <td data-label="新鲜度" data-label-en="Freshness"><span class="status commerce" data-en="Degraded">降级</span></td>
+                  <td data-label="错误" data-label-en="Errors" data-en="Demo mode, real credentials not connected">演示模式，真实凭证未连接</td>
+                  <td data-label="动作" data-label-en="Action"><button class="button" data-en="Connect later">稍后连接</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="panel small-gap">
+            <div class="panel-head"><h2 data-en="Safety defaults">安全默认值</h2></div>
+            <div class="panel-body safety-grid">
+              <div class="lock-row"><span class="status safe" data-en="Locked">已锁定</span><strong data-en="WooCommerce read-only">WooCommerce 只读</strong><p class="muted" data-en="No price, stock, or product edit controls.">不提供价格、库存、商品编辑入口。</p></div>
+              <div class="lock-row"><span class="status safe" data-en="Locked">已锁定</span><strong data-en="WordPress draft future">WordPress 草稿后续</strong><p class="muted" data-en="Draft creation still requires a later QA gate.">草稿创建仍需后续 QA 闸门。</p></div>
+              <div class="lock-row"><span class="status safe" data-en="Locked">已锁定</span><strong data-en="Audit log required">审计日志必需</strong><p class="muted" data-en="Planning, approve, reject, and sync are recorded.">规划、批准、拒绝、同步都记录。</p></div>
+              <div class="lock-row"><span class="status safe" data-en="Locked">已锁定</span><strong data-en="Credentials hidden">凭证隐藏</strong><p class="muted" data-en="UI never shows raw keys or stack traces.">UI 不显示原始密钥和错误堆栈。</p></div>
+            </div>
+          </section>
+
+          <section class="panel small-gap">
+            <div class="panel-head"><h2 data-en="Sync history">同步历史</h2></div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Run</th>
+                  <th data-en="Result">结果</th>
+                  <th data-en="Status">状态</th>
+                  <th data-en="Time">时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td data-label="Run">planning-run-042</td><td data-label="结果" data-label-en="Result" data-en="Generated 10 evidence-backed tasks">生成 10 条有证据任务</td><td data-label="状态" data-label-en="Status"><span class="status safe" data-en="Succeeded">成功</span></td><td data-label="时间" data-label-en="Time" class="mono">13:42</td></tr>
+                <tr><td data-label="Run">gsc-import-demo</td><td data-label="结果" data-label-en="Result" data-en="Loaded 56 query/page metric rows">导入 56 行查询/页面指标</td><td data-label="状态" data-label-en="Status"><span class="status safe" data-en="Succeeded">成功</span></td><td data-label="时间" data-label-en="Time" class="mono">13:35</td></tr>
+                <tr><td data-label="Run">wordpress-page-sync</td><td data-label="结果" data-label-en="Result" data-en="Demo mode, real credentials not connected">演示模式，真实凭证未连接</td><td data-label="状态" data-label-en="Status"><span class="status commerce" data-en="Degraded">降级</span></td><td data-label="时间" data-label-en="Time" class="mono">13:32</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <section class="screen" id="states">
+          <div class="title-row">
+            <div>
+              <h1 data-en="Sprint 1 UI states">Sprint 1 UI 验收态</h1>
+              <p class="subtitle" data-en="Internal design QA screen for states that must exist before development approval.">
+                内部设计 QA 屏，用来检查开发审批前必须具备的状态。
+              </p>
+            </div>
+            <div class="actions">
+              <button class="button" data-en="Copy QA list">复制 QA 清单</button>
+            </div>
+          </div>
+
+          <div class="state-grid">
+            <div class="state-card">
+              <span class="spinner"></span>
+              <strong data-en="Planning running">规划运行中</strong>
+              <p class="muted" data-en="Run button is disabled. aria-live announces job progress.">运行按钮禁用，aria-live 播报任务进度。</p>
+            </div>
+            <div class="state-card">
+              <span class="status risk" data-en="Failed">失败</span>
+              <strong data-en="Planning failed">规划失败</strong>
+              <p class="muted" data-en="Show safe error summary, retry action, and last successful run.">显示安全错误摘要、重试动作和最近成功结果。</p>
+            </div>
+            <div class="state-card">
+              <span class="status" data-en="Empty">空状态</span>
+              <strong data-en="No tasks found">未发现任务</strong>
+              <p class="muted" data-en="Offer demo reload or planning run. Do not imply failure.">提供重新加载演示数据或运行规划，不暗示系统失败。</p>
+            </div>
+            <div class="state-card">
+              <span class="status risk" data-en="Blocked">阻断</span>
+              <strong data-en="Missing evidence">缺少证据</strong>
+              <p class="muted" data-en="Task cannot be approved until source, metric, window, and reason exist.">来源、指标、时间窗、原因缺失时不能批准。</p>
+            </div>
+            <div class="state-card">
+              <span class="status risk" data-en="Rejected">已拒绝</span>
+              <strong data-en="Rejected task retained">拒绝任务保留</strong>
+              <p class="muted" data-en="Rejected tasks remain visible and suppress duplicate regeneration.">拒绝任务保留可见，并抑制重复生成。</p>
+            </div>
+            <div class="state-card">
+              <span class="status commerce" data-en="Stale">数据陈旧</span>
+              <strong data-en="Integration stale">集成数据陈旧</strong>
+              <p class="muted" data-en="Show last sync, affected integration, and retry details.">显示最近同步、受影响集成和重试详情。</p>
+            </div>
+          </div>
+
+          <section class="panel small-gap">
+            <div class="panel-head"><h2 data-en="No-evidence blocked task row">缺证据阻断任务行</h2></div>
+            <div class="banner blocked" style="margin: 14px">
+              <div>
+                <strong data-en="Task blocked: evidence incomplete">任务阻断：证据不完整</strong>
+                <span data-en="Missing GSC date window and product match reason. Approval is disabled until the evidence contract is complete.">
+                  缺少 GSC 时间窗和商品匹配原因。证据契约完整前，批准按钮禁用。
+                </span>
+              </div>
+              <button class="button disabled" data-en="Approve disabled">批准已禁用</button>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const screen = params.get("screen") || "board";
+      const lang = params.get("lang") === "en" ? "en" : "zh";
+      document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
+
+      document.querySelectorAll(".screen").forEach((el) => {
+        el.classList.toggle("active", el.id === screen);
+      });
+      document.querySelectorAll("[data-screen-link]").forEach((el) => {
+        el.classList.toggle("active", el.dataset.screenLink === screen);
+      });
+      document.querySelectorAll("[data-lang-link]").forEach((el) => {
+        el.classList.toggle("active", el.dataset.langLink === lang);
+        const target = new URL(el.href);
+        target.searchParams.set("screen", screen);
+        target.searchParams.set("lang", el.dataset.langLink);
+        el.href = target.search;
+      });
+      document.querySelectorAll(".nav-link").forEach((el) => {
+        const target = new URL(el.href);
+        target.searchParams.set("lang", lang);
+        el.href = target.search;
+      });
+      if (lang === "en") {
+        document.querySelectorAll("[data-en]").forEach((el) => {
+          el.textContent = el.dataset.en;
+        });
+        document.querySelectorAll("[data-label-en]").forEach((el) => {
+          el.dataset.label = el.dataset.labelEn;
+        });
+      }
+    </script>
+  </body>
+</html>

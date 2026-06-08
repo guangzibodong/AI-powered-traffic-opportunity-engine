@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:ui-contract": "node tests/sprint1-ui-contract.test.mjs"
   },
   "dependencies": {
-    "@trafscope/shared": "0.1.0",
+    "@trafscope/shared": "workspace:*",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -22,4 +23,3 @@
     "vite": "^5.4.0"
   }
 }
-

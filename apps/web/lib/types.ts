@@ -1,46 +1,96 @@
-export type TaskStatus =
-  | "new"
-  | "queued"
-  | "drafting"
-  | "needs_review"
-  | "approved"
-  | "published"
-  | "applied"
-  | "tracking"
-  | "completed"
-  | "rejected"
-  | "archived";
+export type Locale = "zh" | "en";
 
-export type AutomationLevel = "recommend_only" | "generate_draft" | "one_click_apply" | "guarded_autopilot";
+export type VisibleTaskStatus = "new" | "approved" | "rejected" | "snoozed";
 
-export type TaskCategory =
-  | "product_seo"
-  | "collection_page"
-  | "buying_guide"
-  | "comparison_page"
-  | "faq_schema"
-  | "internal_link"
-  | "ctr_refresh"
-  | "ranking_push"
-  | "ai_visibility"
-  | "merchant_listing"
-  | "trend_page"
-  | "content_refresh";
+export type TaskStatus = VisibleTaskStatus;
+
+export type AutomationLevel = "recommend_only" | "draft_assist_future";
+
+export type TaskCategory = "collection_page" | "ctr_refresh" | "ranking_push";
+
+export type SprintOneRuleId = "collection_page_gap" | "ranking_push" | "high_impression_low_ctr";
+
+export type EvidenceType = "search" | "commerce" | "page_graph" | "rule" | "audit";
+
+export type EvidenceRow = {
+  type: EvidenceType;
+  source: string;
+  entity: string;
+  metric: string;
+  window: string;
+  reason: string;
+  confidence?: number;
+};
+
+export type ScoreComponent = {
+  label: string;
+  value: number;
+  weight?: number;
+};
+
+export type RuleTrace = {
+  ruleId: SprintOneRuleId;
+  version: string;
+  dedupeKey: string;
+  runId: string;
+  scoring: "deterministic_rules";
+};
+
+export type RelatedEntity = {
+  kind: "query" | "product" | "page";
+  title: string;
+  detail: string;
+};
 
 export type Task = {
   id: string;
   title: string;
   category: TaskCategory;
   automationLevel: AutomationLevel;
-  status: TaskStatus;
+  status: VisibleTaskStatus;
   trafscore: number;
+  ruleId: SprintOneRuleId;
+  evidence: EvidenceRow[];
+  objects: {
+    queries: number;
+    products: number;
+    pages: number;
+  };
+  actionLabel: string;
+};
+
+export type TaskDetailViewModel = Task & {
+  subtitle: string;
+  actionPlan: Array<{
+    title: string;
+    description: string;
+  }>;
+  acceptanceCriteria: string[];
+  scoreComponents: ScoreComponent[];
+  ruleTrace: RuleTrace;
+  relatedEntities: RelatedEntity[];
 };
 
 export type Opportunity = {
   id: string;
   title: string;
+  opportunityType: SprintOneRuleId;
   summary: string;
   trafscore: number;
+  confidence: number;
+  ruleTrace: RuleTrace;
+  scoreComponents: ScoreComponent[];
+  relatedEntities: RelatedEntity[];
+};
+
+export type OpportunityDetailViewModel = Opportunity & {
+  whyNow: string[];
+  evidence: EvidenceRow[];
+  falsePositiveControls: Array<{
+    title: string;
+    description: string;
+  }>;
+  recommendedTask: Pick<Task, "id" | "title" | "trafscore" | "ruleId">;
 };
 
 export type Integration = {
@@ -50,3 +100,34 @@ export type Integration = {
   status: "connected" | "pending" | "not_connected";
 };
 
+export type IntegrationHealth = {
+  name: string;
+  mode: string;
+  permissionBoundary: string;
+  lastSync: string;
+  freshness: "fresh" | "degraded" | "stale" | "failed";
+  errors: string;
+  action: string;
+};
+
+export type PlanningRunViewModel = {
+  runId: string;
+  lastSuccessfulAt: string;
+  currentState: "ready" | "running" | "failed";
+  generatedTasks: number;
+};
+
+export type BoardViewModel = {
+  storeName: string;
+  fixtureLabel: string;
+  planningRun: PlanningRunViewModel;
+  metrics: {
+    priorityAverage: number;
+    queryGaps: number;
+    productsReady: number;
+    trackedAssets: number;
+  };
+  tasks: Task[];
+  opportunities: Opportunity[];
+  integrations: IntegrationHealth[];
+};

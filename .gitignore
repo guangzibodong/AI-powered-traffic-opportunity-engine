@@ -4,10 +4,10 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+*.tsbuildinfo
 node_modules/
 dist/
 .next/
 .vite/
 .env
 .DS_Store
-
