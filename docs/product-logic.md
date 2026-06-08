@@ -114,6 +114,14 @@ Sprint 2 imported opportunity previews apply a small rule set to the imported gr
 
 Preview opportunities include rule metadata, dedupe keys, TrafScore components, evidence, related products/pages, and status `new`. They do not create tasks, drafts, assets, sync jobs, or external writes.
 
+Sprint 2 imported task previews convert those imported opportunities into a safe Action layer:
+
+- Generate deterministic task preview ids from imported opportunity dedupe keys.
+- Preserve source opportunity metadata, related page/product evidence, TrafScore, confidence, and source summaries.
+- Emit category-specific action plans for `ctr_refresh` and `collection_page`.
+- Keep every imported task preview at `automation_level: recommend_only` and `status: new`.
+- Expose list/detail reads only; no approval, rejection, snooze, draft, publishing, or commerce write path exists for imported previews.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.
@@ -195,6 +203,8 @@ Task payloads must include:
 - source summary
 - confidence
 - acceptance criteria
+
+Imported Sprint 2 task previews follow the same evidence and action-plan shape, but they are not persisted workflow tasks yet. They are recommendation previews for review and product validation, so the only allowed status is `new` and the only automation level is `recommend_only`.
 
 Sprint 1 visible task statuses:
 

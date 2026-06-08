@@ -246,11 +246,52 @@ This endpoint is read-only. It does not create tasks, assets, WordPress drafts, 
 
 - `GET /api/stores/:storeId/tasks`
 - `GET /api/stores/:storeId/tasks/:taskId`
+- `GET /api/stores/:storeId/imported-tasks`
+- `GET /api/stores/:storeId/imported-tasks/:taskId`
 - `PATCH /api/stores/:storeId/tasks/:taskId`
 - `POST /api/stores/:storeId/tasks/:taskId/generate-draft` - future-gated in Sprint 1 and returns `403`; it does not create a WordPress draft.
 - `POST /api/stores/:storeId/tasks/:taskId/approve`
 - `POST /api/stores/:storeId/tasks/:taskId/reject`
 - `POST /api/stores/:storeId/tasks/:taskId/snooze`
+
+### Imported task preview contract
+
+`GET /api/stores/:storeId/imported-tasks` converts imported opportunity previews into deterministic task previews:
+
+```json
+{
+  "mode": "imported_task_previews",
+  "store_id": "store-demo-outdoor-coffee",
+  "summary": {
+    "tasks": 1,
+    "source_opportunities": 1,
+    "by_category": { "ctr_refresh": 1 }
+  },
+  "tasks": [
+    {
+      "id": "imptask_abc123def456",
+      "opportunity_id": "impopp_abc123def456",
+      "category": "ctr_refresh",
+      "automation_level": "recommend_only",
+      "status": "new",
+      "priority_score": 82.4,
+      "action_plan": {
+        "automation_level": "recommend_only",
+        "steps": [
+          "Review existing title and meta against imported query evidence",
+          "Draft title and meta recommendations for human review",
+          "Record baseline clicks, impressions, CTR, and position",
+          "Do not publish or update WordPress from this preview"
+        ]
+      }
+    }
+  ]
+}
+```
+
+`GET /api/stores/:storeId/imported-tasks/:taskId` returns one preview as `{ "mode": "imported_task_previews", "store_id": "...", "task": { ... } }`, or `404` when the preview id is unknown.
+
+Imported task previews are read-only recommendation objects. They always use `automation_level: "recommend_only"` and `status: "new"`. They do not expose review mutation routes, create persistent tasks, generate assets, create WordPress drafts, publish content, write WooCommerce data, or call external services.
 
 ### Demo task status contract
 

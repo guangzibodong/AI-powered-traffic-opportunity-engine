@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported opportunity preview foundation. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported task preview foundation completed; next safe Sprint 2 task will be selected from the roadmap. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -23,9 +23,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Role | Person/Agent | Current assignment |
 |---|---|---|
 | Product Manager | Main thread | Keep Sprint 1 review actions state-only and draft-safe. |
-| Backend/API Engineer | Main thread | Add deterministic imported opportunity preview read API. |
+| Backend/API Engineer | Main thread | Add deterministic imported task preview read API. |
 | Frontend Product Engineer | Main thread | No UI import panel in this slice; keep existing Sprint 1 UI stable. |
-| QA Lead | Main thread | Add service and API tests for imported opportunity rules, empty states, deterministic dedupe, and no execution side effects. |
+| QA Lead | Main thread | Add service and API tests for imported task previews, safe action plans, empty states, and no execution side effects. |
 | UI Systems Engineer | Banach | Reserved for later Sync run UI. |
 
 ## Task Queue
@@ -50,6 +50,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-WP-004 | 16 | done | Backend/API Engineer / QA Lead | Add WordPress read-only page import foundation. | API accepts WordPress-like page/post fixture payloads, normalizes page fields, stores them in-memory per store, exposes list/detail reads, syncs through read-only `list_pages` calls, and does not create drafts or publish content. |
 | TASK-S2-GRAPH-005 | 17 | done | Backend/API Engineer / QA Lead | Add imported signal graph foundation. | `GET /imported-graph` links imported query clusters to imported products and WordPress pages with deterministic local token/URL matching, aggregate counts, empty states, and no external service calls. |
 | TASK-S2-OPP-006 | 18 | done | Backend/API Engineer / QA Lead | Add imported opportunity preview foundation. | `GET /imported-opportunities` generates deterministic read-only opportunity previews from the imported graph for CTR refresh and collection page gaps, with evidence, dedupe keys, safe statuses, and no task/draft/external writes. |
+| TASK-S2-TASK-007 | 19 | done | Backend/API Engineer / QA Lead | Add imported task preview foundation. | `GET /imported-tasks` and detail reads convert imported opportunity previews into deterministic recommend-only task previews with evidence, action plans, acceptance criteria, safe `new` status, and no review mutation, draft, or external write path. |
 
 ## Blockers
 
@@ -83,6 +84,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported graph matching is verified by service/API tests plus the existing full backend, frontend contract, lint, build, and browser smoke gates.
 - Imported opportunity previews are next because imported graphs need to produce reviewable growth opportunities before imported-data task generation can happen.
 - Imported opportunity previews are verified by service/API tests plus the existing full backend, frontend contract, lint, build, and browser smoke gates.
+- Imported task previews are next because imported opportunities need a safe Action layer before later task persistence and review workflows.
+- Imported task previews are verified by service/API tests plus the existing full backend, frontend contract, lint, build, and browser smoke gates.
 
 ## Completion Rule
 

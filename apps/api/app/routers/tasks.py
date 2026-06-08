@@ -5,6 +5,7 @@ from app.services.demo_planning_service import (
     get_demo_task,
     update_demo_task_status,
 )
+from app.services.imported_task_service import generate_imported_tasks, get_imported_task
 
 
 router = APIRouter()
@@ -19,6 +20,19 @@ async def list_tasks(store_id: str) -> dict:
         "planning_run": payload["planning_run"],
         "tasks": payload["tasks"],
     }
+
+
+@router.get("/{store_id}/imported-tasks")
+async def list_imported_tasks(store_id: str) -> dict:
+    return generate_imported_tasks(store_id)
+
+
+@router.get("/{store_id}/imported-tasks/{task_id}")
+async def get_imported_task_preview(store_id: str, task_id: str) -> dict:
+    task = get_imported_task(store_id, task_id)
+    if task is None:
+        raise HTTPException(status_code=404, detail="Imported task preview not found")
+    return {"mode": "imported_task_previews", "store_id": store_id, "task": task}
 
 
 @router.get("/{store_id}/tasks/{task_id}")

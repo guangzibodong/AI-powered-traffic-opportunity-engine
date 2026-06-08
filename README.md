@@ -135,6 +135,7 @@ Sprint 2 capabilities completed so far:
 6. WordPress page import foundation: `POST /api/stores/{store_id}/pages/import-wordpress` normalizes read-only page/post fixtures into store-scoped page rows with list/detail APIs.
 7. Imported signal graph foundation: `GET /api/stores/{store_id}/imported-graph` links imported query clusters to imported products and pages through local deterministic matching.
 8. Imported opportunity preview foundation: `GET /api/stores/{store_id}/imported-opportunities` produces read-only opportunity previews for CTR refreshes and collection page gaps from imported data.
+9. Imported task preview foundation: `GET /api/stores/{store_id}/imported-tasks` converts imported opportunity previews into recommend-only action plans with evidence, acceptance criteria, safe `new` status, and no draft or external write path.
 
 Current product/engineering ownership:
 
@@ -282,6 +283,7 @@ Connect the decisioning loop to real WooCommerce and WordPress data.
 - WordPress-like page/post fixture import with normalized URLs, titles, status, SEO metadata, indexability, and content hashes.
 - Imported query-product-page graph matching over local imported rows.
 - Imported opportunity previews with deterministic evidence and dedupe keys.
+- Imported task previews with recommend-only action plans and safe read-only detail APIs.
 - Integration status and sync run tracking.
 - Audit logs.
 - Stable frontend DTO conversion.

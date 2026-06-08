@@ -32,6 +32,8 @@ Move the V3 UI from static mock data toward API-backed demo planning without tou
 | `GET /api/stores/{store_id}/pages/{page_id}` | Returns one imported page/post row. | Same imported page store. |
 | `GET /api/stores/{store_id}/imported-graph` | Links imported query clusters to imported products and pages. | Deterministic local token/URL matching; no external calls. |
 | `GET /api/stores/{store_id}/imported-opportunities` | Generates read-only opportunities from imported graph rows. | Deterministic CTR refresh and collection gap previews only. |
+| `GET /api/stores/{store_id}/imported-tasks` | Generates read-only task previews from imported opportunity previews. | Recommend-only action plans with `new` status; no mutation, draft, or external write path. |
+| `GET /api/stores/{store_id}/imported-tasks/{task_id}` | Returns one imported task preview. | Same recommend-only preview generated from imported data. |
 
 The planning endpoints are read-only demo planning endpoints. The task status endpoints only change Sprint 1 review state in memory. They do not connect to real external services, create WordPress drafts, or publish content.
 
@@ -54,6 +56,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | WordPress page import foundation | Done | `POST /pages/import-wordpress` normalizes WordPress-like page/post rows into in-memory per-store pages with list/detail APIs. Sync service uses read-only `list_pages` calls only. |
 | Imported signal graph foundation | Done | `GET /imported-graph` links imported query clusters to imported products and pages with deterministic local matching and aggregate counts. |
 | Imported opportunity preview foundation | Done | `GET /imported-opportunities` produces deterministic read-only CTR refresh and collection page gap previews from the imported graph. |
+| Imported task preview foundation | Done | `GET /imported-tasks` converts imported opportunity previews into recommend-only action plans with evidence, acceptance criteria, safe `new` status, and no review, draft, or write path. |
 
 ## Local Smoke Run
 
@@ -127,6 +130,7 @@ Expected behavior:
 - WordPress page import must stay read-only in Sprint 2; no draft creation, page overwrite, live publish, or content mutation route may be added.
 - Imported graph matching must stay local and deterministic; no embeddings, LLM calls, live sync calls, or external writes are allowed.
 - Imported opportunity previews must not create tasks, assets, WordPress drafts, sync jobs, or external writes.
+- Imported task previews must stay recommend-only and read-only; no approve/reject/snooze routes, task persistence, asset generation, WordPress draft creation, publishing, WooCommerce writes, or external calls are allowed.
 
 ## Remaining API-backed Task Action UX
 
