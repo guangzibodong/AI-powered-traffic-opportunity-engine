@@ -25,6 +25,18 @@ const statusPill = read("components/tasks/StatusPill.tsx");
 const apiClient = read("lib/api-client.ts");
 const viewModelAdapters = read("lib/view-model-adapters.ts");
 
+const uiContractTargets = {
+  "App.tsx": app,
+  "TaskQueue.tsx": taskQueue,
+  "StatusPill.tsx": statusPill,
+  "api-client.ts": apiClient,
+  "mock-data.ts": data,
+  "task-copy.ts": taskCopy,
+  "task-state.ts": taskState,
+  "types.ts": types,
+  "view-model-adapters.ts": viewModelAdapters
+};
+
 const forbiddenVisibleConcepts = [
   "published",
   "applied",
@@ -36,14 +48,10 @@ const forbiddenVisibleConcepts = [
   "Autopilot"
 ];
 
-for (const concept of forbiddenVisibleConcepts) {
-  assert(!types.includes(concept), `types.ts still exposes forbidden Sprint 1 concept: ${concept}`);
-  assert(!data.includes(concept), `mock-data.ts still exposes forbidden Sprint 1 concept: ${concept}`);
-  assert(!taskState.includes(concept), `task-state.ts still exposes forbidden Sprint 1 concept: ${concept}`);
-  assert(!taskQueue.includes(concept), `TaskQueue.tsx still exposes forbidden Sprint 1 concept: ${concept}`);
-  assert(!taskCopy.includes(concept), `task-copy.ts still exposes forbidden Sprint 1 concept: ${concept}`);
-  assert(!apiClient.includes(concept), `api-client.ts still exposes forbidden Sprint 1 concept: ${concept}`);
-  assert(!viewModelAdapters.includes(concept), `view-model-adapters.ts still exposes forbidden Sprint 1 concept: ${concept}`);
+for (const [fileName, content] of Object.entries(uiContractTargets)) {
+  for (const concept of forbiddenVisibleConcepts) {
+    assert(!content.includes(concept), `${fileName} still exposes forbidden Sprint 1 concept: ${concept}`);
+  }
 }
 
 for (const required of [
@@ -82,6 +90,19 @@ for (const required of ["collection_page_gap", "ranking_push", "high_impression_
   assert(data.includes(required), `mock data missing Sprint 1 rule: ${required}`);
 }
 
+assert(
+  types.includes('export type VisibleTaskStatus = "new" | "approved" | "rejected" | "snoozed";'),
+  "VisibleTaskStatus must stay limited to Sprint 1 review states"
+);
+assert(
+  types.includes('export type AutomationLevel = "recommend_only" | "draft_assist_future";'),
+  "AutomationLevel must stay limited to Sprint 1 safe levels"
+);
+
+for (const evidenceField of ["type:", "source:", "entity:", "metric:", "window:", "reason:"]) {
+  assert(data.includes(evidenceField), `mock data evidence missing field marker: ${evidenceField}`);
+}
+
 for (const required of [
   "TASK_STATUS_STORAGE_KEY",
   "loadTaskStatusMap",
@@ -104,6 +125,9 @@ assert(app.includes("onTaskStatusChange(task.id, \"snoozed\")"), "Task detail mu
 assert(!app.includes("actionLabel.includes"), "Task behavior must not depend on translated action copy");
 assert(taskQueue.includes("onOpenTask"), "TaskQueue must expose a typed open-task callback");
 assert(taskCopy.includes("localizeTaskAction"), "task-copy.ts must own task action copy");
+assert(taskCopy.includes('action: locale === "zh"'), "task-copy.ts must provide bilingual task table labels");
+assert(app.includes("LanguageSwitcher"), "App must expose language switching");
+assert(app.includes('setLocale("zh")') && app.includes('setLocale("en")'), "LanguageSwitcher must support zh and en");
 assert(statusPill.includes("VisibleTaskStatus"), "StatusPill must use the visible Sprint 1 task status type");
 assert(apiClient.includes("VITE_API_BASE_URL"), "api-client.ts must support configurable API base URL");
 assert(viewModelAdapters.includes("mapApiPlanningToBoard"), "view-model-adapters.ts must expose board adapter");
