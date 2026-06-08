@@ -8,6 +8,13 @@ import {
   opportunityDetail,
   taskDetail
 } from "../lib/mock-data";
+import {
+  applyTaskStatusesToBoard,
+  applyTaskStatusToDetail,
+  loadTaskStatusMap,
+  saveTaskStatusMap,
+  updateTaskStatusMap
+} from "../lib/task-state";
 import type {
   BoardViewModel,
   EvidenceRow,
@@ -107,15 +114,26 @@ function useMessages(locale: Locale) {
 export function App() {
   const [screen, setScreen] = useState<Screen>("board");
   const [locale, setLocale] = useState<Locale>("zh");
+  const [taskStatuses, setTaskStatuses] = useState(loadTaskStatusMap);
   const t = useMessages(locale);
+  const board = useMemo(() => applyTaskStatusesToBoard(boardViewModel, taskStatuses), [taskStatuses]);
+  const selectedTask = useMemo(() => applyTaskStatusToDetail(taskDetail, taskStatuses), [taskStatuses]);
+
+  function setTaskStatus(taskId: string, status: VisibleTaskStatus) {
+    setTaskStatuses((current) => {
+      const next = updateTaskStatusMap(current, taskId, status);
+      saveTaskStatusMap(next);
+      return next;
+    });
+  }
 
   return (
     <div className="app-shell">
       <NavigationRail locale={locale} screen={screen} setScreen={setScreen} t={t} />
       <main className="main">
         <TopBar locale={locale} setLocale={setLocale} />
-        {screen === "board" && <TrafficOperationsPage board={boardViewModel} locale={locale} setScreen={setScreen} t={t} />}
-        {screen === "task" && <TaskDetailPage task={taskDetail} locale={locale} t={t} />}
+        {screen === "board" && <TrafficOperationsPage board={board} locale={locale} setScreen={setScreen} t={t} />}
+        {screen === "task" && <TaskDetailPage task={selectedTask} locale={locale} onTaskStatusChange={setTaskStatus} t={t} />}
         {screen === "opportunity" && <OpportunityDetailPage opportunity={opportunityDetail} locale={locale} t={t} />}
         {screen === "integrations" && <IntegrationsSafetyPage integrations={integrationHealth} locale={locale} t={t} />}
         {screen === "states" && <UiStatesPage locale={locale} t={t} />}
@@ -402,7 +420,7 @@ function TaskQueue({
             </td>
             <td data-label={locale === "zh" ? "动作" : "Action"}>
               <button
-                className={`button ${task.actionLabel.includes("草稿") ? "disabled" : ""}`}
+                className={`button ${task.automationLevel === "draft_assist_future" ? "disabled" : ""}`}
                 onClick={() => (task.id === "task_001" ? setScreen("task") : undefined)}
                 type="button"
               >
@@ -468,7 +486,15 @@ function OpportunityRail({ opportunities, locale, t }: SharedProps & { opportuni
   );
 }
 
-function TaskDetailPage({ task, locale, t }: SharedProps & { task: TaskDetailViewModel }) {
+function TaskDetailPage({
+  task,
+  locale,
+  onTaskStatusChange,
+  t
+}: SharedProps & {
+  task: TaskDetailViewModel;
+  onTaskStatusChange: (taskId: string, status: VisibleTaskStatus) => void;
+}) {
   return (
     <section>
       <div className="title-row">
@@ -481,13 +507,15 @@ function TaskDetailPage({ task, locale, t }: SharedProps & { task: TaskDetailVie
           </p>
         </div>
         <div className="actions">
-          <button className="button" type="button">
+          <span className="status-label">{locale === "zh" ? "当前状态" : "Current status"}</span>
+          <StatusPill status={task.status} t={t} />
+          <button className="button" onClick={() => onTaskStatusChange(task.id, "snoozed")} type="button">
             {locale === "zh" ? "稍后处理" : "Snooze"}
           </button>
-          <button className="button danger" type="button">
+          <button className="button danger" onClick={() => onTaskStatusChange(task.id, "rejected")} type="button">
             {locale === "zh" ? "拒绝" : "Reject"}
           </button>
-          <button className="button primary" type="button">
+          <button className="button primary" onClick={() => onTaskStatusChange(task.id, "approved")} type="button">
             {locale === "zh" ? "批准任务" : "Approve task"}
           </button>
         </div>
@@ -1139,9 +1167,9 @@ function localizeTaskTitle(title: string, locale: Locale) {
 }
 
 function localizeAction(task: Task, locale: Locale, t: Record<MessageKey, string>) {
-  if (task.actionLabel.includes("草稿")) return t.draftLater;
-  if (task.actionLabel === "查看") return t.inspect;
-  if (task.actionLabel === "查看原因") return t.viewReason;
+  if (task.automationLevel === "draft_assist_future") return t.draftLater;
+  if (task.status === "rejected") return t.viewReason;
+  if (task.status === "snoozed") return t.inspect;
   return t.review;
 }
 

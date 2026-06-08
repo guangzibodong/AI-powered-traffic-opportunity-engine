@@ -18,6 +18,7 @@ const types = read("lib/types.ts");
 const app = read("app/App.tsx");
 const data = read("lib/mock-data.ts");
 const styles = read("app/styles.css");
+const taskState = read("lib/task-state.ts");
 
 const forbiddenVisibleConcepts = [
   "published",
@@ -33,6 +34,7 @@ const forbiddenVisibleConcepts = [
 for (const concept of forbiddenVisibleConcepts) {
   assert(!types.includes(concept), `types.ts still exposes forbidden Sprint 1 concept: ${concept}`);
   assert(!data.includes(concept), `mock-data.ts still exposes forbidden Sprint 1 concept: ${concept}`);
+  assert(!taskState.includes(concept), `task-state.ts still exposes forbidden Sprint 1 concept: ${concept}`);
 }
 
 for (const required of [
@@ -70,6 +72,27 @@ for (const required of [
 for (const required of ["collection_page_gap", "ranking_push", "high_impression_low_ctr"]) {
   assert(data.includes(required), `mock data missing Sprint 1 rule: ${required}`);
 }
+
+for (const required of [
+  "TASK_STATUS_STORAGE_KEY",
+  "loadTaskStatusMap",
+  "saveTaskStatusMap",
+  "updateTaskStatusMap",
+  "applyTaskStatusesToBoard",
+  "applyTaskStatusToDetail",
+  "isVisibleTaskStatus"
+]) {
+  assert(taskState.includes(required), `task-state.ts missing ${required}`);
+}
+
+for (const status of ["new", "approved", "rejected", "snoozed"]) {
+  assert(taskState.includes(status), `task-state.ts missing visible status: ${status}`);
+}
+
+assert(app.includes("onTaskStatusChange(task.id, \"approved\")"), "Task detail must approve task state");
+assert(app.includes("onTaskStatusChange(task.id, \"rejected\")"), "Task detail must reject task state");
+assert(app.includes("onTaskStatusChange(task.id, \"snoozed\")"), "Task detail must snooze task state");
+assert(!app.includes("actionLabel.includes"), "Task behavior must not depend on translated action copy");
 
 assert(styles.includes("--bg: #0f1216"), "styles.css must use the V3 dark operational canvas token");
 assert(styles.includes("@media (max-width: 760px)"), "styles.css must include mobile responsive rules");
