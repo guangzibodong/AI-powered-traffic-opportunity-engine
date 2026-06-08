@@ -131,6 +131,7 @@ Sprint 2 capabilities completed so far:
 2. Imported query list/detail reads: `GET /queries` and `GET /queries/{query_id}`.
 3. In-memory idempotent imported rows per store and date window, with no live OAuth.
 4. Lightweight imported query clustering: `GET /api/stores/{store_id}/query-clusters` groups related imported rows into deterministic demand clusters with totals, CTR, weighted position, row ids, and top pages.
+5. WooCommerce product import foundation: `POST /api/stores/{store_id}/products/import-woocommerce` normalizes read-only product fixtures into store-scoped product rows with list/detail APIs.
 
 Current product/engineering ownership:
 
@@ -273,6 +274,7 @@ Connect the decisioning loop to real WooCommerce and WordPress data.
 - CSV GSC export import foundation for query/page metrics.
 - Deterministic lightweight query clustering over imported GSC rows.
 - WooCommerce read-only product sync.
+- WooCommerce-like product fixture import with normalized categories, attributes, stock state, prices, and image URLs.
 - WordPress read-only page/post sync.
 - Integration status and sync run tracking.
 - Audit logs.

@@ -77,6 +77,16 @@ Sprint 2 imported CSV rows use a lightweight deterministic clustering path befor
 
 This keeps imported demand grouping local and explainable. It does not use embeddings, LLM calls, OAuth, WooCommerce writes, or WordPress writes.
 
+Sprint 2 WooCommerce product imports use the same local-first pattern:
+
+- Accept WooCommerce-like product rows from fixture/import payloads or a read-only client.
+- Normalize external id, name, slug, SKU, status, permalink, price, stock status, categories, attributes, and image URLs.
+- Store rows idempotently by `store_id + external_id`.
+- Sort readable product lists with in-stock published products first.
+- Preserve stock and category evidence for later query-product matching.
+
+This is still a read/import foundation. It does not create, update, delete, price-edit, inventory-edit, or publish WooCommerce data.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.

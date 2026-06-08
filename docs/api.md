@@ -19,7 +19,41 @@
 
 - `GET /api/stores/:storeId/products`
 - `GET /api/stores/:storeId/products/:productId`
+- `POST /api/stores/:storeId/products/import-woocommerce`
 - `GET /api/stores/:storeId/products/:productId/opportunities`
+
+### WooCommerce product import contract
+
+`POST /api/stores/:storeId/products/import-woocommerce` accepts WooCommerce-like product JSON fixtures:
+
+```json
+{
+  "products": [
+    {
+      "id": 101,
+      "name": "Trail Brew Portable Espresso Maker",
+      "slug": "trail-brew-portable-espresso-maker",
+      "sku": "TB-ESP-01",
+      "status": "publish",
+      "permalink": "https://example.com/product/trail-brew-portable-espresso-maker",
+      "price": "89.00",
+      "stock_status": "instock",
+      "categories": [{ "name": "Camping Coffee" }],
+      "attributes": [{ "name": "Use case", "options": ["Camping", "Travel"] }],
+      "images": [{ "src": "https://example.com/images/trail-brew.jpg" }]
+    }
+  ]
+}
+```
+
+Responses:
+
+- `200` returns `{ "mode": "woocommerce_import", "summary": { ... } }`.
+- `400` is returned when `products` is missing or is not an array.
+
+Imported products are in-memory, scoped per store, and idempotent by store and WooCommerce external id. The read endpoints return normalized fields such as `external_id`, `name`, `slug`, `sku`, `status`, `stock_status`, `in_stock`, `price`, `categories`, `attributes`, `images`, and `permalink`.
+
+This is a read/import flow only. It does not create, update, delete, publish, price-edit, or inventory-edit WooCommerce products.
 
 ## Queries
 
