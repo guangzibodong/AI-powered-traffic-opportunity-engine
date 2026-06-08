@@ -33,13 +33,13 @@ This board is the execution source of truth for the current sprint builder loop.
 | AUTO-002 | 2 | done | Frontend Product Engineer | Extract task state and i18n support into small modules. | `App.tsx` shrinks, shared helpers are typed, and UI contract tests still pass. |
 | AUTO-003 | 3 | done | Backend/API Engineer | Define frontend API adapter path for board/opportunity/task data. | Document endpoint/schema mapping and create a typed API client or adapter skeleton without external credentials. |
 | AUTO-004 | 4 | done | QA Lead | Add stronger frontend contract checks. | Tests cover visible status boundaries, bilingual copy, and no live publishing/action leakage. |
-| AUTO-005 | 5 | todo | Tech Lead | Push current branch and open PR when network allows. | Remote branch contains latest commits and PR link is available. |
+| AUTO-005 | 5 | done | Tech Lead | Push current branch and open PR when network allows. | Remote branch contains latest commits and PR link is available. |
 
 ## Blockers
 
 | Blocker | Status | Notes |
 |---|---|---|
-| GitHub HTTPS push | open | Local network cannot currently reach GitHub 443; SSH has no configured key. Existing branch is ahead locally. |
+| GitHub HTTPS push | resolved | Latest branch push succeeded after retrying direct HTTPS without the stale local proxy. |
 
 ## Agent Findings
 
