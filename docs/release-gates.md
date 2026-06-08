@@ -24,6 +24,8 @@ Any item below blocks MVP release:
 - API error exposing stack trace or raw credentials.
 - Missing audit log for user or system write action.
 - Store-scoped endpoint leaking another store's records.
+- Task click opening a stale, hard-coded, or wrong Task Detail.
+- Demo task status API accepting a non-Sprint-1 status.
 - LLM draft inventing product facts or schema facts.
 - Frontend console uncaught runtime error in demo smoke.
 - Mobile or desktop layout blocking primary action or evidence.
@@ -39,11 +41,19 @@ Required:
 - Task generation tests pass.
 - Dedupe tests pass.
 - Task status transition tests pass.
+- Demo task status API tests pass for PATCH, approve, reject, snooze, persistence, 400, and 404 cases.
 - Schema contract tests pass.
 - API safe error tests pass before real integrations.
 - Store isolation tests pass before multi-store use.
 
-Current command:
+Focused command:
+
+```bash
+cd apps/api
+python -B -m unittest app.tests.test_demo_planning_api
+```
+
+Full command:
 
 ```bash
 cd apps/api
@@ -69,6 +79,8 @@ Required:
 - Integration status tests pass.
 - Empty/loading/error states are tested.
 - API mapper tests pass for snake_case to camelCase conversion.
+- Any task card or row opens the corresponding Task Detail.
+- Task Detail approve/reject/snooze controls use only Sprint 1 safe statuses when wired.
 - No live publish control appears in MVP UI.
 
 Commands:
@@ -90,13 +102,14 @@ Playwright smoke must cover:
 3. Run or load planning.
 4. Confirm summary metrics render.
 5. Confirm at least one task has score, title, category, status, evidence, and next action.
-6. Open task or opportunity detail.
-7. Confirm query/product/page evidence is visible.
-8. Approve or reject a task.
-9. Re-run planning and confirm no duplicate task appears.
-10. Search UI for live publish controls and confirm none exist.
-11. Run desktop and mobile viewport checks.
-12. Confirm browser console has no uncaught runtime errors.
+6. Click the top task and confirm the matching Task Detail opens.
+7. Return to the board, click a non-top task, and confirm the matching Task Detail opens.
+8. Confirm query/product/page evidence is visible.
+9. Approve, reject, and snooze a task through UI controls when wired, or through the demo API smoke path while UI wiring is in progress.
+10. Re-run planning and confirm no duplicate task appears.
+11. Search UI for live publish controls and confirm none exist.
+12. Run desktop and mobile viewport checks.
+13. Confirm browser console has no uncaught runtime errors.
 
 Command:
 
@@ -112,6 +125,7 @@ Rules:
 - Client input must not be allowed to override status to `publish`, `future`, or `private`.
 - UI labels must say `Create WordPress draft`, not generic `Publish`.
 - Task status may not move directly to `published` or `applied`.
+- Sprint 1 demo task status mutations must accept only `new`, `approved`, `rejected`, and `snoozed`.
 - Draft creation records external ID, draft URL, actor, and audit log.
 - No existing WordPress page may be overwritten in MVP.
 
@@ -119,6 +133,7 @@ Tests:
 
 - Mock WordPress REST receives only `status=draft`.
 - Attempting unsafe status is rejected.
+- Demo task status API rejects `draft_generated`, `failed`, `published`, `applied`, `autopilot`, and `one_click_apply`.
 - E2E confirms no live publish wording.
 
 ## WooCommerce Read-Only Gate
@@ -183,8 +198,9 @@ Sprint 1 is complete only when:
 - Three Sprint 1 rules each create at least one opportunity.
 - Re-running planning three times creates no duplicates.
 - Each task includes evidence, related entities, score, action plan, and acceptance criteria.
+- Any task on the board opens its corresponding Task Detail.
 - Approve/reject/snooze states persist.
+- Demo task status API supports PATCH plus approve/reject/snooze and rejects unsafe statuses.
 - Board and detail UI render the decision clearly.
 - No live publish path exists.
 - Backend tests pass.
-

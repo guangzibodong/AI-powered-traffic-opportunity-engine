@@ -39,9 +39,29 @@
 - `GET /api/stores/:storeId/tasks`
 - `GET /api/stores/:storeId/tasks/:taskId`
 - `PATCH /api/stores/:storeId/tasks/:taskId`
-- `POST /api/stores/:storeId/tasks/:taskId/generate-draft`
+- `POST /api/stores/:storeId/tasks/:taskId/generate-draft` - future-gated in Sprint 1 and returns `403`; it does not create a WordPress draft.
 - `POST /api/stores/:storeId/tasks/:taskId/approve`
 - `POST /api/stores/:storeId/tasks/:taskId/reject`
+- `POST /api/stores/:storeId/tasks/:taskId/snooze`
+
+### Demo task status contract
+
+`PATCH /api/stores/:storeId/tasks/:taskId` accepts a JSON body with `status`.
+
+Allowed Sprint 1 demo statuses:
+
+- `new`
+- `approved`
+- `rejected`
+- `snoozed`
+
+Responses:
+
+- `200` returns `{ "store_id": "...", "task": { ... } }` with the updated task status.
+- `400` is returned when `status` is missing, not a string, or outside the allowed Sprint 1 demo statuses.
+- `404` is returned when `taskId` does not match a demo task.
+
+The demo status override is reflected by both `GET /api/stores/:storeId/tasks/:taskId` and `GET /api/stores/:storeId/tasks`.
 
 ## Assets
 
@@ -55,4 +75,3 @@
 - `GET /api/stores/:storeId/performance`
 - `GET /api/stores/:storeId/assets/:assetId/performance`
 - `POST /api/stores/:storeId/performance/refresh`
-

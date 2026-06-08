@@ -34,12 +34,21 @@ assert(adapter.includes("planningRun"), "adapter must produce frontend planning 
 
 assert(apiClient.includes("VITE_USE_API_BOARD"), "API board loading must be explicitly gated");
 assert(apiClient.includes("VITE_API_BASE_URL"), "API base URL must be configurable");
+assert(apiClient.includes("import.meta.env.VITE_USE_API_BOARD"), "API board gate must read Vite env through direct import.meta.env access");
+assert(apiClient.includes("import.meta.env.VITE_API_BASE_URL"), "API base URL must read Vite env through direct import.meta.env access");
 assert(apiClient.includes("ApiVisibleTaskStatus"), "API client must type Sprint 1 visible task status updates");
+assert(apiClient.includes("encodeURIComponent"), "API client must encode store and task path segments");
 assert(apiClient.includes("updateTaskStatus"), "API client must expose task status mutation for the demo API");
 assert(apiClient.includes('method: "PATCH"'), "Task status mutation must use PATCH");
 assert(apiClient.includes("JSON.stringify({ status })"), "Task status mutation must send only the selected review status");
-assert(apiClient.includes("/tasks/${taskId}"), "Task status mutation must target the selected task id");
+assert(apiClient.includes("encodeURIComponent(taskId)"), "Task status mutation must encode the selected task id");
+assert(apiClient.includes("/tasks/${encodedTaskId}"), "Task status mutation must target the encoded selected task id");
 assert(app.includes("isApiBoardEnabled()"), "App must respect the API board gate");
+assert(app.includes("store-demo-outdoor-coffee"), "App must load API-backed demo data with the stable demo store id");
 assert(app.includes('source: "fallback"'), "App must keep a mock fallback state");
+assert(app.includes("updateTaskStatus("), "App must call the demo task status API when API-backed board data is available");
+assert(app.includes('boardDataState.source === "api"'), "App must gate task status API mutations to the connected API board state");
+assert(app.includes("applyApiTaskStatusToBoard"), "App must apply successful API task status responses to the board state");
+assert(app.includes("applyLocalTaskStatus(taskId, status)"), "App must fall back to local task status state when the API mutation is unavailable");
 
 console.log("API adapter contract passed");

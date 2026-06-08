@@ -22,6 +22,40 @@ This is enough to move in parallel without creating coordination overhead. A ded
 - More roles would increase meeting and merge overhead before the product shape is proven.
 - The main risk is trustworthiness, not raw implementation volume.
 
+## 当前执行分工
+
+截至 2026-06-08，当前分支 `codex/sprint1-v3-ui` 采用并行协作。每个角色只改自己负责的范围，不能 revert 或覆盖其他人的未完成改动。
+
+| Role | 当前职责 | 当前状态 |
+|---|---|---|
+| Product Ops / Documentation Lead | 维护 README、Sprint backlog、API adapter plan、team operating model、automation task board。 | 本轮只改产品/项目文档，不改前后端实现。 |
+| Tech Lead / Facilitator | 控制 Sprint 1 scope，协调 API/UI/QA 的接线顺序，保护 demo-only 安全边界。 | 继续要求所有 task action 只是 review state change。 |
+| Backend/API Engineer | 维护 demo planning endpoints、task detail/list endpoints、task status mutation endpoints。 | 已完成 `PATCH /tasks/{id}` 与 approve/reject/snooze shortcut routes。 |
+| Frontend Product Engineer | 维护 Traffic Operations Board、Task Detail、API client、mock fallback。 | 已完成 API-backed board read adapter、`updateTaskStatus` client、visible Task Detail button wiring。 |
+| QA / Test Lead | 验证 scoring、dedupe、state transitions、API adapter contract、fallback、release gates。 | 已扩展后端状态 mutation 与 shortcut route 覆盖；下一步补 browser-level mutation/fallback 覆盖。 |
+| UI Systems Engineer | 支持后续 loading/error/disabled/retry 状态设计。 | 下一步补 mutation feedback states，不阻塞当前 API review wiring。 |
+
+## 当前已完成能力
+
+| Capability | Evidence / Contract |
+|---|---|
+| Deterministic demo planning | Demo fixture 经过 graph builder、opportunity engine、task service 生成 opportunities 和 tasks。 |
+| API-backed board read path | `getTasks`、`getOpportunities`、`mapApiPlanningToBoard` 可把后端 payload 转成前端 board view model。 |
+| Safe fallback path | API 不可用时前端保留 mock board，并显示 fallback 状态。 |
+| Sprint 1 visible task statuses | 前后端都限制为 `new`、`approved`、`rejected`、`snoozed`。 |
+| Demo task status API | `PATCH /tasks/{id}` 更新当前 API 进程内存中的状态覆盖。 |
+| Demo task shortcut actions | `POST /approve`、`POST /reject`、`POST /snooze` 与同一 status override 逻辑一致。 |
+| List/detail consistency | 成功更新后，task list 和 task detail 都能读到相同状态。 |
+| API-backed visible review wiring | Task Detail approve/reject/snooze uses the demo API when API board data is connected, with local fallback retained. |
+| Draft safety boundary | `/generate-draft` is future-gated in Sprint 1 and returns a safe blocked response instead of creating drafts. |
+
+## 下一步协作顺序
+
+1. UI Systems Engineer 补 loading、disabled、error、retry/rollback 状态的视觉与交互细节。
+2. QA / Test Lead 补 browser-level API mutation/fallback 覆盖，确认非法状态不会进入 UI 或 API。
+3. Product Ops / Documentation Lead 继续更新 demo script、release gates、automation board 中的完成口径。
+4. Tech Lead 做 integration review，确认没有真实外部写入、没有 WordPress draft creation、没有 unsafe automation level。
+
 ## Role Responsibilities
 
 ### Product Owner / PM

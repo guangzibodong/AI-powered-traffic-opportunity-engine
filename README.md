@@ -44,15 +44,15 @@ Sprint 1 implements a bilingual, evidence-first traffic operations workspace. Th
 
 ## What TrafScope Does
 
-TrafScope connects store data, Google Search Console signals, WordPress pages, and execution history to generate practical traffic actions:
+TrafScope connects store data, Google Search Console signals, WordPress pages, and execution history to generate practical traffic actions. The full roadmap includes:
 
 - Find high-impression, low-click query opportunities.
 - Identify ranking-push keywords that are close to page-one or top-three wins.
 - Map queries to products, product pages, collection pages, guides, and comparison assets.
 - Score opportunities with deterministic TrafScore and ProductReadiness logic.
 - Generate tasks with evidence, related objects, action plans, and acceptance criteria.
-- Create draft assets such as SEO pages, buying guides, comparison pages, FAQ blocks, and metadata.
-- Publish to WordPress as draft-only content after human approval.
+- Prepare future draft assets such as SEO pages, buying guides, comparison pages, FAQ blocks, and metadata.
+- Send future WordPress draft-only content after human approval; Sprint 1 does not create drafts.
 - Track clicks, impressions, ranking movement, AI citation signals, and conversion impact.
 
 ## How The Engine Works
@@ -92,7 +92,7 @@ The first build is not a broad SEO suite. It is a focused traffic operations loo
 | Core screen | Traffic Operations Board |
 | Core proof | At least 10 prioritized, evidence-backed tasks from demo data |
 | Decisioning | Deterministic rules first, LLMs assist with explanations and drafts |
-| Publishing | WordPress draft-only, never automatic live publish |
+| Publishing | Future WordPress draft-only flow, never automatic live publish; Sprint 1 has no draft creation |
 | Tracking | GSC performance snapshots and before-after asset tracking |
 
 Deferred from MVP: Shopify, backlink databases, full AI visibility monitoring, TikTok, YouTube, Reddit, Xiaohongshu scraping, GA4, Merchant Center, and fully autonomous publishing.
@@ -104,9 +104,40 @@ The first version is a working product experience, not a marketing landing page.
 - Traffic Operations Board: top tasks, integration health, weekly planning, key metrics.
 - Opportunities: rule-based traffic opportunities with score breakdowns and evidence.
 - Task Detail: why this task exists, affected queries/products/pages, action plan, acceptance criteria.
-- Asset Draft Review: structured draft review for titles, slugs, metadata, sections, FAQ, schema, and internal links.
+- Asset Draft Review: future structured draft review for titles, slugs, metadata, sections, FAQ, schema, and internal links.
 - Performance: tracking state and before-after GSC movement.
 - Settings and Integrations: WooCommerce, WordPress, GSC, sync status, safety controls.
+
+## Current Sprint 1 Status
+
+The current branch is focused on the demo decisioning loop and API-backed task review actions. It is still a demo-safe product slice: no real WooCommerce writes, no real GSC OAuth, and no WordPress draft creation.
+
+Completed capabilities in the current Sprint 1 slice:
+
+- Demo planning endpoints return deterministic opportunities and tasks from fixture data.
+- The API-backed board can load demo planning data when `VITE_USE_API_BOARD=true`.
+- Task review states are limited to `new`, `approved`, `rejected`, and `snoozed`.
+- The backend supports demo task status changes through `PATCH /api/stores/{store_id}/tasks/{task_id}`.
+- Backend convenience endpoints also support `POST /approve`, `POST /reject`, and `POST /snooze` for demo tasks.
+- Demo task status overrides are in-memory and reflected in both task list and task detail responses during the current API process.
+- The visible React task buttons call `updateTaskStatus` when API board data is connected, with local state retained as the safe fallback.
+
+Next API-backed task action UX:
+
+1. Add loading, error, and retry/rollback states around task status mutations.
+2. Show safe non-technical feedback when API mutation fails and local fallback is used.
+3. Add browser-level coverage for API mutation success and fallback behavior.
+4. Keep the current local task-state fallback when the API is unavailable or disabled.
+
+Current product/engineering ownership:
+
+| Area | Owner Role | Current Responsibility |
+|---|---|---|
+| Product ops and docs | Product Ops / Documentation Lead | Keep sprint scope, role split, completed capability, and next API action docs current. |
+| Sprint coordination | Tech Lead / Facilitator | Protect the demo decisioning boundary and coordinate parallel work. |
+| Demo planning API | Backend/API Engineer | Maintain deterministic demo endpoints and task status mutation behavior. |
+| Traffic workspace UI | Frontend Product Engineer | Connect API-backed board and task actions while preserving safe fallback behavior. |
+| Verification | QA / Test Lead | Cover scoring, dedupe, state transitions, API contracts, fallback states, and release gates. |
 
 ## Architecture
 
@@ -230,6 +261,7 @@ Prove TrafScope can turn demo store data and GSC-like signals into trustworthy t
 - Opportunity rules for CTR refresh, ranking push, and collection page gaps.
 - Task generation, dedupe, and state model.
 - API-backed task board and opportunity detail.
+- API-backed task review actions for approve, reject, and snooze.
 
 ### Sprint 2: Real Store Sync
 
@@ -271,4 +303,7 @@ Let users approve a task, generate a structured draft, create a WordPress draft,
 - [V3 UI concept](docs/design-mockups/trafscope-ui-concept-v3.html)
 - [Requirements workshop](docs/requirements-workshop.md)
 - [Sprint 1 backlog](docs/sprint-1-backlog.md)
+- [API adapter plan](docs/api-adapter-plan.md)
+- [Team operating model](docs/team-operating-model.md)
+- [Automation task board](docs/automation-task-board.md)
 - [QA strategy](docs/qa-sprint-1.md)

@@ -14,6 +14,8 @@ demo store + mock GSC signals
 -> deterministic opportunities
 -> deduplicated tasks
 -> Traffic Operations Board
+-> Task Detail
+-> approve / reject / snooze state review
 ```
 
 This QA plan covers only Sprint 1 behavior. Real WooCommerce sync, real WordPress publishing, real GSC OAuth, LLM asset generation, and performance tracking are out of scope except where a contract or safety guard must already exist.
@@ -119,27 +121,37 @@ Acceptance:
 
 Sprint 1 should validate the status model used by the demo and API.
 
-Required statuses:
+Required Sprint 1 task statuses:
 
 - `new`
 - `approved`
 - `rejected`
-- `draft_generated` or the agreed equivalent if the shared type is not yet updated
-- `failed`
+- `snoozed`
 
 Transitions to test:
 
 - `new -> approved`
 - `new -> rejected`
-- `approved -> draft_generated`
-- `approved -> failed`
-- rejected tasks cannot be approved, drafted, or published without an explicit restore action.
+- `new -> snoozed`
+- `approved -> new` when an explicit reset/restore path is supported by the API
+- `rejected -> new` when an explicit reset/restore path is supported by the API
+- `snoozed -> new` when an explicit reset/restore path is supported by the API
+
+Unsafe or future statuses to reject in Sprint 1:
+
+- `draft_generated`
+- `failed`
+- `published`
+- `applied`
+- `autopilot`
+- `one_click_apply`
 
 Acceptance:
 
 - UI labels and backend values map cleanly.
+- Demo task status mutation accepts only `new`, `approved`, `rejected`, and `snoozed`.
 - Rejected tasks are preserved for dedupe suppression.
-- No Sprint 1 path moves a task directly to `published` or `applied`.
+- No Sprint 1 path moves a task to `draft_generated`, `failed`, `published`, or `applied`.
 
 ## Rule Engine Tests
 
@@ -314,6 +326,27 @@ Acceptance:
 - Frontend mock data and backend demo responses use the same shape or an explicit adapter.
 - Schema changes require updating shared types and tests in the same PR.
 
+### Demo Task Status API
+
+Verify the demo API supports state-only task review without external writes:
+
+- `PATCH /api/stores/:storeId/tasks/:taskId` accepts `{ "status": "new" }`, `{ "status": "approved" }`, `{ "status": "rejected" }`, and `{ "status": "snoozed" }`.
+- `POST /api/stores/:storeId/tasks/:taskId/approve` returns the same task with status `approved`.
+- `POST /api/stores/:storeId/tasks/:taskId/reject` returns the same task with status `rejected`.
+- `POST /api/stores/:storeId/tasks/:taskId/snooze` returns the same task with status `snoozed`.
+- List and detail reads return the updated status for the same demo process.
+- Unknown task IDs return a safe 404 response.
+- Unsupported status values, including `draft_generated`, `failed`, `published`, `applied`, `autopilot`, and `one_click_apply`, return a safe 400 response.
+- The mutation is store-scoped and does not create WordPress, WooCommerce, or asset-generation side effects.
+
+Verification commands:
+
+```bash
+cd apps/api
+python -B -m unittest app.tests.test_demo_planning_api
+python -B -m unittest discover app/tests
+```
+
 ## Frontend Workbench Tests
 
 ### Traffic Operations Board
@@ -355,6 +388,25 @@ Test states:
 - Missing optional related page.
 - Zero evidence should render as a blocking error state, not a normal task.
 
+### Task Detail Navigation And Review
+
+Verify:
+
+- Every visible task card or task row is clickable, not only the first/top task.
+- Clicking a task opens the corresponding Task Detail for the same `taskId`.
+- The detail title, status, score, evidence, related entities, action plan, and acceptance criteria match the selected task.
+- Browser back or the provided return affordance brings the user back to the board without losing current status.
+- Directly loading a valid Task Detail URL renders the same task.
+- Unknown task IDs render a safe not-found or recoverable error state.
+- Approve, reject, and snooze controls call the demo status API when wired and show loading/error states.
+- Updated status is reflected on both Task Detail and the board after return or refresh.
+
+Acceptance:
+
+- A user can click any task in the board and land on the matching Task Detail.
+- No task click opens stale, hard-coded, or mismatched detail content.
+- Status review remains state-only and cannot imply draft generation or live publishing.
+
 ### Opportunity Detail Or Panel
 
 Verify:
@@ -393,12 +445,14 @@ The E2E script should run in a real browser against the local app and fixture-ba
    - Status.
    - Evidence summary.
    - Next action.
-9. Open or inspect an opportunity/task detail view when available.
-10. Verify evidence includes query/page/product references.
-11. Approve a task if approval UI exists.
-12. Verify task status changes without duplicate task creation.
-13. Attempt to find live publish controls.
-14. Confirm no live publish action exists.
+9. Click multiple visible tasks, including a non-top task, and verify each opens the matching Task Detail by task ID or title.
+10. Return to the board after each detail check and confirm the task list still renders.
+11. Open or inspect an opportunity detail view when available.
+12. Verify evidence includes query/page/product references.
+13. Approve, reject, and snooze a task through the UI or API-backed control path when available.
+14. Verify task status changes without duplicate task creation.
+15. Attempt to find live publish controls.
+16. Confirm no live publish action exists.
 
 Acceptance:
 
@@ -406,6 +460,13 @@ Acceptance:
 - No obvious overlapping text or broken layout on the board.
 - Screenshots are captured for board, task evidence, and any detail view.
 - Console has no uncaught runtime errors.
+
+API-backed status smoke:
+
+```bash
+cd apps/api
+python -B -m unittest app.tests.test_demo_planning_api
+```
 
 ## Publishing Safety Red Lines
 
@@ -446,6 +507,9 @@ Release blocker examples:
 - [ ] Graph tests prove query-product-page relationships are persisted or returned.
 - [ ] Opportunity records include rule id, rule version, score components, evidence, entities, and dedupe key.
 - [ ] Task creation copies evidence, score, summary, confidence, and acceptance criteria.
+- [ ] Demo task status API supports PATCH plus approve/reject/snooze action endpoints.
+- [ ] Demo task status API accepts only `new`, `approved`, `rejected`, and `snoozed`.
+- [ ] Demo task status API rejects unsafe future states with safe 400 errors.
 - [ ] Planning is idempotent across repeated runs.
 - [ ] Rejected tasks do not reappear as new duplicates.
 - [ ] Store-scoped APIs do not leak records across stores.
@@ -462,6 +526,8 @@ Release blocker examples:
 
 - [ ] Traffic Operations Board shows store, planning action, summary metrics, priority tasks, and integration status.
 - [ ] Task cards show score, category, status, automation level, evidence, related objects, and next action.
+- [ ] Clicking any task opens the corresponding Task Detail.
+- [ ] Task Detail status review can approve, reject, and snooze without implying publishing.
 - [ ] Opportunity/task evidence is visible without opening developer tools.
 - [ ] Empty, loading, failed, and demo modes are represented.
 - [ ] Desktop and mobile layouts have no major overlap or clipped labels.
@@ -472,6 +538,8 @@ Release blocker examples:
 - [ ] Demo store is visible.
 - [ ] Planning produces or displays task data.
 - [ ] At least one task detail/evidence path is verified.
+- [ ] A non-top task opens the matching Task Detail.
+- [ ] Approve/reject/snooze status mutation is verified through UI or API smoke.
 - [ ] Repeated planning does not duplicate the task.
 - [ ] No live publish control is present.
 - [ ] Console has no uncaught runtime errors.
@@ -481,6 +549,7 @@ Release blocker examples:
 - [ ] No live WordPress publishing path exists.
 - [ ] No WooCommerce write path exists.
 - [ ] All action plans use draft/review wording.
+- [ ] Demo task status mutations are state-only and restricted to Sprint 1 safe statuses.
 - [ ] No secrets appear in logs, responses, screenshots, or snapshots.
 - [ ] Unsafe publish behavior is covered by tests or explicit assertions.
 
@@ -494,6 +563,8 @@ Sprint 1 can be accepted when:
 - The three Sprint 1 opportunity rules have positive and negative tests.
 - Dedupe is proven by repeated planning runs.
 - Frontend board renders the prioritized work clearly.
+- Clicking any board task opens its corresponding Task Detail.
+- Demo task status API supports PATCH/approve/reject/snooze and rejects unsafe statuses.
 - E2E demo smoke passes in a real browser.
 - Publishing safety red lines are still intact.
 

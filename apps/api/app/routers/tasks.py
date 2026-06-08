@@ -48,7 +48,10 @@ async def update_task(store_id: str, task_id: str, payload: dict) -> dict:
 
 @router.post("/{store_id}/tasks/{task_id}/generate-draft")
 async def generate_task_draft(store_id: str, task_id: str) -> dict:
-    return {"store_id": store_id, "task_id": task_id, "status": "drafting"}
+    raise HTTPException(
+        status_code=403,
+        detail="WordPress draft creation is future-gated in Sprint 1",
+    )
 
 
 @router.post("/{store_id}/tasks/{task_id}/approve")

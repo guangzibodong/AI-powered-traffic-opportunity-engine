@@ -147,6 +147,10 @@ assert(viewModelAdapters.includes("mapApiPlanningToBoard"), "view-model-adapters
 assert(viewModelAdapters.includes("draft_assist_future"), "view-model-adapters.ts must future-gate draft automation");
 assert(app.includes("BoardDataBanner"), "App must show API/mock board data state");
 assert(app.includes("mapApiPlanningToBoard"), "App must wire API planning payloads through the adapter");
+assert(app.includes("updateTaskStatus("), "App must route task status actions through the demo API when connected");
+assert(app.includes('boardDataState.source === "api"'), "App must only call task status API mutations for API-backed board data");
+assert(app.includes("applyApiTaskStatusToBoard"), "App must merge successful API task status changes into board state");
+assert(app.includes("applyLocalTaskStatus(taskId, status)"), "App must keep safe local task status fallback for API failures");
 assert(app.includes("window.scrollTo({ left: 0, top: 0 })"), "App must reset scroll to the top when switching screens");
 assert(app.includes("selectedTaskId"), "App must track the selected task id for task detail routing");
 assert(app.includes("setSelectedTaskId(task.id)"), "Task queue clicks must select the clicked task before opening detail");

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { StatusPill } from "../components/tasks/StatusPill";
 import { TaskQueue } from "../components/tasks/TaskQueue";
 import { localizeTaskTitle } from "../components/tasks/task-copy";
-import { getOpportunities, getTasks, isApiBoardEnabled } from "../lib/api-client";
+import { getOpportunities, getTasks, isApiBoardEnabled, updateTaskStatus } from "../lib/api-client";
 import {
   boardViewModel,
   boundaryCopy,
@@ -41,6 +41,8 @@ type BoardDataState = {
   loading: boolean;
   source: "api" | "fallback" | "mock";
 };
+
+const demoStoreId = "store-demo-outdoor-coffee";
 
 type MessageKey =
   | "board"
@@ -149,7 +151,7 @@ export function App() {
     let active = true;
     setBoardDataState({ loading: true, source: "mock" });
 
-    Promise.all([getTasks(boardViewModel.storeName), getOpportunities(boardViewModel.storeName)])
+    Promise.all([getTasks(demoStoreId), getOpportunities(demoStoreId)])
       .then(([tasksResponse, opportunitiesResponse]) => {
         if (!active) return;
         setBaseBoard(mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrationHealth));
@@ -170,12 +172,46 @@ export function App() {
     };
   }, []);
 
-  function setTaskStatus(taskId: string, status: VisibleTaskStatus) {
+  function applyLocalTaskStatus(taskId: string, status: VisibleTaskStatus) {
     setTaskStatuses((current) => {
       const next = updateTaskStatusMap(current, taskId, status);
       saveTaskStatusMap(next);
       return next;
     });
+  }
+
+  function clearLocalTaskStatus(taskId: string) {
+    setTaskStatuses((current) => {
+      if (!current[taskId]) return current;
+
+      const next = { ...current };
+      delete next[taskId];
+      saveTaskStatusMap(next);
+      return next;
+    });
+  }
+
+  function applyApiTaskStatusToBoard(taskId: string, status: VisibleTaskStatus) {
+    setBaseBoard((current) => ({
+      ...current,
+      tasks: current.tasks.map((task) => (task.id === taskId ? { ...task, status } : task))
+    }));
+  }
+
+  async function setTaskStatus(taskId: string, status: VisibleTaskStatus) {
+    if (boardDataState.source === "api") {
+      try {
+        const response = await updateTaskStatus(baseBoard.storeName, taskId, status);
+        applyApiTaskStatusToBoard(response.task.id, status);
+        clearLocalTaskStatus(response.task.id);
+        return;
+      } catch {
+        applyLocalTaskStatus(taskId, status);
+        return;
+      }
+    }
+
+    applyLocalTaskStatus(taskId, status);
   }
 
   return (

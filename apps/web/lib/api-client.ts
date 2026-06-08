@@ -69,29 +69,33 @@ export type ApiTaskResponse = {
   task: ApiTask;
 };
 
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_API_BASE_URL?: string;
+    readonly VITE_USE_API_BOARD?: string;
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
+
 const defaultApiBaseUrl = "http://localhost:8000";
 
 export function getApiBaseUrl() {
-  const meta = import.meta as ImportMeta & { env?: { VITE_API_BASE_URL?: string } };
-  return meta.env?.VITE_API_BASE_URL ?? defaultApiBaseUrl;
+  return import.meta.env.VITE_API_BASE_URL ?? defaultApiBaseUrl;
 }
 
 export function isApiBoardEnabled() {
-  const meta = import.meta as ImportMeta & {
-    env?: {
-      VITE_API_BASE_URL?: string;
-      VITE_USE_API_BOARD?: string;
-    };
-  };
-  return meta.env?.VITE_USE_API_BOARD === "true" || Boolean(meta.env?.VITE_API_BASE_URL);
+  return import.meta.env.VITE_USE_API_BOARD === "true" || Boolean(import.meta.env.VITE_API_BASE_URL);
 }
 
 export async function getOpportunities(storeId: string, apiBaseUrl = getApiBaseUrl()) {
-  return fetchJson<ApiOpportunitiesResponse>(`${apiBaseUrl}/api/stores/${storeId}/opportunities`);
+  return fetchJson<ApiOpportunitiesResponse>(`${storeApiPath(apiBaseUrl, storeId)}/opportunities`);
 }
 
 export async function getTasks(storeId: string, apiBaseUrl = getApiBaseUrl()) {
-  return fetchJson<ApiTasksResponse>(`${apiBaseUrl}/api/stores/${storeId}/tasks`);
+  return fetchJson<ApiTasksResponse>(`${storeApiPath(apiBaseUrl, storeId)}/tasks`);
 }
 
 export async function updateTaskStatus(
@@ -100,13 +104,18 @@ export async function updateTaskStatus(
   status: ApiVisibleTaskStatus,
   apiBaseUrl = getApiBaseUrl()
 ) {
-  return fetchJson<ApiTaskResponse>(`${apiBaseUrl}/api/stores/${storeId}/tasks/${taskId}`, {
+  const encodedTaskId = encodeURIComponent(taskId);
+  return fetchJson<ApiTaskResponse>(`${storeApiPath(apiBaseUrl, storeId)}/tasks/${encodedTaskId}`, {
     body: JSON.stringify({ status }),
     headers: {
       "Content-Type": "application/json"
     },
     method: "PATCH"
   });
+}
+
+function storeApiPath(apiBaseUrl: string, storeId: string) {
+  return `${apiBaseUrl}/api/stores/${encodeURIComponent(storeId)}`;
 }
 
 async function fetchJson<TResponse>(url: string, init?: RequestInit): Promise<TResponse> {

@@ -27,7 +27,7 @@ class DemoPlanningPayloadTests(unittest.TestCase):
 
         self.assertEqual(payload["mode"], "demo_decisioning")
         self.assertGreaterEqual(len(payload["opportunities"]), 3)
-        self.assertGreaterEqual(len(payload["tasks"]), 3)
+        self.assertGreaterEqual(len(payload["tasks"]), 10)
         self.assertEqual(payload["planning_run"]["generated_tasks"], len(payload["tasks"]))
         self.assertTrue(all(task["evidence"] for task in payload["tasks"]))
 
@@ -49,11 +49,13 @@ class DemoPlanningPayloadTests(unittest.TestCase):
 
         self.assertEqual(by_id["task_002"]["status"], "approved")
 
-    def test_demo_task_status_update_rejects_invalid_status(self):
+    def test_demo_task_status_update_rejects_invalid_statuses(self):
         from app.services.demo_planning_service import update_demo_task_status
 
-        with self.assertRaises(ValueError):
-            update_demo_task_status("store-demo-outdoor-coffee", "task_002", "published")
+        for status in ["draft_generated", "failed", "published", "applied", "autopilot", "one_click_apply"]:
+            with self.subTest(status=status):
+                with self.assertRaises(ValueError):
+                    update_demo_task_status("store-demo-outdoor-coffee", "task_002", status)
 
     def test_demo_task_status_update_returns_none_for_unknown_task(self):
         from app.services.demo_planning_service import update_demo_task_status
@@ -66,7 +68,15 @@ class DemoPlanningApiTests(unittest.TestCase):
     def setUp(self) -> None:
         assert TestClient is not None
         assert create_app is not None
+        from app.services.demo_planning_service import clear_demo_task_status_overrides
+
+        clear_demo_task_status_overrides()
         self.client = TestClient(create_app())
+
+    def tearDown(self) -> None:
+        from app.services.demo_planning_service import clear_demo_task_status_overrides
+
+        clear_demo_task_status_overrides()
 
     def test_opportunities_endpoint_returns_sprint_one_rules(self):
         response = self.client.get("/api/stores/store-demo-outdoor-coffee/opportunities")
@@ -90,13 +100,92 @@ class DemoPlanningApiTests(unittest.TestCase):
         tasks = payload["tasks"]
         automation_levels = {task["automation_level"] for task in tasks}
 
-        self.assertGreaterEqual(payload["planning_run"]["generated_tasks"], 3)
+        self.assertGreaterEqual(payload["planning_run"]["generated_tasks"], 10)
         self.assertTrue(all(task["evidence"] for task in tasks))
         self.assertNotIn("one_click_apply", automation_levels)
         self.assertNotIn("guarded_autopilot", automation_levels)
 
     def test_task_detail_returns_404_for_unknown_task(self):
         response = self.client.get("/api/stores/store-demo-outdoor-coffee/tasks/missing-task")
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_generate_draft_route_is_future_gated_in_sprint_one(self):
+        response = self.client.post("/api/stores/store-demo-outdoor-coffee/tasks/task_002/generate-draft")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertIn("future-gated", response.json()["detail"])
+
+    def test_patch_task_status_accepts_sprint_one_review_statuses(self):
+        for status in ["new", "approved", "rejected", "snoozed"]:
+            with self.subTest(status=status):
+                response = self.client.patch(
+                    "/api/stores/store-demo-outdoor-coffee/tasks/task_002",
+                    json={"status": status},
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json()["task"]["status"], status)
+
+    def test_patch_task_status_persists_to_detail_and_list(self):
+        response = self.client.patch(
+            "/api/stores/store-demo-outdoor-coffee/tasks/task_002",
+            json={"status": "snoozed"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["task"]["status"], "snoozed")
+
+        detail_response = self.client.get("/api/stores/store-demo-outdoor-coffee/tasks/task_002")
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertEqual(detail_response.json()["task"]["status"], "snoozed")
+
+        list_response = self.client.get("/api/stores/store-demo-outdoor-coffee/tasks")
+        self.assertEqual(list_response.status_code, 200)
+        tasks_by_id = {task["id"]: task for task in list_response.json()["tasks"]}
+        self.assertEqual(tasks_by_id["task_002"]["status"], "snoozed")
+
+    def test_post_task_status_shortcuts_update_demo_review_state(self):
+        shortcuts = [
+            ("approve", "approved"),
+            ("reject", "rejected"),
+            ("snooze", "snoozed"),
+        ]
+
+        for route, expected_status in shortcuts:
+            with self.subTest(route=route):
+                response = self.client.post(f"/api/stores/store-demo-outdoor-coffee/tasks/task_002/{route}")
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json()["task"]["status"], expected_status)
+
+                detail_response = self.client.get("/api/stores/store-demo-outdoor-coffee/tasks/task_002")
+                self.assertEqual(detail_response.status_code, 200)
+                self.assertEqual(detail_response.json()["task"]["status"], expected_status)
+
+    def test_post_task_status_shortcuts_return_404_for_unknown_task(self):
+        for route in ["approve", "reject", "snooze"]:
+            with self.subTest(route=route):
+                response = self.client.post(f"/api/stores/store-demo-outdoor-coffee/tasks/missing-task/{route}")
+
+                self.assertEqual(response.status_code, 404)
+
+    def test_patch_task_status_returns_400_for_illegal_statuses(self):
+        for status in ["draft_generated", "failed", "published", "applied", "autopilot", "one_click_apply"]:
+            with self.subTest(status=status):
+                response = self.client.patch(
+                    "/api/stores/store-demo-outdoor-coffee/tasks/task_002",
+                    json={"status": status},
+                )
+
+                self.assertEqual(response.status_code, 400)
+                self.assertIn("Unsupported Sprint 1 demo task status", response.json()["detail"])
+
+    def test_patch_task_status_returns_404_for_unknown_task(self):
+        response = self.client.patch(
+            "/api/stores/store-demo-outdoor-coffee/tasks/missing-task",
+            json={"status": "approved"},
+        )
 
         self.assertEqual(response.status_code, 404)
 

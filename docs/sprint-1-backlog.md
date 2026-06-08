@@ -13,13 +13,14 @@
 
 Sprint 1 proves the decisioning loop with demo/mock data.
 
-UI implementation must follow the root `DESIGN.md`. The Refero Styles reference is used for its DESIGN.md method: define the screen job, audience, tokens, component roles, Do/Don't rules, and acceptance criteria before building UI.
+UI implementation must follow the root `DESIGN.md`. The Refero Styles reference is used for its DESIGN.md method: define the screen job, audience, tokens, component roles, Do/Don't rules, and acceptance criteria before building UI. The concrete visual direction follows the Refero/Fal-style workspace: white canvas, fog gray surfaces, 1px borders, graphite actions, restrained type, and bilingual zh/en copy.
 
 Do not build in Sprint 1:
 
 - Real WooCommerce OAuth or live store sync.
 - Real Google Search Console OAuth.
-- WordPress draft publishing.
+- WordPress draft creation or publishing.
+- Automatic execution, autopilot, one-click apply, or live content publishing.
 - LLM asset generation.
 - Shopify.
 - Social/AI visibility/competitor crawling.
@@ -35,7 +36,7 @@ Do not build in Sprint 1:
 | S5 | As a merchant, I can see CTR refresh, ranking push, and collection page gap opportunities. | Cover the most explainable first opportunity types. |
 | S6 | As a merchant, I can inspect opportunity/task evidence, related objects, action plan, and acceptance criteria. | Reduce AI-randomness concerns. |
 | S7 | As an operator, I can rerun planning without duplicate tasks. | Prove the system can be used repeatedly. |
-| S8 | As a user, I can approve or reject a task and see state persist. | Prepare the execution workflow. |
+| S8 | As a user, I can approve, reject, or snooze a task and see state persist. | Prepare the execution workflow. |
 
 ## P0 Backlog
 
@@ -56,6 +57,29 @@ Do not build in Sprint 1:
 | Task Board / Detail | Frontend | Sorted by TrafScore, evidence summary visible. |
 | Core tests | QA / Backend | Scoring, rules, dedupe, task inheritance, state transitions. |
 | Demo smoke script | PM / QA / Frontend | Stable demo path. |
+
+## 当前能力快照
+
+截至 2026-06-08，Sprint 1 已经从纯静态 mock UI 进入 API-backed demo planning 阶段。当前状态如下：
+
+| 能力 | 状态 | 说明 |
+|---|---|---|
+| Demo fixture planning | 已完成 | 后端可用 demo fixture 生成 deterministic opportunities 和 tasks。 |
+| Opportunity / task read API | 已完成 | `GET /opportunities`、`GET /opportunities/{id}`、`GET /tasks`、`GET /tasks/{id}` 已返回 Sprint 1 demo payload。 |
+| API-backed board loading | 已完成 | 前端在 `VITE_USE_API_BOARD=true` 或设置 `VITE_API_BASE_URL` 时可读取 demo API；API 不可用时保留 mock fallback。 |
+| Task review state API | 已完成后端能力 | `PATCH /tasks/{id}` 支持 `new`、`approved`、`rejected`、`snoozed`，状态在当前 API 进程内存中覆盖，并反映到 list/detail。 |
+| Task shortcut routes | 已完成后端能力 | `POST /approve`、`POST /reject`、`POST /snooze` 已可更新 demo task review state。 |
+| Frontend mutation client | Done | `updateTaskStatus` sends `PATCH { status }` for Sprint 1 review states. |
+| Visible UI mutation wiring | Done | Task Detail approve/reject/snooze calls the demo API when API board data is connected, while preserving local fallback. |
+| Real integrations and publishing | 明确不做 | Sprint 1 不连接真实 WooCommerce/GSC/OAuth，不创建 WordPress draft，不做 live publish。 |
+
+## Remaining API-backed Task Action UX
+
+| ID | Owner | Action | Definition of Done |
+|---|---|---|---|
+| API-ACTION-001 | Frontend Product Engineer / QA | Add loading, error, and retry/rollback states. | Users can see mutation progress; API failure keeps local usable state and shows a safe error. |
+| API-ACTION-002 | QA Lead | Add browser-level API mutation coverage. | Covers API success, API fallback, unsafe status protection, and list/detail state consistency. |
+| API-ACTION-003 | Product Ops / Documentation Lead | Keep demo script and release gates aligned. | Docs consistently say Sprint 1 approve/reject/snooze only changes review state. |
 
 ## P1 Backlog
 
