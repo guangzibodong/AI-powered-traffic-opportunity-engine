@@ -6,7 +6,7 @@ Status: Required before MVP UI sign-off
 
 ## Purpose
 
-This checklist verifies that TrafScope UI remains evidence-first, draft-safe, responsive, accessible, and aligned with the dark operational design system.
+This checklist verifies that TrafScope UI remains evidence-first, draft-safe, responsive, accessible, and aligned with the Refero/Fal-inspired light operational design system.
 
 ## Required Viewports
 
@@ -34,8 +34,8 @@ Capture and review:
 
 ## Global Visual Checks
 
-- App background uses dark operational surface.
-- Panels use restrained dark surfaces.
+- App background uses a white canvas.
+- Panels use white or fog-gray restrained surfaces.
 - Borders are low contrast but visible.
 - Text has readable contrast.
 - Focus ring is visible.
@@ -43,9 +43,10 @@ Capture and review:
 - No button text overflows.
 - No card or panel clips required content.
 - No nested card walls.
-- No decorative gradient orbs, glassmorphism, or AI glow.
+- No decorative gradient orbs, glassmorphism, neon glow, or generic AI effects.
 - No marketing hero inside the app shell.
 - No one-note green/teal palette.
+- No default card shadows; hierarchy should come from borders, spacing, and section bands.
 
 ## Evidence-First Checks
 
@@ -159,4 +160,3 @@ Automated smoke should assert:
 - No live publish control or text exists.
 - Console has no uncaught runtime errors.
 - Mobile screenshots have no major overlap or clipped primary action.
-

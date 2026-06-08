@@ -20,7 +20,7 @@ This is a useful seed, but it is not the final TrafScope MVP UI.
 ## Implementation Principles
 
 - Implement UI contracts before adding broad feature scope.
-- Keep dark operational design from `DESIGN.md`.
+- Keep the Refero/Fal-inspired light operational design from `DESIGN.md`.
 - Keep evidence visible before action.
 - Keep draft-only and read-only safety visible.
 - Keep components data-driven through view models.
@@ -31,7 +31,7 @@ This is a useful seed, but it is not the final TrafScope MVP UI.
 Goals:
 
 - Convert visual system to CSS variables.
-- Rework app shell into dark operational workspace.
+- Rework app shell into a light operational workspace.
 - Prepare routing and component structure.
 
 Tasks:
@@ -211,4 +211,3 @@ Performance:
 - Heavy charting suite.
 - Full Products/Queries top-level management.
 - Agency multi-store workspace.
-

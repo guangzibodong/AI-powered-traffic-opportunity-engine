@@ -1,21 +1,24 @@
 :root {
-  --bg: #0f1216;
-  --nav: #11151a;
-  --panel: #171b21;
-  --panel-raised: #1d232b;
-  --panel-soft: #14181e;
-  --line: rgba(214, 224, 236, 0.12);
-  --line-strong: rgba(214, 224, 236, 0.22);
-  --text: #f4f7f8;
-  --text-soft: #d1d9df;
-  --muted: #9aa8b5;
-  --subtle: #687584;
-  --action: #f4f7f8;
-  --health: #57d0b2;
-  --search: #8fb8ff;
-  --commerce: #f5bd5b;
-  --risk: #f07878;
-  --shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+  --bg: #ffffff;
+  --nav: #ffffff;
+  --panel: #ffffff;
+  --panel-raised: #252527;
+  --panel-soft: #f4f4f5;
+  --line: #e5e7eb;
+  --line-strong: #d4d4d8;
+  --text: #1b1b1d;
+  --text-soft: #35353a;
+  --muted: #6b6b72;
+  --subtle: #9ca3af;
+  --action: #252527;
+  --health: #99ecff;
+  --search: #6120ee;
+  --commerce: #f4b740;
+  --risk: #ef4444;
+  --pixel-violet: #ab77ff;
+  --pixel-lime: #f1ffd2;
+  --bubblegum: #ffddfa;
+  --shadow: none;
   color: var(--text);
   background: var(--bg);
   font-family:
@@ -35,6 +38,23 @@ body {
   background: var(--bg);
 }
 
+body::before {
+  background: var(--pixel-lime);
+  box-shadow:
+    14px 0 0 var(--health),
+    28px 0 0 var(--bubblegum),
+    0 14px 0 var(--pixel-violet),
+    14px 14px 0 var(--panel-soft);
+  content: "";
+  height: 10px;
+  pointer-events: none;
+  position: fixed;
+  right: 30px;
+  top: 24px;
+  width: 10px;
+  z-index: 0;
+}
+
 button {
   font: inherit;
 }
@@ -43,6 +63,8 @@ button {
   display: grid;
   grid-template-columns: 236px minmax(0, 1fr);
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 .sidebar {
@@ -62,7 +84,7 @@ button {
 .brand strong {
   display: block;
   font-size: 21px;
-  font-weight: 650;
+  font-weight: 750;
   letter-spacing: 0;
 }
 
@@ -95,9 +117,14 @@ button {
 
 .nav-link.active {
   background: var(--panel-raised);
-  border-color: var(--line);
-  box-shadow: inset 2px 0 0 var(--action);
-  color: var(--text);
+  border-color: var(--panel-raised);
+  box-shadow: none;
+  color: var(--bg);
+}
+
+.nav-link.active .nav-key {
+  border-color: rgba(255, 255, 255, 0.42);
+  color: var(--bg);
 }
 
 .nav-key {
@@ -124,7 +151,7 @@ button {
 }
 
 .side-note strong {
-  color: var(--health);
+  color: var(--text);
   display: block;
   margin-bottom: 4px;
 }
@@ -162,9 +189,9 @@ button {
 
 .language {
   align-items: center;
-  background: var(--panel);
+  background: var(--panel-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   display: inline-flex;
   padding: 3px;
 }
@@ -172,7 +199,7 @@ button {
 .language button {
   background: transparent;
   border: 0;
-  border-radius: 6px;
+  border-radius: 4px;
   color: var(--muted);
   cursor: pointer;
   font-size: 12px;
@@ -183,7 +210,7 @@ button {
 
 .language button.active {
   background: var(--action);
-  color: var(--bg);
+  color: #ffffff;
 }
 
 .title-row {
@@ -204,7 +231,7 @@ p {
 h1 {
   color: var(--text);
   font-size: 28px;
-  font-weight: 650;
+  font-weight: 750;
   line-height: 1.18;
 }
 
@@ -243,9 +270,9 @@ h3 {
 
 .button {
   align-items: center;
-  background: var(--panel-raised);
+  background: var(--panel);
   border: 1px solid var(--line-strong);
-  border-radius: 6px;
+  border-radius: 4px;
   color: var(--text);
   cursor: pointer;
   display: inline-flex;
@@ -261,11 +288,11 @@ h3 {
 .button.primary {
   background: var(--action);
   border-color: var(--action);
-  color: var(--bg);
+  color: #ffffff;
 }
 
 .button.danger {
-  border-color: rgba(240, 120, 120, 0.44);
+  border-color: rgba(239, 68, 68, 0.42);
   color: var(--risk);
 }
 
@@ -279,7 +306,7 @@ h3 {
   align-items: flex-start;
   background: var(--panel);
   border: 1px solid var(--line);
-  border-left: 3px solid var(--health);
+  border-left: 8px solid var(--health);
   border-radius: 8px;
   box-shadow: var(--shadow);
   display: grid;
@@ -290,7 +317,7 @@ h3 {
 }
 
 .banner.rule {
-  border-left-color: var(--search);
+  border-left-color: var(--pixel-violet);
 }
 
 .banner.blocked {
@@ -318,7 +345,7 @@ h3 {
 .pill,
 .status {
   align-items: center;
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--panel);
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   color: var(--muted);
@@ -333,22 +360,26 @@ h3 {
 }
 
 .safe {
-  border-color: rgba(87, 208, 178, 0.42);
-  color: var(--health);
+  background: rgba(153, 236, 255, 0.34);
+  border-color: #7fcfe3;
+  color: var(--text);
 }
 
 .search {
-  border-color: rgba(143, 184, 255, 0.38);
+  background: rgba(171, 119, 255, 0.12);
+  border-color: rgba(97, 32, 238, 0.36);
   color: var(--search);
 }
 
 .commerce {
-  border-color: rgba(245, 189, 91, 0.42);
-  color: var(--commerce);
+  background: rgba(244, 183, 64, 0.16);
+  border-color: rgba(244, 183, 64, 0.58);
+  color: #7a4a00;
 }
 
 .risk {
-  border-color: rgba(240, 120, 120, 0.42);
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.42);
   color: var(--risk);
 }
 
@@ -409,6 +440,18 @@ h3 {
   padding: 13px;
 }
 
+.metric-tile:nth-child(2) {
+  background: rgba(153, 236, 255, 0.24);
+}
+
+.metric-tile:nth-child(3) {
+  background: rgba(255, 221, 250, 0.4);
+}
+
+.metric-tile:nth-child(4) {
+  background: rgba(241, 255, 210, 0.64);
+}
+
 .metric-tile strong {
   display: block;
   font-size: 24px;
@@ -451,6 +494,7 @@ h3 {
 .panel-heading {
   align-items: center;
   border-bottom: 1px solid var(--line);
+  background: var(--panel-soft);
   display: flex;
   gap: 12px;
   justify-content: space-between;
@@ -473,26 +517,17 @@ table {
 
 .queue-table th:nth-child(2),
 .queue-table td:nth-child(2) {
-  width: 228px;
+  width: 260px;
 }
 
 .queue-table th:nth-child(4),
 .queue-table td:nth-child(4) {
-  width: 86px;
+  width: 104px;
 }
 
 .queue-table th:nth-child(5),
 .queue-table td:nth-child(5) {
-  width: 96px;
-}
-
-.queue-table th:nth-child(6),
-.queue-table td:nth-child(6) {
-  width: 118px;
-}
-
-.queue-table td:nth-child(4) .mono {
-  white-space: nowrap;
+  width: 124px;
 }
 
 th {
@@ -523,11 +558,11 @@ tr:last-child td {
 
 .score {
   align-items: center;
-  background: var(--panel-soft);
-  border: 1px solid var(--line-strong);
-  border-left: 3px solid var(--health);
+  background: var(--panel-raised);
+  border: 1px solid var(--panel-raised);
+  border-left: 0;
   border-radius: 6px;
-  color: var(--text);
+  color: #ffffff;
   display: inline-flex;
   font-size: 17px;
   font-weight: 700;
@@ -538,11 +573,13 @@ tr:last-child td {
 }
 
 .score.mid {
-  border-left-color: var(--commerce);
+  background: #6f4ee8;
+  border-color: #6f4ee8;
 }
 
 .score.risk-score {
-  border-left-color: var(--risk);
+  background: var(--risk);
+  border-color: var(--risk);
 }
 
 .row-title {
@@ -575,7 +612,7 @@ tr:last-child td {
 .control-item,
 .state-card,
 .lock-row {
-  background: var(--panel-soft);
+  background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 12px;
@@ -619,7 +656,7 @@ tr:last-child td {
 
 .decision {
   align-items: flex-start;
-  background: var(--panel);
+  background: var(--panel-soft);
   border: 1px solid var(--line);
   border-radius: 8px;
   display: grid;
@@ -651,9 +688,9 @@ tr:last-child td {
 }
 
 .check-list li::before {
-  background: rgba(87, 208, 178, 0.12);
-  border: 1px solid rgba(87, 208, 178, 0.42);
-  border-radius: 999px;
+  background: var(--health);
+  border: 1px solid #7fcfe3;
+  border-radius: 3px;
   content: "";
   height: 9px;
   margin-top: 6px;
@@ -684,9 +721,9 @@ tr:last-child td {
 .step::before {
   align-items: center;
   background: var(--panel-raised);
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  color: var(--text);
+  border: 1px solid var(--panel-raised);
+  border-radius: 4px;
+  color: #ffffff;
   content: counter(step);
   display: inline-flex;
   font-size: 11px;
@@ -732,14 +769,14 @@ tr:last-child td {
 }
 
 .bar {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--line);
   border-radius: 999px;
   height: 6px;
   overflow: hidden;
 }
 
 .bar i {
-  background: var(--health);
+  background: var(--search);
   display: block;
   height: 100%;
 }
@@ -768,7 +805,7 @@ tr:last-child td {
 
 .spinner {
   animation: spin 1s linear infinite;
-  border: 2px solid rgba(143, 184, 255, 0.24);
+  border: 2px solid rgba(97, 32, 238, 0.18);
   border-radius: 999px;
   border-top-color: var(--search);
   display: inline-block;
@@ -780,6 +817,17 @@ tr:last-child td {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1320px) {
+  .workbench-grid,
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .side-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

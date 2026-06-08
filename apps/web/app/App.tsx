@@ -135,6 +135,10 @@ export function App() {
   const selectedTask = useMemo(() => applyTaskStatusToDetail(taskDetail, taskStatuses), [taskStatuses]);
 
   useEffect(() => {
+    window.scrollTo({ left: 0, top: 0 });
+  }, [screen]);
+
+  useEffect(() => {
     if (!isApiBoardEnabled()) return;
 
     let active = true;

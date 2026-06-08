@@ -3,9 +3,14 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
+const repoRoot = fileURLToPath(new URL("../../../", import.meta.url));
 
 function read(relativePath) {
   return readFileSync(join(root, relativePath), "utf8");
+}
+
+function readRepo(relativePath) {
+  return readFileSync(join(repoRoot, relativePath), "utf8");
 }
 
 function assert(condition, message) {
@@ -24,6 +29,8 @@ const taskCopy = read("components/tasks/task-copy.ts");
 const statusPill = read("components/tasks/StatusPill.tsx");
 const apiClient = read("lib/api-client.ts");
 const viewModelAdapters = read("lib/view-model-adapters.ts");
+const uiReference = readRepo("docs/ui-reference-refero.md");
+const visualChecklist = readRepo("docs/ui-visual-qa-checklist.md");
 
 const uiContractTargets = {
   "App.tsx": app,
@@ -138,8 +145,29 @@ assert(viewModelAdapters.includes("mapApiPlanningToBoard"), "view-model-adapters
 assert(viewModelAdapters.includes("draft_assist_future"), "view-model-adapters.ts must future-gate draft automation");
 assert(app.includes("BoardDataBanner"), "App must show API/mock board data state");
 assert(app.includes("mapApiPlanningToBoard"), "App must wire API planning payloads through the adapter");
+assert(app.includes("window.scrollTo({ left: 0, top: 0 })"), "App must reset scroll to the top when switching screens");
 
-assert(styles.includes("--bg: #0f1216"), "styles.css must use the V3 dark operational canvas token");
+for (const required of [
+  "14cc44e6-41bf-4178-b834-fc61bfeed4ae",
+  "Fal / Generative AI",
+  "white canvas",
+  "1px neutral borders",
+  "no shadow",
+  "pixel block"
+]) {
+  assert(uiReference.includes(required), `ui-reference-refero.md missing extracted Refero/Fal rule: ${required}`);
+}
+
+assert(!uiReference.includes("Theme: dark operational workspace"), "Refero translation must not keep the old dark workspace theme");
+assert(!visualChecklist.includes("dark operational"), "visual QA checklist must not require the old dark operational surface");
+assert(styles.includes("--bg: #ffffff"), "styles.css must use the Refero/Fal white canvas token");
+assert(styles.includes("--panel-soft: #f4f4f5"), "styles.css must use the Refero/Fal fog surface token");
+assert(styles.includes("--line: #e5e7eb"), "styles.css must use 1px neutral border tokens");
+assert(styles.includes("--text: #1b1b1d"), "styles.css must use near-black text on light canvas");
+assert(styles.includes("--shadow: none"), "styles.css must remove generic app card shadows");
+assert(!taskQueue.includes("<th>{labels.objects}</th>"), "TaskQueue must not duplicate object counts in a separate narrow desktop column");
+assert(!taskQueue.includes("data-label={labels.objects}"), "TaskQueue object counts should stay inside task metadata pills");
+assert(styles.includes("@media (max-width: 1320px)"), "styles.css must stack the side rail before evidence columns become unreadable");
 assert(styles.includes("@media (max-width: 760px)"), "styles.css must include mobile responsive rules");
 
 console.log("Sprint 1 UI contract passed");

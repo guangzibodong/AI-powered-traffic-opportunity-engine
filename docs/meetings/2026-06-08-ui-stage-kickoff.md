@@ -12,6 +12,8 @@ Move from finalized requirements and technical stack into the UI stage. Re-study
 
 Reference site: https://styles.refero.design/
 
+Specific style page now selected: https://styles.refero.design/style/14cc44e6-41bf-4178-b834-fc61bfeed4ae
+
 The useful lesson is the method, not the visual skin:
 
 1. Define the screen job and audience before styling.
@@ -32,9 +34,9 @@ The useful lesson is the method, not the visual skin:
 
 ## Final UI Decision
 
-TrafScope should look and behave like a calm ecommerce traffic operations command room:
+TrafScope should look and behave like a calm ecommerce traffic operations evidence desk:
 
-- Dark operational workspace.
+- Light operational workspace.
 - Dense but readable task-first layout.
 - Evidence visible before action.
 - Functional accents, not decorative color.
@@ -73,7 +75,7 @@ Current frontend is a useful Sprint 0 board sketch, but not MVP UI-ready.
 
 Main gaps:
 
-- `styles.css` is still light SaaS, not TrafScope dark operations workspace.
+- `styles.css` must converge on the selected Refero/Fal light product system, not generic light SaaS or dark AI dashboard styling.
 - CSS variables from `DESIGN.md` are not implemented.
 - Task cards do not show enough evidence, related entities, action plan, or acceptance criteria.
 - Opportunity panel does not show rule ID/version, score components, evidence rows, or dedupe identity.
@@ -193,21 +195,26 @@ Evidence-first:
 
 Use:
 
-- `#0f1216` app background.
-- `#171b21` panels.
-- `#1d232b` raised panels.
-- `#57d0b2` action/healthy state.
-- `#8fb8ff` search/GSC evidence.
-- `#f5bd5b` commerce/product caution.
-- `#f07878` risk/failure.
+- `#ffffff` app background.
+- `#f4f4f5` fog-gray section surfaces.
+- `#252527` graphite primary buttons and active navigation.
+- `#e5e7eb` 1px neutral borders.
+- `#99ecff` safe/healthy accent band.
+- `#6120ee` search/GSC evidence accent.
+- `#ab77ff` lavender pixel accent.
+- `#f1ffd2` pixel lime accent.
+- `#ffddfa` soft pink accent band.
+- `#f4b740` commerce/product caution, TrafScope-specific.
+- `#ef4444` risk/failure, TrafScope-specific.
 
 Avoid:
 
 - Marketing hero layouts.
-- AI gradient/orb/glassmorphism.
+- AI gradient/orb/glassmorphism/neon glow.
 - Generic KPI + giant chart dashboards.
 - One-note teal/green palette.
 - Large-radius soft SaaS cards.
+- Default card shadows.
 - Decorative charts that replace evidence rows.
 - Oversized type in dashboard panels.
 
@@ -234,4 +241,3 @@ The UI stage can move into implementation when:
 - Visual QA checklist is documented.
 - Current frontend gaps are known and accepted.
 - Evidence-first and draft-only gates are explicit.
-

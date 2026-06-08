@@ -26,7 +26,7 @@ This document records the initial stack choices for TrafScope Commerce OS and th
 Current Sprint 1 frontend implementation:
 
 - `apps/web/app/App.tsx`: bilingual product workbench with board, task detail, opportunity detail, integrations/safety, and UI states.
-- `apps/web/app/styles.css`: V3 dark operational design system and responsive layout.
+- `apps/web/app/styles.css`: Refero/Fal-inspired light operational design system and responsive layout.
 - `apps/web/lib/types.ts`: frontend view-model contracts.
 - `apps/web/lib/mock-data.ts`: deterministic Sprint 1 demo data and boundary copy.
 - `apps/web/tests/sprint1-ui-contract.test.mjs`: contract guard for Sprint 1 UI scope.

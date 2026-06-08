@@ -11,31 +11,36 @@ TrafScope is a traffic operations workspace for WooCommerce and WordPress mercha
 3. What will happen if I approve it?
 4. How will we know whether it worked?
 
-The UI should feel like a calm command room for ecommerce growth: dark, focused, evidence-backed, and operational.
+The UI should feel like a calm evidence desk for ecommerce growth: light, precise, evidence-backed, and operational.
 
 ## Theme
 
-Dark operational workspace with restrained editorial hierarchy.
+Light operational workspace with restrained editorial hierarchy, based on the specific Refero Styles page for `Generative AI - fal.ai`.
 
-Use dark surfaces, low-contrast borders, precise typography, and quiet accent colors. Do not make it a glossy AI dashboard, a marketing landing page, or a generic SaaS card wall.
+Use a white canvas, fog-gray sections, 1px neutral borders, precise typography, and small functional color accents. Do not make it a glossy AI dashboard, a marketing landing page, or a generic SaaS card wall.
 
 ## Tokens - Colors
 
 | Name | Value | Token | Role |
 |---|---:|---|---|
-| Void | `#0f1216` | `--color-background` | App background and main canvas. |
-| Panel | `#171b21` | `--color-panel` | Primary work surfaces and grouped regions. |
-| Panel Raised | `#1d232b` | `--color-panel-raised` | Hovered cards, selected rows, active tabs. |
-| Hairline | `rgba(214, 224, 236, 0.12)` | `--color-border` | Borders, dividers, grid lines. |
-| Text | `#f4f7f8` | `--color-text` | Primary text. |
-| Muted | `#9aa8b5` | `--color-muted` | Secondary text, timestamps, helper labels. |
-| Subtle | `#687584` | `--color-subtle` | Tertiary text and disabled labels. |
-| Signal | `#57d0b2` | `--color-signal` | Primary action, healthy states, positive movement. |
-| Search Blue | `#8fb8ff` | `--color-search` | Query/search evidence and GSC metrics. |
-| Commerce Amber | `#f5bd5b` | `--color-commerce` | Product/inventory evidence and caution states. |
-| Risk Red | `#f07878` | `--color-risk` | Failed sync, rejected task, destructive warning. |
+| Canvas | `#ffffff` | `--color-background` | App background and main canvas. |
+| Fog Surface | `#f4f4f5` | `--color-panel-soft` | Section bands, table headers, subtle grouped regions. |
+| Panel | `#ffffff` | `--color-panel` | Primary work surfaces. |
+| Graphite | `#252527` | `--color-panel-raised` | Active navigation, primary buttons, high-emphasis blocks. |
+| Hairline | `#e5e7eb` | `--color-border` | 1px borders, dividers, grid lines. |
+| Hairline Strong | `#d4d4d8` | `--color-border-strong` | Selected rows and higher-emphasis dividers. |
+| Text | `#1b1b1d` | `--color-text` | Primary text. |
+| Muted | `#6b6b72` | `--color-muted` | Secondary text, timestamps, helper labels. |
+| Subtle | `#9ca3af` | `--color-subtle` | Tertiary text and disabled labels. |
+| Sky Cyan | `#99ecff` | `--color-signal` | Healthy state, safe planning, positive movement. |
+| Electric Violet | `#6120ee` | `--color-search` | Search/GSC evidence and high-attention markers. |
+| Lavender | `#ab77ff` | `--color-pixel-violet` | Small pixel block accents. |
+| Pixel Lime | `#f1ffd2` | `--color-pixel-lime` | Small pixel block accents. |
+| Bubblegum | `#ffddfa` | `--color-bubblegum` | Soft accent bands. |
+| Amber | `#f4b740` | `--color-commerce` | Product/inventory evidence and caution states, TrafScope-specific. |
+| Red | `#ef4444` | `--color-risk` | Failed sync, rejected task, destructive warning, TrafScope-specific. |
 
-Color rule: one dominant dark neutral system plus two functional accents. Green is action/health, blue is search evidence, amber is commerce/inventory. Avoid decorative gradients and hue-heavy backgrounds.
+Color rule: one dominant light neutral system plus a few functional accents. Graphite is primary action. Sky cyan, violet, lime, and pink are reference accents. Amber and red are TrafScope-specific evidence/status colors only. Avoid decorative gradients, glows, and hue-heavy backgrounds.
 
 ## Tokens - Typography
 
@@ -43,8 +48,8 @@ Use system sans by default. If custom fonts are added later, use a utilitarian s
 
 | Role | Size | Weight | Line Height | Use |
 |---|---:|---:|---:|---|
-| Display | 40-48px | 400 | 1.05 | Top-level board title only. |
-| Page Title | 28-32px | 600 | 1.15 | Main page headings. |
+| Display | 40-48px | 700 | 1.05 | Top-level board title only, not inside dense panels. |
+| Page Title | 28-32px | 700 | 1.15 | Main page headings. |
 | Section Title | 18-20px | 600 | 1.3 | Panel headings. |
 | Card Title | 15-16px | 600 | 1.35 | Task and opportunity titles. |
 | Body | 14px | 400 | 1.5 | Evidence, summaries, descriptions. |
@@ -68,9 +73,9 @@ Do not scale type with viewport width. Letter spacing should remain normal excep
 Shapes:
 
 - Cards and panels: 8px radius.
-- Buttons and inputs: 6-8px radius.
+- Buttons and inputs: 4px radius.
 - Pills, status chips, segmented filters: 999px radius.
-- Avoid large rounded cards in the product app even if the reference examples use them; TrafScope is an operations tool.
+- Avoid oversized rounded cards, soft SaaS blobs, and heavy shadows.
 
 ## Layout Rhythm
 
@@ -168,7 +173,7 @@ Use compact rows with:
 - Do not bury evidence behind charts only.
 - Do not show huge hero typography inside dashboard panels.
 - Do not make every object a floating card.
-- Do not use a one-note green/teal palette; keep blue and amber as functional evidence accents.
+- Do not use a one-note green/teal palette; keep sky cyan, violet, lime, pink, amber, and red as functional evidence accents.
 - Do not imply live publishing exists in Sprint 1.
 
 ## Prompt Guide For Future UI Work
@@ -185,7 +190,7 @@ When asking an AI agent to design or build a TrafScope screen, include:
 Good prompt shape:
 
 ```txt
-Build the TrafScope Task Detail screen for a WooCommerce merchant reviewing a collection-page opportunity. Use the TrafScope DESIGN.md system. The user must understand why the task exists, which queries/products/pages it affects, what the action plan is, and whether they should approve or reject it. Use realistic evidence rows and score breakdown. Keep the UI dark, dense, operational, and draft-safe.
+Build the TrafScope Task Detail screen for a WooCommerce merchant reviewing a collection-page opportunity. Use the TrafScope DESIGN.md system. The user must understand why the task exists, which queries/products/pages it affects, what the action plan is, and whether they should approve or reject it. Use realistic evidence rows and score breakdown. Keep the UI light, dense, operational, and draft-safe.
 ```
 
 ## Acceptance Criteria
@@ -194,6 +199,5 @@ Build the TrafScope Task Detail screen for a WooCommerce merchant reviewing a co
 - Every recommendation has evidence visible or one click away.
 - Text never overflows cards, buttons, tables, or side rails.
 - Mobile layout stacks without losing evidence or primary actions.
-- Dark surfaces retain accessible contrast.
+- Light surfaces retain accessible contrast.
 - UI remains operational and commerce-aware, not decorative.
-

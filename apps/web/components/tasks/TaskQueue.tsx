@@ -25,7 +25,6 @@ export function TaskQueue({ locale, onOpenTask, t, tasks }: TaskQueueProps) {
           <th>{labels.priority}</th>
           <th>{labels.task}</th>
           <th>{labels.evidence}</th>
-          <th>{labels.objects}</th>
           <th>{labels.status}</th>
           <th>{labels.action}</th>
         </tr>
@@ -53,11 +52,6 @@ export function TaskQueue({ locale, onOpenTask, t, tasks }: TaskQueueProps) {
                   <span key={`${task.id}-${row.source}-${row.metric}`}>{localizeTaskEvidence(row, locale)}</span>
                 ))}
               </div>
-            </td>
-            <td data-label={labels.objects}>
-              <span className="mono">
-                Q{task.objects.queries}/P{task.objects.products}/WP{task.objects.pages}
-              </span>
             </td>
             <td data-label={labels.status}>
               <StatusPill status={task.status} t={t} />

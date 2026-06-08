@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 1 demo data depth.
+Current loop: Specific Refero/Fal UI convergence.
 
 ## Status Legend
 
@@ -21,31 +21,34 @@ Current loop: Sprint 1 demo data depth.
 | Role | Person/Agent | Current assignment |
 |---|---|---|
 | Product Manager | Main thread | Keep Sprint 1 focused on evidence-backed task review. |
-| Tech Lead | Main thread | Integrate code, verification, commits, and push attempts. |
-| Frontend Product Engineer | Main thread | Task status persistence and UI state model. |
-| Backend/API Engineer | Maxwell | API contract exploration for future board wiring. |
-| UI Systems Engineer | Banach | Frontend decomposition and i18n architecture exploration. |
-| QA Lead | Main thread | Contract tests, build, backend tests, secret scan. |
+| UI Design Lead | Main thread | Extract the specific Refero/Fal style page and translate it to TrafScope. |
+| Frontend Product Engineer | Main thread | Implement the light operational design system in React/CSS. |
+| QA Lead | Main thread | Contract tests, visual checks, build, backend tests, and secret scan. |
+| Backend/API Engineer | Maxwell | Available for API contract work after UI convergence. |
+| UI Systems Engineer | Banach | Available for deeper component/i18n architecture work. |
 
 ## Task Queue
 
 | ID | Priority | Status | Owner | Task | Definition of Done |
 |---|---:|---|---|---|---|
-| DEMO-001 | 1 | done | Backend Decisioning Engineer | Expand demo fixture to Sprint 1 acceptance depth. | Fixture has at least 20 products, 5 pages, and 50 GSC-like metric rows. |
-| DEMO-002 | 2 | done | Backend Decisioning Engineer | Generate at least 10 deterministic demo opportunities/tasks. | Demo planning payload returns at least 10 evidence-backed tasks while preserving all three Sprint 1 rule types. |
-| DEMO-003 | 3 | done | QA Lead | Add tests for fixture depth and demo task volume. | Backend tests fail before fixture expansion and pass after implementation. |
-| DEMO-004 | 4 | done | Tech Lead | Verify, document, commit, and push. | Backend tests, frontend contracts, lint, build, secret scan, commit, and push succeed. |
+| UI-REF-001 | 1 | done | UI Design Lead | Extract the specific Refero/Fal style page. | `docs/ui-reference-refero.md` includes the source style ID, tokens, component rules, and TrafScope translation. |
+| UI-REF-002 | 2 | done | UI Design Lead | Replace old dark operational design guidance. | `DESIGN.md`, UI meeting notes, implementation plan, component notes, tech-stack notes, and visual QA checklist point to the light operational system. |
+| UI-REF-003 | 3 | done | Frontend Product Engineer | Apply Refero/Fal-inspired visual tokens to the app. | `apps/web/app/styles.css` uses white canvas, fog surfaces, graphite actions, 1px borders, no default shadows, and small pixel block accents. |
+| UI-REF-004 | 4 | done | Frontend Product Engineer | Fix UI usability issues found during browser QA. | Task queue evidence remains readable on desktop/narrow desktop, redundant object column is removed, and screen changes reset scroll to top. |
+| UI-REF-005 | 5 | done | QA Lead | Update screenshots and run verification. | React screenshots are refreshed and verification passes: UI contracts, lint, build, backend unittest, browser console check, and secret scan. |
+| UI-REF-006 | 6 | done | Tech Lead | Commit and push coherent UI convergence work. | Local commit exists and push either succeeds or is blocked by concrete GitHub network failure. |
 
 ## Blockers
 
 | Blocker | Status | Notes |
 |---|---|---|
-| GitHub HTTPS push | resolved | Latest branch push succeeded after retrying direct HTTPS without the stale local proxy. |
+| GitHub HTTPS push | active | Previous push attempt failed because github.com:443 could not be reached from this environment. Retry after commit with direct HTTPS proxy override. |
 
 ## Agent Findings
 
-- Backend/API explorer recommends `api-client.ts` plus `view-model-adapters.ts` as the minimum path from mock UI to API-backed board. Existing demo services can generate deterministic planning data without real credentials.
-- Frontend architecture explorer recommends extracting typed i18n/copy first, then splitting `TaskQueue` as the first component slice. It also flagged copy-driven behavior as a risk; AUTO-001 removed the task action behavior dependency on translated `actionLabel` text.
+- The specific Refero page is a light Fal / Generative AI visual system, not the earlier dark operational direction.
+- The transferable rules are white canvas, fog-gray sections, 1px neutral borders, graphite primary actions, no default shadows, crisp typography, and sparing pixel block accents.
+- Browser QA found and fixed two product UX issues: evidence text became unreadable at narrow desktop widths, and switching screens preserved scroll position.
 
 ## Completion Rule
 

@@ -10,7 +10,7 @@ Status: Component priority and anatomy for UI implementation
 - Product components must keep evidence and safety close to actions.
 - Primitive components must be stable before large page work.
 - Components should use lucide icons where useful, but icons cannot replace unfamiliar labels.
-- Components must support dark operational surfaces from `DESIGN.md`.
+- Components must support the light operational surfaces from `DESIGN.md`.
 
 ## P0 Primitives
 
@@ -355,4 +355,3 @@ Rules:
 - `Publish` wording.
 - Hero-scale typography in panels.
 - Decorative charts with no decision value.
-
