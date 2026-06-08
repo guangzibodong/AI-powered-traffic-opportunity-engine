@@ -69,7 +69,9 @@ type SafetySignalState = {
 };
 
 type ImportedPreviewState = {
+  availability: "empty" | "ready" | "unavailable";
   clusters: ImportedQueryClusterPreview[];
+  error?: string;
   opportunities: Opportunity[];
   tasks: BoardViewModel["tasks"];
 };
@@ -180,6 +182,7 @@ export function App() {
     syncRunPreviews: []
   });
   const [importedPreviews, setImportedPreviews] = useState<ImportedPreviewState>({
+    availability: "empty",
     clusters: [],
     opportunities: [],
     tasks: []
@@ -210,38 +213,49 @@ export function App() {
       getOpportunities(demoStoreId),
       getIntegrations(demoStoreId),
       getSyncRuns(demoStoreId),
-      getAuditLogs(demoStoreId),
-      getImportedQueryClusters(demoStoreId),
-      getImportedOpportunities(demoStoreId),
-      getImportedTasks(demoStoreId)
+      getAuditLogs(demoStoreId)
     ])
-      .then(([
-        tasksResponse,
-        opportunitiesResponse,
-        integrationsResponse,
-        syncRunsResponse,
-        auditLogsResponse,
-        importedQueryClustersResponse,
-        importedOpportunitiesResponse,
-        importedTasksResponse
-      ]) => {
+      .then(([tasksResponse, opportunitiesResponse, integrationsResponse, syncRunsResponse, auditLogsResponse]) => {
         if (!active) return;
         const integrations = mapApiIntegrationsToIntegrationHealth(integrationsResponse);
         const syncRunPreviews = mapApiSyncRunsToSyncRunPreviews(syncRunsResponse);
         const auditEvidence = mapApiAuditLogsToEvidenceRows(auditLogsResponse);
-        setImportedPreviews({
-          clusters: mapApiImportedQueryClustersToPreviews(importedQueryClustersResponse),
-          opportunities: mapApiImportedOpportunitiesToOpportunities(importedOpportunitiesResponse),
-          tasks: mapApiImportedTasksToTasks(importedTasksResponse)
-        });
         setSafetySignals({ auditEvidence, syncRunPreviews });
         setBaseBoard(mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrations));
         setBoardDataState({ loading: false, source: "api" });
+
+        Promise.all([
+          getImportedQueryClusters(demoStoreId),
+          getImportedOpportunities(demoStoreId),
+          getImportedTasks(demoStoreId)
+        ])
+          .then(([importedQueryClustersResponse, importedOpportunitiesResponse, importedTasksResponse]) => {
+            if (!active) return;
+            const clusters = mapApiImportedQueryClustersToPreviews(importedQueryClustersResponse);
+            const opportunities = mapApiImportedOpportunitiesToOpportunities(importedOpportunitiesResponse);
+            const tasks = mapApiImportedTasksToTasks(importedTasksResponse);
+            setImportedPreviews({
+              availability: clusters.length > 0 || opportunities.length > 0 || tasks.length > 0 ? "ready" : "empty",
+              clusters,
+              opportunities,
+              tasks
+            });
+          })
+          .catch((importedError: unknown) => {
+            if (!active) return;
+            setImportedPreviews({
+              availability: "unavailable",
+              clusters: [],
+              error: importedError instanceof Error ? importedError.message : "Imported previews unavailable",
+              opportunities: [],
+              tasks: []
+            });
+          });
       })
       .catch((error: unknown) => {
         if (!active) return;
         setBaseBoard(boardViewModel);
-        setImportedPreviews({ clusters: [], opportunities: [], tasks: [] });
+        setImportedPreviews({ availability: "empty", clusters: [], opportunities: [], tasks: [] });
         setSafetySignals({ auditEvidence: [], syncRunPreviews: [] });
         setBoardDataState({
           error: error instanceof Error ? error.message : "Unknown API error",
@@ -671,7 +685,8 @@ function ImportedPreviewPanel({
   const visibleOpportunities = importedPreviews.opportunities.slice(0, 2);
   const visibleTasks = importedPreviews.tasks.slice(0, 2);
   const hasImportedPreviews =
-    visibleClusters.length > 0 || visibleOpportunities.length > 0 || visibleTasks.length > 0;
+    importedPreviews.availability === "ready" &&
+    (visibleClusters.length > 0 || visibleOpportunities.length > 0 || visibleTasks.length > 0);
 
   return (
     <section className="panel imported-preview-panel" aria-label="Imported preview panel">
@@ -722,6 +737,15 @@ function ImportedPreviewPanel({
               </p>
             </article>
           ))}
+        </div>
+      ) : importedPreviews.availability === "unavailable" ? (
+        <div className="imported-preview-empty">
+          <strong>{locale === "zh" ? "Imported previews unavailable" : "Imported previews unavailable"}</strong>
+          <p className="muted">
+            {locale === "zh"
+              ? "主工作台仍使用 demo API 数据。Imported preview 读取暂不可用，已保持只读空状态。"
+              : "The main board still uses demo API data. Imported preview reads are unavailable, so this panel stays read-only and empty."}
+          </p>
         </div>
       ) : (
         <div className="imported-preview-empty">

@@ -219,6 +219,26 @@ async function runSmoke() {
       assert(!importedPanelText.includes(forbidden), `Imported preview panel exposes unsafe control copy: ${forbidden}`);
     }
 
+    const resilientPage = await context.newPage();
+    await resilientPage.route("**/api/stores/**", async (route) => {
+      const url = route.request().url();
+      if (url.includes("/query-clusters") || url.includes("/imported-opportunities") || url.includes("/imported-tasks")) {
+        await route.abort("failed");
+        return;
+      }
+
+      await route.continue();
+    });
+    await resilientPage.goto(webUrl);
+    await clickUnique(resilientPage.getByRole("button", { name: "EN" }), "resilient language switcher");
+    await expectVisible(resilientPage.getByText("Demo API connected"), "resilient API connected banner");
+    await expectVisible(resilientPage.getByText("Imported previews unavailable"), "resilient imported preview fallback");
+    assert(
+      (await resilientPage.locator(".imported-preview-panel button").count()) === 0,
+      "Resilient imported preview fallback must not render action buttons"
+    );
+    await resilientPage.close();
+
     const firstTaskRow = page.locator("tr").filter({ hasText: taskTitle });
     assert((await firstTaskRow.count()) === 1, "Expected first demo task row to be visible");
     await clickUnique(firstTaskRow.getByRole("button", { name: "Draft later" }), "first task action");
