@@ -511,6 +511,16 @@ h3 {
   gap: 10px;
 }
 
+.imported-preview-list {
+  display: grid;
+  gap: 10px;
+  padding: 0 14px 14px;
+}
+
+.imported-preview-empty {
+  padding: 0 14px 14px;
+}
+
 .panel {
   overflow: hidden;
 }

@@ -14,6 +14,13 @@ function assert(condition, message) {
   }
 }
 
+function readExportedFunction(content, name) {
+  const start = content.indexOf(`export async function ${name}`);
+  assert(start >= 0, `Missing exported function: ${name}`);
+  const next = content.indexOf("\nexport async function", start + 1);
+  return content.slice(start, next === -1 ? content.length : next);
+}
+
 const adapter = read("lib/view-model-adapters.ts");
 const apiClient = read("lib/api-client.ts");
 const app = read("app/App.tsx");
@@ -66,6 +73,12 @@ assert(apiClient.includes("getImportedQueryClusters"), "API client must expose i
 assert(apiClient.includes("getImportedOpportunities"), "API client must expose imported opportunity reads");
 assert(apiClient.includes("getImportedTasks"), "API client must expose imported task preview reads");
 assert(apiClient.includes("/imported-tasks"), "Imported task client must target the read-only imported task endpoint");
+for (const importedReadFunction of ["getImportedQueryClusters", "getImportedOpportunities", "getImportedTasks"]) {
+  const functionBody = readExportedFunction(apiClient, importedReadFunction);
+  for (const unsafeMethod of ['method: "POST"', 'method: "PATCH"', 'method: "PUT"', 'method: "DELETE"']) {
+    assert(!functionBody.includes(unsafeMethod), `${importedReadFunction} must stay read-only and not use ${unsafeMethod}`);
+  }
+}
 assert(apiClient.includes('method: "PATCH"'), "Task status mutation must use PATCH");
 assert(apiClient.includes("JSON.stringify({ status })"), "Task status mutation must send only the selected review status");
 assert(apiClient.includes("encodeURIComponent(taskId)"), "Task status mutation must encode the selected task id");
@@ -76,10 +89,18 @@ assert(app.includes('source: "fallback"'), "App must keep a mock fallback state"
 assert(app.includes("getIntegrations("), "App must read API-backed integration status in API mode");
 assert(app.includes("getSyncRuns("), "App must read API-backed sync run tracking in API mode");
 assert(app.includes("getAuditLogs("), "App must read API-backed audit logs in API mode");
+assert(app.includes("getImportedQueryClusters("), "App must read API-backed imported query clusters in API mode");
+assert(app.includes("getImportedOpportunities("), "App must read API-backed imported opportunities in API mode");
+assert(app.includes("getImportedTasks("), "App must read API-backed imported task previews in API mode");
 assert(app.includes("mapApiIntegrationsToIntegrationHealth("), "App must map API integration status into integration health rows");
 assert(app.includes("mapApiSyncRunsToSyncRunPreviews("), "App must map API sync runs through the safe adapter");
 assert(app.includes("mapApiAuditLogsToEvidenceRows("), "App must map audit logs into safe audit evidence rows");
+assert(app.includes("mapApiImportedQueryClustersToPreviews("), "App must map imported query clusters through the safe adapter");
+assert(app.includes("mapApiImportedOpportunitiesToOpportunities("), "App must map imported opportunities through the safe adapter");
+assert(app.includes("mapApiImportedTasksToTasks("), "App must map imported task previews through the safe adapter");
 assert(app.includes("integrations={board.integrations}"), "Safety page must render board integrations, including API-backed integrations");
+assert(app.includes("ImportedPreviewPanel"), "Board must expose an imported preview panel for API-backed imported data");
+assert(app.includes("read-only imported previews"), "Imported preview UI must state that previews are read-only");
 assert(app.includes("updateTaskStatus("), "App must call the demo task status API when API-backed board data is available");
 assert(app.includes('boardDataState.source === "api"'), "App must gate task status API mutations to the connected API board state");
 assert(app.includes("applyApiTaskStatusToBoard"), "App must apply successful API task status responses to the board state");

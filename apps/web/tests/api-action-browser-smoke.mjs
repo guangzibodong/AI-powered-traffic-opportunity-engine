@@ -18,6 +18,40 @@ const webPort = Number(process.env.TRAFSCOPE_API_ACTION_WEB_PORT ?? 5177);
 const apiUrl = `http://127.0.0.1:${apiPort}`;
 const webUrl = `http://127.0.0.1:${webPort}`;
 
+const importedGscCsv = `Query,Page,Clicks,Impressions,CTR,Position
+portable espresso maker camping,https://example.com/camping-espresso,24,1200,2.0%,4.8
+camping portable espresso machine,https://example.com/camping-espresso,18,800,2.25%,5.2
+`;
+
+const importedProducts = [
+  {
+    attributes: [{ name: "Use case", options: ["Camping", "Espresso"] }],
+    categories: [{ name: "Camping Coffee" }],
+    id: 101,
+    name: "Trail Brew Portable Espresso Maker",
+    slug: "trail-brew-portable-espresso-maker",
+    status: "publish",
+    stock_status: "instock"
+  }
+];
+
+const importedPages = [
+  {
+    excerpt: { rendered: "Portable espresso makers for camp coffee." },
+    id: 301,
+    link: "https://example.com/camping-espresso",
+    slug: "camping-espresso",
+    status: "publish",
+    title: { rendered: "Camping Espresso Collection" },
+    type: "page",
+    yoast_head_json: {
+      description: "Compare portable espresso makers for camping.",
+      robots: { index: "index" },
+      title: "Camping Espresso Makers"
+    }
+  }
+];
+
 const managedProcesses = [];
 
 function assert(condition, message) {
@@ -69,6 +103,22 @@ async function expectVisible(locator, label) {
   assert(count >= 1, `Expected visible ${label}, found none`);
 }
 
+async function postJson(url, body, label) {
+  const response = await fetch(url, {
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
+  assert(response.ok, `${label} failed with ${response.status}: ${await response.text()}`);
+}
+
+async function seedImportedPreviewFixtures(currentApiUrl, currentStoreId) {
+  const storePath = `${currentApiUrl}/api/stores/${currentStoreId}`;
+  await postJson(`${storePath}/queries/import-csv`, { csv_text: importedGscCsv, window: "28d" }, "GSC fixture import");
+  await postJson(`${storePath}/products/import-woocommerce`, { products: importedProducts }, "Woo fixture import");
+  await postJson(`${storePath}/pages/import-wordpress`, { pages: importedPages }, "WordPress fixture import");
+}
+
 function findBrowserExecutable() {
   const candidates = [
     process.env.TRAFSCOPE_BROWSER_EXECUTABLE,
@@ -108,6 +158,7 @@ async function runSmoke() {
   });
 
   await waitForHttp(`${apiUrl}/api/stores/${storeId}/tasks`, "TrafScope API");
+  await seedImportedPreviewFixtures(apiUrl, storeId);
   await waitForHttp(webUrl, "TrafScope web app");
 
   const executablePath = findBrowserExecutable();
@@ -119,10 +170,54 @@ async function runSmoke() {
   try {
     const context = await browser.newContext();
     const page = await context.newPage();
+    const importedPreviewRequests = [];
+
+    page.on("request", (request) => {
+      const url = request.url();
+      if (url.includes("/query-clusters") || url.includes("/imported-opportunities") || url.includes("/imported-tasks")) {
+        importedPreviewRequests.push({ method: request.method(), url });
+      }
+    });
 
     await page.goto(webUrl);
     await clickUnique(page.getByRole("button", { name: "EN" }), "language switcher");
     await expectVisible(page.getByText("Demo API connected"), "API connected banner");
+    await expectVisible(page.getByText("read-only imported previews"), "read-only imported preview badge");
+    await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
+    await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
+
+    for (const target of ["/query-clusters", "/imported-opportunities", "/imported-tasks"]) {
+      assert(
+        importedPreviewRequests.some((request) => request.method === "GET" && request.url.includes(target)),
+        `Imported preview endpoint was not read with GET: ${target}`
+      );
+    }
+
+    const unsafeImportedRequests = importedPreviewRequests.filter((request) => request.method !== "GET");
+    assert(
+      unsafeImportedRequests.length === 0,
+      `Imported preview endpoints must be read-only GETs: ${JSON.stringify(unsafeImportedRequests)}`
+    );
+
+    const importedPanel = page.locator(".imported-preview-panel");
+    assert((await importedPanel.locator("button").count()) === 0, "Imported preview panel must not render action buttons");
+    const importedPanelText = (await importedPanel.textContent()) ?? "";
+    for (const forbidden of [
+      "Retry sync",
+      "Connect later",
+      "Approve task",
+      "Publish",
+      "Apply",
+      "Create task",
+      "Run planning",
+      "credential",
+      "price edit",
+      "stock edit",
+      "product edit",
+      "commerce write"
+    ]) {
+      assert(!importedPanelText.includes(forbidden), `Imported preview panel exposes unsafe control copy: ${forbidden}`);
+    }
 
     const firstTaskRow = page.locator("tr").filter({ hasText: taskTitle });
     assert((await firstTaskRow.count()) === 1, "Expected first demo task row to be visible");

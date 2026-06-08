@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported preview frontend DTO foundation completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported preview UI read-only panel completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -57,6 +57,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-LIVE-011 | 23 | blocked | Product Manager / Backend/API Engineer | Plan real read-only credential handshake for live WooCommerce, WordPress, and GSC sources. | Blocked on explicit credentials and boundary approval; current sprint rules still forbid real GSC OAuth, WooCommerce writes, WordPress writes, draft creation, and live publishing. |
 | TASK-S2-UI-012 | 24 | done | Frontend Product Engineer / QA Lead | Add API-backed safety panel foundation. | API board loading also reads integration status, sync runs, and audit logs, maps them through safe DTO adapters, updates the visible Safety page from `board.integrations`, and does not add sync execution, credential, draft, publish, or commerce write controls. |
 | TASK-S2-IMPORT-013 | 25 | done | Frontend Product Engineer / QA Lead | Add imported preview frontend DTO foundation. | API client and view-model adapters expose read-only imported query cluster, imported opportunity, and imported task preview conversions with safe `new` status fallback, `recommend_only` task previews, and no review mutation, draft, publish, sync execution, credential, or commerce write controls. |
+| TASK-S2-IMPORT-014 | 26 | done | Frontend Product Engineer / QA Lead | Add API-backed imported preview UI panel. | API mode reads imported query clusters, imported opportunities, and imported task previews, renders them in a read-only board side panel, and exposes no review mutation, credential, sync execution, draft, publish, product edit, commerce write, or live integration controls. |
 
 ## Blockers
 
@@ -104,6 +105,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - API-backed safety panel wiring is verified by backend tests plus the existing frontend contract, lint, build, and browser smoke gates.
 - Imported preview frontend DTOs are next because the backend already exposes read-only imported clusters, opportunities, and task previews that need stable frontend contracts before UI rendering.
 - Imported preview frontend DTOs are verified by backend tests plus the existing frontend contract, lint, build, and browser smoke gates.
+- Imported preview UI is next because the backend and DTOs already expose imported previews, but the visible app still needs a safe read-only surface that cannot trigger review mutations or external writes.
+- Imported preview UI is verified by backend tests, frontend contract, lint, build, browser smoke with seeded imported fixture data, read-only imported endpoint request checks, diff check, and secret scan.
 
 ## Completion Rule
 

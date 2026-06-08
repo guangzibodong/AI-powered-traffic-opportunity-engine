@@ -6,6 +6,9 @@ import { TaskQueue } from "../components/tasks/TaskQueue";
 import { localizeTaskTitle } from "../components/tasks/task-copy";
 import {
   getAuditLogs,
+  getImportedOpportunities,
+  getImportedQueryClusters,
+  getImportedTasks,
   getIntegrations,
   getOpportunities,
   getSyncRuns,
@@ -30,6 +33,9 @@ import {
 import { createTaskDetailViewModel } from "../lib/task-detail";
 import {
   mapApiAuditLogsToEvidenceRows,
+  mapApiImportedOpportunitiesToOpportunities,
+  mapApiImportedQueryClustersToPreviews,
+  mapApiImportedTasksToTasks,
   mapApiIntegrationsToIntegrationHealth,
   mapApiPlanningToBoard,
   mapApiSyncRunsToSyncRunPreviews
@@ -37,6 +43,7 @@ import {
 import type {
   BoardViewModel,
   EvidenceRow,
+  ImportedQueryClusterPreview,
   IntegrationHealth,
   Locale,
   Opportunity,
@@ -59,6 +66,12 @@ type BoardDataState = {
 type SafetySignalState = {
   auditEvidence: EvidenceRow[];
   syncRunPreviews: SyncRunPreview[];
+};
+
+type ImportedPreviewState = {
+  clusters: ImportedQueryClusterPreview[];
+  opportunities: Opportunity[];
+  tasks: BoardViewModel["tasks"];
 };
 
 const demoStoreId = "store-demo-outdoor-coffee";
@@ -166,6 +179,11 @@ export function App() {
     auditEvidence: [],
     syncRunPreviews: []
   });
+  const [importedPreviews, setImportedPreviews] = useState<ImportedPreviewState>({
+    clusters: [],
+    opportunities: [],
+    tasks: []
+  });
   const [selectedTaskId, setSelectedTaskId] = useState(taskDetail.id);
   const [taskStatuses, setTaskStatuses] = useState(loadTaskStatusMap);
   const [pendingTaskStatus, setPendingTaskStatus] = useState<PendingTaskStatus | null>(null);
@@ -192,13 +210,30 @@ export function App() {
       getOpportunities(demoStoreId),
       getIntegrations(demoStoreId),
       getSyncRuns(demoStoreId),
-      getAuditLogs(demoStoreId)
+      getAuditLogs(demoStoreId),
+      getImportedQueryClusters(demoStoreId),
+      getImportedOpportunities(demoStoreId),
+      getImportedTasks(demoStoreId)
     ])
-      .then(([tasksResponse, opportunitiesResponse, integrationsResponse, syncRunsResponse, auditLogsResponse]) => {
+      .then(([
+        tasksResponse,
+        opportunitiesResponse,
+        integrationsResponse,
+        syncRunsResponse,
+        auditLogsResponse,
+        importedQueryClustersResponse,
+        importedOpportunitiesResponse,
+        importedTasksResponse
+      ]) => {
         if (!active) return;
         const integrations = mapApiIntegrationsToIntegrationHealth(integrationsResponse);
         const syncRunPreviews = mapApiSyncRunsToSyncRunPreviews(syncRunsResponse);
         const auditEvidence = mapApiAuditLogsToEvidenceRows(auditLogsResponse);
+        setImportedPreviews({
+          clusters: mapApiImportedQueryClustersToPreviews(importedQueryClustersResponse),
+          opportunities: mapApiImportedOpportunitiesToOpportunities(importedOpportunitiesResponse),
+          tasks: mapApiImportedTasksToTasks(importedTasksResponse)
+        });
         setSafetySignals({ auditEvidence, syncRunPreviews });
         setBaseBoard(mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrations));
         setBoardDataState({ loading: false, source: "api" });
@@ -206,6 +241,7 @@ export function App() {
       .catch((error: unknown) => {
         if (!active) return;
         setBaseBoard(boardViewModel);
+        setImportedPreviews({ clusters: [], opportunities: [], tasks: [] });
         setSafetySignals({ auditEvidence: [], syncRunPreviews: [] });
         setBoardDataState({
           error: error instanceof Error ? error.message : "Unknown API error",
@@ -292,6 +328,7 @@ export function App() {
           <TrafficOperationsPage
             board={board}
             dataState={boardDataState}
+            importedPreviews={importedPreviews}
             locale={locale}
             onOpenTask={(task) => {
               setSelectedTaskId(task.id);
@@ -409,12 +446,14 @@ function LanguageSwitcher({ locale, setLocale }: { locale: Locale; setLocale: (l
 function TrafficOperationsPage({
   board,
   dataState,
+  importedPreviews,
   locale,
   onOpenTask,
   t
 }: SharedProps & {
   board: BoardViewModel;
   dataState: BoardDataState;
+  importedPreviews: ImportedPreviewState;
   onOpenTask: (task: BoardViewModel["tasks"][number]) => void;
 }) {
   return (
@@ -508,6 +547,7 @@ function TrafficOperationsPage({
         </section>
         <aside className="side-rail">
           <DataHealthPanel integrations={board.integrations} locale={locale} t={t} />
+          <ImportedPreviewPanel importedPreviews={importedPreviews} locale={locale} />
           <OpportunityRail opportunities={board.opportunities} locale={locale} t={t} />
         </aside>
       </div>
@@ -616,6 +656,82 @@ function DataHealthPanel({ integrations, locale, t }: SharedProps & { integratio
           <strong>2026-06-08 13:42</strong>
         </div>
       </div>
+    </section>
+  );
+}
+
+function ImportedPreviewPanel({
+  importedPreviews,
+  locale
+}: {
+  importedPreviews: ImportedPreviewState;
+  locale: Locale;
+}) {
+  const visibleClusters = importedPreviews.clusters.slice(0, 2);
+  const visibleOpportunities = importedPreviews.opportunities.slice(0, 2);
+  const visibleTasks = importedPreviews.tasks.slice(0, 2);
+  const hasImportedPreviews =
+    visibleClusters.length > 0 || visibleOpportunities.length > 0 || visibleTasks.length > 0;
+
+  return (
+    <section className="panel imported-preview-panel" aria-label="Imported preview panel">
+      <div className="panel-heading">
+        <h2>{locale === "zh" ? "Imported 预览" : "Imported previews"}</h2>
+        <span className="status safe">read-only imported previews</span>
+      </div>
+      <div className="kv-list">
+        <div className="kv-row">
+          <span>{locale === "zh" ? "查询簇" : "Query clusters"}</span>
+          <strong>{importedPreviews.clusters.length}</strong>
+        </div>
+        <div className="kv-row">
+          <span>{locale === "zh" ? "机会预览" : "Opportunity previews"}</span>
+          <strong>{importedPreviews.opportunities.length}</strong>
+        </div>
+        <div className="kv-row">
+          <span>{locale === "zh" ? "任务预览" : "Task previews"}</span>
+          <strong>{importedPreviews.tasks.length}</strong>
+        </div>
+      </div>
+      {hasImportedPreviews ? (
+        <div className="imported-preview-list">
+          {visibleClusters.map((cluster) => (
+            <article className="rail-item" key={cluster.id}>
+              <span className="pill search">{locale === "zh" ? "查询簇" : "Cluster"}</span>
+              <h3>{cluster.primaryQuery}</h3>
+              <p className="muted">
+                {cluster.impressions} impressions / {cluster.clicks} clicks / CTR {cluster.ctr}
+              </p>
+            </article>
+          ))}
+          {visibleOpportunities.map((opportunity) => (
+            <article className="rail-item" key={opportunity.id}>
+              <span className="pill safe">{locale === "zh" ? "机会" : "Opportunity"}</span>
+              <h3>{opportunity.title}</h3>
+              <p className="muted">{opportunity.summary}</p>
+            </article>
+          ))}
+          {visibleTasks.map((task) => (
+            <article className="rail-item" key={task.id}>
+              <span className="pill commerce">{locale === "zh" ? "任务预览" : "Task preview"}</span>
+              <h3>{localizeTaskTitle(task.title, locale)}</h3>
+              <p className="muted">
+                {locale === "zh"
+                  ? `recommend_only / 分数 ${task.trafscore} / 证据 ${task.evidence.length}`
+                  : `recommend_only / score ${task.trafscore} / evidence ${task.evidence.length}`}
+              </p>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="imported-preview-empty">
+          <p className="muted">
+            {locale === "zh"
+              ? "本地 imported preview endpoint 已连接；当前会话还没有导入的 GSC、WooCommerce 或 WordPress fixture。"
+              : "The local imported preview endpoints are connected; this session has no imported GSC, WooCommerce, or WordPress fixture data yet."}
+          </p>
+        </div>
+      )}
     </section>
   );
 }
