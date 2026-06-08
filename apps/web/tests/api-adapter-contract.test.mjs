@@ -61,6 +61,13 @@ assert(apiClient.includes("/tasks/${encodedTaskId}"), "Task status mutation must
 assert(app.includes("isApiBoardEnabled()"), "App must respect the API board gate");
 assert(app.includes("store-demo-outdoor-coffee"), "App must load API-backed demo data with the stable demo store id");
 assert(app.includes('source: "fallback"'), "App must keep a mock fallback state");
+assert(app.includes("getIntegrations("), "App must read API-backed integration status in API mode");
+assert(app.includes("getSyncRuns("), "App must read API-backed sync run tracking in API mode");
+assert(app.includes("getAuditLogs("), "App must read API-backed audit logs in API mode");
+assert(app.includes("mapApiIntegrationsToIntegrationHealth("), "App must map API integration status into integration health rows");
+assert(app.includes("mapApiSyncRunsToSyncRunPreviews("), "App must map API sync runs through the safe adapter");
+assert(app.includes("mapApiAuditLogsToEvidenceRows("), "App must map audit logs into safe audit evidence rows");
+assert(app.includes("integrations={board.integrations}"), "Safety page must render board integrations, including API-backed integrations");
 assert(app.includes("updateTaskStatus("), "App must call the demo task status API when API-backed board data is available");
 assert(app.includes('boardDataState.source === "api"'), "App must gate task status API mutations to the connected API board state");
 assert(app.includes("applyApiTaskStatusToBoard"), "App must apply successful API task status responses to the board state");

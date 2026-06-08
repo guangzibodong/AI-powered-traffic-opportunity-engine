@@ -4,7 +4,15 @@ import type { ReactNode } from "react";
 import { StatusPill } from "../components/tasks/StatusPill";
 import { TaskQueue } from "../components/tasks/TaskQueue";
 import { localizeTaskTitle } from "../components/tasks/task-copy";
-import { getOpportunities, getTasks, isApiBoardEnabled, updateTaskStatus } from "../lib/api-client";
+import {
+  getAuditLogs,
+  getIntegrations,
+  getOpportunities,
+  getSyncRuns,
+  getTasks,
+  isApiBoardEnabled,
+  updateTaskStatus
+} from "../lib/api-client";
 import {
   boardViewModel,
   boundaryCopy,
@@ -20,7 +28,12 @@ import {
   updateTaskStatusMap
 } from "../lib/task-state";
 import { createTaskDetailViewModel } from "../lib/task-detail";
-import { mapApiPlanningToBoard } from "../lib/view-model-adapters";
+import {
+  mapApiAuditLogsToEvidenceRows,
+  mapApiIntegrationsToIntegrationHealth,
+  mapApiPlanningToBoard,
+  mapApiSyncRunsToSyncRunPreviews
+} from "../lib/view-model-adapters";
 import type {
   BoardViewModel,
   EvidenceRow,
@@ -30,6 +43,7 @@ import type {
   OpportunityDetailViewModel,
   RelatedEntity,
   ScoreComponent,
+  SyncRunPreview,
   TaskDetailViewModel,
   VisibleTaskStatus
 } from "../lib/types";
@@ -40,6 +54,11 @@ type BoardDataState = {
   error?: string;
   loading: boolean;
   source: "api" | "fallback" | "mock";
+};
+
+type SafetySignalState = {
+  auditEvidence: EvidenceRow[];
+  syncRunPreviews: SyncRunPreview[];
 };
 
 const demoStoreId = "store-demo-outdoor-coffee";
@@ -143,6 +162,10 @@ export function App() {
     loading: false,
     source: "mock"
   });
+  const [safetySignals, setSafetySignals] = useState<SafetySignalState>({
+    auditEvidence: [],
+    syncRunPreviews: []
+  });
   const [selectedTaskId, setSelectedTaskId] = useState(taskDetail.id);
   const [taskStatuses, setTaskStatuses] = useState(loadTaskStatusMap);
   const [pendingTaskStatus, setPendingTaskStatus] = useState<PendingTaskStatus | null>(null);
@@ -164,15 +187,26 @@ export function App() {
     let active = true;
     setBoardDataState({ loading: true, source: "mock" });
 
-    Promise.all([getTasks(demoStoreId), getOpportunities(demoStoreId)])
-      .then(([tasksResponse, opportunitiesResponse]) => {
+    Promise.all([
+      getTasks(demoStoreId),
+      getOpportunities(demoStoreId),
+      getIntegrations(demoStoreId),
+      getSyncRuns(demoStoreId),
+      getAuditLogs(demoStoreId)
+    ])
+      .then(([tasksResponse, opportunitiesResponse, integrationsResponse, syncRunsResponse, auditLogsResponse]) => {
         if (!active) return;
-        setBaseBoard(mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrationHealth));
+        const integrations = mapApiIntegrationsToIntegrationHealth(integrationsResponse);
+        const syncRunPreviews = mapApiSyncRunsToSyncRunPreviews(syncRunsResponse);
+        const auditEvidence = mapApiAuditLogsToEvidenceRows(auditLogsResponse);
+        setSafetySignals({ auditEvidence, syncRunPreviews });
+        setBaseBoard(mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrations));
         setBoardDataState({ loading: false, source: "api" });
       })
       .catch((error: unknown) => {
         if (!active) return;
         setBaseBoard(boardViewModel);
+        setSafetySignals({ auditEvidence: [], syncRunPreviews: [] });
         setBoardDataState({
           error: error instanceof Error ? error.message : "Unknown API error",
           loading: false,
@@ -279,7 +313,15 @@ export function App() {
           />
         )}
         {screen === "opportunity" && <OpportunityDetailPage opportunity={opportunityDetail} locale={locale} t={t} />}
-        {screen === "integrations" && <IntegrationsSafetyPage integrations={integrationHealth} locale={locale} t={t} />}
+        {screen === "integrations" && (
+          <IntegrationsSafetyPage
+            auditEvidence={safetySignals.auditEvidence}
+            integrations={board.integrations}
+            locale={locale}
+            syncRunPreviews={safetySignals.syncRunPreviews}
+            t={t}
+          />
+        )}
         {screen === "states" && <UiStatesPage locale={locale} t={t} />}
       </main>
     </div>
@@ -1207,7 +1249,17 @@ function TriggerThresholds({ locale }: { locale: Locale }) {
   );
 }
 
-function IntegrationsSafetyPage({ integrations, locale, t }: SharedProps & { integrations: IntegrationHealth[] }) {
+function IntegrationsSafetyPage({
+  auditEvidence,
+  integrations,
+  locale,
+  syncRunPreviews,
+  t
+}: SharedProps & {
+  auditEvidence: EvidenceRow[];
+  integrations: IntegrationHealth[];
+  syncRunPreviews: SyncRunPreview[];
+}) {
   return (
     <section>
       <div className="title-row">
@@ -1321,45 +1373,83 @@ function IntegrationsSafetyPage({ integrations, locale, t }: SharedProps & { int
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td data-label="Run" className="mono">
-                planning-run-042
-              </td>
-              <td data-label={locale === "zh" ? "结果" : "Result"}>{locale === "zh" ? "生成 10 条有证据任务" : "Generated 10 evidence-backed tasks"}</td>
-              <td data-label={locale === "zh" ? "状态" : "Status"}>
-                <span className="status safe">{locale === "zh" ? "成功" : "Succeeded"}</span>
-              </td>
-              <td data-label={locale === "zh" ? "时间" : "Time"} className="mono">
-                13:42
-              </td>
-            </tr>
-            <tr>
-              <td data-label="Run" className="mono">
-                gsc-import-demo
-              </td>
-              <td data-label={locale === "zh" ? "结果" : "Result"}>{locale === "zh" ? "导入 56 行查询/页面指标" : "Loaded 56 query/page metric rows"}</td>
-              <td data-label={locale === "zh" ? "状态" : "Status"}>
-                <span className="status safe">{locale === "zh" ? "成功" : "Succeeded"}</span>
-              </td>
-              <td data-label={locale === "zh" ? "时间" : "Time"} className="mono">
-                13:35
-              </td>
-            </tr>
-            <tr>
-              <td data-label="Run" className="mono">
-                wordpress-page-sync
-              </td>
-              <td data-label={locale === "zh" ? "结果" : "Result"}>{locale === "zh" ? "演示模式，真实凭证未连接" : "Demo mode, real credentials not connected"}</td>
-              <td data-label={locale === "zh" ? "状态" : "Status"}>
-                <span className="status commerce">{t.degraded}</span>
-              </td>
-              <td data-label={locale === "zh" ? "时间" : "Time"} className="mono">
-                13:32
-              </td>
-            </tr>
+            {syncRunPreviews.length > 0 ? (
+              syncRunPreviews.map((run) => (
+                <tr key={run.id}>
+                  <td data-label="Run" className="mono">
+                    {run.id}
+                  </td>
+                  <td data-label={locale === "zh" ? "结果" : "Result"}>
+                    {locale === "zh"
+                      ? `${run.executionMode} / ${run.providerSteps.length} 个步骤 / 外部写入关闭`
+                      : `${run.executionMode} / ${run.providerSteps.length} steps / external writes disabled`}
+                  </td>
+                  <td data-label={locale === "zh" ? "状态" : "Status"}>
+                    <span className={`status ${run.status === "failed" ? "risk" : "commerce"}`}>{run.status}</span>
+                  </td>
+                  <td data-label={locale === "zh" ? "时间" : "Time"} className="mono">
+                    {run.externalWriteAllowed ? "blocked" : "local"}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <>
+                <tr>
+                  <td data-label="Run" className="mono">
+                    planning-run-042
+                  </td>
+                  <td data-label={locale === "zh" ? "结果" : "Result"}>{locale === "zh" ? "生成 10 条有证据任务" : "Generated 10 evidence-backed tasks"}</td>
+                  <td data-label={locale === "zh" ? "状态" : "Status"}>
+                    <span className="status safe">{locale === "zh" ? "成功" : "Succeeded"}</span>
+                  </td>
+                  <td data-label={locale === "zh" ? "时间" : "Time"} className="mono">
+                    13:42
+                  </td>
+                </tr>
+                <tr>
+                  <td data-label="Run" className="mono">
+                    gsc-import-demo
+                  </td>
+                  <td data-label={locale === "zh" ? "结果" : "Result"}>{locale === "zh" ? "导入 56 行查询/页面指标" : "Loaded 56 query/page metric rows"}</td>
+                  <td data-label={locale === "zh" ? "状态" : "Status"}>
+                    <span className="status safe">{locale === "zh" ? "成功" : "Succeeded"}</span>
+                  </td>
+                  <td data-label={locale === "zh" ? "时间" : "Time"} className="mono">
+                    13:35
+                  </td>
+                </tr>
+                <tr>
+                  <td data-label="Run" className="mono">
+                    wordpress-page-sync
+                  </td>
+                  <td data-label={locale === "zh" ? "结果" : "Result"}>{locale === "zh" ? "演示模式，真实凭证未连接" : "Demo mode, real credentials not connected"}</td>
+                  <td data-label={locale === "zh" ? "状态" : "Status"}>
+                    <span className="status commerce">{t.degraded}</span>
+                  </td>
+                  <td data-label={locale === "zh" ? "时间" : "Time"} className="mono">
+                    13:32
+                  </td>
+                </tr>
+              </>
+            )}
           </tbody>
         </table>
       </section>
+      {auditEvidence.length > 0 && (
+        <section className="panel safety-panel">
+          <div className="panel-heading">
+            <h2>{locale === "zh" ? "审计事件" : "Audit events"}</h2>
+          </div>
+          <div className="kv-list">
+            {auditEvidence.slice(0, 4).map((event) => (
+              <div className="kv-row" key={`${event.entity}-${event.metric}`}>
+                <span>{event.metric}</span>
+                <strong>{event.reason}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </section>
   );
 }
@@ -1511,6 +1601,7 @@ function localizeIntegrationSummary(integration: IntegrationHealth, locale: Loca
 
 function localizeIntegrationMode(integration: IntegrationHealth, locale: Locale) {
   if (locale === "zh") return integration.mode;
+  if (integration.mode === "not_connected" || integration.mode.includes("_")) return integration.mode.replace(/_/g, " ");
   if (integration.name === "Google Search Console") return "Demo import";
   if (integration.name === "WooCommerce") return "Read-only";
   return "Draft future";
@@ -1518,6 +1609,7 @@ function localizeIntegrationMode(integration: IntegrationHealth, locale: Locale)
 
 function localizePermission(integration: IntegrationHealth, locale: Locale) {
   if (locale === "zh") return integration.permissionBoundary;
+  if (integration.permissionBoundary.startsWith("Allowed:")) return integration.permissionBoundary;
   if (integration.name === "Google Search Console") return "Read queries, pages, impressions, clicks, and positions";
   if (integration.name === "WooCommerce") return "Read products, categories, and stock attributes; no price or stock writes";
   return "Draft creation is future-gated; publishing, overwrite, and delete are blocked";
@@ -1525,5 +1617,6 @@ function localizePermission(integration: IntegrationHealth, locale: Locale) {
 
 function localizeErrors(integration: IntegrationHealth, locale: Locale) {
   if (locale === "zh") return integration.errors;
+  if (integration.errors !== "无" && !integration.errors.includes("模式")) return integration.errors;
   return integration.errors === "无" ? "None" : "Demo mode, real credentials not connected";
 }

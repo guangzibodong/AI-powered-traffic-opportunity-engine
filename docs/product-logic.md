@@ -146,6 +146,12 @@ Sprint 2 frontend DTO conversion keeps those backend surfaces safe before UI pan
 - Backend `external_write_allowed` flags are inspected but frontend sync previews clamp `externalWriteAllowed` to `false`.
 - Audit logs can be converted into `audit` evidence rows without exposing metadata secrets or execution controls.
 
+Sprint 2 API-backed safety UI wiring consumes those DTOs in the existing Safety surface:
+
+- API board mode reads integration status, sync run tracking, and audit logs alongside tasks and opportunities.
+- The visible Safety page renders `board.integrations` so API-backed integration status can replace static mock rows.
+- Sync and audit signals are preview-only; buttons do not trigger sync execution, credential handshakes, draft creation, publishing, or commerce writes.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.

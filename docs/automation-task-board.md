@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 stable frontend DTO conversion completed; Sprint 2 safe local roadmap is complete. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 API-backed safety panel foundation completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -23,9 +23,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Role | Person/Agent | Current assignment |
 |---|---|---|
 | Product Manager | Main thread | Keep Sprint 1 review actions state-only and draft-safe. |
-| Backend/API Engineer | Main thread | Keep Sprint 2 API contracts stable while frontend DTO conversion is added. |
-| Frontend Product Engineer | Main thread | Add stable API client DTOs and safe adapters for integrations, sync runs, and audit logs. |
-| QA Lead | Main thread | Add contract tests for DTO conversion boundaries, safe status fallback, and no unsafe execution terms. |
+| Backend/API Engineer | Main thread | Keep Sprint 2 read-only safety APIs stable while frontend consumes them. |
+| Frontend Product Engineer | Main thread | Wire API-backed integration, sync run, and audit DTOs into the Safety surface without execution controls. |
+| QA Lead | Main thread | Add contract tests for API-backed safety reads, board integration state, and no unsafe execution terms. |
 | UI Systems Engineer | Banach | Reserved for later Sync run UI. |
 
 ## Task Queue
@@ -55,6 +55,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-AUDIT-009 | 21 | done | Backend/API Engineer / QA Lead | Add audit log foundation. | Integration connect and sync tracking actions record sanitized local audit events, `GET /audit-logs` and detail reads expose them, raw secrets are never stored or returned, and audit logging does not create drafts, publish, or write commerce data. |
 | TASK-S2-DTO-010 | 22 | done | Frontend Product Engineer / QA Lead | Add stable frontend DTO conversion foundation. | API client and view-model adapters expose typed integrations, sync runs, and audit log reads/conversions that clamp unsafe external-write signals, map unknown statuses to safe UI states, and keep Sprint 1 UI behavior stable. |
 | TASK-S2-LIVE-011 | 23 | blocked | Product Manager / Backend/API Engineer | Plan real read-only credential handshake for live WooCommerce, WordPress, and GSC sources. | Blocked on explicit credentials and boundary approval; current sprint rules still forbid real GSC OAuth, WooCommerce writes, WordPress writes, draft creation, and live publishing. |
+| TASK-S2-UI-012 | 24 | done | Frontend Product Engineer / QA Lead | Add API-backed safety panel foundation. | API board loading also reads integration status, sync runs, and audit logs, maps them through safe DTO adapters, updates the visible Safety page from `board.integrations`, and does not add sync execution, credential, draft, publish, or commerce write controls. |
 
 ## Blockers
 
@@ -98,6 +99,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Stable frontend DTO conversion is next because Sprint 2 backend payloads need typed client contracts before the UI starts rendering imported sync and audit panels.
 - Stable frontend DTO conversion is verified by backend tests plus the existing frontend contract, lint, build, and browser smoke gates.
 - The remaining Sprint 2 roadmap step that is not purely local is live read-only credential work, which is blocked until credentials and boundary approval are provided.
+- API-backed safety panel wiring is next because existing safe DTOs should feed the current Safety surface before any live credential work is attempted.
+- API-backed safety panel wiring is verified by backend tests plus the existing frontend contract, lint, build, and browser smoke gates.
 
 ## Completion Rule
 
