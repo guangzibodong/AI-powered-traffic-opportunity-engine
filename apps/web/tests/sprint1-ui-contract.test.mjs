@@ -19,6 +19,9 @@ const app = read("app/App.tsx");
 const data = read("lib/mock-data.ts");
 const styles = read("app/styles.css");
 const taskState = read("lib/task-state.ts");
+const taskQueue = read("components/tasks/TaskQueue.tsx");
+const taskCopy = read("components/tasks/task-copy.ts");
+const statusPill = read("components/tasks/StatusPill.tsx");
 
 const forbiddenVisibleConcepts = [
   "published",
@@ -35,6 +38,8 @@ for (const concept of forbiddenVisibleConcepts) {
   assert(!types.includes(concept), `types.ts still exposes forbidden Sprint 1 concept: ${concept}`);
   assert(!data.includes(concept), `mock-data.ts still exposes forbidden Sprint 1 concept: ${concept}`);
   assert(!taskState.includes(concept), `task-state.ts still exposes forbidden Sprint 1 concept: ${concept}`);
+  assert(!taskQueue.includes(concept), `TaskQueue.tsx still exposes forbidden Sprint 1 concept: ${concept}`);
+  assert(!taskCopy.includes(concept), `task-copy.ts still exposes forbidden Sprint 1 concept: ${concept}`);
 }
 
 for (const required of [
@@ -93,6 +98,9 @@ assert(app.includes("onTaskStatusChange(task.id, \"approved\")"), "Task detail m
 assert(app.includes("onTaskStatusChange(task.id, \"rejected\")"), "Task detail must reject task state");
 assert(app.includes("onTaskStatusChange(task.id, \"snoozed\")"), "Task detail must snooze task state");
 assert(!app.includes("actionLabel.includes"), "Task behavior must not depend on translated action copy");
+assert(taskQueue.includes("onOpenTask"), "TaskQueue must expose a typed open-task callback");
+assert(taskCopy.includes("localizeTaskAction"), "task-copy.ts must own task action copy");
+assert(statusPill.includes("VisibleTaskStatus"), "StatusPill must use the visible Sprint 1 task status type");
 
 assert(styles.includes("--bg: #0f1216"), "styles.css must use the V3 dark operational canvas token");
 assert(styles.includes("@media (max-width: 760px)"), "styles.css must include mobile responsive rules");

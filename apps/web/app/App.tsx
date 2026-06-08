@@ -1,6 +1,9 @@
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
+import { StatusPill } from "../components/tasks/StatusPill";
+import { TaskQueue } from "../components/tasks/TaskQueue";
+import { localizeTaskTitle } from "../components/tasks/task-copy";
 import {
   boardViewModel,
   boundaryCopy,
@@ -24,7 +27,6 @@ import type {
   OpportunityDetailViewModel,
   RelatedEntity,
   ScoreComponent,
-  Task,
   TaskDetailViewModel,
   VisibleTaskStatus
 } from "../lib/types";
@@ -310,7 +312,14 @@ function TrafficOperationsPage({
             </div>
             <span className="status">{board.planningRun.generatedTasks}</span>
           </div>
-          <TaskQueue tasks={board.tasks} locale={locale} setScreen={setScreen} t={t} />
+          <TaskQueue
+            locale={locale}
+            onOpenTask={(task) => {
+              if (task.id === "task_001") setScreen("task");
+            }}
+            t={t}
+            tasks={board.tasks}
+          />
         </section>
         <aside className="side-rail">
           <DataHealthPanel integrations={board.integrations} locale={locale} t={t} />
@@ -363,80 +372,6 @@ function Metric({ label, value }: { label: string; value: number }) {
       <span>{label}</span>
     </div>
   );
-}
-
-function TaskQueue({
-  tasks,
-  locale,
-  setScreen,
-  t
-}: SharedProps & {
-  tasks: Task[];
-  setScreen: (screen: Screen) => void;
-}) {
-  return (
-    <table className="queue-table">
-      <thead>
-        <tr>
-          <th>{locale === "zh" ? "优先级" : "Priority"}</th>
-          <th>{locale === "zh" ? "任务" : "Task"}</th>
-          <th>{locale === "zh" ? "证据" : "Evidence"}</th>
-          <th>{locale === "zh" ? "对象" : "Objects"}</th>
-          <th>{locale === "zh" ? "状态" : "Status"}</th>
-          <th>{locale === "zh" ? "动作" : "Action"}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {tasks.map((task) => (
-          <tr key={task.id}>
-            <td data-label={locale === "zh" ? "优先级" : "Priority"}>
-              <span className={`score ${task.status === "rejected" ? "risk-score" : task.trafscore < 85 ? "mid" : ""}`}>{task.trafscore}</span>
-            </td>
-            <td data-label={locale === "zh" ? "任务" : "Task"}>
-              <span className="row-title">{localizeTaskTitle(task.title, locale)}</span>
-              <span className="task-meta mono">
-                {task.ruleId} / rule v1
-              </span>
-              <div className="tag-row">
-                <span className="pill search">{task.objects.queries} queries</span>
-                {task.objects.products > 0 && <span className="pill commerce">{task.objects.products} SKUs</span>}
-                <span className="pill">{task.objects.pages} pages</span>
-              </div>
-            </td>
-            <td data-label={locale === "zh" ? "证据" : "Evidence"}>
-              <div className="evidence-mini">
-                {task.evidence.slice(0, 3).map((row) => (
-                  <span key={`${task.id}-${row.source}-${row.metric}`}>{localizeEvidence(row, locale)}</span>
-                ))}
-              </div>
-            </td>
-            <td data-label={locale === "zh" ? "对象" : "Objects"}>
-              <span className="mono">
-                Q{task.objects.queries}/P{task.objects.products}/WP{task.objects.pages}
-              </span>
-            </td>
-            <td data-label={locale === "zh" ? "状态" : "Status"}>
-              <StatusPill status={task.status} t={t} />
-            </td>
-            <td data-label={locale === "zh" ? "动作" : "Action"}>
-              <button
-                className={`button ${task.automationLevel === "draft_assist_future" ? "disabled" : ""}`}
-                onClick={() => (task.id === "task_001" ? setScreen("task") : undefined)}
-                type="button"
-              >
-                {localizeAction(task, locale, t)}
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-function StatusPill({ status, t }: { status: VisibleTaskStatus; t: Record<MessageKey, string> }) {
-  const className = status === "rejected" ? "risk" : status === "snoozed" ? "commerce" : "safe";
-  return <span className={`status ${className}`}>{t[status]}</span>;
 }
 
 function DataHealthPanel({ integrations, locale, t }: SharedProps & { integrations: IntegrationHealth[] }) {
@@ -1153,34 +1088,6 @@ function UiStatesPage({ locale }: SharedProps) {
       </section>
     </section>
   );
-}
-
-function localizeTaskTitle(title: string, locale: Locale) {
-  if (locale === "zh") return title;
-  const map: Record<string, string> = {
-    创建露营便携咖啡机集合页: "Create camping portable espresso collection page",
-    刷新充电式便携咖啡机商品页: "Refresh rechargeable portable espresso product page",
-    优化手压咖啡机查询组点击率: "Improve CTR for manual espresso maker query cluster",
-    "创建 100 美元以下手动磨豆机集合页": "Create under-$100 manual grinder collection page"
-  };
-  return map[title] ?? title;
-}
-
-function localizeAction(task: Task, locale: Locale, t: Record<MessageKey, string>) {
-  if (task.automationLevel === "draft_assist_future") return t.draftLater;
-  if (task.status === "rejected") return t.viewReason;
-  if (task.status === "snoozed") return t.inspect;
-  return t.review;
-}
-
-function localizeEvidence(row: EvidenceRow, locale: Locale) {
-  if (locale === "zh") {
-    return `${row.source}：${row.metric}`;
-  }
-  if (row.type === "search") return `GSC: ${localizeMetric(row, locale)}`;
-  if (row.type === "commerce") return "WooCommerce: in-stock products match category and attributes";
-  if (row.type === "page_graph") return "WordPress: no matching collection page";
-  return `${row.source}: ${row.reason}`;
 }
 
 function localizeEvidenceType(type: EvidenceRow["type"], locale: Locale) {
