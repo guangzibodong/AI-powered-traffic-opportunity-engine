@@ -42,7 +42,7 @@ Current loop: Specific Refero/Fal UI convergence.
 
 | Blocker | Status | Notes |
 |---|---|---|
-| GitHub HTTPS push | active | Previous push attempt failed because github.com:443 could not be reached from this environment. Retry after commit with direct HTTPS proxy override. |
+| GitHub HTTPS push | resolved | Latest branch push succeeded with direct HTTPS proxy override. |
 
 ## Agent Findings
 
