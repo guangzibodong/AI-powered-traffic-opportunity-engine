@@ -125,11 +125,12 @@ Completed capabilities in the current Sprint 1 slice:
 - API-unavailable fallback feedback now exposes explicit `Retry sync` and `Keep local` controls, so the user can either re-attempt the demo API mutation or intentionally keep the local review state.
 - Automated browser smoke coverage is available through `pnpm --filter @trafscope/web run test:api-actions`; it launches isolated local API/web ports and verifies API success, API fallback, retry sync, keep-local confirmation, unsafe status rejection, and board/detail consistency.
 
-Sprint 2 capabilities now in progress:
+Sprint 2 capabilities completed so far:
 
 1. CSV GSC import foundation: `POST /api/stores/{store_id}/queries/import-csv`.
 2. Imported query list/detail reads: `GET /queries` and `GET /queries/{query_id}`.
 3. In-memory idempotent imported rows per store and date window, with no live OAuth.
+4. Lightweight imported query clustering: `GET /api/stores/{store_id}/query-clusters` groups related imported rows into deterministic demand clusters with totals, CTR, weighted position, row ids, and top pages.
 
 Current product/engineering ownership:
 
@@ -270,6 +271,7 @@ Prove TrafScope can turn demo store data and GSC-like signals into trustworthy t
 Connect the decisioning loop to real WooCommerce and WordPress data.
 
 - CSV GSC export import foundation for query/page metrics.
+- Deterministic lightweight query clustering over imported GSC rows.
 - WooCommerce read-only product sync.
 - WordPress read-only page/post sync.
 - Integration status and sync run tracking.

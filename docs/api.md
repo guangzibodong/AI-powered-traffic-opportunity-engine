@@ -55,6 +55,33 @@ Responses:
 
 Imported rows are in-memory, scoped per store, and idempotent by store, window, query, and page. This is an import/read flow only; it does not connect real GSC OAuth.
 
+### Imported query cluster contract
+
+`GET /api/stores/:storeId/query-clusters` returns lightweight deterministic clusters generated from imported GSC CSV rows:
+
+```json
+{
+  "mode": "csv_import",
+  "store_id": "store-demo-outdoor-coffee",
+  "query_clusters": [
+    {
+      "cluster_key": "camping-espresso-maker-portable",
+      "primary_query": "portable espresso maker camping",
+      "query_count": 2,
+      "queries": ["camping portable espresso machine", "portable espresso maker camping"],
+      "row_ids": ["gsc_abc123def456", "gsc_def456abc123"],
+      "clicks": 42,
+      "impressions": 2000,
+      "ctr": 0.021,
+      "position": 4.96,
+      "top_pages": ["https://example.com/camping-espresso"]
+    }
+  ]
+}
+```
+
+The service uses local token overlap only. It does not call embeddings, LLMs, GSC OAuth, WooCommerce, or WordPress. CTR is calculated from total clicks divided by total impressions, and `position` is impression-weighted.
+
 ## Opportunities
 
 - `GET /api/stores/:storeId/opportunities`

@@ -17,6 +17,21 @@ _required_columns = {
     "position": "position",
 }
 
+_cluster_stopwords = {
+    "a",
+    "an",
+    "and",
+    "best",
+    "buy",
+    "for",
+    "near",
+    "of",
+    "on",
+    "the",
+    "to",
+    "with",
+}
+
 
 class GSCIngestionService:
     def __init__(self, gsc_client: GSCClient) -> None:
@@ -74,6 +89,36 @@ def get_imported_gsc_row(store_id: str, query_id: str) -> dict[str, Any] | None:
     return _imported_gsc_rows_by_store.get(store_id, {}).get(query_id)
 
 
+def list_imported_query_clusters(store_id: str) -> list[dict[str, Any]]:
+    clusters: list[dict[str, Any]] = []
+
+    for row in list_imported_gsc_rows(store_id):
+        tokens = _query_cluster_tokens(row["query"])
+        matched_cluster = _find_matching_cluster(clusters, tokens)
+        if matched_cluster is None:
+            matched_cluster = {
+                "clicks": 0,
+                "cluster_key": "-".join(tokens),
+                "ctr": 0.0,
+                "impressions": 0,
+                "position": 0.0,
+                "primary_query": row["query"],
+                "query_count": 0,
+                "queries": [],
+                "row_ids": [],
+                "top_pages": [],
+                "_page_impressions": {},
+                "_position_weighted_sum": 0.0,
+                "_primary_query_impressions": 0,
+                "_tokens": tokens,
+            }
+            clusters.append(matched_cluster)
+
+        _add_row_to_cluster(matched_cluster, row)
+
+    return [_finalize_cluster(cluster) for cluster in sorted(clusters, key=_cluster_sort_key)]
+
+
 def _normalize_fieldnames(fieldnames: list[str]) -> dict[str, str]:
     normalized: dict[str, str] = {}
     for fieldname in fieldnames:
@@ -85,6 +130,66 @@ def _normalize_fieldnames(fieldnames: list[str]) -> dict[str, str]:
 
 def _normalize_column_name(value: str) -> str:
     return value.strip().lower().replace(" ", "_").replace("-", "_")
+
+
+def _query_cluster_tokens(query: str) -> tuple[str, ...]:
+    tokens = [
+        token
+        for token in "".join(character if character.isalnum() else " " for character in query.casefold()).split()
+        if len(token) > 1 and token not in _cluster_stopwords
+    ]
+    return tuple(sorted(dict.fromkeys(tokens)))
+
+
+def _find_matching_cluster(clusters: list[dict[str, Any]], tokens: tuple[str, ...]) -> dict[str, Any] | None:
+    token_set = set(tokens)
+    if not token_set:
+        return None
+
+    for cluster in clusters:
+        cluster_token_set = set(cluster["_tokens"])
+        overlap = token_set.intersection(cluster_token_set)
+        if len(overlap) >= 2:
+            return cluster
+
+    return None
+
+
+def _add_row_to_cluster(cluster: dict[str, Any], row: dict[str, Any]) -> None:
+    cluster["clicks"] += row["clicks"]
+    cluster["impressions"] += row["impressions"]
+    cluster["query_count"] += 1
+    cluster["queries"].append(row["query"])
+    cluster["row_ids"].append(row["id"])
+    cluster["_position_weighted_sum"] += row["position"] * row["impressions"]
+    cluster["_page_impressions"][row["page"]] = cluster["_page_impressions"].get(row["page"], 0) + row["impressions"]
+
+    if row["impressions"] > cluster["_primary_query_impressions"]:
+        cluster["primary_query"] = row["query"]
+        cluster["_primary_query_impressions"] = row["impressions"]
+
+
+def _finalize_cluster(cluster: dict[str, Any]) -> dict[str, Any]:
+    impressions = cluster["impressions"]
+    page_impressions = cluster["_page_impressions"]
+    top_pages = sorted(page_impressions, key=lambda page: (-page_impressions[page], page))[:3]
+
+    return {
+        "clicks": cluster["clicks"],
+        "cluster_key": cluster["cluster_key"],
+        "ctr": round(cluster["clicks"] / impressions, 4) if impressions else 0.0,
+        "impressions": impressions,
+        "position": round(cluster["_position_weighted_sum"] / impressions, 2) if impressions else 0.0,
+        "primary_query": cluster["primary_query"],
+        "query_count": cluster["query_count"],
+        "queries": sorted(cluster["queries"]),
+        "row_ids": sorted(cluster["row_ids"]),
+        "top_pages": top_pages,
+    }
+
+
+def _cluster_sort_key(cluster: dict[str, Any]) -> tuple[int, int, str]:
+    return (-cluster["impressions"], -cluster["clicks"], cluster["primary_query"])
 
 
 def _normalize_csv_row(

@@ -20,6 +20,10 @@ Move the V3 UI from static mock data toward API-backed demo planning without tou
 | `POST /api/stores/{store_id}/tasks/{task_id}/approve` | Convenience route for approving a demo task. | Same in-memory status override. |
 | `POST /api/stores/{store_id}/tasks/{task_id}/reject` | Convenience route for rejecting a demo task. | Same in-memory status override. |
 | `POST /api/stores/{store_id}/tasks/{task_id}/snooze` | Convenience route for snoozing a demo task. | Same in-memory status override. |
+| `POST /api/stores/{store_id}/queries/import-csv` | Imports GSC-like CSV rows for Sprint 2 query metrics. | In-memory per store and window; no real GSC OAuth. |
+| `GET /api/stores/{store_id}/queries` | Lists imported query/page rows. | Imported CSV rows sorted by impressions and clicks. |
+| `GET /api/stores/{store_id}/queries/{query_id}` | Returns one imported query/page row. | Same imported CSV store. |
+| `GET /api/stores/{store_id}/query-clusters` | Returns deterministic lightweight clusters over imported rows. | Local token-overlap grouping with aggregate metrics. |
 
 The planning endpoints are read-only demo planning endpoints. The task status endpoints only change Sprint 1 review state in memory. They do not connect to real external services, create WordPress drafts, or publish content.
 
@@ -37,6 +41,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | Error/loading UX | Done | Task Detail shows pending, synced, local, and API-unavailable fallback feedback. API-unavailable fallback includes explicit `Retry sync` and `Keep local` controls. |
 | Browser mutation smoke | Done | `pnpm --filter @trafscope/web run test:api-actions` launches isolated API/web ports in a real browser and covers success, fallback, retry, keep-local, unsafe status rejection, and board/detail consistency. |
 | CSV GSC import foundation | Done | `POST /queries/import-csv` imports GSC-like CSV exports into in-memory per-store query rows, with list/detail read APIs. No real GSC OAuth is connected. |
+| Imported query clustering | Done | `GET /query-clusters` groups imported rows into deterministic demand clusters with primary query, source row ids, totals, CTR, weighted position, and top pages. |
 
 ## Local Smoke Run
 
@@ -105,6 +110,7 @@ Expected behavior:
 - API mutation fallback controls must remain state-only: `Retry sync` re-attempts `PATCH`, and `Keep local` confirms the local demo review state.
 - Local browser smoke may set `CORS_ORIGINS` for isolated test ports; production/live integrations remain outside Sprint 1.
 - CSV GSC import is allowed as a read/import fixture path; real GSC OAuth, WooCommerce writes, WordPress writes, credentials, and publishing actions remain outside this adapter slice.
+- Imported query clustering must stay deterministic and local in Sprint 2; no embeddings, LLM calls, or external service calls are required to form clusters.
 
 ## Remaining API-backed Task Action UX
 

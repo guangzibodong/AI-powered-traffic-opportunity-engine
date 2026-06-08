@@ -14,6 +14,13 @@ portable espresso maker camping,https://example.com/camping-espresso,24,1200,2.0
 manual coffee grinder camping,https://example.com/manual-grinders,8,640,1.25%,9.4
 """
 
+CLUSTER_GSC_CSV = """Query,Page,Clicks,Impressions,CTR,Position
+portable espresso maker camping,https://example.com/camping-espresso,24,1200,2.0%,4.8
+camping portable espresso machine,https://example.com/camping-espresso,18,800,2.25%,5.2
+manual coffee grinder camping,https://example.com/manual-grinders,8,640,1.25%,9.4
+camping manual burr grinder,https://example.com/manual-grinders,7,360,1.94%,10.1
+"""
+
 
 class GscCsvImportServiceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -61,6 +68,23 @@ class GscCsvImportServiceTests(unittest.TestCase):
             import_gsc_csv("store-demo-outdoor-coffee", "Query,Clicks\nportable espresso,2\n")
 
         self.assertIn("Missing required GSC CSV columns", str(context.exception))
+
+    def test_query_clusters_group_imported_rows_by_lightweight_intent(self):
+        from app.services.gsc_ingestion_service import import_gsc_csv, list_imported_query_clusters
+
+        import_gsc_csv("store-demo-outdoor-coffee", CLUSTER_GSC_CSV, window="28d")
+        clusters = list_imported_query_clusters("store-demo-outdoor-coffee")
+
+        self.assertEqual(len(clusters), 2)
+        self.assertEqual(clusters[0]["primary_query"], "portable espresso maker camping")
+        self.assertEqual(clusters[0]["query_count"], 2)
+        self.assertEqual(clusters[0]["impressions"], 2000)
+        self.assertEqual(clusters[0]["clicks"], 42)
+        self.assertAlmostEqual(clusters[0]["ctr"], 0.021)
+        self.assertAlmostEqual(clusters[0]["position"], 4.96)
+        self.assertEqual(clusters[0]["top_pages"], ["https://example.com/camping-espresso"])
+        self.assertTrue(all(row_id.startswith("gsc_") for row_id in clusters[0]["row_ids"]))
+        self.assertEqual(clusters[1]["primary_query"], "manual coffee grinder camping")
 
 
 @unittest.skipIf(TestClient is None, "FastAPI is not installed in this local test runtime")
@@ -113,6 +137,26 @@ class GscCsvImportApiTests(unittest.TestCase):
         response = self.client.get("/api/stores/store-demo-outdoor-coffee/queries/missing-query")
 
         self.assertEqual(response.status_code, 404)
+
+    def test_query_clusters_endpoint_returns_imported_clusters(self):
+        self.client.post(
+            "/api/stores/store-demo-outdoor-coffee/queries/import-csv",
+            json={"csv_text": CLUSTER_GSC_CSV, "window": "28d"},
+        )
+
+        response = self.client.get("/api/stores/store-demo-outdoor-coffee/query-clusters")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["mode"], "csv_import")
+        self.assertEqual(len(payload["query_clusters"]), 2)
+        self.assertEqual(payload["query_clusters"][0]["primary_query"], "portable espresso maker camping")
+
+    def test_query_clusters_endpoint_returns_empty_array_without_imported_rows(self):
+        response = self.client.get("/api/stores/store-demo-outdoor-coffee/query-clusters")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["query_clusters"], [])
 
 
 if __name__ == "__main__":

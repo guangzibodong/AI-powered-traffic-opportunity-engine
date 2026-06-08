@@ -4,6 +4,7 @@ from app.services.gsc_ingestion_service import (
     get_imported_gsc_row,
     import_gsc_csv,
     list_imported_gsc_rows,
+    list_imported_query_clusters,
 )
 
 
@@ -43,4 +44,8 @@ async def get_query(store_id: str, query_id: str) -> dict:
 
 @router.get("/{store_id}/query-clusters")
 async def list_query_clusters(store_id: str) -> dict:
-    return {"store_id": store_id, "query_clusters": []}
+    return {
+        "mode": "csv_import",
+        "store_id": store_id,
+        "query_clusters": list_imported_query_clusters(store_id),
+    }

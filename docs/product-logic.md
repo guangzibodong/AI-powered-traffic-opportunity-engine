@@ -67,6 +67,16 @@ The graph builder converts raw store/search data into relationships the rule eng
 
 The graph is the bridge between data and action. TrafScope should never generate a task from a naked keyword without related evidence.
 
+Sprint 2 imported CSV rows use a lightweight deterministic clustering path before richer graph matching exists:
+
+- Normalize each query into lowercase alphanumeric tokens.
+- Remove generic modifiers such as `best`, `buy`, `for`, and `with`.
+- Group rows when two or more meaningful tokens overlap with an existing cluster.
+- Pick the primary query by highest impressions.
+- Aggregate clicks, impressions, CTR, impression-weighted average position, source row ids, and top pages.
+
+This keeps imported demand grouping local and explainable. It does not use embeddings, LLM calls, OAuth, WooCommerce writes, or WordPress writes.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.
