@@ -119,6 +119,13 @@ def list_imported_query_clusters(store_id: str) -> list[dict[str, Any]]:
     return [_finalize_cluster(cluster) for cluster in sorted(clusters, key=_cluster_sort_key)]
 
 
+def get_imported_query_cluster(store_id: str, cluster_key: str) -> dict[str, Any] | None:
+    for cluster in list_imported_query_clusters(store_id):
+        if cluster["cluster_key"] == cluster_key:
+            return cluster
+    return None
+
+
 def _normalize_fieldnames(fieldnames: list[str]) -> dict[str, str]:
     normalized: dict[str, str] = {}
     for fieldname in fieldnames:

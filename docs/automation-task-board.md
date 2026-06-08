@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported opportunity detail read client completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported query cluster detail read API completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -62,6 +62,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-IMPORT-016 | 28 | done | Frontend Product Engineer / QA Lead | Add imported task detail read client foundation. | Frontend API client exposes a typed read-only `GET /imported-tasks/{task_id}` helper, encodes store/task path segments, keeps imported task detail previews `recommend_only`, and adds no review mutation, credential, sync execution, draft, publish, or commerce write controls. |
 | TASK-S2-OPP-017 | 29 | done | Backend/API Engineer / QA Lead | Add imported opportunity detail read API. | API exposes read-only `GET /imported-opportunities/{opportunity_id}` with deterministic generated previews and 404 for unknown ids, without task creation, review mutation, draft, publish, credential, sync execution, or commerce write controls. |
 | TASK-S2-OPP-018 | 30 | done | Frontend Product Engineer / QA Lead | Add imported opportunity detail read client foundation. | Frontend API client exposes a typed read-only `GET /imported-opportunities/{opportunity_id}` helper, encodes store/opportunity path segments, maps one imported opportunity preview through the safe opportunity adapter, and adds no review mutation, task creation, draft, publish, credential, sync execution, or commerce write controls. |
+| TASK-S2-GSC-019 | 31 | done | Backend/API Engineer / QA Lead | Add imported query cluster detail read API. | API exposes read-only `GET /query-clusters/{cluster_key}` with deterministic imported GSC cluster payloads and 404 for unknown keys, without embeddings, real GSC OAuth, sync execution, task creation, draft, publish, credential, or external write controls. |
 
 ## Blockers
 
@@ -119,6 +120,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported opportunity detail read API is verified by service/API red-green coverage, backend tests, frontend contract, lint, build, browser smoke, diff check, and secret scan.
 - Imported opportunity detail read client is next because the backend now exposes one imported opportunity preview, but the frontend contract only covers imported opportunity lists.
 - Imported opportunity detail read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported query cluster detail read API is next because imported query clusters can be listed but not read individually for future preview-only demand-cluster detail surfaces.
+- Imported query cluster detail read API is verified by service/API red-green coverage, backend tests, frontend contract, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 

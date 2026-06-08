@@ -86,6 +86,22 @@ class GscCsvImportServiceTests(unittest.TestCase):
         self.assertTrue(all(row_id.startswith("gsc_") for row_id in clusters[0]["row_ids"]))
         self.assertEqual(clusters[1]["primary_query"], "manual coffee grinder camping")
 
+    def test_query_cluster_detail_returns_one_cluster_or_none(self):
+        from app.services.gsc_ingestion_service import (
+            get_imported_query_cluster,
+            import_gsc_csv,
+            list_imported_query_clusters,
+        )
+
+        import_gsc_csv("store-demo-outdoor-coffee", CLUSTER_GSC_CSV, window="28d")
+        cluster = list_imported_query_clusters("store-demo-outdoor-coffee")[0]
+
+        self.assertEqual(
+            get_imported_query_cluster("store-demo-outdoor-coffee", cluster["cluster_key"])["cluster_key"],
+            cluster["cluster_key"],
+        )
+        self.assertIsNone(get_imported_query_cluster("store-demo-outdoor-coffee", "missing-cluster"))
+
 
 @unittest.skipIf(TestClient is None, "FastAPI is not installed in this local test runtime")
 class GscCsvImportApiTests(unittest.TestCase):
@@ -151,6 +167,22 @@ class GscCsvImportApiTests(unittest.TestCase):
         self.assertEqual(payload["mode"], "csv_import")
         self.assertEqual(len(payload["query_clusters"]), 2)
         self.assertEqual(payload["query_clusters"][0]["primary_query"], "portable espresso maker camping")
+
+    def test_query_cluster_detail_endpoint_returns_cluster_and_404(self):
+        self.client.post(
+            "/api/stores/store-demo-outdoor-coffee/queries/import-csv",
+            json={"csv_text": CLUSTER_GSC_CSV, "window": "28d"},
+        )
+        list_response = self.client.get("/api/stores/store-demo-outdoor-coffee/query-clusters")
+        cluster_key = list_response.json()["query_clusters"][0]["cluster_key"]
+
+        detail_response = self.client.get(f"/api/stores/store-demo-outdoor-coffee/query-clusters/{cluster_key}")
+        missing_response = self.client.get("/api/stores/store-demo-outdoor-coffee/query-clusters/missing-cluster")
+
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertEqual(detail_response.json()["mode"], "csv_import")
+        self.assertEqual(detail_response.json()["query_cluster"]["cluster_key"], cluster_key)
+        self.assertEqual(missing_response.status_code, 404)
 
     def test_query_clusters_endpoint_returns_empty_array_without_imported_rows(self):
         response = self.client.get("/api/stores/store-demo-outdoor-coffee/query-clusters")

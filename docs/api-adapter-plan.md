@@ -24,6 +24,7 @@ Move the V3 UI from static mock data toward API-backed demo planning without tou
 | `GET /api/stores/{store_id}/queries` | Lists imported query/page rows. | Imported CSV rows sorted by impressions and clicks. |
 | `GET /api/stores/{store_id}/queries/{query_id}` | Returns one imported query/page row. | Same imported CSV store. |
 | `GET /api/stores/{store_id}/query-clusters` | Returns deterministic lightweight clusters over imported rows. | Local token-overlap grouping with aggregate metrics. |
+| `GET /api/stores/{store_id}/query-clusters/{cluster_key}` | Returns one imported query cluster. | Same deterministic local cluster generation. |
 | `POST /api/stores/{store_id}/products/import-woocommerce` | Imports WooCommerce-like product fixture rows. | In-memory per store; no WooCommerce write calls. |
 | `GET /api/stores/{store_id}/products` | Lists imported product rows. | Imported WooCommerce fixture rows, in-stock products first. |
 | `GET /api/stores/{store_id}/products/{product_id}` | Returns one imported product row. | Same imported product store. |

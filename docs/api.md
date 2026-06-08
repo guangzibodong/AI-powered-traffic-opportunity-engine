@@ -116,6 +116,7 @@ This is a read/import flow only. It does not create WordPress drafts, overwrite 
 - `GET /api/stores/:storeId/queries/:queryId`
 - `POST /api/stores/:storeId/queries/import-csv`
 - `GET /api/stores/:storeId/query-clusters`
+- `GET /api/stores/:storeId/query-clusters/:clusterKey`
 
 ### CSV GSC import contract
 
@@ -170,6 +171,8 @@ Imported rows are in-memory, scoped per store, and idempotent by store, window, 
 ```
 
 The service uses local token overlap only. It does not call embeddings, LLMs, GSC OAuth, WooCommerce, or WordPress. CTR is calculated from total clicks divided by total impressions, and `position` is impression-weighted.
+
+`GET /api/stores/:storeId/query-clusters/:clusterKey` returns one cluster as `{ "mode": "csv_import", "store_id": "...", "query_cluster": { ... } }`, or `404` when the cluster key is unknown.
 
 ## Imported Graph
 

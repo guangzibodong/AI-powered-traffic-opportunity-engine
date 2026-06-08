@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.services.gsc_ingestion_service import (
     get_imported_gsc_row,
+    get_imported_query_cluster,
     import_gsc_csv,
     list_imported_gsc_rows,
     list_imported_query_clusters,
@@ -49,3 +50,11 @@ async def list_query_clusters(store_id: str) -> dict:
         "store_id": store_id,
         "query_clusters": list_imported_query_clusters(store_id),
     }
+
+
+@router.get("/{store_id}/query-clusters/{cluster_key}")
+async def get_query_cluster(store_id: str, cluster_key: str) -> dict:
+    cluster = get_imported_query_cluster(store_id, cluster_key)
+    if cluster is None:
+        raise HTTPException(status_code=404, detail="Query cluster not found")
+    return {"mode": "csv_import", "store_id": store_id, "query_cluster": cluster}
