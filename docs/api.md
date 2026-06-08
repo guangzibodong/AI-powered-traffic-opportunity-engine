@@ -339,3 +339,21 @@ The demo status override is reflected by both `GET /api/stores/:storeId/tasks/:t
 - `GET /api/stores/:storeId/performance`
 - `GET /api/stores/:storeId/assets/:assetId/performance`
 - `POST /api/stores/:storeId/performance/refresh`
+
+## Audit Logs
+
+- `GET /api/stores/:storeId/audit-logs`
+- `GET /api/stores/:storeId/audit-logs/:auditLogId`
+
+### Audit log contract
+
+Sprint 2 audit logs are local safety records for system events:
+
+- Integration stub connect actions record `integration.connected_stub`.
+- Sync queue tracking actions record `sync.queued`.
+- `GET /api/stores/:storeId/audit-logs` returns newest-first entries with `mode: "audit_logs"`.
+- Detail reads return one audit entry or `404`.
+- Entries include `safety_scope: "local_tracking_only"` and `external_write_allowed: false`.
+- Sensitive metadata fields such as passwords, tokens, secrets, and API keys are redacted before storage.
+
+Audit logging does not create WordPress drafts, publish content, write WooCommerce data, run real GSC OAuth, or execute external sync jobs.

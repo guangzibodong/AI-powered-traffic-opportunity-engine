@@ -1,6 +1,8 @@
 import hashlib
 from typing import Any
 
+from app.services.audit_log_service import record_audit_log
+
 
 _integration_state_by_store: dict[str, dict[str, dict[str, Any]]] = {}
 _sync_runs_by_store: dict[str, list[dict[str, Any]]] = {}
@@ -55,7 +57,21 @@ def record_integration_connection(store_id: str, provider: str, payload: dict[st
         "connection_mode": spec["connection_mode"],
         "status": "connected_stub",
     }
-    return _integration_payload(store_id, provider)
+    integration = _integration_payload(store_id, provider)
+    record_audit_log(
+        store_id,
+        action="integration.connected_stub",
+        actor=_actor_from_payload(payload),
+        target_id=provider,
+        target_type="integration",
+        metadata={
+            "connection_mode": integration["connection_mode"],
+            "external_write_allowed": integration["external_write_allowed"],
+            "provider": provider,
+            "safe_operations": integration["safe_operations"],
+        },
+    )
+    return integration
 
 
 def enqueue_sync_run(store_id: str, requested_by: str = "manual") -> dict[str, Any]:
@@ -81,6 +97,18 @@ def enqueue_sync_run(store_id: str, requested_by: str = "manual") -> dict[str, A
     }
     runs.append(run)
     _mark_last_sync_run(store_id, run_id)
+    record_audit_log(
+        store_id,
+        action="sync.queued",
+        actor=run["requested_by"],
+        target_id=run_id,
+        target_type="sync_run",
+        metadata={
+            "blocked_capabilities": run["blocked_capabilities"],
+            "execution_mode": run["execution_mode"],
+            "steps": [step["provider"] for step in steps],
+        },
+    )
     return run
 
 
@@ -155,6 +183,13 @@ def _mark_last_sync_run(store_id: str, sync_run_id: str) -> None:
 def _require_provider(provider: str) -> None:
     if provider not in _provider_specs:
         raise ValueError(f"Unsupported integration provider: {provider}")
+
+
+def _actor_from_payload(payload: dict[str, Any] | None) -> str:
+    if not isinstance(payload, dict):
+        return "system"
+    actor = payload.get("actor") or payload.get("requested_by") or "system"
+    return actor if isinstance(actor, str) and actor.strip() else "system"
 
 
 def _build_id(prefix: str, *parts: str) -> str:

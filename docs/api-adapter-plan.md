@@ -36,6 +36,8 @@ Move the V3 UI from static mock data toward API-backed demo planning without tou
 | `GET /api/stores/{store_id}/imported-tasks/{task_id}` | Returns one imported task preview. | Same recommend-only preview generated from imported data. |
 | `GET /api/stores/{store_id}/sync-runs` | Lists local sync run tracking records. | Queued tracking-only records; no external job execution. |
 | `GET /api/stores/{store_id}/sync-runs/{sync_run_id}` | Returns one local sync run tracking record. | 404 for unknown runs; no external calls. |
+| `GET /api/stores/{store_id}/audit-logs` | Lists sanitized local audit events. | Newest-first event trail for safe local actions; no secrets or external writes. |
+| `GET /api/stores/{store_id}/audit-logs/{audit_log_id}` | Returns one sanitized audit event. | 404 for unknown logs; read-only. |
 
 The planning endpoints are read-only demo planning endpoints. The task status endpoints only change Sprint 1 review state in memory. They do not connect to real external services, create WordPress drafts, or publish content.
 
@@ -60,6 +62,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | Imported opportunity preview foundation | Done | `GET /imported-opportunities` produces deterministic read-only CTR refresh and collection page gap previews from the imported graph. |
 | Imported task preview foundation | Done | `GET /imported-tasks` converts imported opportunity previews into recommend-only action plans with evidence, acceptance criteria, safe `new` status, and no review, draft, or write path. |
 | Integration status and sync run tracking foundation | Done | Stub connect endpoints record local `connected_stub` state, `/sync` creates queued tracking-only runs, and sync run list/detail reads expose safe local status without real external execution. |
+| Audit log foundation | Done | Integration stub connects and sync queue tracking write sanitized local audit events, with audit list/detail reads and no secret storage, publishing, drafts, commerce writes, or external execution. |
 
 ## Local Smoke Run
 
@@ -135,6 +138,7 @@ Expected behavior:
 - Imported opportunity previews must not create tasks, assets, WordPress drafts, sync jobs, or external writes.
 - Imported task previews must stay recommend-only and read-only; no approve/reject/snooze routes, task persistence, asset generation, WordPress draft creation, publishing, WooCommerce writes, or external calls are allowed.
 - Integration status and sync run tracking must not store raw secrets, perform real OAuth, execute external sync jobs, create WordPress drafts, publish content, or write WooCommerce data.
+- Audit logs must redact sensitive metadata and stay read-only; logging must not become an execution, draft, publishing, OAuth, or commerce write path.
 
 ## Remaining API-backed Task Action UX
 

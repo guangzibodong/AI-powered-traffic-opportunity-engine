@@ -130,6 +130,14 @@ Sprint 2 integration status and sync run tracking makes the imported-data loop o
 - Sync run steps keep `external_write_allowed: false` and zero record counts until a later read-only worker actually fills them.
 - No real GSC OAuth, WooCommerce write, WordPress draft, WordPress publish, or external job execution is triggered by this foundation.
 
+Sprint 2 audit logs create a safe event trail for those local actions:
+
+- Integration stub connections write `integration.connected_stub` audit entries.
+- Sync run queue records write `sync.queued` audit entries.
+- Audit metadata is sanitized before storage so passwords, tokens, secrets, and API keys are redacted.
+- Audit entries are read-only and carry `safety_scope: local_tracking_only`.
+- Audit logging records what happened, but it does not create drafts, publish content, write commerce data, or execute external jobs.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.
@@ -255,7 +263,7 @@ AI must not invent:
 | WordPress | Draft-only writes in later sprint. No live publish path. |
 | Sync tracking | Sprint 2 sync runs are local tracking records only until real read-only workers and audit state are added. |
 | Credentials | Never show raw credentials, stack traces, or keys in UI. |
-| Audit | Every future write action should create an audit log. |
+| Audit | Current audit logs are sanitized local records; every future write action should create an audit log before execution expands. |
 
 ## Service Map
 
