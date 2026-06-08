@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: trafscope-postgres
+    environment:
+      POSTGRES_DB: trafscope
+      POSTGRES_USER: trafscope
+      POSTGRES_PASSWORD: trafscope
+    ports:
+      - "5432:5432"
+    volumes:
+      - trafscope_postgres:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+
+  redis:
+    image: redis:7-alpine
+    container_name: trafscope-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  trafscope_postgres:
+
