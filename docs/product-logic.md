@@ -87,6 +87,16 @@ Sprint 2 WooCommerce product imports use the same local-first pattern:
 
 This is still a read/import foundation. It does not create, update, delete, price-edit, inventory-edit, or publish WooCommerce data.
 
+Sprint 2 WordPress page imports complete the initial product-page-search substrate:
+
+- Accept WordPress-like page and post rows from fixture/import payloads or a read-only client.
+- Normalize external id, URL, title, slug, status, page type, excerpt, SEO metadata, indexability, and content hash.
+- Store rows idempotently by `store_id + external_id`.
+- Sort readable page lists with indexable published pages first.
+- Preserve page URL and SEO evidence for later page-match, gap, and refresh rules.
+
+This remains read-only. It does not create drafts, overwrite pages, publish content, or call WordPress write operations.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.

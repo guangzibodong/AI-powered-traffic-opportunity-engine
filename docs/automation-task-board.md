@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 WooCommerce read-only product import foundation. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 WordPress read-only page import foundation. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -23,9 +23,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Role | Person/Agent | Current assignment |
 |---|---|---|
 | Product Manager | Main thread | Keep Sprint 1 review actions state-only and draft-safe. |
-| Backend/API Engineer | Main thread | Add deterministic read-only WooCommerce product import and read APIs. |
+| Backend/API Engineer | Main thread | Add deterministic read-only WordPress page import and read APIs. |
 | Frontend Product Engineer | Main thread | No UI import panel in this slice; keep existing Sprint 1 UI stable. |
-| QA Lead | Main thread | Add service and API tests for WooCommerce product normalization, idempotency, read APIs, and no write calls. |
+| QA Lead | Main thread | Add service and API tests for WordPress page normalization, idempotency, read APIs, and no draft/live publish calls. |
 | UI Systems Engineer | Banach | Reserved for later Sync run UI. |
 
 ## Task Queue
@@ -47,6 +47,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-GSC-001 | 13 | done | Backend/API Engineer / QA Lead | Add CSV GSC import foundation. | API accepts GSC CSV text, normalizes query/page/clicks/impressions/CTR/position rows, stores them in-memory per store, exposes list/detail reads, rejects invalid rows safely, and preserves Sprint 1 no-live-integration boundaries. |
 | TASK-S2-GSC-002 | 14 | done | Backend/API Engineer / QA Lead | Add lightweight query clustering for imported GSC rows. | `GET /query-clusters` groups imported query rows into deterministic clusters with primary query, row ids, totals, weighted CTR, average position, and top pages without using embeddings or external services. |
 | TASK-S2-WC-003 | 15 | done | Backend/API Engineer / QA Lead | Add WooCommerce read-only product import foundation. | API accepts WooCommerce-like product fixture payloads, normalizes product fields, stores them in-memory per store, exposes list/detail reads, syncs through read-only client calls, rejects or skips invalid rows safely, and has no WooCommerce write path. |
+| TASK-S2-WP-004 | 16 | done | Backend/API Engineer / QA Lead | Add WordPress read-only page import foundation. | API accepts WordPress-like page/post fixture payloads, normalizes page fields, stores them in-memory per store, exposes list/detail reads, syncs through read-only `list_pages` calls, and does not create drafts or publish content. |
 
 ## Blockers
 
@@ -74,6 +75,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Lightweight query clustering is verified by service and API tests, plus the existing full backend, frontend contract, lint, build, and browser smoke gates.
 - WooCommerce product import is next because query clusters need store-owned product entities before query-product matching can graduate from demo fixtures.
 - WooCommerce product import is verified by service/API/client-safety tests, plus the existing full backend, frontend contract, lint, build, and browser smoke gates.
+- WordPress page import is next because imported GSC rows need existing page entities before page gap and refresh rules can graduate from demo fixtures.
+- WordPress page import is verified by service/API/read-only sync tests, plus the existing full backend, frontend contract, lint, build, and browser smoke gates.
 
 ## Completion Rule
 

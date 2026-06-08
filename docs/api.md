@@ -55,6 +55,46 @@ Imported products are in-memory, scoped per store, and idempotent by store and W
 
 This is a read/import flow only. It does not create, update, delete, publish, price-edit, or inventory-edit WooCommerce products.
 
+## Pages
+
+- `GET /api/stores/:storeId/pages`
+- `GET /api/stores/:storeId/pages/:pageId`
+- `POST /api/stores/:storeId/pages/import-wordpress`
+
+### WordPress page import contract
+
+`POST /api/stores/:storeId/pages/import-wordpress` accepts WordPress-like page or post JSON fixtures:
+
+```json
+{
+  "pages": [
+    {
+      "id": 201,
+      "slug": "camping-espresso",
+      "status": "publish",
+      "type": "page",
+      "link": "https://example.com/camping-espresso",
+      "title": { "rendered": "Camping Espresso Collection" },
+      "excerpt": { "rendered": "Portable espresso makers for camp coffee." },
+      "yoast_head_json": {
+        "title": "Camping Espresso Makers",
+        "description": "Compare portable espresso makers for camping.",
+        "robots": { "index": "index" }
+      }
+    }
+  ]
+}
+```
+
+Responses:
+
+- `200` returns `{ "mode": "wordpress_import", "summary": { ... } }`.
+- `400` is returned when `pages` is missing or is not an array.
+
+Imported pages are in-memory, scoped per store, and idempotent by store and WordPress external id. The read endpoints return normalized fields such as `external_id`, `url`, `title`, `slug`, `status`, `page_type`, `indexable`, `seo`, `excerpt`, and `content_hash`.
+
+This is a read/import flow only. It does not create WordPress drafts, overwrite pages, publish content, or call live write operations.
+
 ## Queries
 
 - `GET /api/stores/:storeId/queries`
