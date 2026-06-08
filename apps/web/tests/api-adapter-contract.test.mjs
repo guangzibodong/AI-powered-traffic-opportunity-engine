@@ -34,6 +34,11 @@ assert(adapter.includes("planningRun"), "adapter must produce frontend planning 
 
 assert(apiClient.includes("VITE_USE_API_BOARD"), "API board loading must be explicitly gated");
 assert(apiClient.includes("VITE_API_BASE_URL"), "API base URL must be configurable");
+assert(apiClient.includes("ApiVisibleTaskStatus"), "API client must type Sprint 1 visible task status updates");
+assert(apiClient.includes("updateTaskStatus"), "API client must expose task status mutation for the demo API");
+assert(apiClient.includes('method: "PATCH"'), "Task status mutation must use PATCH");
+assert(apiClient.includes("JSON.stringify({ status })"), "Task status mutation must send only the selected review status");
+assert(apiClient.includes("/tasks/${taskId}"), "Task status mutation must target the selected task id");
 assert(app.includes("isApiBoardEnabled()"), "App must respect the API board gate");
 assert(app.includes('source: "fallback"'), "App must keep a mock fallback state");
 

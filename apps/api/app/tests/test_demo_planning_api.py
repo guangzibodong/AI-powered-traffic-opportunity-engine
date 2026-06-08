@@ -10,6 +10,16 @@ except ModuleNotFoundError:
 
 
 class DemoPlanningPayloadTests(unittest.TestCase):
+    def setUp(self) -> None:
+        from app.services.demo_planning_service import clear_demo_task_status_overrides
+
+        clear_demo_task_status_overrides()
+
+    def tearDown(self) -> None:
+        from app.services.demo_planning_service import clear_demo_task_status_overrides
+
+        clear_demo_task_status_overrides()
+
     def test_demo_planning_payload_contains_opportunities_and_tasks(self):
         from app.services.demo_planning_service import build_demo_planning_payload
 
@@ -20,6 +30,35 @@ class DemoPlanningPayloadTests(unittest.TestCase):
         self.assertGreaterEqual(len(payload["tasks"]), 3)
         self.assertEqual(payload["planning_run"]["generated_tasks"], len(payload["tasks"]))
         self.assertTrue(all(task["evidence"] for task in payload["tasks"]))
+
+    def test_demo_task_status_update_persists_to_detail_and_list(self):
+        from app.services.demo_planning_service import (
+            build_demo_planning_payload,
+            get_demo_task,
+            update_demo_task_status,
+        )
+
+        updated = update_demo_task_status("store-demo-outdoor-coffee", "task_002", "approved")
+
+        self.assertIsNotNone(updated)
+        self.assertEqual(updated["status"], "approved")
+        self.assertEqual(get_demo_task("store-demo-outdoor-coffee", "task_002")["status"], "approved")
+
+        payload = build_demo_planning_payload("store-demo-outdoor-coffee")
+        by_id = {task["id"]: task for task in payload["tasks"]}
+
+        self.assertEqual(by_id["task_002"]["status"], "approved")
+
+    def test_demo_task_status_update_rejects_invalid_status(self):
+        from app.services.demo_planning_service import update_demo_task_status
+
+        with self.assertRaises(ValueError):
+            update_demo_task_status("store-demo-outdoor-coffee", "task_002", "published")
+
+    def test_demo_task_status_update_returns_none_for_unknown_task(self):
+        from app.services.demo_planning_service import update_demo_task_status
+
+        self.assertIsNone(update_demo_task_status("store-demo-outdoor-coffee", "missing-task", "approved"))
 
 
 @unittest.skipIf(TestClient is None, "FastAPI is not installed in this local test runtime")

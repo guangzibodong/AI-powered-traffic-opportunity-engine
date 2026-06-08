@@ -42,6 +42,8 @@ export type ApiTask = {
   title: string;
 };
 
+export type ApiVisibleTaskStatus = "new" | "approved" | "rejected" | "snoozed";
+
 export type ApiPlanningRun = {
   generated_tasks: number;
   run_id: string;
@@ -60,6 +62,11 @@ export type ApiTasksResponse = {
   planning_run: ApiPlanningRun;
   store_id: string;
   tasks: ApiTask[];
+};
+
+export type ApiTaskResponse = {
+  store_id: string;
+  task: ApiTask;
 };
 
 const defaultApiBaseUrl = "http://localhost:8000";
@@ -87,8 +94,23 @@ export async function getTasks(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiTasksResponse>(`${apiBaseUrl}/api/stores/${storeId}/tasks`);
 }
 
-async function fetchJson<TResponse>(url: string): Promise<TResponse> {
-  const response = await fetch(url);
+export async function updateTaskStatus(
+  storeId: string,
+  taskId: string,
+  status: ApiVisibleTaskStatus,
+  apiBaseUrl = getApiBaseUrl()
+) {
+  return fetchJson<ApiTaskResponse>(`${apiBaseUrl}/api/stores/${storeId}/tasks/${taskId}`, {
+    body: JSON.stringify({ status }),
+    headers: {
+      "Content-Type": "application/json"
+    },
+    method: "PATCH"
+  });
+}
+
+async function fetchJson<TResponse>(url: string, init?: RequestInit): Promise<TResponse> {
+  const response = await fetch(url, init);
   if (!response.ok) {
     throw new Error(`TrafScope API request failed: ${response.status}`);
   }
