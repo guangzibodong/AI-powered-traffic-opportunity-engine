@@ -152,6 +152,13 @@ Sprint 2 API-backed safety UI wiring consumes those DTOs in the existing Safety 
 - The visible Safety page renders `board.integrations` so API-backed integration status can replace static mock rows.
 - Sync and audit signals are preview-only; buttons do not trigger sync execution, credential handshakes, draft creation, publishing, or commerce writes.
 
+Sprint 2 imported preview frontend DTOs prepare the UI for imported-data review without changing execution boundaries:
+
+- Imported query clusters become preview rows with `Imported GSC` evidence.
+- Imported opportunities reuse deterministic rule mapping into frontend opportunity view models.
+- Imported task previews become frontend tasks with `automationLevel: recommend_only` and safe visible status fallback.
+- These DTOs are read-only and do not add review mutation, draft generation, credential, sync execution, publishing, or commerce write controls.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.

@@ -128,6 +128,18 @@ export type AuditLogPreview = {
   externalWriteAllowed: false;
 };
 
+export type ImportedQueryClusterPreview = {
+  id: string;
+  primaryQuery: string;
+  queryCount: number;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+  topPages: string[];
+  evidence: EvidenceRow[];
+};
+
 export type PlanningRunViewModel = {
   runId: string;
   lastSuccessfulAt: string;

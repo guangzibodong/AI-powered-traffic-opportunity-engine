@@ -65,6 +65,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | Audit log foundation | Done | Integration stub connects and sync queue tracking write sanitized local audit events, with audit list/detail reads and no secret storage, publishing, drafts, commerce writes, or external execution. |
 | Stable frontend DTO conversion foundation | Done | API client and view-model adapters type and safely convert integration status, sync run, and audit log payloads while preserving Sprint 1 UI behavior. |
 | API-backed safety panel foundation | Done | API board loading also reads integrations, sync run tracking, and audit logs, then feeds existing Safety UI rows through safe read-only adapters. |
+| Imported preview frontend DTO foundation | Done | API client and view-model adapters type imported query clusters, imported opportunities, and imported task previews as read-only preview data for later UI rendering. |
 
 ## Local Smoke Run
 
@@ -117,6 +118,9 @@ Expected behavior:
 | `evidence[].type: gsc_* / query_cluster` | `EvidenceRow.type: search` |
 | `evidence[].type: product_fit` | `EvidenceRow.type: commerce` |
 | `evidence[].type: page_gap / existing_page` | `EvidenceRow.type: page_graph` |
+| `query_clusters[]` | `ImportedQueryClusterPreview[]` with `Imported GSC` evidence |
+| `imported-opportunities[]` | `Opportunity[]` through the deterministic opportunity adapter |
+| `imported-tasks[]` | `Task[]` with `automationLevel: recommend_only` |
 
 ## Safety Rules
 
@@ -143,6 +147,7 @@ Expected behavior:
 - Audit logs must redact sensitive metadata and stay read-only; logging must not become an execution, draft, publishing, OAuth, or commerce write path.
 - Frontend DTO adapters must clamp unsafe or unknown backend states to safe UI defaults and must not expose `one_click_apply`, `guarded_autopilot`, live publish, applied, or external-write controls.
 - API-backed Safety UI must remain read-only; it can render integration, sync, and audit state, but it must not trigger sync execution, credential flows, draft creation, publishing, or commerce writes.
+- Imported preview frontend DTOs must remain read-only and recommend-only; they must not expose approve/reject/snooze mutation, draft generation, sync execution, credential flows, publishing, or commerce writes.
 
 ## Remaining API-backed Task Action UX
 

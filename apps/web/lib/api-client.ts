@@ -130,6 +130,55 @@ export type ApiAuditLogsResponse = {
   summary?: Record<string, number>;
 };
 
+export type ApiImportedQueryCluster = {
+  clicks: number;
+  cluster_key: string;
+  ctr: number;
+  impressions: number;
+  position: number;
+  primary_query: string;
+  query_count: number;
+  queries?: string[];
+  row_ids?: string[];
+  top_pages?: string[];
+};
+
+export type ApiImportedQueryClustersResponse = {
+  mode: "csv_import";
+  query_clusters: ApiImportedQueryCluster[];
+  store_id: string;
+};
+
+export type ApiImportedOpportunity = ApiOpportunity & {
+  related_page?: unknown;
+  related_products?: unknown[];
+  source_cluster?: ApiImportedQueryCluster;
+};
+
+export type ApiImportedOpportunitiesResponse = {
+  mode: "imported_opportunities";
+  opportunities: ApiImportedOpportunity[];
+  store_id: string;
+  summary?: Record<string, unknown>;
+};
+
+export type ApiImportedTask = ApiTask & {
+  related_page?: unknown;
+  related_products?: unknown[];
+  source_opportunity?: {
+    dedupe_key?: string;
+    rule_id?: string;
+    rule_version?: number;
+  };
+};
+
+export type ApiImportedTasksResponse = {
+  mode: "imported_task_previews";
+  store_id: string;
+  summary?: Record<string, unknown>;
+  tasks: ApiImportedTask[];
+};
+
 declare global {
   interface ImportMetaEnv {
     readonly VITE_API_BASE_URL?: string;
@@ -169,6 +218,18 @@ export async function getSyncRuns(storeId: string, apiBaseUrl = getApiBaseUrl())
 
 export async function getAuditLogs(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiAuditLogsResponse>(`${storeApiPath(apiBaseUrl, storeId)}/audit-logs`);
+}
+
+export async function getImportedQueryClusters(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiImportedQueryClustersResponse>(`${storeApiPath(apiBaseUrl, storeId)}/query-clusters`);
+}
+
+export async function getImportedOpportunities(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiImportedOpportunitiesResponse>(`${storeApiPath(apiBaseUrl, storeId)}/imported-opportunities`);
+}
+
+export async function getImportedTasks(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiImportedTasksResponse>(`${storeApiPath(apiBaseUrl, storeId)}/imported-tasks`);
 }
 
 export async function updateTaskStatus(

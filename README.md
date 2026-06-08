@@ -140,6 +140,7 @@ Sprint 2 capabilities completed so far:
 11. Audit log foundation: integration stub connects and sync tracking actions record sanitized local audit events, with `GET /audit-logs` list/detail reads and no secret, publishing, draft, or commerce write path.
 12. Stable frontend DTO conversion foundation: the API client and view-model adapters now type and safely convert integration status, sync run, and audit log payloads without changing the visible Sprint 1 UI.
 13. API-backed safety panel foundation: the React app now reads integration status, sync run tracking, and audit logs in API mode and feeds the existing Safety surface through safe read-only adapters.
+14. Imported preview frontend DTO foundation: the API client and adapters now type read-only imported query clusters, imported opportunities, and imported task previews for future UI rendering.
 
 Current product/engineering ownership:
 

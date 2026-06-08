@@ -34,6 +34,11 @@ assert(adapter.includes("planningRun"), "adapter must produce frontend planning 
 assert(adapter.includes("mapApiIntegrationsToIntegrationHealth"), "adapter must expose integration status DTO conversion");
 assert(adapter.includes("mapApiSyncRunsToSyncRunPreviews"), "adapter must expose sync run DTO conversion");
 assert(adapter.includes("mapApiAuditLogsToEvidenceRows"), "adapter must expose audit log DTO conversion");
+assert(adapter.includes("mapApiImportedQueryClustersToPreviews"), "adapter must expose imported query cluster DTO conversion");
+assert(adapter.includes("mapApiImportedOpportunitiesToOpportunities"), "adapter must expose imported opportunity DTO conversion");
+assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose imported task preview DTO conversion");
+assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
+assert(adapter.includes("source: \"Imported GSC\""), "imported query cluster adapter must label imported GSC evidence");
 assert(adapter.includes('type: "audit"'), "audit log DTO conversion must produce audit evidence rows");
 assert(adapter.includes('status === "connected_stub"'), "integration adapter must handle connected_stub status");
 assert(adapter.includes('status === "not_connected"'), "integration adapter must handle not_connected status");
@@ -51,9 +56,16 @@ assert(apiClient.includes("updateTaskStatus"), "API client must expose task stat
 assert(apiClient.includes("ApiIntegrationsResponse"), "API client must type integration status responses");
 assert(apiClient.includes("ApiSyncRunsResponse"), "API client must type sync run responses");
 assert(apiClient.includes("ApiAuditLogsResponse"), "API client must type audit log responses");
+assert(apiClient.includes("ApiImportedQueryClustersResponse"), "API client must type imported query cluster responses");
+assert(apiClient.includes("ApiImportedOpportunitiesResponse"), "API client must type imported opportunity responses");
+assert(apiClient.includes("ApiImportedTasksResponse"), "API client must type imported task preview responses");
 assert(apiClient.includes("getIntegrations"), "API client must expose integration status reads");
 assert(apiClient.includes("getSyncRuns"), "API client must expose sync run reads");
 assert(apiClient.includes("getAuditLogs"), "API client must expose audit log reads");
+assert(apiClient.includes("getImportedQueryClusters"), "API client must expose imported query cluster reads");
+assert(apiClient.includes("getImportedOpportunities"), "API client must expose imported opportunity reads");
+assert(apiClient.includes("getImportedTasks"), "API client must expose imported task preview reads");
+assert(apiClient.includes("/imported-tasks"), "Imported task client must target the read-only imported task endpoint");
 assert(apiClient.includes('method: "PATCH"'), "Task status mutation must use PATCH");
 assert(apiClient.includes("JSON.stringify({ status })"), "Task status mutation must send only the selected review status");
 assert(apiClient.includes("encodeURIComponent(taskId)"), "Task status mutation must encode the selected task id");

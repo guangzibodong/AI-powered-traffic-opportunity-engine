@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 API-backed safety panel foundation completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported preview frontend DTO foundation completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -23,9 +23,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Role | Person/Agent | Current assignment |
 |---|---|---|
 | Product Manager | Main thread | Keep Sprint 1 review actions state-only and draft-safe. |
-| Backend/API Engineer | Main thread | Keep Sprint 2 read-only safety APIs stable while frontend consumes them. |
-| Frontend Product Engineer | Main thread | Wire API-backed integration, sync run, and audit DTOs into the Safety surface without execution controls. |
-| QA Lead | Main thread | Add contract tests for API-backed safety reads, board integration state, and no unsafe execution terms. |
+| Backend/API Engineer | Main thread | Keep Sprint 2 imported preview APIs stable while frontend DTOs are added. |
+| Frontend Product Engineer | Main thread | Add stable API client DTOs and safe adapters for imported query clusters, opportunities, and task previews. |
+| QA Lead | Main thread | Add contract tests for imported preview reads, safe status fallback, and no execution controls. |
 | UI Systems Engineer | Banach | Reserved for later Sync run UI. |
 
 ## Task Queue
@@ -56,6 +56,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-DTO-010 | 22 | done | Frontend Product Engineer / QA Lead | Add stable frontend DTO conversion foundation. | API client and view-model adapters expose typed integrations, sync runs, and audit log reads/conversions that clamp unsafe external-write signals, map unknown statuses to safe UI states, and keep Sprint 1 UI behavior stable. |
 | TASK-S2-LIVE-011 | 23 | blocked | Product Manager / Backend/API Engineer | Plan real read-only credential handshake for live WooCommerce, WordPress, and GSC sources. | Blocked on explicit credentials and boundary approval; current sprint rules still forbid real GSC OAuth, WooCommerce writes, WordPress writes, draft creation, and live publishing. |
 | TASK-S2-UI-012 | 24 | done | Frontend Product Engineer / QA Lead | Add API-backed safety panel foundation. | API board loading also reads integration status, sync runs, and audit logs, maps them through safe DTO adapters, updates the visible Safety page from `board.integrations`, and does not add sync execution, credential, draft, publish, or commerce write controls. |
+| TASK-S2-IMPORT-013 | 25 | done | Frontend Product Engineer / QA Lead | Add imported preview frontend DTO foundation. | API client and view-model adapters expose read-only imported query cluster, imported opportunity, and imported task preview conversions with safe `new` status fallback, `recommend_only` task previews, and no review mutation, draft, publish, sync execution, credential, or commerce write controls. |
 
 ## Blockers
 
@@ -101,6 +102,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - The remaining Sprint 2 roadmap step that is not purely local is live read-only credential work, which is blocked until credentials and boundary approval are provided.
 - API-backed safety panel wiring is next because existing safe DTOs should feed the current Safety surface before any live credential work is attempted.
 - API-backed safety panel wiring is verified by backend tests plus the existing frontend contract, lint, build, and browser smoke gates.
+- Imported preview frontend DTOs are next because the backend already exposes read-only imported clusters, opportunities, and task previews that need stable frontend contracts before UI rendering.
+- Imported preview frontend DTOs are verified by backend tests plus the existing frontend contract, lint, build, and browser smoke gates.
 
 ## Completion Rule
 

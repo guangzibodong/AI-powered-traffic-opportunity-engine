@@ -2,6 +2,7 @@ import type {
   BoardViewModel,
   AuditLogPreview,
   EvidenceRow,
+  ImportedQueryClusterPreview,
   IntegrationHealth,
   Opportunity,
   ScoreComponent,
@@ -14,6 +15,9 @@ import type {
 import type {
   ApiAuditLogsResponse,
   ApiEvidence,
+  ApiImportedOpportunitiesResponse,
+  ApiImportedQueryClustersResponse,
+  ApiImportedTasksResponse,
   ApiIntegrationStatus,
   ApiIntegrationsResponse,
   ApiOpportunitiesResponse,
@@ -143,6 +147,46 @@ export function mapApiAuditLogsToPreviews(response: ApiAuditLogsResponse): Audit
     id: entry.id,
     safetyScope: entry.safety_scope ?? "local_tracking_only",
     target: `${entry.target_type}:${entry.target_id}`
+  }));
+}
+
+export function mapApiImportedQueryClustersToPreviews(
+  response: ApiImportedQueryClustersResponse
+): ImportedQueryClusterPreview[] {
+  return response.query_clusters.map((cluster) => ({
+    clicks: cluster.clicks,
+    ctr: cluster.ctr,
+    evidence: [
+      {
+        entity: cluster.primary_query,
+        metric: `${cluster.impressions} impressions / ${cluster.clicks} clicks / CTR ${cluster.ctr}`,
+        reason: `${cluster.query_count} imported queries grouped by local token overlap`,
+        source: "Imported GSC",
+        type: "search",
+        window: "imported"
+      }
+    ],
+    id: cluster.cluster_key,
+    impressions: cluster.impressions,
+    position: cluster.position,
+    primaryQuery: cluster.primary_query,
+    queryCount: cluster.query_count,
+    topPages: cluster.top_pages ?? []
+  }));
+}
+
+export function mapApiImportedOpportunitiesToOpportunities(
+  response: ApiImportedOpportunitiesResponse
+): Opportunity[] {
+  return response.opportunities.map(mapApiOpportunityToOpportunity);
+}
+
+export function mapApiImportedTasksToTasks(response: ApiImportedTasksResponse): Task[] {
+  return response.tasks.map((task) => ({
+    ...mapApiTaskToTask(task),
+    actionLabel: "Review",
+    automationLevel: "recommend_only",
+    status: mapVisibleTaskStatus(task.status)
   }));
 }
 
