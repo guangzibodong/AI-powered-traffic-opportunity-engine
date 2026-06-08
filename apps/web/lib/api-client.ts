@@ -179,6 +179,12 @@ export type ApiImportedTasksResponse = {
   tasks: ApiImportedTask[];
 };
 
+export type ApiImportedTaskResponse = {
+  mode: "imported_task_previews";
+  store_id: string;
+  task: ApiImportedTask;
+};
+
 declare global {
   interface ImportMetaEnv {
     readonly VITE_API_BASE_URL?: string;
@@ -230,6 +236,11 @@ export async function getImportedOpportunities(storeId: string, apiBaseUrl = get
 
 export async function getImportedTasks(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiImportedTasksResponse>(`${storeApiPath(apiBaseUrl, storeId)}/imported-tasks`);
+}
+
+export async function getImportedTask(storeId: string, taskId: string, apiBaseUrl = getApiBaseUrl()) {
+  const encodedTaskId = encodeURIComponent(taskId);
+  return fetchJson<ApiImportedTaskResponse>(`${storeApiPath(apiBaseUrl, storeId)}/imported-tasks/${encodedTaskId}`);
 }
 
 export async function updateTaskStatus(

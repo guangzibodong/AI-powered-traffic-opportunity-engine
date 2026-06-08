@@ -17,6 +17,7 @@ import type {
   ApiEvidence,
   ApiImportedOpportunitiesResponse,
   ApiImportedQueryClustersResponse,
+  ApiImportedTaskResponse,
   ApiImportedTasksResponse,
   ApiIntegrationStatus,
   ApiIntegrationsResponse,
@@ -182,12 +183,20 @@ export function mapApiImportedOpportunitiesToOpportunities(
 }
 
 export function mapApiImportedTasksToTasks(response: ApiImportedTasksResponse): Task[] {
-  return response.tasks.map((task) => ({
+  return response.tasks.map(mapApiImportedTaskToTask);
+}
+
+export function mapApiImportedTaskResponseToTask(response: ApiImportedTaskResponse): Task {
+  return mapApiImportedTaskToTask(response.task);
+}
+
+function mapApiImportedTaskToTask(task: ApiTask): Task {
+  return {
     ...mapApiTaskToTask(task),
     actionLabel: "Review",
     automationLevel: "recommend_only",
     status: mapVisibleTaskStatus(task.status)
-  }));
+  };
 }
 
 function mapApiEvidenceToEvidenceRow(evidence: ApiEvidence): EvidenceRow {

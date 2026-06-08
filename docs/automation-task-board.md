@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported preview resilient loading completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported task detail read client completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -59,6 +59,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-IMPORT-013 | 25 | done | Frontend Product Engineer / QA Lead | Add imported preview frontend DTO foundation. | API client and view-model adapters expose read-only imported query cluster, imported opportunity, and imported task preview conversions with safe `new` status fallback, `recommend_only` task previews, and no review mutation, draft, publish, sync execution, credential, or commerce write controls. |
 | TASK-S2-IMPORT-014 | 26 | done | Frontend Product Engineer / QA Lead | Add API-backed imported preview UI panel. | API mode reads imported query clusters, imported opportunities, and imported task previews, renders them in a read-only board side panel, and exposes no review mutation, credential, sync execution, draft, publish, product edit, commerce write, or live integration controls. |
 | TASK-S2-IMPORT-015 | 27 | done | Frontend Product Engineer / QA Lead | Make imported preview loading resilient. | Imported preview endpoint failures leave the API-backed board, tasks, opportunities, integrations, sync runs, and audit logs usable; the imported preview panel shows a safe unavailable/empty state and does not add retries, credentials, sync execution, draft, publish, or commerce write controls. |
+| TASK-S2-IMPORT-016 | 28 | done | Frontend Product Engineer / QA Lead | Add imported task detail read client foundation. | Frontend API client exposes a typed read-only `GET /imported-tasks/{task_id}` helper, encodes store/task path segments, keeps imported task detail previews `recommend_only`, and adds no review mutation, credential, sync execution, draft, publish, or commerce write controls. |
 
 ## Blockers
 
@@ -110,6 +111,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported preview UI is verified by backend tests, frontend contract, lint, build, browser smoke with seeded imported fixture data, read-only imported endpoint request checks, diff check, and secret scan.
 - Imported preview resilient loading is next because a supplementary imported preview read should not make the whole API-backed planning board fall back to mock data.
 - Imported preview resilient loading is verified by browser smoke that aborts imported preview endpoints while preserving the API-backed board, plus backend tests, frontend contract, lint, build, diff check, and secret scan.
+- Imported task detail read client is next because the backend already exposes read-only imported task detail previews, but the frontend contract only covers the list endpoint.
+- Imported task detail read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 
