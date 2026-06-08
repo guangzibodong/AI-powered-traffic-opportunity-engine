@@ -43,7 +43,7 @@ MVP frontend routes:
 | Python | Selected | Good fit for scoring, data processing, integrations, and AI workflows. |
 | Pydantic | Selected | Validation and schema contracts for API and service boundaries. |
 | SQL migrations | Selected | Explicit schema evolution in `infra/migrations`. |
-| RQ or Celery | Planned | Background sync, planning, generation, publishing, and performance refresh jobs. |
+| Celery | Selected | Background sync, planning, generation, publishing, retries, and performance refresh jobs. |
 
 Primary backend services:
 
@@ -148,9 +148,8 @@ No production deployment provider is locked yet. The stack should remain deploya
 
 | Decision | Current Recommendation |
 |---|---|
-| Queue system | Start with RQ if the job model stays simple; move to Celery if workflows become more complex. |
+| Queue system | Celery is selected for real sync, generation, publishing, retries, and step tracking. Sprint 1 demo services may run synchronously while recording run state. |
 | Auth | Start with app-level session or token auth for MVP demo; design for organization/store scopes. |
 | LLM provider | Keep provider abstraction; choose once asset generation begins. |
 | Frontend test runner | Vitest plus Testing Library for components; Playwright for E2E smoke tests. |
 | Rich text editor | Avoid full rich text in MVP; use a structured section editor first. |
-
