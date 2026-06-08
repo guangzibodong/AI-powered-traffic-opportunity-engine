@@ -82,6 +82,7 @@ Required:
 - Any task card or row opens the corresponding Task Detail.
 - Task Detail approve/reject/snooze controls use only Sprint 1 safe statuses, disable duplicate submissions while pending, and show safe fallback feedback when the API is unavailable.
 - API-unavailable review feedback offers only safe state actions: retry the demo API sync or keep the local review state.
+- Automated API action browser smoke passes.
 - No live publish control appears in MVP UI.
 
 Commands:
@@ -90,9 +91,10 @@ Commands:
 npm --workspace apps/web run lint
 npm --workspace apps/web run build
 npm --workspace apps/web run test
+pnpm --filter @trafscope/web run test:api-actions
 ```
 
-Note: final frontend test infrastructure must be added before this can become a real gate.
+Note: component-level frontend tests are still future work, but API task action browser smoke is now an executable gate.
 
 ## E2E Gates
 
@@ -107,7 +109,7 @@ Playwright smoke must cover:
 7. Return to the board, click a non-top task, and confirm the matching Task Detail opens.
 8. Confirm query/product/page evidence is visible.
 9. Approve, reject, and snooze a task through UI controls.
-10. Confirm API-backed success feedback, API-unavailable local fallback feedback, retry sync, and keep-local behavior.
+10. Confirm API-backed success feedback, API-unavailable local fallback feedback, retry sync, keep-local behavior, unsafe status rejection, and board/detail consistency.
 11. Re-run planning and confirm no duplicate task appears.
 12. Search UI for live publish controls and confirm none exist.
 13. Run desktop and mobile viewport checks.
@@ -116,7 +118,7 @@ Playwright smoke must cover:
 Command:
 
 ```bash
-npx playwright test
+pnpm --filter @trafscope/web run test:api-actions
 ```
 
 ## WordPress Draft-Only Gate
@@ -204,6 +206,7 @@ Sprint 1 is complete only when:
 - Approve/reject/snooze states persist.
 - Task review controls show pending, success, API-unavailable fallback, retry sync, and keep-local feedback without implying execution.
 - Demo task status API supports PATCH plus approve/reject/snooze and rejects unsafe statuses.
+- Automated browser smoke covers API success, API fallback, retry sync, keep-local confirmation, unsafe status rejection, and board/detail consistency.
 - Board and detail UI render the decision clearly.
 - No live publish path exists.
 - Backend tests pass.

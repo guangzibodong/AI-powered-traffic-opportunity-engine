@@ -12,6 +12,7 @@
     "dev:web": "pnpm --filter @trafscope/web run dev",
     "build:web": "pnpm --filter @trafscope/web run build",
     "lint:web": "pnpm --filter @trafscope/web run lint",
+    "test:web:api-actions": "pnpm --filter @trafscope/web run test:api-actions",
     "test:web": "pnpm --filter @trafscope/web run test:ui-contract",
     "test:api": "cd apps/api && python -B -m unittest discover app/tests"
   },

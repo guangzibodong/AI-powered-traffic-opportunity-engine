@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 1 QA acceptance for Task Detail navigation, demo task status API, API-backed task review wiring, review action feedback states, and fallback retry/keep-local controls.
+Current loop: Sprint 1 automated browser coverage for API-backed task review success, fallback, retry, keep-local, unsafe status rejection, and board/detail consistency.
 
 ## Status Legend
 
@@ -24,9 +24,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 |---|---|---|
 | Product Manager | Main thread | Keep Sprint 1 review actions state-only and draft-safe. |
 | Backend/API Engineer | Main thread | Add demo task status mutation and persistence. |
-| Frontend Product Engineer | Main thread | Add retry/keep-local controls after API-unavailable review fallback. |
-| QA Lead | Main thread | Verify fallback retry/keep-local contract, release gates, and browser smoke. |
-| UI Systems Engineer | Banach | Review mutation feedback states against the Refero/Fal-style compact system. |
+| Frontend Product Engineer | Main thread | Support browser smoke hooks only if needed; keep UI behavior unchanged. |
+| QA Lead | Main thread | Add automated browser smoke for API-backed task review success, fallback, retry, keep-local, unsafe status, and board/detail consistency. |
+| UI Systems Engineer | Banach | Watch for compact feedback layout regressions in browser smoke. |
 
 ## Task Queue
 
@@ -43,6 +43,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-DOC-009 | 9 | done | Product Ops / Documentation Lead | Reconcile docs with API-backed review wiring and Sprint 1 draft-safety boundaries. | README, backlog, adapter plan, and task board all state that Sprint 1 review actions are state-only and no WordPress draft is created. |
 | TASK-UX-010 | 10 | done | Frontend Product Engineer / UI Systems Engineer | Add review action pending, success, local, and API fallback feedback states. | Task Detail disables duplicate review submissions while syncing, announces feedback with `aria-live`, and shows safe fallback copy when the API is unavailable. |
 | TASK-UX-011 | 11 | done | Frontend Product Engineer / QA Lead | Add fallback retry and keep-local controls. | API-unavailable review feedback lets users retry the demo API sync or intentionally keep the local review state without creating drafts, publishing, or writing commerce data. |
+| TASK-QA-012 | 12 | done | QA Lead / Frontend Product Engineer | Add automated browser-level API task action coverage. | A repo script launches the API and web app, drives the Task Detail UI in a real browser, verifies API success, API fallback, retry sync, keep-local confirmation, unsafe status rejection, and board/detail status consistency. |
 
 ## Blockers
 
@@ -63,6 +64,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Browser smoke on `localhost:3000` confirmed API-connected board, non-top task detail routing, and API-backed approve mutation for `task_006`.
 - Browser smoke on `localhost:3000` confirmed review feedback success path for `task_007` and API-unavailable fallback path for `task_008`.
 - Browser smoke on `localhost:3000` confirmed API-unavailable fallback exposes `Retry sync` and `Keep local`, retry returns to synced API feedback after API recovery, and keep-local confirms local state without execution.
+- Automated browser smoke command added: `pnpm --filter @trafscope/web run test:api-actions`. It launches isolated API/web ports, uses a real browser, and covers success, fallback, retry, keep-local, unsafe status rejection, and board/detail consistency.
 
 ## Completion Rule
 

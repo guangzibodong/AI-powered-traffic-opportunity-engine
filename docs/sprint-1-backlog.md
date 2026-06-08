@@ -79,7 +79,7 @@ Do not build in Sprint 1:
 | ID | Owner | Action | Definition of Done |
 |---|---|---|---|
 | API-ACTION-001 | Frontend Product Engineer / QA | Done: add explicit retry/keep-local controls after local fallback. | Users can retry a failed API sync or intentionally keep the local review state. |
-| API-ACTION-002 | QA Lead | Add automated browser-level API mutation coverage. | Covers API success, API fallback, unsafe status protection, and list/detail state consistency. |
+| API-ACTION-002 | QA Lead | Done: add automated browser-level API mutation coverage. | `pnpm --filter @trafscope/web run test:api-actions` covers API success, API fallback, retry sync, keep-local confirmation, unsafe status protection, and list/detail state consistency. |
 | API-ACTION-003 | Product Ops / Documentation Lead | Keep demo script and release gates aligned. | Docs consistently say Sprint 1 approve/reject/snooze only changes review state. |
 
 ## P1 Backlog

@@ -35,6 +35,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | Frontend API mutation client | Done | `updateTaskStatus` wraps `PATCH { status }` for Sprint 1 review states. API settings use direct `import.meta.env.VITE_*` access so Vite can inject them. |
 | Visible UI mutation wiring | Done | Task Detail approve/reject/snooze calls `updateTaskStatus` when API board data is connected, then patches board state. |
 | Error/loading UX | Done | Task Detail shows pending, synced, local, and API-unavailable fallback feedback. API-unavailable fallback includes explicit `Retry sync` and `Keep local` controls. |
+| Browser mutation smoke | Done | `pnpm --filter @trafscope/web run test:api-actions` launches isolated API/web ports in a real browser and covers success, fallback, retry, keep-local, unsafe status rejection, and board/detail consistency. |
 
 ## Local Smoke Run
 
@@ -72,6 +73,7 @@ Expected behavior:
 | `apps/web/lib/view-model-adapters.ts` | Convert backend snake_case demo payloads into frontend `BoardViewModel`, `Task`, and `Opportunity` shapes. |
 | `apps/web/lib/task-state.ts` | Keep local review-state fallback for mock mode and API failure paths. |
 | `apps/web/app/App.tsx` | Calls `updateTaskStatus` for API-backed task review actions, falls back to local review-state persistence when the API is unavailable, and lets users retry sync or keep the local state. |
+| `apps/web/tests/api-action-browser-smoke.mjs` | Runs the automated browser smoke for API-backed review mutations. |
 
 ## Important Mappings
 
@@ -100,10 +102,11 @@ Expected behavior:
 - API-backed demo reads use stable store id `store-demo-outdoor-coffee`; UI display copy can still show "Outdoor Coffee Gear Demo Store".
 - API mutation failure must not erase the user's visible local review state.
 - API mutation fallback controls must remain state-only: `Retry sync` re-attempts `PATCH`, and `Keep local` confirms the local demo review state.
+- Local browser smoke may set `CORS_ORIGINS` for isolated test ports; production/live integrations remain outside Sprint 1.
 - Real WooCommerce, GSC, WordPress, credential, and publishing actions remain outside this adapter slice.
 
 ## Remaining API-backed Task Action UX
 
 1. Keep mock mode behavior unchanged so demos still work without the backend.
-2. Add automated browser-level tests that prove API mutation success, fallback behavior, retry behavior, and list/detail state consistency.
+2. Keep browser mutation smoke green as UI copy and task flows evolve.
 3. Keep backend tests covering allowed statuses, illegal statuses, shortcut routes, and 10+ evidence-backed demo tasks.

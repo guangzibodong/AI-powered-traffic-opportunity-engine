@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.config import get_settings
 from app.routers import assets, health, integrations, opportunities, performance, products, queries, stores, tasks
 
 
 def create_app() -> FastAPI:
+    settings = get_settings()
     app = FastAPI(
         title="TrafScope Commerce OS API",
         version="0.1.0",
@@ -12,7 +14,7 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://localhost:3000"],
+        allow_origins=settings.cors_origin_list(),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -31,4 +33,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-

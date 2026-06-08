@@ -123,12 +123,13 @@ Completed capabilities in the current Sprint 1 slice:
 - The visible React task buttons call `updateTaskStatus` when API board data is connected, with local state retained as the safe fallback.
 - Task Detail review controls show accessible pending, synced, and API-unavailable fallback feedback while disabling duplicate submissions during sync.
 - API-unavailable fallback feedback now exposes explicit `Retry sync` and `Keep local` controls, so the user can either re-attempt the demo API mutation or intentionally keep the local review state.
+- Automated browser smoke coverage is available through `pnpm --filter @trafscope/web run test:api-actions`; it launches isolated local API/web ports and verifies API success, API fallback, retry sync, keep-local confirmation, unsafe status rejection, and board/detail consistency.
 
 Next API-backed task action UX:
 
-1. Add automated browser-level coverage for API mutation success and fallback behavior.
-2. Keep the current local task-state fallback when the API is unavailable or disabled.
-3. Add deeper list/detail consistency checks around retry behavior.
+1. Keep the current local task-state fallback when the API is unavailable or disabled.
+2. Add deeper audit-log preview once Sprint 2 execution tracking starts.
+3. Keep automated browser coverage green as UI copy and task flows evolve.
 
 Current product/engineering ownership:
 
