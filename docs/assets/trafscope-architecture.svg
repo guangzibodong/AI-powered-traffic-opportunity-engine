@@ -1,0 +1,61 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">TrafScope architecture</title>
+  <desc id="desc">Monorepo architecture showing frontend, API, services, workers, database, integrations, and safety controls.</desc>
+  <rect width="1280" height="720" fill="#0f1216"/>
+  <rect x="56" y="48" width="1168" height="624" rx="20" fill="#14181e" stroke="#2a313b"/>
+  <text x="88" y="96" fill="#f4f7f8" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="750">TrafScope Commerce OS Architecture</text>
+  <text x="88" y="126" fill="#9aa8b5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">A safe, evidence-first loop from store and search data to task execution and performance tracking.</text>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="88" y="176" width="292" height="452" rx="14" fill="#171b21" stroke="#313a45"/>
+    <text x="116" y="216" fill="#8fb8ff" font-size="18" font-weight="800">Frontend</text>
+    <text x="116" y="244" fill="#f4f7f8" font-size="15" font-weight="700">React + Vite + TypeScript</text>
+    <rect x="116" y="278" width="236" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="136" y="307" fill="#f4f7f8" font-size="13">Traffic Operations Board</text>
+    <rect x="116" y="340" width="236" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="136" y="369" fill="#f4f7f8" font-size="13">Opportunity and Task Detail</text>
+    <rect x="116" y="402" width="236" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="136" y="431" fill="#f4f7f8" font-size="13">Structured Asset Review</text>
+    <rect x="116" y="464" width="236" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="136" y="493" fill="#f4f7f8" font-size="13">Performance Views</text>
+    <rect x="116" y="540" width="236" height="54" rx="8" fill="#182723" stroke="#57d0b2"/>
+    <text x="136" y="573" fill="#57d0b2" font-size="13" font-weight="750">Evidence visible before action</text>
+    <rect x="436" y="176" width="408" height="452" rx="14" fill="#171b21" stroke="#313a45"/>
+    <text x="464" y="216" fill="#57d0b2" font-size="18" font-weight="800">Backend API And Services</text>
+    <text x="464" y="244" fill="#f4f7f8" font-size="15" font-weight="700">FastAPI + Python</text>
+    <rect x="464" y="278" width="156" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="484" y="307" fill="#f4f7f8" font-size="13">API routers</text>
+    <rect x="648" y="278" width="156" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="668" y="307" fill="#f4f7f8" font-size="13">DTO contracts</text>
+    <rect x="464" y="350" width="156" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="484" y="379" fill="#f4f7f8" font-size="13">GraphBuilder</text>
+    <rect x="648" y="350" width="156" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="668" y="379" fill="#f4f7f8" font-size="13">ScoringService</text>
+    <rect x="464" y="422" width="156" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="484" y="451" fill="#f4f7f8" font-size="13">OpportunityEngine</text>
+    <rect x="648" y="422" width="156" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="668" y="451" fill="#f4f7f8" font-size="13">TaskEngine</text>
+    <rect x="464" y="494" width="156" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="484" y="523" fill="#f4f7f8" font-size="13">AssetGeneration</text>
+    <rect x="648" y="494" width="156" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="668" y="523" fill="#f4f7f8" font-size="13">Publishing</text>
+    <rect x="464" y="568" width="340" height="34" rx="8" fill="#2c221b" stroke="#f5bd5b"/>
+    <text x="484" y="590" fill="#f5bd5b" font-size="13" font-weight="750">Rules first, LLMs assist after evidence is known</text>
+    <rect x="900" y="176" width="292" height="452" rx="14" fill="#171b21" stroke="#313a45"/>
+    <text x="928" y="216" fill="#f5bd5b" font-size="18" font-weight="800">Data And Integrations</text>
+    <text x="928" y="244" fill="#f4f7f8" font-size="15" font-weight="700">Postgres + External APIs</text>
+    <rect x="928" y="278" width="236" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="948" y="307" fill="#f4f7f8" font-size="13">PostgreSQL + pgvector ready</text>
+    <rect x="928" y="340" width="236" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="948" y="369" fill="#f4f7f8" font-size="13">Google Search Console</text>
+    <rect x="928" y="402" width="236" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="948" y="431" fill="#f4f7f8" font-size="13">WooCommerce REST API</text>
+    <rect x="928" y="464" width="236" height="46" rx="8" fill="#1d232b" stroke="#2f3844"/>
+    <text x="948" y="493" fill="#f4f7f8" font-size="13">WordPress REST API</text>
+    <rect x="928" y="540" width="236" height="54" rx="8" fill="#291e20" stroke="#f07878"/>
+    <text x="948" y="573" fill="#f07878" font-size="13" font-weight="750">Draft-only publishing in MVP</text>
+  </g>
+  <path d="M380 402H436" stroke="#687584" stroke-width="2"/>
+  <path d="M436 402L426 395V409L436 402Z" fill="#687584"/>
+  <path d="M844 402H900" stroke="#687584" stroke-width="2"/>
+  <path d="M900 402L890 395V409L900 402Z" fill="#687584"/>
+</svg>

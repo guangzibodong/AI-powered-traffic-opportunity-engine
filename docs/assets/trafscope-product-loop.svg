@@ -1,0 +1,53 @@
+<svg width="1280" height="360" viewBox="0 0 1280 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">TrafScope product loop</title>
+  <desc id="desc">Signal to opportunity to action to asset to QA to execution to performance.</desc>
+  <rect width="1280" height="360" rx="18" fill="#0f1216"/>
+  <rect x="48" y="48" width="1184" height="264" rx="18" fill="#14181e" stroke="#2a313b"/>
+  <text x="72" y="92" fill="#f4f7f8" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="750">TrafScope Core Loop</text>
+  <text x="72" y="120" fill="#9aa8b5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">Demand signals become prioritized, traceable growth execution.</text>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <g>
+      <rect x="72" y="172" width="128" height="72" rx="12" fill="#171b21" stroke="#8fb8ff"/>
+      <text x="100" y="204" fill="#8fb8ff" font-size="15" font-weight="800">Signal</text>
+      <text x="92" y="228" fill="#9aa8b5" font-size="12">GSC, pages, store</text>
+    </g>
+    <path d="M216 208H270" stroke="#687584" stroke-width="2"/>
+    <path d="M270 208L262 202V216L270 208Z" fill="#687584"/>
+    <g>
+      <rect x="288" y="172" width="148" height="72" rx="12" fill="#171b21" stroke="#57d0b2"/>
+      <text x="318" y="204" fill="#57d0b2" font-size="15" font-weight="800">Opportunity</text>
+      <text x="312" y="228" fill="#9aa8b5" font-size="12">TrafScore, evidence</text>
+    </g>
+    <path d="M452 208H506" stroke="#687584" stroke-width="2"/>
+    <path d="M506 208L498 202V216L506 208Z" fill="#687584"/>
+    <g>
+      <rect x="524" y="172" width="128" height="72" rx="12" fill="#171b21" stroke="#f5bd5b"/>
+      <text x="568" y="204" fill="#f5bd5b" font-size="15" font-weight="800">Action</text>
+      <text x="544" y="228" fill="#9aa8b5" font-size="12">Task and plan</text>
+    </g>
+    <path d="M668 208H722" stroke="#687584" stroke-width="2"/>
+    <path d="M722 208L714 202V216L722 208Z" fill="#687584"/>
+    <g>
+      <rect x="740" y="172" width="128" height="72" rx="12" fill="#171b21" stroke="#8fb8ff"/>
+      <text x="786" y="204" fill="#8fb8ff" font-size="15" font-weight="800">Asset</text>
+      <text x="764" y="228" fill="#9aa8b5" font-size="12">Draft content</text>
+    </g>
+    <path d="M884 208H938" stroke="#687584" stroke-width="2"/>
+    <path d="M938 208L930 202V216L938 208Z" fill="#687584"/>
+    <g>
+      <rect x="956" y="172" width="96" height="72" rx="12" fill="#171b21" stroke="#57d0b2"/>
+      <text x="990" y="204" fill="#57d0b2" font-size="15" font-weight="800">QA</text>
+      <text x="976" y="228" fill="#9aa8b5" font-size="12">Checks</text>
+    </g>
+    <path d="M1068 208H1122" stroke="#687584" stroke-width="2"/>
+    <path d="M1122 208L1114 202V216L1122 208Z" fill="#687584"/>
+    <g>
+      <rect x="1140" y="150" width="128" height="116" rx="12" fill="#171b21" stroke="#f07878"/>
+      <text x="1164" y="188" fill="#f07878" font-size="15" font-weight="800">Execution</text>
+      <text x="1162" y="214" fill="#9aa8b5" font-size="12">Draft publish</text>
+      <line x1="1162" y1="232" x2="1244" y2="232" stroke="#2f3844"/>
+      <text x="1163" y="252" fill="#57d0b2" font-size="12" font-weight="700">Performance</text>
+    </g>
+  </g>
+</svg>
+
