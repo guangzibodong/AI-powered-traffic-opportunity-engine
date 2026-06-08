@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported opportunity detail read API completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported opportunity detail read client completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -61,6 +61,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-IMPORT-015 | 27 | done | Frontend Product Engineer / QA Lead | Make imported preview loading resilient. | Imported preview endpoint failures leave the API-backed board, tasks, opportunities, integrations, sync runs, and audit logs usable; the imported preview panel shows a safe unavailable/empty state and does not add retries, credentials, sync execution, draft, publish, or commerce write controls. |
 | TASK-S2-IMPORT-016 | 28 | done | Frontend Product Engineer / QA Lead | Add imported task detail read client foundation. | Frontend API client exposes a typed read-only `GET /imported-tasks/{task_id}` helper, encodes store/task path segments, keeps imported task detail previews `recommend_only`, and adds no review mutation, credential, sync execution, draft, publish, or commerce write controls. |
 | TASK-S2-OPP-017 | 29 | done | Backend/API Engineer / QA Lead | Add imported opportunity detail read API. | API exposes read-only `GET /imported-opportunities/{opportunity_id}` with deterministic generated previews and 404 for unknown ids, without task creation, review mutation, draft, publish, credential, sync execution, or commerce write controls. |
+| TASK-S2-OPP-018 | 30 | done | Frontend Product Engineer / QA Lead | Add imported opportunity detail read client foundation. | Frontend API client exposes a typed read-only `GET /imported-opportunities/{opportunity_id}` helper, encodes store/opportunity path segments, maps one imported opportunity preview through the safe opportunity adapter, and adds no review mutation, task creation, draft, publish, credential, sync execution, or commerce write controls. |
 
 ## Blockers
 
@@ -116,6 +117,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported task detail read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported opportunity detail read API is next because imported opportunities can be listed but not read individually for future preview-only detail surfaces.
 - Imported opportunity detail read API is verified by service/API red-green coverage, backend tests, frontend contract, lint, build, browser smoke, diff check, and secret scan.
+- Imported opportunity detail read client is next because the backend now exposes one imported opportunity preview, but the frontend contract only covers imported opportunity lists.
+- Imported opportunity detail read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 

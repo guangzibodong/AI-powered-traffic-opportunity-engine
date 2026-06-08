@@ -65,6 +65,7 @@ assert(apiClient.includes("ApiSyncRunsResponse"), "API client must type sync run
 assert(apiClient.includes("ApiAuditLogsResponse"), "API client must type audit log responses");
 assert(apiClient.includes("ApiImportedQueryClustersResponse"), "API client must type imported query cluster responses");
 assert(apiClient.includes("ApiImportedOpportunitiesResponse"), "API client must type imported opportunity responses");
+assert(apiClient.includes("ApiImportedOpportunityResponse"), "API client must type imported opportunity detail responses");
 assert(apiClient.includes("ApiImportedTasksResponse"), "API client must type imported task preview responses");
 assert(apiClient.includes("ApiImportedTaskResponse"), "API client must type imported task preview detail responses");
 assert(apiClient.includes("getIntegrations"), "API client must expose integration status reads");
@@ -72,15 +73,19 @@ assert(apiClient.includes("getSyncRuns"), "API client must expose sync run reads
 assert(apiClient.includes("getAuditLogs"), "API client must expose audit log reads");
 assert(apiClient.includes("getImportedQueryClusters"), "API client must expose imported query cluster reads");
 assert(apiClient.includes("getImportedOpportunities"), "API client must expose imported opportunity reads");
+assert(apiClient.includes("getImportedOpportunity"), "API client must expose imported opportunity detail reads");
 assert(apiClient.includes("getImportedTasks"), "API client must expose imported task preview reads");
 assert(apiClient.includes("getImportedTask"), "API client must expose imported task preview detail reads");
 assert(apiClient.includes("/imported-tasks"), "Imported task client must target the read-only imported task endpoint");
-for (const importedReadFunction of ["getImportedQueryClusters", "getImportedOpportunities", "getImportedTasks", "getImportedTask"]) {
+for (const importedReadFunction of ["getImportedQueryClusters", "getImportedOpportunities", "getImportedOpportunity", "getImportedTasks", "getImportedTask"]) {
   const functionBody = readExportedFunction(apiClient, importedReadFunction);
   for (const unsafeMethod of ['method: "POST"', 'method: "PATCH"', 'method: "PUT"', 'method: "DELETE"']) {
     assert(!functionBody.includes(unsafeMethod), `${importedReadFunction} must stay read-only and not use ${unsafeMethod}`);
   }
 }
+const importedOpportunityDetailClient = readExportedFunction(apiClient, "getImportedOpportunity");
+assert(importedOpportunityDetailClient.includes("/imported-opportunities/${encodedOpportunityId}"), "Imported opportunity detail client must target the encoded imported opportunity id");
+assert(importedOpportunityDetailClient.includes("encodeURIComponent(opportunityId)"), "Imported opportunity detail client must encode opportunity path segments");
 const importedTaskDetailClient = readExportedFunction(apiClient, "getImportedTask");
 assert(importedTaskDetailClient.includes("/imported-tasks/${encodedTaskId}"), "Imported task detail client must target the encoded imported task id");
 assert(importedTaskDetailClient.includes("encodeURIComponent(taskId)"), "Imported task detail client must encode task path segments");
@@ -103,6 +108,7 @@ assert(app.includes("mapApiAuditLogsToEvidenceRows("), "App must map audit logs 
 assert(app.includes("mapApiImportedQueryClustersToPreviews("), "App must map imported query clusters through the safe adapter");
 assert(app.includes("mapApiImportedOpportunitiesToOpportunities("), "App must map imported opportunities through the safe adapter");
 assert(app.includes("mapApiImportedTasksToTasks("), "App must map imported task previews through the safe adapter");
+assert(adapter.includes("mapApiImportedOpportunityResponseToOpportunity"), "Adapter must expose imported opportunity detail DTO conversion");
 assert(adapter.includes("mapApiImportedTaskResponseToTask"), "Adapter must expose imported task detail DTO conversion");
 assert(app.includes("integrations={board.integrations}"), "Safety page must render board integrations, including API-backed integrations");
 assert(app.includes("ImportedPreviewPanel"), "Board must expose an imported preview panel for API-backed imported data");

@@ -15,6 +15,7 @@ import type {
 import type {
   ApiAuditLogsResponse,
   ApiEvidence,
+  ApiImportedOpportunityResponse,
   ApiImportedOpportunitiesResponse,
   ApiImportedQueryClustersResponse,
   ApiImportedTaskResponse,
@@ -180,6 +181,12 @@ export function mapApiImportedOpportunitiesToOpportunities(
   response: ApiImportedOpportunitiesResponse
 ): Opportunity[] {
   return response.opportunities.map(mapApiOpportunityToOpportunity);
+}
+
+export function mapApiImportedOpportunityResponseToOpportunity(
+  response: ApiImportedOpportunityResponse
+): Opportunity {
+  return mapApiOpportunityToOpportunity(response.opportunity);
 }
 
 export function mapApiImportedTasksToTasks(response: ApiImportedTasksResponse): Task[] {

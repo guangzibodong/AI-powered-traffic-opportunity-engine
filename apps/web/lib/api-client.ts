@@ -162,6 +162,12 @@ export type ApiImportedOpportunitiesResponse = {
   summary?: Record<string, unknown>;
 };
 
+export type ApiImportedOpportunityResponse = {
+  mode: "imported_opportunities";
+  opportunity: ApiImportedOpportunity;
+  store_id: string;
+};
+
 export type ApiImportedTask = ApiTask & {
   related_page?: unknown;
   related_products?: unknown[];
@@ -232,6 +238,13 @@ export async function getImportedQueryClusters(storeId: string, apiBaseUrl = get
 
 export async function getImportedOpportunities(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiImportedOpportunitiesResponse>(`${storeApiPath(apiBaseUrl, storeId)}/imported-opportunities`);
+}
+
+export async function getImportedOpportunity(storeId: string, opportunityId: string, apiBaseUrl = getApiBaseUrl()) {
+  const encodedOpportunityId = encodeURIComponent(opportunityId);
+  return fetchJson<ApiImportedOpportunityResponse>(
+    `${storeApiPath(apiBaseUrl, storeId)}/imported-opportunities/${encodedOpportunityId}`
+  );
 }
 
 export async function getImportedTasks(storeId: string, apiBaseUrl = getApiBaseUrl()) {
