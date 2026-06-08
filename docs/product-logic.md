@@ -122,6 +122,14 @@ Sprint 2 imported task previews convert those imported opportunities into a safe
 - Keep every imported task preview at `automation_level: recommend_only` and `status: new`.
 - Expose list/detail reads only; no approval, rejection, snooze, draft, publishing, or commerce write path exists for imported previews.
 
+Sprint 2 integration status and sync run tracking makes the imported-data loop observable before real credentials exist:
+
+- Provider connect endpoints record local `connected_stub` state for GSC, WooCommerce, and WordPress.
+- Integration reads expose safe operations and blocked capabilities instead of secrets or raw auth payloads.
+- `POST /sync` creates a queued `tracking_only` sync run with provider steps.
+- Sync run steps keep `external_write_allowed: false` and zero record counts until a later read-only worker actually fills them.
+- No real GSC OAuth, WooCommerce write, WordPress draft, WordPress publish, or external job execution is triggered by this foundation.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.
@@ -245,6 +253,7 @@ AI must not invent:
 | WooCommerce | Read-only in MVP. No price, inventory, or product writes. |
 | GSC | Read/import only. CSV import rows and planning runs must be idempotent. |
 | WordPress | Draft-only writes in later sprint. No live publish path. |
+| Sync tracking | Sprint 2 sync runs are local tracking records only until real read-only workers and audit state are added. |
 | Credentials | Never show raw credentials, stack traces, or keys in UI. |
 | Audit | Every future write action should create an audit log. |
 

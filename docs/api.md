@@ -14,6 +14,21 @@
 - `POST /api/stores/:storeId/integrations/woocommerce/connect`
 - `GET /api/stores/:storeId/integrations`
 - `POST /api/stores/:storeId/sync`
+- `GET /api/stores/:storeId/sync-runs`
+- `GET /api/stores/:storeId/sync-runs/:syncRunId`
+
+### Integration status and sync run contract
+
+Sprint 2 integration endpoints track local safe state only:
+
+- Connect endpoints record `connected_stub` status and return the provider state under `integration`.
+- `GET /api/stores/:storeId/integrations` returns `mode: "integration_status"`, provider statuses, safe operations, blocked capabilities, and `external_write_allowed: false`.
+- Raw connection secrets are not returned or stored by the in-memory tracking service.
+- `POST /api/stores/:storeId/sync` creates a queued `sync_run` record with `execution_mode: "tracking_only"`.
+- `GET /api/stores/:storeId/sync-runs` lists queued sync run records.
+- `GET /api/stores/:storeId/sync-runs/:syncRunId` returns one sync run or `404`.
+
+Sync run steps are local tracking records for GSC, WooCommerce, and WordPress. They do not execute real GSC OAuth, WooCommerce writes, WordPress writes, WordPress draft creation, live publishing, external jobs, or credential checks.
 
 ## Products
 

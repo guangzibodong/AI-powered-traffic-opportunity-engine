@@ -136,6 +136,7 @@ Sprint 2 capabilities completed so far:
 7. Imported signal graph foundation: `GET /api/stores/{store_id}/imported-graph` links imported query clusters to imported products and pages through local deterministic matching.
 8. Imported opportunity preview foundation: `GET /api/stores/{store_id}/imported-opportunities` produces read-only opportunity previews for CTR refreshes and collection page gaps from imported data.
 9. Imported task preview foundation: `GET /api/stores/{store_id}/imported-tasks` converts imported opportunity previews into recommend-only action plans with evidence, acceptance criteria, safe `new` status, and no draft or external write path.
+10. Integration status and sync run tracking foundation: `GET /integrations`, stub connect endpoints, `POST /sync`, and sync run list/detail reads track safe local state without OAuth, publishing, drafts, or commerce writes.
 
 Current product/engineering ownership:
 
