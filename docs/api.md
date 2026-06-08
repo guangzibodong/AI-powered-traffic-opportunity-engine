@@ -25,7 +25,35 @@
 
 - `GET /api/stores/:storeId/queries`
 - `GET /api/stores/:storeId/queries/:queryId`
+- `POST /api/stores/:storeId/queries/import-csv`
 - `GET /api/stores/:storeId/query-clusters`
+
+### CSV GSC import contract
+
+`POST /api/stores/:storeId/queries/import-csv` accepts exported GSC-like CSV text in JSON:
+
+```json
+{
+  "csv_text": "Query,Page,Clicks,Impressions,CTR,Position\nportable espresso,https://example.com/page,24,1200,2.0%,4.8\n",
+  "window": "28d"
+}
+```
+
+Required CSV columns:
+
+- `Query`
+- `Page`
+- `Clicks`
+- `Impressions`
+- `CTR`
+- `Position`
+
+Responses:
+
+- `200` returns `{ "mode": "csv_import", "summary": { ... } }`.
+- `400` is returned when `csv_text` is missing or required columns are absent.
+
+Imported rows are in-memory, scoped per store, and idempotent by store, window, query, and page. This is an import/read flow only; it does not connect real GSC OAuth.
 
 ## Opportunities
 

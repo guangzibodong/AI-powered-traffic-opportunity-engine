@@ -108,9 +108,9 @@ The first version is a working product experience, not a marketing landing page.
 - Performance: tracking state and before-after GSC movement.
 - Settings and Integrations: WooCommerce, WordPress, GSC, sync status, safety controls.
 
-## Current Sprint 1 Status
+## Current Sprint Status
 
-The current branch is focused on the demo decisioning loop and API-backed task review actions. It is still a demo-safe product slice: no real WooCommerce writes, no real GSC OAuth, and no WordPress draft creation.
+Sprint 1 is complete. The current branch has started Sprint 2 with a demo-safe CSV import foundation for Google Search Console exports. This still does not connect real GSC OAuth, write WooCommerce data, or create WordPress drafts.
 
 Completed capabilities in the current Sprint 1 slice:
 
@@ -125,11 +125,11 @@ Completed capabilities in the current Sprint 1 slice:
 - API-unavailable fallback feedback now exposes explicit `Retry sync` and `Keep local` controls, so the user can either re-attempt the demo API mutation or intentionally keep the local review state.
 - Automated browser smoke coverage is available through `pnpm --filter @trafscope/web run test:api-actions`; it launches isolated local API/web ports and verifies API success, API fallback, retry sync, keep-local confirmation, unsafe status rejection, and board/detail consistency.
 
-Next API-backed task action UX:
+Sprint 2 capabilities now in progress:
 
-1. Keep the current local task-state fallback when the API is unavailable or disabled.
-2. Add deeper audit-log preview once Sprint 2 execution tracking starts.
-3. Keep automated browser coverage green as UI copy and task flows evolve.
+1. CSV GSC import foundation: `POST /api/stores/{store_id}/queries/import-csv`.
+2. Imported query list/detail reads: `GET /queries` and `GET /queries/{query_id}`.
+3. In-memory idempotent imported rows per store and date window, with no live OAuth.
 
 Current product/engineering ownership:
 
@@ -269,6 +269,7 @@ Prove TrafScope can turn demo store data and GSC-like signals into trustworthy t
 
 Connect the decisioning loop to real WooCommerce and WordPress data.
 
+- CSV GSC export import foundation for query/page metrics.
 - WooCommerce read-only product sync.
 - WordPress read-only page/post sync.
 - Integration status and sync run tracking.

@@ -34,7 +34,7 @@ flowchart LR
 
 | Source | Current role | Examples | Safety default |
 |---|---|---|---|
-| Google Search Console | Search demand and performance | Query, page, impressions, clicks, CTR, average position | Read/import only |
+| Google Search Console | Search demand and performance | Query, page, impressions, clicks, CTR, average position | Read/import only; CSV import before OAuth |
 | WooCommerce | Product fit and commerce readiness | Product title, categories, stock attributes, images | Read only |
 | WordPress | Existing page graph | Pages, posts, URLs, titles, candidate matches | Draft-only writes later |
 | Execution history | Outcome feedback | Approved tasks, draft assets, baseline snapshots | Audit logged |
@@ -186,7 +186,7 @@ AI must not invent:
 |---|---|
 | Scoring | Deterministic rules only. AI does not score or rank. |
 | WooCommerce | Read-only in MVP. No price, inventory, or product writes. |
-| GSC | Read/import only. Planning runs must be idempotent. |
+| GSC | Read/import only. CSV import rows and planning runs must be idempotent. |
 | WordPress | Draft-only writes in later sprint. No live publish path. |
 | Credentials | Never show raw credentials, stack traces, or keys in UI. |
 | Audit | Every future write action should create an audit log. |
@@ -195,7 +195,7 @@ AI must not invent:
 
 | Service | Owns | Does not own |
 |---|---|---|
-| `GSCIngestionService` | Import/query metrics and performance rows. | Opportunity ranking. |
+| `GSCIngestionService` | Import/query metrics and performance rows, starting with CSV exports. | Opportunity ranking or live OAuth. |
 | `ProductSyncService` | WooCommerce product/category/attribute read sync. | Product writes. |
 | `GraphBuilderService` | Query-product-page relationships. | Task state changes. |
 | `OpportunityEngine` | Rule triggers, score components, dedupe. | AI drafting. |

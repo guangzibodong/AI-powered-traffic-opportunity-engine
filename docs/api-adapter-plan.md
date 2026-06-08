@@ -36,6 +36,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | Visible UI mutation wiring | Done | Task Detail approve/reject/snooze calls `updateTaskStatus` when API board data is connected, then patches board state. |
 | Error/loading UX | Done | Task Detail shows pending, synced, local, and API-unavailable fallback feedback. API-unavailable fallback includes explicit `Retry sync` and `Keep local` controls. |
 | Browser mutation smoke | Done | `pnpm --filter @trafscope/web run test:api-actions` launches isolated API/web ports in a real browser and covers success, fallback, retry, keep-local, unsafe status rejection, and board/detail consistency. |
+| CSV GSC import foundation | Done | `POST /queries/import-csv` imports GSC-like CSV exports into in-memory per-store query rows, with list/detail read APIs. No real GSC OAuth is connected. |
 
 ## Local Smoke Run
 
@@ -103,7 +104,7 @@ Expected behavior:
 - API mutation failure must not erase the user's visible local review state.
 - API mutation fallback controls must remain state-only: `Retry sync` re-attempts `PATCH`, and `Keep local` confirms the local demo review state.
 - Local browser smoke may set `CORS_ORIGINS` for isolated test ports; production/live integrations remain outside Sprint 1.
-- Real WooCommerce, GSC, WordPress, credential, and publishing actions remain outside this adapter slice.
+- CSV GSC import is allowed as a read/import fixture path; real GSC OAuth, WooCommerce writes, WordPress writes, credentials, and publishing actions remain outside this adapter slice.
 
 ## Remaining API-backed Task Action UX
 

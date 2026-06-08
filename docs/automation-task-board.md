@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 1 automated browser coverage for API-backed task review success, fallback, retry, keep-local, unsafe status rejection, and board/detail consistency.
+Current loop: Sprint 2 GSC CSV import foundation. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -23,10 +23,10 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Role | Person/Agent | Current assignment |
 |---|---|---|
 | Product Manager | Main thread | Keep Sprint 1 review actions state-only and draft-safe. |
-| Backend/API Engineer | Main thread | Add demo task status mutation and persistence. |
-| Frontend Product Engineer | Main thread | Support browser smoke hooks only if needed; keep UI behavior unchanged. |
-| QA Lead | Main thread | Add automated browser smoke for API-backed task review success, fallback, retry, keep-local, unsafe status, and board/detail consistency. |
-| UI Systems Engineer | Banach | Watch for compact feedback layout regressions in browser smoke. |
+| Backend/API Engineer | Main thread | Add in-memory CSV GSC import and read APIs. |
+| Frontend Product Engineer | Main thread | No UI import panel in this slice; keep existing Sprint 1 UI stable. |
+| QA Lead | Main thread | Add service and API tests for CSV normalization, idempotency, invalid rows, and query detail reads. |
+| UI Systems Engineer | Banach | Reserved for later Sync run UI. |
 
 ## Task Queue
 
@@ -44,6 +44,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-UX-010 | 10 | done | Frontend Product Engineer / UI Systems Engineer | Add review action pending, success, local, and API fallback feedback states. | Task Detail disables duplicate review submissions while syncing, announces feedback with `aria-live`, and shows safe fallback copy when the API is unavailable. |
 | TASK-UX-011 | 11 | done | Frontend Product Engineer / QA Lead | Add fallback retry and keep-local controls. | API-unavailable review feedback lets users retry the demo API sync or intentionally keep the local review state without creating drafts, publishing, or writing commerce data. |
 | TASK-QA-012 | 12 | done | QA Lead / Frontend Product Engineer | Add automated browser-level API task action coverage. | A repo script launches the API and web app, drives the Task Detail UI in a real browser, verifies API success, API fallback, retry sync, keep-local confirmation, unsafe status rejection, and board/detail status consistency. |
+| TASK-S2-GSC-001 | 13 | done | Backend/API Engineer / QA Lead | Add CSV GSC import foundation. | API accepts GSC CSV text, normalizes query/page/clicks/impressions/CTR/position rows, stores them in-memory per store, exposes list/detail reads, rejects invalid rows safely, and preserves Sprint 1 no-live-integration boundaries. |
 
 ## Blockers
 
@@ -65,6 +66,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Browser smoke on `localhost:3000` confirmed review feedback success path for `task_007` and API-unavailable fallback path for `task_008`.
 - Browser smoke on `localhost:3000` confirmed API-unavailable fallback exposes `Retry sync` and `Keep local`, retry returns to synced API feedback after API recovery, and keep-local confirms local state without execution.
 - Automated browser smoke command added: `pnpm --filter @trafscope/web run test:api-actions`. It launches isolated API/web ports, uses a real browser, and covers success, fallback, retry, keep-local, unsafe status rejection, and board/detail consistency.
+- Sprint 2 starts with imported CSV search data because it moves TrafScope from demo-only planning toward user-owned GSC exports without requiring OAuth credentials.
+- CSV import tests cover normalization, sorting, idempotency, missing required columns, endpoint import/list/detail, and unknown query 404 behavior.
 
 ## Completion Rule
 
