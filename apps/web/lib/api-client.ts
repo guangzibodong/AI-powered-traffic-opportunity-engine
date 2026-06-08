@@ -185,6 +185,67 @@ export type ApiImportedGraphResponse = {
   };
 };
 
+export type ApiImportedProduct = {
+  attributes?: Record<string, string[]>;
+  categories?: string[];
+  currency?: string | null;
+  external_id: string;
+  id: string;
+  images?: string[];
+  in_stock?: boolean;
+  name: string;
+  permalink?: string | null;
+  price?: number | null;
+  regular_price?: number | null;
+  short_description?: string;
+  sku?: string | null;
+  slug?: string | null;
+  source?: string;
+  status?: string;
+  stock_status?: string;
+  store_id?: string;
+};
+
+export type ApiImportedProductsResponse = {
+  mode: "woocommerce_import";
+  products: ApiImportedProduct[];
+  store_id: string;
+};
+
+export type ApiImportedProductResponse = {
+  mode: "woocommerce_import";
+  product: ApiImportedProduct;
+  store_id: string;
+};
+
+export type ApiImportedPage = {
+  content_hash?: string;
+  excerpt?: string;
+  external_id: string;
+  id: string;
+  indexable?: boolean;
+  page_type?: string;
+  seo?: Record<string, unknown>;
+  slug?: string | null;
+  source?: string;
+  status?: string;
+  store_id?: string;
+  title: string;
+  url: string;
+};
+
+export type ApiImportedPagesResponse = {
+  mode: "wordpress_import";
+  pages: ApiImportedPage[];
+  store_id: string;
+};
+
+export type ApiImportedPageResponse = {
+  mode: "wordpress_import";
+  page: ApiImportedPage;
+  store_id: string;
+};
+
 export type ApiImportedQueryClustersResponse = {
   mode: "csv_import";
   query_clusters: ApiImportedQueryCluster[];
@@ -282,6 +343,24 @@ export async function getAuditLogs(storeId: string, apiBaseUrl = getApiBaseUrl()
 
 export async function getImportedGraph(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiImportedGraphResponse>(`${storeApiPath(apiBaseUrl, storeId)}/imported-graph`);
+}
+
+export async function getImportedProducts(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiImportedProductsResponse>(`${storeApiPath(apiBaseUrl, storeId)}/products`);
+}
+
+export async function getImportedProduct(storeId: string, productId: string, apiBaseUrl = getApiBaseUrl()) {
+  const encodedProductId = encodeURIComponent(productId);
+  return fetchJson<ApiImportedProductResponse>(`${storeApiPath(apiBaseUrl, storeId)}/products/${encodedProductId}`);
+}
+
+export async function getImportedPages(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiImportedPagesResponse>(`${storeApiPath(apiBaseUrl, storeId)}/pages`);
+}
+
+export async function getImportedPage(storeId: string, pageId: string, apiBaseUrl = getApiBaseUrl()) {
+  const encodedPageId = encodeURIComponent(pageId);
+  return fetchJson<ApiImportedPageResponse>(`${storeApiPath(apiBaseUrl, storeId)}/pages/${encodedPageId}`);
 }
 
 export async function getImportedQueryClusters(storeId: string, apiBaseUrl = getApiBaseUrl()) {

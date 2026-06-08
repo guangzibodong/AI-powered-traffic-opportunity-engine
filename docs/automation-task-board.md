@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported graph read client completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported catalog read client completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -65,6 +65,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-GSC-019 | 31 | done | Backend/API Engineer / QA Lead | Add imported query cluster detail read API. | API exposes read-only `GET /query-clusters/{cluster_key}` with deterministic imported GSC cluster payloads and 404 for unknown keys, without embeddings, real GSC OAuth, sync execution, task creation, draft, publish, credential, or external write controls. |
 | TASK-S2-GSC-020 | 32 | done | Frontend Product Engineer / QA Lead | Add imported query cluster detail read client foundation. | Frontend API client exposes a typed read-only `GET /query-clusters/{cluster_key}` helper, encodes store/cluster path segments, maps one imported query cluster through the safe preview adapter, and adds no embedding, real GSC OAuth, sync execution, task creation, draft, publish, credential, or external write controls. |
 | TASK-S2-GRAPH-021 | 33 | done | Frontend Product Engineer / QA Lead | Add imported signal graph read client foundation. | Frontend API client exposes a typed read-only `GET /imported-graph` helper and maps imported graph query clusters through the safe cluster preview adapter, without embeddings, real GSC OAuth, sync execution, task creation, draft, publish, credential, or external write controls. |
+| TASK-S2-CATALOG-022 | 34 | done | Frontend Product Engineer / QA Lead | Add imported catalog read client foundation. | Frontend API client exposes typed read-only list/detail helpers for imported WooCommerce products and WordPress pages, encodes store/product/page path segments, and adds no credential, sync execution, draft, publish, product edit, price edit, inventory edit, commerce write, or external write controls. |
 
 ## Blockers
 
@@ -128,6 +129,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported query cluster detail read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported signal graph read client is next because the backend graph endpoint already links imported clusters/products/pages, but the frontend contract does not expose a read-only graph client yet.
 - Imported signal graph read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported catalog read client is next because graph and opportunity previews now reference imported WooCommerce products and WordPress pages, but the frontend has no stable read-only list/detail DTO helpers for those catalog entities.
+- Imported catalog read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 
