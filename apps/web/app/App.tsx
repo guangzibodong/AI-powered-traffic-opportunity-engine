@@ -44,6 +44,17 @@ type BoardDataState = {
 
 const demoStoreId = "store-demo-outdoor-coffee";
 
+type PendingTaskStatus = {
+  status: VisibleTaskStatus;
+  taskId: string;
+};
+
+type TaskActionFeedback = {
+  kind: "api" | "fallback" | "local" | "pending";
+  status: VisibleTaskStatus;
+  taskId: string;
+} | null;
+
 type MessageKey =
   | "board"
   | "opportunities"
@@ -134,6 +145,8 @@ export function App() {
   });
   const [selectedTaskId, setSelectedTaskId] = useState(taskDetail.id);
   const [taskStatuses, setTaskStatuses] = useState(loadTaskStatusMap);
+  const [pendingTaskStatus, setPendingTaskStatus] = useState<PendingTaskStatus | null>(null);
+  const [taskActionFeedback, setTaskActionFeedback] = useState<TaskActionFeedback>(null);
   const t = useMessages(locale);
   const board = useMemo(() => applyTaskStatusesToBoard(baseBoard, taskStatuses), [baseBoard, taskStatuses]);
   const selectedTask = useMemo(() => {
@@ -200,18 +213,28 @@ export function App() {
 
   async function setTaskStatus(taskId: string, status: VisibleTaskStatus) {
     if (boardDataState.source === "api") {
+      setPendingTaskStatus({ status, taskId });
+      setTaskActionFeedback({ kind: "pending", status, taskId });
+
       try {
         const response = await updateTaskStatus(baseBoard.storeName, taskId, status);
         applyApiTaskStatusToBoard(response.task.id, status);
         clearLocalTaskStatus(response.task.id);
+        setTaskActionFeedback({ kind: "api", status, taskId: response.task.id });
         return;
       } catch {
         applyLocalTaskStatus(taskId, status);
+        setTaskActionFeedback({ kind: "fallback", status, taskId });
         return;
+      } finally {
+        setPendingTaskStatus((current) =>
+          current?.taskId === taskId && current.status === status ? null : current
+        );
       }
     }
 
     applyLocalTaskStatus(taskId, status);
+    setTaskActionFeedback({ kind: "local", status, taskId });
   }
 
   return (
@@ -231,7 +254,16 @@ export function App() {
             t={t}
           />
         )}
-        {screen === "task" && <TaskDetailPage task={selectedTask} locale={locale} onTaskStatusChange={setTaskStatus} t={t} />}
+        {screen === "task" && (
+          <TaskDetailPage
+            locale={locale}
+            onTaskStatusChange={setTaskStatus}
+            pendingTaskStatus={pendingTaskStatus}
+            task={selectedTask}
+            taskActionFeedback={taskActionFeedback}
+            t={t}
+          />
+        )}
         {screen === "opportunity" && <OpportunityDetailPage opportunity={opportunityDetail} locale={locale} t={t} />}
         {screen === "integrations" && <IntegrationsSafetyPage integrations={integrationHealth} locale={locale} t={t} />}
         {screen === "states" && <UiStatesPage locale={locale} t={t} />}
@@ -556,15 +588,108 @@ function OpportunityRail({ opportunities, locale, t }: SharedProps & { opportuni
   );
 }
 
+function reviewButtonLabel(
+  locale: Locale,
+  status: VisibleTaskStatus,
+  pendingTaskStatus: PendingTaskStatus | null,
+  isReviewActionPending: boolean,
+  zh: string,
+  en: string
+) {
+  if (!isReviewActionPending || pendingTaskStatus?.status !== status) return locale === "zh" ? zh : en;
+  return locale === "zh" ? "同步中" : "Syncing";
+}
+
+function ReviewActionFeedback({ feedback, locale }: { feedback: TaskActionFeedback; locale: Locale }) {
+  if (!feedback) return null;
+
+  const copy = getReviewActionFeedbackCopy(feedback.kind, locale);
+
+  return (
+    <div
+      aria-live="polite"
+      className={`banner review-feedback ${feedback.kind === "fallback" ? "blocked" : "rule"}`}
+    >
+      <div>
+        <strong>{copy.title}</strong>
+        <span>{copy.description}</span>
+      </div>
+      <span className={`pill ${feedback.kind === "fallback" ? "commerce" : "safe"}`}>{copy.badge}</span>
+    </div>
+  );
+}
+
+function getReviewActionFeedbackCopy(kind: NonNullable<TaskActionFeedback>["kind"], locale: Locale) {
+  const copy: Record<NonNullable<TaskActionFeedback>["kind"], Record<Locale, { badge: string; description: string; title: string }>> = {
+    api: {
+      zh: {
+        badge: "demo API",
+        description: "审核状态已同步到 demo API。没有创建 WordPress 草稿或改写商品数据。",
+        title: "审核状态已同步"
+      },
+      en: {
+        badge: "demo API",
+        description: "The review state is synced to the demo API. No WordPress draft or product data was changed.",
+        title: "Review state synced"
+      }
+    },
+    fallback: {
+      zh: {
+        badge: "fallback",
+        description: "API 不可用。我们已把这次审核状态保留在本地演示状态中，没有执行任何外部写入。",
+        title: "API 不可用"
+      },
+      en: {
+        badge: "fallback",
+        description: "API unavailable. We kept this review state locally for the demo and made no external writes.",
+        title: "API unavailable"
+      }
+    },
+    local: {
+      zh: {
+        badge: "local",
+        description: "审核状态已保存在本地演示状态中。启用 API board 后会优先同步 demo API。",
+        title: "审核状态已本地保存"
+      },
+      en: {
+        badge: "local",
+        description: "The review state is saved locally for the demo. API board mode syncs the demo API first.",
+        title: "Review state saved locally"
+      }
+    },
+    pending: {
+      zh: {
+        badge: "syncing",
+        description: "正在同步审核状态。按钮会暂时禁用，以避免重复提交。",
+        title: "正在同步审核状态"
+      },
+      en: {
+        badge: "syncing",
+        description: "Syncing review state. The review buttons are temporarily disabled to prevent duplicate submissions.",
+        title: "Syncing review state"
+      }
+    }
+  };
+
+  return copy[kind][locale];
+}
+
 function TaskDetailPage({
   task,
   locale,
   onTaskStatusChange,
+  pendingTaskStatus,
+  taskActionFeedback,
   t
 }: SharedProps & {
   task: TaskDetailViewModel;
-  onTaskStatusChange: (taskId: string, status: VisibleTaskStatus) => void;
+  onTaskStatusChange: (taskId: string, status: VisibleTaskStatus) => Promise<void> | void;
+  pendingTaskStatus: PendingTaskStatus | null;
+  taskActionFeedback: TaskActionFeedback;
 }) {
+  const isReviewActionPending = pendingTaskStatus?.taskId === task.id;
+  const visibleFeedback = taskActionFeedback?.taskId === task.id ? taskActionFeedback : null;
+
   return (
     <section>
       <div className="title-row">
@@ -579,17 +704,34 @@ function TaskDetailPage({
         <div className="actions">
           <span className="status-label">{locale === "zh" ? "当前状态" : "Current status"}</span>
           <StatusPill status={task.status} t={t} />
-          <button className="button" onClick={() => onTaskStatusChange(task.id, "snoozed")} type="button">
-            {locale === "zh" ? "稍后处理" : "Snooze"}
+          <button
+            className="button"
+            disabled={isReviewActionPending}
+            onClick={() => onTaskStatusChange(task.id, "snoozed")}
+            type="button"
+          >
+            {reviewButtonLabel(locale, "snoozed", pendingTaskStatus, isReviewActionPending, "稍后处理", "Snooze")}
           </button>
-          <button className="button danger" onClick={() => onTaskStatusChange(task.id, "rejected")} type="button">
-            {locale === "zh" ? "拒绝" : "Reject"}
+          <button
+            className="button danger"
+            disabled={isReviewActionPending}
+            onClick={() => onTaskStatusChange(task.id, "rejected")}
+            type="button"
+          >
+            {reviewButtonLabel(locale, "rejected", pendingTaskStatus, isReviewActionPending, "拒绝", "Reject")}
           </button>
-          <button className="button primary" onClick={() => onTaskStatusChange(task.id, "approved")} type="button">
-            {locale === "zh" ? "批准任务" : "Approve task"}
+          <button
+            className="button primary"
+            disabled={isReviewActionPending}
+            onClick={() => onTaskStatusChange(task.id, "approved")}
+            type="button"
+          >
+            {reviewButtonLabel(locale, "approved", pendingTaskStatus, isReviewActionPending, "批准任务", "Approve task")}
           </button>
         </div>
       </div>
+
+      <ReviewActionFeedback feedback={visibleFeedback} locale={locale} />
 
       <div className="banner">
         <div>

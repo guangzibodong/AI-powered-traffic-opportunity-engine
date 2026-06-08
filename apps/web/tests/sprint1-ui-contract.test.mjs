@@ -151,6 +151,15 @@ assert(app.includes("updateTaskStatus("), "App must route task status actions th
 assert(app.includes('boardDataState.source === "api"'), "App must only call task status API mutations for API-backed board data");
 assert(app.includes("applyApiTaskStatusToBoard"), "App must merge successful API task status changes into board state");
 assert(app.includes("applyLocalTaskStatus(taskId, status)"), "App must keep safe local task status fallback for API failures");
+assert(app.includes("pendingTaskStatus"), "App must track an in-flight task review status mutation");
+assert(app.includes("taskActionFeedback"), "App must retain safe review action feedback after API mutation attempts");
+assert(app.includes("ReviewActionFeedback"), "Task Detail must render review action feedback");
+assert(app.includes("isReviewActionPending"), "Task Detail must disable review controls while a mutation is pending");
+assert(app.includes("disabled={isReviewActionPending}"), "Task Detail review buttons must be disabled while syncing");
+assert(app.includes('aria-live="polite"'), "Review action feedback must announce pending/error state accessibly");
+assert(app.includes("Syncing review state"), "Review action feedback must include non-technical pending copy");
+assert(app.includes("API unavailable"), "Review action feedback must include safe API failure fallback copy");
+assert(styles.includes(".review-feedback"), "styles.css must style review action feedback");
 assert(app.includes("window.scrollTo({ left: 0, top: 0 })"), "App must reset scroll to the top when switching screens");
 assert(app.includes("selectedTaskId"), "App must track the selected task id for task detail routing");
 assert(app.includes("setSelectedTaskId(task.id)"), "Task queue clicks must select the clicked task before opening detail");

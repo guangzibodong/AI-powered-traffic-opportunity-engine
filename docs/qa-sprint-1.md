@@ -398,13 +398,16 @@ Verify:
 - Browser back or the provided return affordance brings the user back to the board without losing current status.
 - Directly loading a valid Task Detail URL renders the same task.
 - Unknown task IDs render a safe not-found or recoverable error state.
-- Approve, reject, and snooze controls call the demo status API when wired and show loading/error states.
+- Approve, reject, and snooze controls call the demo status API from the UI and show pending/synced/fallback feedback.
+- Review controls are disabled while a mutation is pending, then re-enabled after success or fallback.
+- API failure keeps a safe local fallback state and shows non-technical feedback without raw stack traces or credentials.
 - Updated status is reflected on both Task Detail and the board after return or refresh.
 
 Acceptance:
 
 - A user can click any task in the board and land on the matching Task Detail.
 - No task click opens stale, hard-coded, or mismatched detail content.
+- API-backed review success and API-unavailable fallback are both visible from Task Detail.
 - Status review remains state-only and cannot imply draft generation or live publishing.
 
 ### Opportunity Detail Or Panel
@@ -415,7 +418,7 @@ Verify:
 - Why-now summary is visible.
 - Evidence rows are visible and source-labeled.
 - Score breakdown can be inspected.
-- Approve/reject controls have loading/error states when wired.
+- Opportunity task actions inherit the same state-only review boundary; loading/error feedback must never imply publishing.
 
 ### Integration Status
 
@@ -539,7 +542,8 @@ Release blocker examples:
 - [ ] Planning produces or displays task data.
 - [ ] At least one task detail/evidence path is verified.
 - [ ] A non-top task opens the matching Task Detail.
-- [ ] Approve/reject/snooze status mutation is verified through UI or API smoke.
+- [ ] Approve/reject/snooze status mutation is verified through UI controls.
+- [ ] API-backed success feedback and API-unavailable local fallback feedback are verified.
 - [ ] Repeated planning does not duplicate the task.
 - [ ] No live publish control is present.
 - [ ] Console has no uncaught runtime errors.

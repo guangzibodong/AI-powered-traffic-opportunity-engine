@@ -77,10 +77,10 @@ Required:
 - Evidence list component tests pass.
 - Score breakdown component tests pass.
 - Integration status tests pass.
-- Empty/loading/error states are tested.
+- Empty/loading/error states are tested, including task review mutation pending and fallback feedback.
 - API mapper tests pass for snake_case to camelCase conversion.
 - Any task card or row opens the corresponding Task Detail.
-- Task Detail approve/reject/snooze controls use only Sprint 1 safe statuses when wired.
+- Task Detail approve/reject/snooze controls use only Sprint 1 safe statuses, disable duplicate submissions while pending, and show safe fallback feedback when the API is unavailable.
 - No live publish control appears in MVP UI.
 
 Commands:
@@ -105,11 +105,12 @@ Playwright smoke must cover:
 6. Click the top task and confirm the matching Task Detail opens.
 7. Return to the board, click a non-top task, and confirm the matching Task Detail opens.
 8. Confirm query/product/page evidence is visible.
-9. Approve, reject, and snooze a task through UI controls when wired, or through the demo API smoke path while UI wiring is in progress.
-10. Re-run planning and confirm no duplicate task appears.
-11. Search UI for live publish controls and confirm none exist.
-12. Run desktop and mobile viewport checks.
-13. Confirm browser console has no uncaught runtime errors.
+9. Approve, reject, and snooze a task through UI controls.
+10. Confirm API-backed success feedback and API-unavailable local fallback feedback.
+11. Re-run planning and confirm no duplicate task appears.
+12. Search UI for live publish controls and confirm none exist.
+13. Run desktop and mobile viewport checks.
+14. Confirm browser console has no uncaught runtime errors.
 
 Command:
 
@@ -200,6 +201,7 @@ Sprint 1 is complete only when:
 - Each task includes evidence, related entities, score, action plan, and acceptance criteria.
 - Any task on the board opens its corresponding Task Detail.
 - Approve/reject/snooze states persist.
+- Task review controls show pending, success, and API-unavailable fallback feedback without implying execution.
 - Demo task status API supports PATCH plus approve/reject/snooze and rejects unsafe statuses.
 - Board and detail UI render the decision clearly.
 - No live publish path exists.

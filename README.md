@@ -121,13 +121,13 @@ Completed capabilities in the current Sprint 1 slice:
 - Backend convenience endpoints also support `POST /approve`, `POST /reject`, and `POST /snooze` for demo tasks.
 - Demo task status overrides are in-memory and reflected in both task list and task detail responses during the current API process.
 - The visible React task buttons call `updateTaskStatus` when API board data is connected, with local state retained as the safe fallback.
+- Task Detail review controls show accessible pending, synced, and API-unavailable fallback feedback while disabling duplicate submissions during sync.
 
 Next API-backed task action UX:
 
-1. Add loading, error, and retry/rollback states around task status mutations.
-2. Show safe non-technical feedback when API mutation fails and local fallback is used.
-3. Add browser-level coverage for API mutation success and fallback behavior.
-4. Keep the current local task-state fallback when the API is unavailable or disabled.
+1. Add explicit retry/rollback controls for failed API mutations.
+2. Add automated browser-level coverage for API mutation success and fallback behavior.
+3. Keep the current local task-state fallback when the API is unavailable or disabled.
 
 Current product/engineering ownership:
 

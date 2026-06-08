@@ -71,14 +71,15 @@ Do not build in Sprint 1:
 | Task shortcut routes | 已完成后端能力 | `POST /approve`、`POST /reject`、`POST /snooze` 已可更新 demo task review state。 |
 | Frontend mutation client | Done | `updateTaskStatus` sends `PATCH { status }` for Sprint 1 review states. |
 | Visible UI mutation wiring | Done | Task Detail approve/reject/snooze calls the demo API when API board data is connected, while preserving local fallback. |
+| Review action feedback | Partial done | Task Detail shows pending, synced, local, and API-unavailable fallback feedback; explicit retry/rollback controls remain next. |
 | Real integrations and publishing | 明确不做 | Sprint 1 不连接真实 WooCommerce/GSC/OAuth，不创建 WordPress draft，不做 live publish。 |
 
 ## Remaining API-backed Task Action UX
 
 | ID | Owner | Action | Definition of Done |
 |---|---|---|---|
-| API-ACTION-001 | Frontend Product Engineer / QA | Add loading, error, and retry/rollback states. | Users can see mutation progress; API failure keeps local usable state and shows a safe error. |
-| API-ACTION-002 | QA Lead | Add browser-level API mutation coverage. | Covers API success, API fallback, unsafe status protection, and list/detail state consistency. |
+| API-ACTION-001 | Frontend Product Engineer / QA | Add explicit retry/rollback controls after local fallback. | Users can retry a failed API sync or intentionally keep the local review state. |
+| API-ACTION-002 | QA Lead | Add automated browser-level API mutation coverage. | Covers API success, API fallback, unsafe status protection, and list/detail state consistency. |
 | API-ACTION-003 | Product Ops / Documentation Lead | Keep demo script and release gates aligned. | Docs consistently say Sprint 1 approve/reject/snooze only changes review state. |
 
 ## P1 Backlog

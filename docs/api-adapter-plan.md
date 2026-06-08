@@ -34,7 +34,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | Frontend API read adapter | 已完成 | `getTasks`、`getOpportunities` 与 `mapApiPlanningToBoard` 可驱动 API-backed board。 |
 | Frontend API mutation client | Done | `updateTaskStatus` wraps `PATCH { status }` for Sprint 1 review states. API settings use direct `import.meta.env.VITE_*` access so Vite can inject them. |
 | Visible UI mutation wiring | Done | Task Detail approve/reject/snooze calls `updateTaskStatus` when API board data is connected, then patches board state. |
-| Error/loading UX | 待做 | 需要为 approve/reject/snooze 增加 loading、失败、重试/回滚状态。 |
+| Error/loading UX | Partial done | Task Detail now shows pending, synced, local, and API-unavailable fallback feedback; explicit retry/rollback controls remain future work. |
 
 ## Local Smoke Run
 
@@ -103,8 +103,7 @@ Expected behavior:
 
 ## Remaining API-backed Task Action UX
 
-1. Add a pending indicator while approve/reject/snooze mutations are in flight.
-2. On failure, keep the existing local fallback path and show a safe, non-technical error message.
-3. Keep mock mode behavior unchanged so demos still work without the backend.
-4. Add browser-level tests that prove API mutation success, fallback behavior, and list/detail state consistency.
-5. Keep backend tests covering allowed statuses, illegal statuses, shortcut routes, and 10+ evidence-backed demo tasks.
+1. Add explicit retry/rollback controls after an API mutation falls back to local state.
+2. Keep mock mode behavior unchanged so demos still work without the backend.
+3. Add automated browser-level tests that prove API mutation success, fallback behavior, and list/detail state consistency.
+4. Keep backend tests covering allowed statuses, illegal statuses, shortcut routes, and 10+ evidence-backed demo tasks.

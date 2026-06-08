@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 1 QA acceptance for Task Detail navigation, demo task status API, and API-backed task review wiring.
+Current loop: Sprint 1 QA acceptance for Task Detail navigation, demo task status API, API-backed task review wiring, and review action feedback states.
 
 ## Status Legend
 
@@ -41,6 +41,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-API-007 | 7 | done | Frontend Product Engineer | Wire visible Task Detail review actions to the demo API when API board data is connected. | `App.tsx` calls `updateTaskStatus`, applies successful API responses to board state, and keeps local fallback for API-disabled or failed mutations. |
 | TASK-QA-008 | 8 | done | QA Lead | Expand status API acceptance coverage. | Tests cover 10+ evidence-backed tasks, shortcut routes, unknown shortcut tasks, unsafe review statuses, and future-gated draft generation. |
 | TASK-DOC-009 | 9 | done | Product Ops / Documentation Lead | Reconcile docs with API-backed review wiring and Sprint 1 draft-safety boundaries. | README, backlog, adapter plan, and task board all state that Sprint 1 review actions are state-only and no WordPress draft is created. |
+| TASK-UX-010 | 10 | done | Frontend Product Engineer / UI Systems Engineer | Add review action pending, success, local, and API fallback feedback states. | Task Detail disables duplicate review submissions while syncing, announces feedback with `aria-live`, and shows safe fallback copy when the API is unavailable. |
 
 ## Blockers
 
@@ -59,6 +60,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - The frontend API gate now reads `import.meta.env.VITE_*` directly so Vite dev/build can inject API settings.
 - The API-backed board now uses stable demo store id `store-demo-outdoor-coffee` instead of the display store name.
 - Browser smoke on `localhost:3000` confirmed API-connected board, non-top task detail routing, and API-backed approve mutation for `task_006`.
+- Browser smoke on `localhost:3000` confirmed review feedback success path for `task_007` and API-unavailable fallback path for `task_008`.
 
 ## Completion Rule
 
