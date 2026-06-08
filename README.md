@@ -5,6 +5,8 @@
 TrafScope is an AI-powered traffic opportunity engine for WooCommerce and WordPress businesses.
 It finds demand signals from search data, product data, website pages, and execution history, then turns those signals into prioritized growth tasks, draft content assets, and measurable performance loops.
 
+Positioning: **AI-powered full-channel traffic opportunity engine**.
+
 Repository: https://github.com/guangzibodong/AI-powered-traffic-opportunity-engine
 
 ## Product Positioning
@@ -16,6 +18,20 @@ Traditional SEO tools show keywords, rankings, audits, and charts. TrafScope is 
 The product focuses on the full traffic execution loop:
 
 ![TrafScope Product Loop](docs/assets/trafscope-product-loop.svg)
+
+## Current Product UI
+
+Sprint 1 implements a bilingual, evidence-first traffic operations workspace. The UI is intentionally a product workbench, not a landing page.
+
+![TrafScope Traffic Operations Board](docs/design-mockups/screenshots/react-board-desktop.png)
+
+| Task Detail | Opportunity Detail |
+|---|---|
+| ![TrafScope Task Detail](docs/design-mockups/screenshots/react-task-desktop.png) | ![TrafScope Opportunity Detail](docs/design-mockups/screenshots/react-opportunity-desktop.png) |
+
+| Integrations And Safety | Mobile Board |
+|---|---|
+| ![TrafScope Integrations Safety](docs/design-mockups/screenshots/react-integrations-desktop.png) | ![TrafScope Mobile Board](docs/design-mockups/screenshots/react-board-mobile.png) |
 
 ## Who It Is For
 
@@ -38,6 +54,32 @@ TrafScope connects store data, Google Search Console signals, WordPress pages, a
 - Create draft assets such as SEO pages, buying guides, comparison pages, FAQ blocks, and metadata.
 - Publish to WordPress as draft-only content after human approval.
 - Track clicks, impressions, ranking movement, AI citation signals, and conversion impact.
+
+## How The Engine Works
+
+TrafScope separates deterministic decisioning from AI assistance. Rules and scores decide what should be reviewed first; AI is only allowed to assist later with explanations and drafts.
+
+```mermaid
+flowchart LR
+  A["Signals<br/>GSC, WooCommerce, WordPress"] --> B["Normalize<br/>queries, products, pages"]
+  B --> C["Decisioning graph<br/>query clusters and entity matches"]
+  C --> D["Opportunity rules<br/>collection gap, ranking push, low CTR"]
+  D --> E["TrafScore<br/>weighted deterministic score"]
+  E --> F["Tasks<br/>evidence, action plan, QA criteria"]
+  F --> G["Human review<br/>approve, reject, snooze"]
+  G --> H["Assets and drafts<br/>future gated"]
+  H --> I["Performance<br/>GSC snapshots and outcomes"]
+```
+
+Sprint 1 visible rules:
+
+| Rule | Trigger | Recommended task |
+|---|---|---|
+| `collection_page_gap` | Search demand maps to at least 3 matching products, but no strong existing page exists. | Create a collection page task. |
+| `high_impression_low_ctr` | Existing page has high impressions, low CTR, and is still within ranking range. | Refresh title/meta and CTR messaging. |
+| `ranking_push` | Existing page ranks around positions 4-20 with meaningful impressions. | Expand content and improve internal links. |
+
+See [docs/product-logic.md](docs/product-logic.md) for the detailed business logic, scoring weights, state model, and safety boundaries.
 
 ## MVP Scope
 
@@ -100,6 +142,13 @@ See [docs/tech-stack.md](docs/tech-stack.md) for the detailed stack decisions an
 
 ## Local Development
 
+Install dependencies from the repo root:
+
+```bash
+corepack enable
+pnpm install
+```
+
 Backend:
 
 ```bash
@@ -113,9 +162,7 @@ uvicorn app.main:app --reload
 Frontend:
 
 ```bash
-cd apps/web
-npm install
-npm run dev
+pnpm --filter @trafscope/web run dev
 ```
 
 Infrastructure:
@@ -129,6 +176,14 @@ Backend tests:
 ```bash
 cd apps/api
 python -B -m unittest discover app/tests
+```
+
+Frontend checks:
+
+```bash
+pnpm --filter @trafscope/web run test:ui-contract
+pnpm --filter @trafscope/web run lint
+pnpm --filter @trafscope/web run build
 ```
 
 ## Safety Defaults
@@ -177,6 +232,7 @@ Let users approve a task, generate a structured draft, create a WordPress draft,
 ## Key Docs
 
 - [Product spec](docs/product-spec.md)
+- [Product logic](docs/product-logic.md)
 - [Architecture](docs/architecture.md)
 - [Tech stack](docs/tech-stack.md)
 - [Tech stack decision](docs/tech-stack-decision.md)
@@ -190,6 +246,7 @@ Let users approve a task, generate a structured draft, create a WordPress draft,
 - [UI components](docs/ui-components.md)
 - [UI implementation plan](docs/ui-implementation-plan.md)
 - [UI visual QA checklist](docs/ui-visual-qa-checklist.md)
+- [V3 UI concept](docs/design-mockups/trafscope-ui-concept-v3.html)
 - [Requirements workshop](docs/requirements-workshop.md)
 - [Sprint 1 backlog](docs/sprint-1-backlog.md)
 - [QA strategy](docs/qa-sprint-1.md)

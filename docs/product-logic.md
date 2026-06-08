@@ -1,0 +1,216 @@
+# TrafScope Product Logic
+
+This document explains how TrafScope turns traffic signals into opportunities, tasks, assets, and performance feedback. It is written as the operating logic for the product and should stay aligned with the backend services and Sprint scope.
+
+## Core Principle
+
+TrafScope is not a generic SEO dashboard. It is a traffic opportunity engine.
+
+The product must answer one operational question:
+
+> What should this business do next to capture hidden organic traffic, and why?
+
+Sprint 1 proves the decisioning loop with demo data and deterministic rules. AI does not calculate scores, rank opportunities, or create external changes in Sprint 1.
+
+## System Loop
+
+```mermaid
+flowchart LR
+  Signal["Signal<br/>search, product, page, execution data"]
+  Normalize["Normalize<br/>typed rows and store scope"]
+  Graph["Graph<br/>query clusters, products, pages"]
+  Opportunity["Opportunity<br/>rule-triggered traffic gaps"]
+  Task["Task<br/>evidence-backed next action"]
+  Asset["Asset<br/>structured draft, future gated"]
+  QA["QA<br/>SEO, GEO, factual, safety checks"]
+  Execution["Execution<br/>manual action or WordPress draft"]
+  Performance["Performance<br/>GSC snapshots and outcomes"]
+
+  Signal --> Normalize --> Graph --> Opportunity --> Task --> Asset --> QA --> Execution --> Performance
+  Performance --> Signal
+```
+
+## Input Signals
+
+| Source | Current role | Examples | Safety default |
+|---|---|---|---|
+| Google Search Console | Search demand and performance | Query, page, impressions, clicks, CTR, average position | Read/import only |
+| WooCommerce | Product fit and commerce readiness | Product title, categories, stock attributes, images | Read only |
+| WordPress | Existing page graph | Pages, posts, URLs, titles, candidate matches | Draft-only writes later |
+| Execution history | Outcome feedback | Approved tasks, draft assets, baseline snapshots | Audit logged |
+| AI/search/community channels | Future opportunity signals | AI citations, Reddit, forums, video scripts | Deferred from Sprint 1 |
+
+## Core Objects
+
+| Object | Meaning |
+|---|---|
+| Store | A scoped merchant workspace. All data and actions belong to a store. |
+| Integration | Connection state and permissions for GSC, WooCommerce, and WordPress. |
+| Product | Commerce object used for product fit and readiness. |
+| Page | Existing WordPress page or post used for page-match and gap analysis. |
+| Search metric | GSC-like query/page performance row. |
+| Query cluster | A group of related demand signals mapped to possible products and pages. |
+| Opportunity | A rule-triggered growth gap with score, evidence, and dedupe key. |
+| Task | A reviewable action created from an opportunity. |
+| Asset | A future structured draft connected to an approved task. |
+| Performance snapshot | Baseline and follow-up metrics used to judge impact. |
+
+## Decisioning Graph
+
+The graph builder converts raw store/search data into relationships the rule engine can evaluate:
+
+1. Group search queries into query clusters.
+2. Match query clusters to products.
+3. Match search metrics to existing WordPress pages.
+4. Identify clusters with no strong existing page.
+5. Preserve evidence rows so every opportunity can explain itself.
+
+The graph is the bridge between data and action. TrafScope should never generate a task from a naked keyword without related evidence.
+
+## Sprint 1 Opportunity Rules
+
+Sprint 1 exposes only three user-visible rule types.
+
+| Rule ID | Trigger logic | Output |
+|---|---|---|
+| `collection_page_gap` | Query cluster has no best existing page and at least 3 matched products. | A collection page task. |
+| `high_impression_low_ctr` | Existing page exists, impressions are at least 1,000, CTR is 3% or lower, and average position is 20 or better. | A CTR refresh task. |
+| `ranking_push` | Existing page exists, average position is 4-20, impressions are at least 800, and CTR is above 3%. | A ranking push task. |
+
+Each opportunity receives:
+
+- `rule_id`
+- `rule_version`
+- `dedupe_key`
+- `trafscore`
+- `confidence`
+- `score_components`
+- evidence rows
+- recommended task type
+
+The opportunity list is deduped by key and sorted by deterministic TrafScore.
+
+## TrafScore
+
+TrafScore is a weighted deterministic score. It ranks review priority, but it does not claim perfect revenue attribution.
+
+| Component | Weight |
+|---|---:|
+| `traffic_potential` | 0.18 |
+| `intent_score` | 0.16 |
+| `product_fit_score` | 0.14 |
+| `revenue_fit_score` | 0.14 |
+| `inventory_score` | 0.10 |
+| `gap_score` | 0.12 |
+| `timing_score` | 0.08 |
+| `execution_ease` | 0.05 |
+| `confidence_score` | 0.03 |
+
+All component values must stay between 0 and 100. The backend rounds the weighted result to two decimal places.
+
+## Product Readiness
+
+ProductReadiness is reserved for product-fit and commerce execution checks.
+
+| Component | Weight |
+|---|---:|
+| `stock_score` | 0.25 |
+| `content_completeness` | 0.20 |
+| `structured_data_completeness` | 0.15 |
+| `review_score` | 0.10 |
+| `image_score` | 0.10 |
+| `price_competitiveness` | 0.10 |
+| `conversion_proxy` | 0.10 |
+
+The product readiness score helps TrafScope avoid recommending pages around products that are unavailable, poorly described, or not ready for traffic.
+
+## Task Generation
+
+The task service converts an opportunity into a reviewable task:
+
+```mermaid
+flowchart LR
+  A["Opportunity"] --> B["Task template"]
+  B --> C["Action plan"]
+  C --> D["Acceptance criteria"]
+  D --> E["Task state: new"]
+```
+
+Task payloads must include:
+
+- title
+- category
+- automation level
+- status
+- priority score
+- evidence
+- action plan
+- source summary
+- confidence
+- acceptance criteria
+
+Sprint 1 visible task statuses:
+
+| Status | Meaning |
+|---|---|
+| `new` | Needs human review. |
+| `approved` | Accepted for later execution or drafting. |
+| `rejected` | Explicitly declined. |
+| `snoozed` | Deferred without losing evidence. |
+
+Sprint 1 must not expose `published`, `applied`, `autopilot`, or `one-click apply` states.
+
+## Asset And QA Logic
+
+Assets are future-gated from Sprint 1 UI, but the product model already reserves the flow:
+
+1. Approved task becomes an asset draft candidate.
+2. AI can generate structured drafts only from known evidence and product data.
+3. QA checks validate SEO, GEO, factual grounding, schema, internal links, and safety.
+4. WordPress draft creation happens only after human approval and QA.
+5. Live publishing remains outside the MVP safety boundary.
+
+AI must not invent:
+
+- prices
+- stock state
+- reviews
+- certifications
+- product capabilities
+- competitor claims
+- unsupported performance claims
+
+## Safety Boundaries
+
+| Boundary | Rule |
+|---|---|
+| Scoring | Deterministic rules only. AI does not score or rank. |
+| WooCommerce | Read-only in MVP. No price, inventory, or product writes. |
+| GSC | Read/import only. Planning runs must be idempotent. |
+| WordPress | Draft-only writes in later sprint. No live publish path. |
+| Credentials | Never show raw credentials, stack traces, or keys in UI. |
+| Audit | Every future write action should create an audit log. |
+
+## Service Map
+
+| Service | Owns | Does not own |
+|---|---|---|
+| `GSCIngestionService` | Import/query metrics and performance rows. | Opportunity ranking. |
+| `ProductSyncService` | WooCommerce product/category/attribute read sync. | Product writes. |
+| `GraphBuilderService` | Query-product-page relationships. | Task state changes. |
+| `OpportunityEngine` | Rule triggers, score components, dedupe. | AI drafting. |
+| `ScoringService` | TrafScore and ProductReadiness math. | Business copy. |
+| `TaskService` | Task templates, action plans, acceptance criteria. | Publishing. |
+| `AssetGenerationService` | Future structured drafts. | Deterministic ranking. |
+| `PublishingService` | Future WordPress draft creation. | Live publishing. |
+| `PerformanceService` | Baseline and follow-up snapshots. | Unsupported attribution claims. |
+
+## Sprint Roadmap Logic
+
+| Sprint | Main proof |
+|---|---|
+| Sprint 1 | Demo decisioning loop: evidence-backed opportunities and tasks. |
+| Sprint 2 | Real WooCommerce and WordPress sync with safety and audit state. |
+| Sprint 3 | Asset drafts, QA checks, WordPress draft creation, and performance snapshots. |
+
+The roadmap should expand only when the previous loop is credible. A broader channel surface is less important than making each generated task trustworthy.

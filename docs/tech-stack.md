@@ -17,10 +17,19 @@ This document records the initial stack choices for TrafScope Commerce OS and th
 | React | Selected | Mature ecosystem and fast product iteration. |
 | Vite | Selected | Simple local development and build tooling. |
 | TypeScript | Selected | Safer DTOs and shared contracts across app surfaces. |
+| lucide-react | Selected | Consistent operational icons for actions, states, and evidence. |
 | React Router | Planned | Store-scoped routes such as `/stores/:storeId/tasks/:taskId`. |
 | TanStack Query | Planned | Server state, caching, polling, loading states, and mutations. |
 | React Hook Form | Planned | Integration forms, onboarding, and asset metadata editing. |
 | Zod | Planned | Runtime validation for frontend forms and API DTO boundaries. |
+
+Current Sprint 1 frontend implementation:
+
+- `apps/web/app/App.tsx`: bilingual product workbench with board, task detail, opportunity detail, integrations/safety, and UI states.
+- `apps/web/app/styles.css`: V3 dark operational design system and responsive layout.
+- `apps/web/lib/types.ts`: frontend view-model contracts.
+- `apps/web/lib/mock-data.ts`: deterministic Sprint 1 demo data and boundary copy.
+- `apps/web/tests/sprint1-ui-contract.test.mjs`: contract guard for Sprint 1 UI scope.
 
 MVP frontend routes:
 
@@ -120,11 +129,19 @@ MVP AI rules:
 
 ## Testing
 
-Current verification:
+Current backend verification:
 
 ```bash
 cd apps/api
 python -B -m unittest discover app/tests
+```
+
+Current frontend verification:
+
+```bash
+pnpm --filter @trafscope/web run test:ui-contract
+pnpm --filter @trafscope/web run lint
+pnpm --filter @trafscope/web run build
 ```
 
 Target test mix:
