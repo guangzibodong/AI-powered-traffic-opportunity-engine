@@ -90,6 +90,9 @@ for (const required of ["collection_page_gap", "ranking_push", "high_impression_
   assert(data.includes(required), `mock data missing Sprint 1 rule: ${required}`);
 }
 
+const mockTaskCount = (data.match(/id: "task_/g) || []).length;
+assert(mockTaskCount >= 10, `mock board must expose at least 10 Sprint 1 tasks, found ${mockTaskCount}`);
+
 assert(
   types.includes('export type VisibleTaskStatus = "new" | "approved" | "rejected" | "snoozed";'),
   "VisibleTaskStatus must stay limited to Sprint 1 review states"

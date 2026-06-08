@@ -225,6 +225,168 @@ export const tasks: Task[] = [
         reason: "曾因意图不确定被拒绝"
       }
     ]
+  },
+  {
+    id: "task_005",
+    title: "Refresh Portable Espresso Maker X1 review query",
+    category: "ctr_refresh",
+    automationLevel: "recommend_only",
+    status: "new",
+    trafscore: 86,
+    ruleId: "high_impression_low_ctr",
+    objects: { queries: 6, products: 1, pages: 1 },
+    actionLabel: "Review",
+    evidence: [
+      {
+        type: "search",
+        source: "GSC",
+        entity: "portable espresso maker x1 review",
+        metric: "2.2K impressions / 42 clicks / CTR 1.9% / avg position 8.6",
+        window: "2026-05-11 - 2026-06-08",
+        reason: "Existing product page has strong impressions but low CTR.",
+        confidence: 0.81
+      },
+      {
+        type: "page_graph",
+        source: "WordPress",
+        entity: "page-x1",
+        metric: "Product page title and FAQ can be refreshed",
+        window: "2026-06-08",
+        reason: "No product write is required in Sprint 1."
+      }
+    ]
+  },
+  {
+    id: "task_006",
+    title: "Improve compact manual burr grinder CTR",
+    category: "ctr_refresh",
+    automationLevel: "recommend_only",
+    status: "new",
+    trafscore: 83,
+    ruleId: "high_impression_low_ctr",
+    objects: { queries: 5, products: 1, pages: 1 },
+    actionLabel: "Review",
+    evidence: [
+      {
+        type: "search",
+        source: "GSC",
+        entity: "compact manual burr grinder",
+        metric: "2.6K impressions / 55 clicks / CTR 2.1% / avg position 9.2",
+        window: "2026-05-11 - 2026-06-08",
+        reason: "high_impression_low_ctr threshold passed.",
+        confidence: 0.8
+      }
+    ]
+  },
+  {
+    id: "task_007",
+    title: "Push camping pour over coffee guide",
+    category: "ranking_push",
+    automationLevel: "draft_assist_future",
+    status: "new",
+    trafscore: 82,
+    ruleId: "ranking_push",
+    objects: { queries: 7, products: 3, pages: 1 },
+    actionLabel: "Draft later",
+    evidence: [
+      {
+        type: "search",
+        source: "GSC",
+        entity: "camping pour over coffee",
+        metric: "2.1K impressions / 126 clicks / CTR 6.0% / avg position 9.8",
+        window: "2026-05-11 - 2026-06-08",
+        reason: "Page is within striking distance and can receive internal-link support.",
+        confidence: 0.78
+      }
+    ]
+  },
+  {
+    id: "task_008",
+    title: "Expand best portable espresso maker camping guide",
+    category: "ranking_push",
+    automationLevel: "draft_assist_future",
+    status: "new",
+    trafscore: 81,
+    ruleId: "ranking_push",
+    objects: { queries: 8, products: 5, pages: 1 },
+    actionLabel: "Draft later",
+    evidence: [
+      {
+        type: "search",
+        source: "GSC",
+        entity: "best portable espresso maker camping",
+        metric: "2.4K impressions / 146 clicks / CTR 6.1% / avg position 7.9",
+        window: "2026-05-11 - 2026-06-08",
+        reason: "ranking_push threshold passed.",
+        confidence: 0.79
+      }
+    ]
+  },
+  {
+    id: "task_009",
+    title: "Refresh travel cold brew bottle snippet",
+    category: "ctr_refresh",
+    automationLevel: "recommend_only",
+    status: "new",
+    trafscore: 78,
+    ruleId: "high_impression_low_ctr",
+    objects: { queries: 4, products: 1, pages: 1 },
+    actionLabel: "Review",
+    evidence: [
+      {
+        type: "search",
+        source: "GSC",
+        entity: "travel cold brew bottle",
+        metric: "1.45K impressions / 24 clicks / CTR 1.7% / avg position 11.1",
+        window: "2026-05-11 - 2026-06-08",
+        reason: "CTR is below threshold while ranking is still visible.",
+        confidence: 0.74
+      }
+    ]
+  },
+  {
+    id: "task_010",
+    title: "Push manual coffee grinder for camping page",
+    category: "ranking_push",
+    automationLevel: "draft_assist_future",
+    status: "new",
+    trafscore: 77,
+    ruleId: "ranking_push",
+    objects: { queries: 6, products: 2, pages: 1 },
+    actionLabel: "Draft later",
+    evidence: [
+      {
+        type: "search",
+        source: "GSC",
+        entity: "best manual coffee grinder for camping",
+        metric: "1.6K impressions / 74 clicks / CTR 4.6% / avg position 14.1",
+        window: "2026-05-11 - 2026-06-08",
+        reason: "Ranking can be pushed with comparison content and internal links.",
+        confidence: 0.73
+      }
+    ]
+  },
+  {
+    id: "task_011",
+    title: "Refresh insulated travel coffee mug CTR",
+    category: "ctr_refresh",
+    automationLevel: "recommend_only",
+    status: "new",
+    trafscore: 75,
+    ruleId: "high_impression_low_ctr",
+    objects: { queries: 3, products: 1, pages: 1 },
+    actionLabel: "Review",
+    evidence: [
+      {
+        type: "search",
+        source: "GSC",
+        entity: "insulated travel coffee mug",
+        metric: "1.84K impressions / 36 clicks / CTR 2.0% / avg position 10.4",
+        window: "2026-05-11 - 2026-06-08",
+        reason: "Title and meta refresh can be reviewed without product writes.",
+        confidence: 0.71
+      }
+    ]
   }
 ];
 
@@ -324,7 +486,7 @@ export const boardViewModel: BoardViewModel = {
     runId: "planning-run-042",
     lastSuccessfulAt: "2026-06-08 13:42",
     currentState: "ready",
-    generatedTasks: 10
+    generatedTasks: 11
   },
   metrics: {
     priorityAverage: 82,
