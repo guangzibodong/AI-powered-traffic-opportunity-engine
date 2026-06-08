@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Specific Refero/Fal UI convergence.
+Current loop: Selected task detail routing.
 
 ## Status Legend
 
@@ -20,35 +20,32 @@ Current loop: Specific Refero/Fal UI convergence.
 
 | Role | Person/Agent | Current assignment |
 |---|---|---|
-| Product Manager | Main thread | Keep Sprint 1 focused on evidence-backed task review. |
-| UI Design Lead | Main thread | Extract the specific Refero/Fal style page and translate it to TrafScope. |
-| Frontend Product Engineer | Main thread | Implement the light operational design system in React/CSS. |
-| QA Lead | Main thread | Contract tests, visual checks, build, backend tests, and secret scan. |
-| Backend/API Engineer | Maxwell | Available for API contract work after UI convergence. |
-| UI Systems Engineer | Banach | Available for deeper component/i18n architecture work. |
+| Product Manager | Main thread | Keep Sprint 1 focused on real task review behavior. |
+| Frontend Product Engineer | Main thread | Wire selected task state from board row to task detail. |
+| UI Systems Engineer | Main thread | Keep detail fallback data consistent for mock/API tasks. |
+| QA Lead | Main thread | Contract, TypeScript, build, browser interaction, backend tests, and secret scan. |
+| Backend/API Engineer | Maxwell | Available for future task mutation API work. |
 
 ## Task Queue
 
 | ID | Priority | Status | Owner | Task | Definition of Done |
 |---|---:|---|---|---|---|
-| UI-REF-001 | 1 | done | UI Design Lead | Extract the specific Refero/Fal style page. | `docs/ui-reference-refero.md` includes the source style ID, tokens, component rules, and TrafScope translation. |
-| UI-REF-002 | 2 | done | UI Design Lead | Replace old dark operational design guidance. | `DESIGN.md`, UI meeting notes, implementation plan, component notes, tech-stack notes, and visual QA checklist point to the light operational system. |
-| UI-REF-003 | 3 | done | Frontend Product Engineer | Apply Refero/Fal-inspired visual tokens to the app. | `apps/web/app/styles.css` uses white canvas, fog surfaces, graphite actions, 1px borders, no default shadows, and small pixel block accents. |
-| UI-REF-004 | 4 | done | Frontend Product Engineer | Fix UI usability issues found during browser QA. | Task queue evidence remains readable on desktop/narrow desktop, redundant object column is removed, and screen changes reset scroll to top. |
-| UI-REF-005 | 5 | done | QA Lead | Update screenshots and run verification. | React screenshots are refreshed and verification passes: UI contracts, lint, build, backend unittest, browser console check, and secret scan. |
-| UI-REF-006 | 6 | done | Tech Lead | Commit and push coherent UI convergence work. | Local commit exists and push either succeeds or is blocked by concrete GitHub network failure. |
+| TASK-DETAIL-001 | 1 | done | QA Lead | Add a failing contract for selected task detail behavior. | UI contract fails before implementation when `selectedTaskId` and task-detail helper are missing. |
+| TASK-DETAIL-002 | 2 | done | Frontend Product Engineer | Track selected task ID in App state. | Clicking any task row sets `selectedTaskId` and opens the task detail screen. |
+| TASK-DETAIL-003 | 3 | done | UI Systems Engineer | Derive task detail view models from board/API tasks. | `createTaskDetailViewModel` can use the rich fallback for `task_001` and generate safe detail fields for other tasks. |
+| TASK-DETAIL-004 | 4 | done | QA Lead | Verify selected task behavior and commit/push. | UI contract, TypeScript, build, browser interaction, backend unittest, secret scan, commit, and push succeed. |
 
 ## Blockers
 
 | Blocker | Status | Notes |
 |---|---|---|
-| GitHub HTTPS push | resolved | Latest branch push succeeded with direct HTTPS proxy override. |
+| None | clear | No external credential or network blocker is known for this loop. |
 
 ## Agent Findings
 
-- The specific Refero page is a light Fal / Generative AI visual system, not the earlier dark operational direction.
-- The transferable rules are white canvas, fog-gray sections, 1px neutral borders, graphite primary actions, no default shadows, crisp typography, and sparing pixel block accents.
-- Browser QA found and fixed two product UX issues: evidence text became unreadable at narrow desktop widths, and switching screens preserved scroll position.
+- Before this loop, only `task_001` could open Task Detail.
+- Task Detail always used the static `taskDetail` fixture, so API-backed tasks would not be inspectable.
+- The fix keeps the richer mock detail for `task_001` while allowing every board task to produce a safe review detail.
 
 ## Completion Rule
 

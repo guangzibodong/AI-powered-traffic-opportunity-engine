@@ -24,6 +24,7 @@ const app = read("app/App.tsx");
 const data = read("lib/mock-data.ts");
 const styles = read("app/styles.css");
 const taskState = read("lib/task-state.ts");
+const taskDetail = read("lib/task-detail.ts");
 const taskQueue = read("components/tasks/TaskQueue.tsx");
 const taskCopy = read("components/tasks/task-copy.ts");
 const statusPill = read("components/tasks/StatusPill.tsx");
@@ -38,6 +39,7 @@ const uiContractTargets = {
   "StatusPill.tsx": statusPill,
   "api-client.ts": apiClient,
   "mock-data.ts": data,
+  "task-detail.ts": taskDetail,
   "task-copy.ts": taskCopy,
   "task-state.ts": taskState,
   "types.ts": types,
@@ -146,6 +148,20 @@ assert(viewModelAdapters.includes("draft_assist_future"), "view-model-adapters.t
 assert(app.includes("BoardDataBanner"), "App must show API/mock board data state");
 assert(app.includes("mapApiPlanningToBoard"), "App must wire API planning payloads through the adapter");
 assert(app.includes("window.scrollTo({ left: 0, top: 0 })"), "App must reset scroll to the top when switching screens");
+assert(app.includes("selectedTaskId"), "App must track the selected task id for task detail routing");
+assert(app.includes("setSelectedTaskId(task.id)"), "Task queue clicks must select the clicked task before opening detail");
+assert(!app.includes('if (task.id === "task_001")'), "Task queue must not gate detail opening to the first mock task");
+assert(app.includes("createTaskDetailViewModel"), "App must build task detail from the currently selected board task");
+
+for (const required of [
+  "createTaskDetailViewModel",
+  "fallback.id === task.id",
+  "task.evidence.map",
+  "ruleTrace",
+  "acceptanceCriteria"
+]) {
+  assert(taskDetail.includes(required), `task-detail.ts missing selected-task detail behavior: ${required}`);
+}
 
 for (const required of [
   "14cc44e6-41bf-4178-b834-fc61bfeed4ae",

@@ -19,6 +19,7 @@ import {
   saveTaskStatusMap,
   updateTaskStatusMap
 } from "../lib/task-state";
+import { createTaskDetailViewModel } from "../lib/task-detail";
 import { mapApiPlanningToBoard } from "../lib/view-model-adapters";
 import type {
   BoardViewModel,
@@ -129,10 +130,14 @@ export function App() {
     loading: false,
     source: "mock"
   });
+  const [selectedTaskId, setSelectedTaskId] = useState(taskDetail.id);
   const [taskStatuses, setTaskStatuses] = useState(loadTaskStatusMap);
   const t = useMessages(locale);
   const board = useMemo(() => applyTaskStatusesToBoard(baseBoard, taskStatuses), [baseBoard, taskStatuses]);
-  const selectedTask = useMemo(() => applyTaskStatusToDetail(taskDetail, taskStatuses), [taskStatuses]);
+  const selectedTask = useMemo(() => {
+    const task = board.tasks.find((item) => item.id === selectedTaskId) ?? board.tasks[0] ?? taskDetail;
+    return applyTaskStatusToDetail(createTaskDetailViewModel(task, taskDetail), taskStatuses);
+  }, [board.tasks, selectedTaskId, taskStatuses]);
 
   useEffect(() => {
     window.scrollTo({ left: 0, top: 0 });
@@ -178,7 +183,18 @@ export function App() {
       <NavigationRail locale={locale} screen={screen} setScreen={setScreen} t={t} />
       <main className="main">
         <TopBar locale={locale} setLocale={setLocale} />
-        {screen === "board" && <TrafficOperationsPage board={board} dataState={boardDataState} locale={locale} setScreen={setScreen} t={t} />}
+        {screen === "board" && (
+          <TrafficOperationsPage
+            board={board}
+            dataState={boardDataState}
+            locale={locale}
+            onOpenTask={(task) => {
+              setSelectedTaskId(task.id);
+              setScreen("task");
+            }}
+            t={t}
+          />
+        )}
         {screen === "task" && <TaskDetailPage task={selectedTask} locale={locale} onTaskStatusChange={setTaskStatus} t={t} />}
         {screen === "opportunity" && <OpportunityDetailPage opportunity={opportunityDetail} locale={locale} t={t} />}
         {screen === "integrations" && <IntegrationsSafetyPage integrations={integrationHealth} locale={locale} t={t} />}
@@ -270,12 +286,12 @@ function TrafficOperationsPage({
   board,
   dataState,
   locale,
-  setScreen,
+  onOpenTask,
   t
 }: SharedProps & {
   board: BoardViewModel;
   dataState: BoardDataState;
-  setScreen: (screen: Screen) => void;
+  onOpenTask: (task: BoardViewModel["tasks"][number]) => void;
 }) {
   return (
     <section>
@@ -361,9 +377,7 @@ function TrafficOperationsPage({
           </div>
           <TaskQueue
             locale={locale}
-            onOpenTask={(task) => {
-              if (task.id === "task_001") setScreen("task");
-            }}
+            onOpenTask={onOpenTask}
             t={t}
             tasks={board.tasks}
           />
