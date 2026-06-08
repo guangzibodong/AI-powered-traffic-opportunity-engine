@@ -6,8 +6,8 @@ import { TaskQueue } from "../components/tasks/TaskQueue";
 import { localizeTaskTitle } from "../components/tasks/task-copy";
 import {
   getAuditLogs,
+  getImportedGraph,
   getImportedOpportunities,
-  getImportedQueryClusters,
   getImportedTasks,
   getIntegrations,
   getOpportunities,
@@ -33,8 +33,8 @@ import {
 import { createTaskDetailViewModel } from "../lib/task-detail";
 import {
   mapApiAuditLogsToEvidenceRows,
+  mapApiImportedGraphToClusterPreviews,
   mapApiImportedOpportunitiesToOpportunities,
-  mapApiImportedQueryClustersToPreviews,
   mapApiImportedTasksToTasks,
   mapApiIntegrationsToIntegrationHealth,
   mapApiPlanningToBoard,
@@ -72,6 +72,11 @@ type ImportedPreviewState = {
   availability: "empty" | "ready" | "unavailable";
   clusters: ImportedQueryClusterPreview[];
   error?: string;
+  graphSummary: {
+    page_matches?: number;
+    product_matches?: number;
+    query_clusters?: number;
+  } | null;
   opportunities: Opportunity[];
   tasks: BoardViewModel["tasks"];
 };
@@ -184,6 +189,7 @@ export function App() {
   const [importedPreviews, setImportedPreviews] = useState<ImportedPreviewState>({
     availability: "empty",
     clusters: [],
+    graphSummary: null,
     opportunities: [],
     tasks: []
   });
@@ -215,7 +221,8 @@ export function App() {
       getSyncRuns(demoStoreId),
       getAuditLogs(demoStoreId)
     ])
-      .then(([tasksResponse, opportunitiesResponse, integrationsResponse, syncRunsResponse, auditLogsResponse]) => {
+      .then(
+        ([tasksResponse, opportunitiesResponse, integrationsResponse, syncRunsResponse, auditLogsResponse]) => {
         if (!active) return;
         const integrations = mapApiIntegrationsToIntegrationHealth(integrationsResponse);
         const syncRunPreviews = mapApiSyncRunsToSyncRunPreviews(syncRunsResponse);
@@ -225,18 +232,19 @@ export function App() {
         setBoardDataState({ loading: false, source: "api" });
 
         Promise.all([
-          getImportedQueryClusters(demoStoreId),
+          getImportedGraph(demoStoreId),
           getImportedOpportunities(demoStoreId),
           getImportedTasks(demoStoreId)
         ])
-          .then(([importedQueryClustersResponse, importedOpportunitiesResponse, importedTasksResponse]) => {
+          .then(([graphResponse, importedOpportunitiesResponse, importedTasksResponse]) => {
             if (!active) return;
-            const clusters = mapApiImportedQueryClustersToPreviews(importedQueryClustersResponse);
+            const clusters = mapApiImportedGraphToClusterPreviews(graphResponse);
             const opportunities = mapApiImportedOpportunitiesToOpportunities(importedOpportunitiesResponse);
             const tasks = mapApiImportedTasksToTasks(importedTasksResponse);
             setImportedPreviews({
               availability: clusters.length > 0 || opportunities.length > 0 || tasks.length > 0 ? "ready" : "empty",
               clusters,
+              graphSummary: graphResponse.summary ?? null,
               opportunities,
               tasks
             });
@@ -247,6 +255,7 @@ export function App() {
               availability: "unavailable",
               clusters: [],
               error: importedError instanceof Error ? importedError.message : "Imported previews unavailable",
+              graphSummary: null,
               opportunities: [],
               tasks: []
             });
@@ -255,7 +264,7 @@ export function App() {
       .catch((error: unknown) => {
         if (!active) return;
         setBaseBoard(boardViewModel);
-        setImportedPreviews({ availability: "empty", clusters: [], opportunities: [], tasks: [] });
+        setImportedPreviews({ availability: "empty", clusters: [], graphSummary: null, opportunities: [], tasks: [] });
         setSafetySignals({ auditEvidence: [], syncRunPreviews: [] });
         setBoardDataState({
           error: error instanceof Error ? error.message : "Unknown API error",
@@ -696,8 +705,16 @@ function ImportedPreviewPanel({
       </div>
       <div className="kv-list">
         <div className="kv-row">
-          <span>{locale === "zh" ? "查询簇" : "Query clusters"}</span>
-          <strong>{importedPreviews.clusters.length}</strong>
+          <span>{locale === "zh" ? "图谱关联簇" : "Graph-linked clusters"}</span>
+          <strong>{importedPreviews.graphSummary?.query_clusters ?? importedPreviews.clusters.length}</strong>
+        </div>
+        <div className="kv-row">
+          <span>{locale === "zh" ? "匹配商品" : "Matched products"}</span>
+          <strong>{importedPreviews.graphSummary?.product_matches ?? 0}</strong>
+        </div>
+        <div className="kv-row">
+          <span>{locale === "zh" ? "匹配页面" : "Matched pages"}</span>
+          <strong>{importedPreviews.graphSummary?.page_matches ?? 0}</strong>
         </div>
         <div className="kv-row">
           <span>{locale === "zh" ? "机会预览" : "Opportunity previews"}</span>

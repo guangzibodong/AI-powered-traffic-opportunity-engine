@@ -123,14 +123,14 @@ assert(app.includes('source: "fallback"'), "App must keep a mock fallback state"
 assert(app.includes("getIntegrations("), "App must read API-backed integration status in API mode");
 assert(app.includes("getSyncRuns("), "App must read API-backed sync run tracking in API mode");
 assert(app.includes("getAuditLogs("), "App must read API-backed audit logs in API mode");
-assert(app.includes("getImportedQueryClusters("), "App must read API-backed imported query clusters in API mode");
+assert(app.includes("getImportedGraph("), "App must read API-backed imported graph in API mode");
 assert(app.includes("getImportedOpportunities("), "App must read API-backed imported opportunities in API mode");
 assert(app.includes("getImportedTasks("), "App must read API-backed imported task previews in API mode");
 assert(app.includes("mapApiIntegrationsToIntegrationHealth("), "App must map API integration status into integration health rows");
 assert(app.includes("mapApiSyncRunsToSyncRunPreviews("), "App must map API sync runs through the safe adapter");
 assert(app.includes("mapApiAuditLogsToEvidenceRows("), "App must map audit logs into safe audit evidence rows");
 assert(adapter.includes("mapApiImportedGraphToClusterPreviews"), "Adapter must expose imported graph DTO conversion");
-assert(app.includes("mapApiImportedQueryClustersToPreviews("), "App must map imported query clusters through the safe adapter");
+assert(app.includes("mapApiImportedGraphToClusterPreviews("), "App must map imported graph through the safe adapter");
 assert(adapter.includes("mapApiImportedQueryClusterResponseToPreview"), "Adapter must expose imported query cluster detail DTO conversion");
 assert(app.includes("mapApiImportedOpportunitiesToOpportunities("), "App must map imported opportunities through the safe adapter");
 assert(app.includes("mapApiImportedTasksToTasks("), "App must map imported task previews through the safe adapter");

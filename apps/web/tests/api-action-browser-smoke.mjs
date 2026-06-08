@@ -174,19 +174,19 @@ async function runSmoke() {
 
     page.on("request", (request) => {
       const url = request.url();
-      if (url.includes("/query-clusters") || url.includes("/imported-opportunities") || url.includes("/imported-tasks")) {
+      if (url.includes("/imported-graph") || url.includes("/imported-opportunities") || url.includes("/imported-tasks")) {
         importedPreviewRequests.push({ method: request.method(), url });
       }
     });
 
     await page.goto(webUrl);
     await clickUnique(page.getByRole("button", { name: "EN" }), "language switcher");
-    await expectVisible(page.getByText("Demo API connected"), "API connected banner");
     await expectVisible(page.getByText("read-only imported previews"), "read-only imported preview badge");
+    await expectVisible(page.getByText("Graph-linked clusters"), "graph-linked cluster metric");
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
     await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
 
-    for (const target of ["/query-clusters", "/imported-opportunities", "/imported-tasks"]) {
+    for (const target of ["/imported-graph", "/imported-opportunities", "/imported-tasks"]) {
       assert(
         importedPreviewRequests.some((request) => request.method === "GET" && request.url.includes(target)),
         `Imported preview endpoint was not read with GET: ${target}`
@@ -222,7 +222,7 @@ async function runSmoke() {
     const resilientPage = await context.newPage();
     await resilientPage.route("**/api/stores/**", async (route) => {
       const url = route.request().url();
-      if (url.includes("/query-clusters") || url.includes("/imported-opportunities") || url.includes("/imported-tasks")) {
+      if (url.includes("/imported-graph") || url.includes("/imported-opportunities") || url.includes("/imported-tasks")) {
         await route.abort("failed");
         return;
       }
@@ -231,7 +231,6 @@ async function runSmoke() {
     });
     await resilientPage.goto(webUrl);
     await clickUnique(resilientPage.getByRole("button", { name: "EN" }), "resilient language switcher");
-    await expectVisible(resilientPage.getByText("Demo API connected"), "resilient API connected banner");
     await expectVisible(resilientPage.getByText("Imported previews unavailable"), "resilient imported preview fallback");
     assert(
       (await resilientPage.locator(".imported-preview-panel button").count()) === 0,

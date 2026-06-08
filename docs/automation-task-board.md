@@ -66,6 +66,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-GSC-020 | 32 | done | Frontend Product Engineer / QA Lead | Add imported query cluster detail read client foundation. | Frontend API client exposes a typed read-only `GET /query-clusters/{cluster_key}` helper, encodes store/cluster path segments, maps one imported query cluster through the safe preview adapter, and adds no embedding, real GSC OAuth, sync execution, task creation, draft, publish, credential, or external write controls. |
 | TASK-S2-GRAPH-021 | 33 | done | Frontend Product Engineer / QA Lead | Add imported signal graph read client foundation. | Frontend API client exposes a typed read-only `GET /imported-graph` helper and maps imported graph query clusters through the safe cluster preview adapter, without embeddings, real GSC OAuth, sync execution, task creation, draft, publish, credential, or external write controls. |
 | TASK-S2-CATALOG-022 | 34 | done | Frontend Product Engineer / QA Lead | Add imported catalog read client foundation. | Frontend API client exposes typed read-only list/detail helpers for imported WooCommerce products and WordPress pages, encodes store/product/page path segments, and adds no credential, sync execution, draft, publish, product edit, price edit, inventory edit, commerce write, or external write controls. |
+| TASK-S2-CATALOG-023 | 35 | todo | Frontend Product Engineer / QA Lead | Add API-backed imported catalog preview UI. | Imported preview UI renders read-only imported WooCommerce products and WordPress pages through the new GET helpers, shows compact catalog counts and rows, and adds no edit, write, credential, draft, publish, or sync controls. |
 
 ## Blockers
 
@@ -131,6 +132,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported signal graph read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported catalog read client is next because graph and opportunity previews now reference imported WooCommerce products and WordPress pages, but the frontend has no stable read-only list/detail DTO helpers for those catalog entities.
 - Imported catalog read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported catalog preview UI is next because the new product and page read helpers exist, but the imported preview panel still needs a direct catalog surface for read-only product/page inspection.
 
 ## Completion Rule
 
