@@ -17,6 +17,7 @@ import type {
   ApiEvidence,
   ApiImportedOpportunityResponse,
   ApiImportedOpportunitiesResponse,
+  ApiImportedQueryClusterResponse,
   ApiImportedQueryClustersResponse,
   ApiImportedTaskResponse,
   ApiImportedTasksResponse,
@@ -155,7 +156,17 @@ export function mapApiAuditLogsToPreviews(response: ApiAuditLogsResponse): Audit
 export function mapApiImportedQueryClustersToPreviews(
   response: ApiImportedQueryClustersResponse
 ): ImportedQueryClusterPreview[] {
-  return response.query_clusters.map((cluster) => ({
+  return response.query_clusters.map(mapApiImportedQueryClusterToPreview);
+}
+
+export function mapApiImportedQueryClusterResponseToPreview(
+  response: ApiImportedQueryClusterResponse
+): ImportedQueryClusterPreview {
+  return mapApiImportedQueryClusterToPreview(response.query_cluster);
+}
+
+function mapApiImportedQueryClusterToPreview(cluster: ApiImportedQueryClusterResponse["query_cluster"]): ImportedQueryClusterPreview {
+  return {
     clicks: cluster.clicks,
     ctr: cluster.ctr,
     evidence: [
@@ -174,7 +185,7 @@ export function mapApiImportedQueryClustersToPreviews(
     primaryQuery: cluster.primary_query,
     queryCount: cluster.query_count,
     topPages: cluster.top_pages ?? []
-  }));
+  };
 }
 
 export function mapApiImportedOpportunitiesToOpportunities(

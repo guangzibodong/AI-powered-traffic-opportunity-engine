@@ -149,6 +149,12 @@ export type ApiImportedQueryClustersResponse = {
   store_id: string;
 };
 
+export type ApiImportedQueryClusterResponse = {
+  mode: "csv_import";
+  query_cluster: ApiImportedQueryCluster;
+  store_id: string;
+};
+
 export type ApiImportedOpportunity = ApiOpportunity & {
   related_page?: unknown;
   related_products?: unknown[];
@@ -234,6 +240,13 @@ export async function getAuditLogs(storeId: string, apiBaseUrl = getApiBaseUrl()
 
 export async function getImportedQueryClusters(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiImportedQueryClustersResponse>(`${storeApiPath(apiBaseUrl, storeId)}/query-clusters`);
+}
+
+export async function getImportedQueryCluster(storeId: string, clusterKey: string, apiBaseUrl = getApiBaseUrl()) {
+  const encodedClusterKey = encodeURIComponent(clusterKey);
+  return fetchJson<ApiImportedQueryClusterResponse>(
+    `${storeApiPath(apiBaseUrl, storeId)}/query-clusters/${encodedClusterKey}`
+  );
 }
 
 export async function getImportedOpportunities(storeId: string, apiBaseUrl = getApiBaseUrl()) {
