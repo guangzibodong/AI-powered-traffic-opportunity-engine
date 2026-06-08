@@ -122,12 +122,13 @@ Completed capabilities in the current Sprint 1 slice:
 - Demo task status overrides are in-memory and reflected in both task list and task detail responses during the current API process.
 - The visible React task buttons call `updateTaskStatus` when API board data is connected, with local state retained as the safe fallback.
 - Task Detail review controls show accessible pending, synced, and API-unavailable fallback feedback while disabling duplicate submissions during sync.
+- API-unavailable fallback feedback now exposes explicit `Retry sync` and `Keep local` controls, so the user can either re-attempt the demo API mutation or intentionally keep the local review state.
 
 Next API-backed task action UX:
 
-1. Add explicit retry/rollback controls for failed API mutations.
-2. Add automated browser-level coverage for API mutation success and fallback behavior.
-3. Keep the current local task-state fallback when the API is unavailable or disabled.
+1. Add automated browser-level coverage for API mutation success and fallback behavior.
+2. Keep the current local task-state fallback when the API is unavailable or disabled.
+3. Add deeper list/detail consistency checks around retry behavior.
 
 Current product/engineering ownership:
 

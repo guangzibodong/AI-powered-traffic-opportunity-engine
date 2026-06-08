@@ -34,7 +34,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | Frontend API read adapter | 已完成 | `getTasks`、`getOpportunities` 与 `mapApiPlanningToBoard` 可驱动 API-backed board。 |
 | Frontend API mutation client | Done | `updateTaskStatus` wraps `PATCH { status }` for Sprint 1 review states. API settings use direct `import.meta.env.VITE_*` access so Vite can inject them. |
 | Visible UI mutation wiring | Done | Task Detail approve/reject/snooze calls `updateTaskStatus` when API board data is connected, then patches board state. |
-| Error/loading UX | Partial done | Task Detail now shows pending, synced, local, and API-unavailable fallback feedback; explicit retry/rollback controls remain future work. |
+| Error/loading UX | Done | Task Detail shows pending, synced, local, and API-unavailable fallback feedback. API-unavailable fallback includes explicit `Retry sync` and `Keep local` controls. |
 
 ## Local Smoke Run
 
@@ -71,7 +71,7 @@ Expected behavior:
 | `apps/web/lib/api-client.ts` | Fetch typed raw API payloads from `VITE_API_BASE_URL` or `http://localhost:8000`. |
 | `apps/web/lib/view-model-adapters.ts` | Convert backend snake_case demo payloads into frontend `BoardViewModel`, `Task`, and `Opportunity` shapes. |
 | `apps/web/lib/task-state.ts` | Keep local review-state fallback for mock mode and API failure paths. |
-| `apps/web/app/App.tsx` | Calls `updateTaskStatus` for API-backed task review actions and falls back to local review-state persistence when the API is unavailable. |
+| `apps/web/app/App.tsx` | Calls `updateTaskStatus` for API-backed task review actions, falls back to local review-state persistence when the API is unavailable, and lets users retry sync or keep the local state. |
 
 ## Important Mappings
 
@@ -99,11 +99,11 @@ Expected behavior:
 - API-backed task actions must only change review state: `new`, `approved`, `rejected`, or `snoozed`.
 - API-backed demo reads use stable store id `store-demo-outdoor-coffee`; UI display copy can still show "Outdoor Coffee Gear Demo Store".
 - API mutation failure must not erase the user's visible local review state.
+- API mutation fallback controls must remain state-only: `Retry sync` re-attempts `PATCH`, and `Keep local` confirms the local demo review state.
 - Real WooCommerce, GSC, WordPress, credential, and publishing actions remain outside this adapter slice.
 
 ## Remaining API-backed Task Action UX
 
-1. Add explicit retry/rollback controls after an API mutation falls back to local state.
-2. Keep mock mode behavior unchanged so demos still work without the backend.
-3. Add automated browser-level tests that prove API mutation success, fallback behavior, and list/detail state consistency.
-4. Keep backend tests covering allowed statuses, illegal statuses, shortcut routes, and 10+ evidence-backed demo tasks.
+1. Keep mock mode behavior unchanged so demos still work without the backend.
+2. Add automated browser-level tests that prove API mutation success, fallback behavior, retry behavior, and list/detail state consistency.
+3. Keep backend tests covering allowed statuses, illegal statuses, shortcut routes, and 10+ evidence-backed demo tasks.

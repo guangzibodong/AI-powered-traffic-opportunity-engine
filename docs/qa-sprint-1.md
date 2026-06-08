@@ -401,13 +401,14 @@ Verify:
 - Approve, reject, and snooze controls call the demo status API from the UI and show pending/synced/fallback feedback.
 - Review controls are disabled while a mutation is pending, then re-enabled after success or fallback.
 - API failure keeps a safe local fallback state and shows non-technical feedback without raw stack traces or credentials.
+- API failure feedback lets the user retry demo API sync or intentionally keep the local review state.
 - Updated status is reflected on both Task Detail and the board after return or refresh.
 
 Acceptance:
 
 - A user can click any task in the board and land on the matching Task Detail.
 - No task click opens stale, hard-coded, or mismatched detail content.
-- API-backed review success and API-unavailable fallback are both visible from Task Detail.
+- API-backed review success, API-unavailable fallback, retry sync, and keep-local confirmation are visible from Task Detail.
 - Status review remains state-only and cannot imply draft generation or live publishing.
 
 ### Opportunity Detail Or Panel
@@ -543,7 +544,7 @@ Release blocker examples:
 - [ ] At least one task detail/evidence path is verified.
 - [ ] A non-top task opens the matching Task Detail.
 - [ ] Approve/reject/snooze status mutation is verified through UI controls.
-- [ ] API-backed success feedback and API-unavailable local fallback feedback are verified.
+- [ ] API-backed success feedback, API-unavailable local fallback feedback, retry sync, and keep-local confirmation are verified.
 - [ ] Repeated planning does not duplicate the task.
 - [ ] No live publish control is present.
 - [ ] Console has no uncaught runtime errors.

@@ -338,6 +338,20 @@ h3 {
   margin-top: -4px;
 }
 
+.review-feedback-side {
+  align-items: flex-end;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.review-feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .banner strong {
   display: block;
   font-size: 13px;
@@ -949,5 +963,11 @@ tr:last-child td {
 
   .decision {
     grid-template-columns: 1fr;
+  }
+
+  .review-feedback-side,
+  .review-feedback-actions {
+    justify-items: start;
+    justify-content: flex-start;
   }
 }

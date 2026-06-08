@@ -211,30 +211,42 @@ export function App() {
     }));
   }
 
-  async function setTaskStatus(taskId: string, status: VisibleTaskStatus) {
-    if (boardDataState.source === "api") {
-      setPendingTaskStatus({ status, taskId });
-      setTaskActionFeedback({ kind: "pending", status, taskId });
-
-      try {
-        const response = await updateTaskStatus(baseBoard.storeName, taskId, status);
-        applyApiTaskStatusToBoard(response.task.id, status);
-        clearLocalTaskStatus(response.task.id);
-        setTaskActionFeedback({ kind: "api", status, taskId: response.task.id });
-        return;
-      } catch {
-        applyLocalTaskStatus(taskId, status);
-        setTaskActionFeedback({ kind: "fallback", status, taskId });
-        return;
-      } finally {
-        setPendingTaskStatus((current) =>
-          current?.taskId === taskId && current.status === status ? null : current
-        );
-      }
+  async function retryTaskStatusSync(taskId: string, status: VisibleTaskStatus) {
+    if (boardDataState.source !== "api") {
+      keepLocalTaskStatus(taskId, status);
+      return;
     }
 
+    setPendingTaskStatus({ status, taskId });
+    setTaskActionFeedback({ kind: "pending", status, taskId });
+
+    try {
+      const response = await updateTaskStatus(baseBoard.storeName, taskId, status);
+      applyApiTaskStatusToBoard(response.task.id, status);
+      clearLocalTaskStatus(response.task.id);
+      setTaskActionFeedback({ kind: "api", status, taskId: response.task.id });
+    } catch {
+      applyLocalTaskStatus(taskId, status);
+      setTaskActionFeedback({ kind: "fallback", status, taskId });
+    } finally {
+      setPendingTaskStatus((current) =>
+        current?.taskId === taskId && current.status === status ? null : current
+      );
+    }
+  }
+
+  function keepLocalTaskStatus(taskId: string, status: VisibleTaskStatus) {
     applyLocalTaskStatus(taskId, status);
     setTaskActionFeedback({ kind: "local", status, taskId });
+  }
+
+  async function setTaskStatus(taskId: string, status: VisibleTaskStatus) {
+    if (boardDataState.source === "api") {
+      await retryTaskStatusSync(taskId, status);
+      return;
+    }
+
+    keepLocalTaskStatus(taskId, status);
   }
 
   return (
@@ -257,6 +269,8 @@ export function App() {
         {screen === "task" && (
           <TaskDetailPage
             locale={locale}
+            onKeepLocalTaskStatus={keepLocalTaskStatus}
+            onRetryTaskStatusSync={retryTaskStatusSync}
             onTaskStatusChange={setTaskStatus}
             pendingTaskStatus={pendingTaskStatus}
             task={selectedTask}
@@ -600,10 +614,23 @@ function reviewButtonLabel(
   return locale === "zh" ? "同步中" : "Syncing";
 }
 
-function ReviewActionFeedback({ feedback, locale }: { feedback: TaskActionFeedback; locale: Locale }) {
+function ReviewActionFeedback({
+  feedback,
+  isPending,
+  locale,
+  onKeepLocalTaskStatus,
+  onRetryTaskStatusSync
+}: {
+  feedback: TaskActionFeedback;
+  isPending: boolean;
+  locale: Locale;
+  onKeepLocalTaskStatus: (taskId: string, status: VisibleTaskStatus) => void;
+  onRetryTaskStatusSync: (taskId: string, status: VisibleTaskStatus) => Promise<void> | void;
+}) {
   if (!feedback) return null;
 
   const copy = getReviewActionFeedbackCopy(feedback.kind, locale);
+  const shouldShowFallbackActions = feedback.kind === "fallback";
 
   return (
     <div
@@ -614,7 +641,29 @@ function ReviewActionFeedback({ feedback, locale }: { feedback: TaskActionFeedba
         <strong>{copy.title}</strong>
         <span>{copy.description}</span>
       </div>
-      <span className={`pill ${feedback.kind === "fallback" ? "commerce" : "safe"}`}>{copy.badge}</span>
+      <div className="review-feedback-side">
+        <span className={`pill ${feedback.kind === "fallback" ? "commerce" : "safe"}`}>{copy.badge}</span>
+        {shouldShowFallbackActions && (
+          <div className="review-feedback-actions" aria-label={locale === "zh" ? "fallback 同步动作" : "Fallback sync actions"}>
+            <button
+              className="button"
+              disabled={isPending}
+              onClick={() => onRetryTaskStatusSync(feedback.taskId, feedback.status)}
+              type="button"
+            >
+              {locale === "zh" ? "重试同步 / Retry sync" : "Retry sync"}
+            </button>
+            <button
+              className="button"
+              disabled={isPending}
+              onClick={() => onKeepLocalTaskStatus(feedback.taskId, feedback.status)}
+              type="button"
+            >
+              {locale === "zh" ? "保留本地 / Keep local" : "Keep local"}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -677,12 +726,16 @@ function getReviewActionFeedbackCopy(kind: NonNullable<TaskActionFeedback>["kind
 function TaskDetailPage({
   task,
   locale,
+  onKeepLocalTaskStatus,
+  onRetryTaskStatusSync,
   onTaskStatusChange,
   pendingTaskStatus,
   taskActionFeedback,
   t
 }: SharedProps & {
   task: TaskDetailViewModel;
+  onKeepLocalTaskStatus: (taskId: string, status: VisibleTaskStatus) => void;
+  onRetryTaskStatusSync: (taskId: string, status: VisibleTaskStatus) => Promise<void> | void;
   onTaskStatusChange: (taskId: string, status: VisibleTaskStatus) => Promise<void> | void;
   pendingTaskStatus: PendingTaskStatus | null;
   taskActionFeedback: TaskActionFeedback;
@@ -731,7 +784,13 @@ function TaskDetailPage({
         </div>
       </div>
 
-      <ReviewActionFeedback feedback={visibleFeedback} locale={locale} />
+      <ReviewActionFeedback
+        feedback={visibleFeedback}
+        isPending={isReviewActionPending}
+        locale={locale}
+        onKeepLocalTaskStatus={onKeepLocalTaskStatus}
+        onRetryTaskStatusSync={onRetryTaskStatusSync}
+      />
 
       <div className="banner">
         <div>

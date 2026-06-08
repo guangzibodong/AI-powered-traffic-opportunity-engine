@@ -159,6 +159,10 @@ assert(app.includes("disabled={isReviewActionPending}"), "Task Detail review but
 assert(app.includes('aria-live="polite"'), "Review action feedback must announce pending/error state accessibly");
 assert(app.includes("Syncing review state"), "Review action feedback must include non-technical pending copy");
 assert(app.includes("API unavailable"), "Review action feedback must include safe API failure fallback copy");
+assert(app.includes("retryTaskStatusSync"), "Fallback review feedback must expose an explicit retry sync action");
+assert(app.includes("keepLocalTaskStatus"), "Fallback review feedback must expose an explicit keep-local action");
+assert(app.includes("Retry sync"), "Fallback review feedback must include clear retry copy");
+assert(app.includes("Keep local"), "Fallback review feedback must include clear keep-local copy");
 assert(styles.includes(".review-feedback"), "styles.css must style review action feedback");
 assert(app.includes("window.scrollTo({ left: 0, top: 0 })"), "App must reset scroll to the top when switching screens");
 assert(app.includes("selectedTaskId"), "App must track the selected task id for task detail routing");
