@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 import { StatusPill } from "../components/tasks/StatusPill";
 import { TaskQueue } from "../components/tasks/TaskQueue";
 import { localizeTaskTitle } from "../components/tasks/task-copy";
+import { getOpportunities, getTasks, isApiBoardEnabled } from "../lib/api-client";
 import {
   boardViewModel,
   boundaryCopy,
@@ -18,6 +19,7 @@ import {
   saveTaskStatusMap,
   updateTaskStatusMap
 } from "../lib/task-state";
+import { mapApiPlanningToBoard } from "../lib/view-model-adapters";
 import type {
   BoardViewModel,
   EvidenceRow,
@@ -32,6 +34,12 @@ import type {
 } from "../lib/types";
 
 type Screen = "board" | "opportunity" | "task" | "integrations" | "states";
+
+type BoardDataState = {
+  error?: string;
+  loading: boolean;
+  source: "api" | "fallback" | "mock";
+};
 
 type MessageKey =
   | "board"
@@ -116,10 +124,42 @@ function useMessages(locale: Locale) {
 export function App() {
   const [screen, setScreen] = useState<Screen>("board");
   const [locale, setLocale] = useState<Locale>("zh");
+  const [baseBoard, setBaseBoard] = useState<BoardViewModel>(boardViewModel);
+  const [boardDataState, setBoardDataState] = useState<BoardDataState>({
+    loading: false,
+    source: "mock"
+  });
   const [taskStatuses, setTaskStatuses] = useState(loadTaskStatusMap);
   const t = useMessages(locale);
-  const board = useMemo(() => applyTaskStatusesToBoard(boardViewModel, taskStatuses), [taskStatuses]);
+  const board = useMemo(() => applyTaskStatusesToBoard(baseBoard, taskStatuses), [baseBoard, taskStatuses]);
   const selectedTask = useMemo(() => applyTaskStatusToDetail(taskDetail, taskStatuses), [taskStatuses]);
+
+  useEffect(() => {
+    if (!isApiBoardEnabled()) return;
+
+    let active = true;
+    setBoardDataState({ loading: true, source: "mock" });
+
+    Promise.all([getTasks(boardViewModel.storeName), getOpportunities(boardViewModel.storeName)])
+      .then(([tasksResponse, opportunitiesResponse]) => {
+        if (!active) return;
+        setBaseBoard(mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrationHealth));
+        setBoardDataState({ loading: false, source: "api" });
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        setBaseBoard(boardViewModel);
+        setBoardDataState({
+          error: error instanceof Error ? error.message : "Unknown API error",
+          loading: false,
+          source: "fallback"
+        });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function setTaskStatus(taskId: string, status: VisibleTaskStatus) {
     setTaskStatuses((current) => {
@@ -134,7 +174,7 @@ export function App() {
       <NavigationRail locale={locale} screen={screen} setScreen={setScreen} t={t} />
       <main className="main">
         <TopBar locale={locale} setLocale={setLocale} />
-        {screen === "board" && <TrafficOperationsPage board={board} locale={locale} setScreen={setScreen} t={t} />}
+        {screen === "board" && <TrafficOperationsPage board={board} dataState={boardDataState} locale={locale} setScreen={setScreen} t={t} />}
         {screen === "task" && <TaskDetailPage task={selectedTask} locale={locale} onTaskStatusChange={setTaskStatus} t={t} />}
         {screen === "opportunity" && <OpportunityDetailPage opportunity={opportunityDetail} locale={locale} t={t} />}
         {screen === "integrations" && <IntegrationsSafetyPage integrations={integrationHealth} locale={locale} t={t} />}
@@ -224,11 +264,13 @@ function LanguageSwitcher({ locale, setLocale }: { locale: Locale; setLocale: (l
 
 function TrafficOperationsPage({
   board,
+  dataState,
   locale,
   setScreen,
   t
 }: SharedProps & {
   board: BoardViewModel;
+  dataState: BoardDataState;
   setScreen: (screen: Screen) => void;
 }) {
   return (
@@ -254,6 +296,7 @@ function TrafficOperationsPage({
       </div>
 
       <BoundaryBanner locale={locale} t={t} />
+      <BoardDataBanner dataState={dataState} locale={locale} />
 
       <section className="planning-grid" aria-label="Planning status">
         <InfoCard
@@ -327,6 +370,44 @@ function TrafficOperationsPage({
         </aside>
       </div>
     </section>
+  );
+}
+
+function BoardDataBanner({ dataState, locale }: { dataState: BoardDataState; locale: Locale }) {
+  if (dataState.source === "mock" && !dataState.loading) return null;
+
+  const title =
+    dataState.source === "api"
+      ? locale === "zh"
+        ? "已连接 demo API"
+        : "Demo API connected"
+      : dataState.loading
+        ? locale === "zh"
+          ? "正在加载 demo API"
+          : "Loading demo API"
+        : locale === "zh"
+          ? "使用 mock 回退"
+          : "Using mock fallback";
+
+  const description =
+    dataState.source === "api"
+      ? locale === "zh"
+        ? "当前工作台数据来自后端只读 demo planning endpoint。"
+        : "The workspace is using read-only demo planning data from the backend."
+      : dataState.loading
+        ? locale === "zh"
+          ? "如果后端不可用，工作台会自动保留安全 mock 数据。"
+          : "If the backend is unavailable, the workspace keeps the safe mock data."
+        : dataState.error ?? "API unavailable, mock data retained.";
+
+  return (
+    <div className={`banner ${dataState.source === "fallback" ? "blocked" : "rule"}`}>
+      <div>
+        <strong>{title}</strong>
+        <span>{description}</span>
+      </div>
+      <span className="pill mono">{dataState.source}</span>
+    </div>
   );
 }
 

@@ -4,6 +4,8 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
+Current loop: API-backed board implementation.
+
 ## Status Legend
 
 | Status | Meaning |
@@ -29,11 +31,10 @@ This board is the execution source of truth for the current sprint builder loop.
 
 | ID | Priority | Status | Owner | Task | Definition of Done |
 |---|---:|---|---|---|---|
-| AUTO-001 | 1 | done | Frontend Product Engineer | Implement Sprint 1 task status persistence. | Approve, reject, and snooze update board/detail state, survive refresh, and keep forbidden future states out of UI contracts. |
-| AUTO-002 | 2 | done | Frontend Product Engineer | Extract task state and i18n support into small modules. | `App.tsx` shrinks, shared helpers are typed, and UI contract tests still pass. |
-| AUTO-003 | 3 | done | Backend/API Engineer | Define frontend API adapter path for board/opportunity/task data. | Document endpoint/schema mapping and create a typed API client or adapter skeleton without external credentials. |
-| AUTO-004 | 4 | done | QA Lead | Add stronger frontend contract checks. | Tests cover visible status boundaries, bilingual copy, and no live publishing/action leakage. |
-| AUTO-005 | 5 | done | Tech Lead | Push current branch and open PR when network allows. | Remote branch contains latest commits and PR link is available. |
+| API-001 | 1 | done | Frontend Product Engineer | Add API-backed board loading with mock fallback. | Board uses demo API when enabled, shows source/loading/error state, and falls back to mock without breaking Sprint 1 UI. |
+| API-002 | 2 | done | QA Lead | Add API adapter contract tests. | Tests prove backend-style payload maps to safe Sprint 1 frontend statuses, rules, automation levels, and evidence. |
+| API-003 | 3 | done | Backend/API Engineer | Add a documented local API smoke command. | README/docs explain how to run backend and web together for demo planning. |
+| API-004 | 4 | done | Tech Lead | Verify and push API board loop. | Frontend contract, lint, build, backend tests, secret scan, commit, and push succeed. |
 
 ## Blockers
 

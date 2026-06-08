@@ -7,7 +7,7 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "lint": "tsc --noEmit",
-    "test:ui-contract": "node tests/sprint1-ui-contract.test.mjs"
+    "test:ui-contract": "node tests/sprint1-ui-contract.test.mjs && node tests/api-adapter-contract.test.mjs"
   },
   "dependencies": {
     "@trafscope/shared": "workspace:*",

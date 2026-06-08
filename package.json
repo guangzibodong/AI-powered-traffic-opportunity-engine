@@ -8,6 +8,7 @@
     "url": "https://github.com/guangzibodong/AI-powered-traffic-opportunity-engine.git"
   },
   "scripts": {
+    "dev:api": "cd apps/api && uvicorn app.main:app --reload --port 8000",
     "dev:web": "pnpm --filter @trafscope/web run dev",
     "build:web": "pnpm --filter @trafscope/web run build",
     "lint:web": "pnpm --filter @trafscope/web run lint",

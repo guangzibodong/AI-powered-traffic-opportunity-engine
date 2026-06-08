@@ -130,8 +130,11 @@ assert(app.includes("LanguageSwitcher"), "App must expose language switching");
 assert(app.includes('setLocale("zh")') && app.includes('setLocale("en")'), "LanguageSwitcher must support zh and en");
 assert(statusPill.includes("VisibleTaskStatus"), "StatusPill must use the visible Sprint 1 task status type");
 assert(apiClient.includes("VITE_API_BASE_URL"), "api-client.ts must support configurable API base URL");
+assert(apiClient.includes("VITE_USE_API_BOARD"), "api-client.ts must gate API-backed board loading");
 assert(viewModelAdapters.includes("mapApiPlanningToBoard"), "view-model-adapters.ts must expose board adapter");
 assert(viewModelAdapters.includes("draft_assist_future"), "view-model-adapters.ts must future-gate draft automation");
+assert(app.includes("BoardDataBanner"), "App must show API/mock board data state");
+assert(app.includes("mapApiPlanningToBoard"), "App must wire API planning payloads through the adapter");
 
 assert(styles.includes("--bg: #0f1216"), "styles.css must use the V3 dark operational canvas token");
 assert(styles.includes("@media (max-width: 760px)"), "styles.css must include mobile responsive rules");

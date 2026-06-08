@@ -19,6 +19,34 @@ Move the V3 UI from static mock data toward API-backed demo planning without tou
 
 These endpoints are read-only demo planning endpoints. They do not connect to real external services.
 
+## Local Smoke Run
+
+Start the backend:
+
+```bash
+pnpm run dev:api
+```
+
+Start the web app with API-backed board loading enabled:
+
+```bash
+cd apps/web
+pnpm run dev
+```
+
+In PowerShell, set the flag before starting Vite:
+
+```powershell
+$env:VITE_USE_API_BOARD='true'
+pnpm run dev
+```
+
+Expected behavior:
+
+- The board first renders safely with mock data.
+- If `http://localhost:8000` is available, the board switches to demo API data.
+- If the API is unavailable, the board shows a fallback banner and keeps mock data.
+
 ## Frontend Adapter Files
 
 | File | Responsibility |

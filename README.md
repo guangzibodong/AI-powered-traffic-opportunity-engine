@@ -165,6 +165,28 @@ Frontend:
 pnpm --filter @trafscope/web run dev
 ```
 
+API-backed demo board:
+
+```bash
+pnpm run dev:api
+```
+
+In another terminal:
+
+```bash
+cd apps/web
+pnpm run dev
+```
+
+Set `VITE_USE_API_BOARD=true` before starting the web app to load from the demo API. In PowerShell:
+
+```powershell
+$env:VITE_USE_API_BOARD='true'
+pnpm run dev
+```
+
+If the API is unavailable, the web app keeps the safe mock board and shows a fallback state.
+
 Infrastructure:
 
 ```bash

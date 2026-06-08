@@ -69,6 +69,16 @@ export function getApiBaseUrl() {
   return meta.env?.VITE_API_BASE_URL ?? defaultApiBaseUrl;
 }
 
+export function isApiBoardEnabled() {
+  const meta = import.meta as ImportMeta & {
+    env?: {
+      VITE_API_BASE_URL?: string;
+      VITE_USE_API_BOARD?: string;
+    };
+  };
+  return meta.env?.VITE_USE_API_BOARD === "true" || Boolean(meta.env?.VITE_API_BASE_URL);
+}
+
 export async function getOpportunities(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiOpportunitiesResponse>(`${apiBaseUrl}/api/stores/${storeId}/opportunities`);
 }
