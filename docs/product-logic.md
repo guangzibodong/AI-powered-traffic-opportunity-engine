@@ -97,6 +97,16 @@ Sprint 2 WordPress page imports complete the initial product-page-search substra
 
 This remains read-only. It does not create drafts, overwrite pages, publish content, or call WordPress write operations.
 
+Sprint 2 imported signal graph matching connects those imported signals:
+
+- Read imported query clusters, products, and WordPress pages for one store.
+- Match query clusters to products only when three or more meaningful tokens overlap.
+- Match query clusters to pages first through exact GSC top-page URLs, then conservative token overlap.
+- Mark the best existing page only when the matched page is published and indexable.
+- Return aggregate graph counts so later opportunity generation can explain its substrate.
+
+This graph layer is deterministic and read-only. It does not call embeddings, LLMs, GSC, WooCommerce, or WordPress.
+
 ## Sprint 1 Opportunity Rules
 
 Sprint 1 exposes only three user-visible rule types.

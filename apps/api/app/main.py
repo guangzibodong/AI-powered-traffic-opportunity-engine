@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
-from app.routers import assets, health, integrations, opportunities, pages, performance, products, queries, stores, tasks
+from app.routers import assets, graphs, health, integrations, opportunities, pages, performance, products, queries, stores, tasks
 
 
 def create_app() -> FastAPI:
@@ -26,6 +26,7 @@ def create_app() -> FastAPI:
     app.include_router(products.router, prefix="/api/stores", tags=["products"])
     app.include_router(pages.router, prefix="/api/stores", tags=["pages"])
     app.include_router(queries.router, prefix="/api/stores", tags=["queries"])
+    app.include_router(graphs.router, prefix="/api/stores", tags=["graphs"])
     app.include_router(opportunities.router, prefix="/api/stores", tags=["opportunities"])
     app.include_router(tasks.router, prefix="/api/stores", tags=["tasks"])
     app.include_router(assets.router, prefix="/api/stores", tags=["assets"])

@@ -30,6 +30,7 @@ Move the V3 UI from static mock data toward API-backed demo planning without tou
 | `POST /api/stores/{store_id}/pages/import-wordpress` | Imports WordPress-like page/post fixture rows. | In-memory per store; no WordPress draft or publish calls. |
 | `GET /api/stores/{store_id}/pages` | Lists imported page/post rows. | Imported WordPress fixture rows, indexable published pages first. |
 | `GET /api/stores/{store_id}/pages/{page_id}` | Returns one imported page/post row. | Same imported page store. |
+| `GET /api/stores/{store_id}/imported-graph` | Links imported query clusters to imported products and pages. | Deterministic local token/URL matching; no external calls. |
 
 The planning endpoints are read-only demo planning endpoints. The task status endpoints only change Sprint 1 review state in memory. They do not connect to real external services, create WordPress drafts, or publish content.
 
@@ -50,6 +51,7 @@ The planning endpoints are read-only demo planning endpoints. The task status en
 | Imported query clustering | Done | `GET /query-clusters` groups imported rows into deterministic demand clusters with primary query, source row ids, totals, CTR, weighted position, and top pages. |
 | WooCommerce product import foundation | Done | `POST /products/import-woocommerce` normalizes WooCommerce-like product rows into in-memory per-store products with list/detail APIs. Sync service uses read-only client calls only. |
 | WordPress page import foundation | Done | `POST /pages/import-wordpress` normalizes WordPress-like page/post rows into in-memory per-store pages with list/detail APIs. Sync service uses read-only `list_pages` calls only. |
+| Imported signal graph foundation | Done | `GET /imported-graph` links imported query clusters to imported products and pages with deterministic local matching and aggregate counts. |
 
 ## Local Smoke Run
 
@@ -121,6 +123,7 @@ Expected behavior:
 - Imported query clustering must stay deterministic and local in Sprint 2; no embeddings, LLM calls, or external service calls are required to form clusters.
 - WooCommerce product import must stay read-only in Sprint 2; no create, update, delete, price, stock, product content, or inventory write route may be added.
 - WordPress page import must stay read-only in Sprint 2; no draft creation, page overwrite, live publish, or content mutation route may be added.
+- Imported graph matching must stay local and deterministic; no embeddings, LLM calls, live sync calls, or external writes are allowed.
 
 ## Remaining API-backed Task Action UX
 

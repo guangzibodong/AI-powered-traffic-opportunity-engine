@@ -156,6 +156,47 @@ Imported rows are in-memory, scoped per store, and idempotent by store, window, 
 
 The service uses local token overlap only. It does not call embeddings, LLMs, GSC OAuth, WooCommerce, or WordPress. CTR is calculated from total clicks divided by total impressions, and `position` is impression-weighted.
 
+## Imported Graph
+
+- `GET /api/stores/:storeId/imported-graph`
+
+### Imported signal graph contract
+
+`GET /api/stores/:storeId/imported-graph` links imported query clusters to imported products and WordPress pages:
+
+```json
+{
+  "mode": "imported_graph",
+  "store_id": "store-demo-outdoor-coffee",
+  "summary": {
+    "query_clusters": 2,
+    "product_matches": 2,
+    "page_matches": 2
+  },
+  "query_clusters": [
+    {
+      "cluster_key": "camping-espresso-maker-portable",
+      "primary_query": "portable espresso maker camping",
+      "matched_products": [
+        {
+          "product_id": "wc_abc123def456",
+          "name": "Trail Brew Portable Espresso Maker",
+          "match_score": 100,
+          "match_terms": ["camping", "espresso", "maker", "portable"]
+        }
+      ],
+      "best_existing_page": {
+        "page_id": "wp_abc123def456",
+        "url": "https://example.com/camping-espresso",
+        "match_type": "gsc_top_page"
+      }
+    }
+  ]
+}
+```
+
+Product matches require at least three meaningful token overlaps. Page matches first use exact GSC top-page URL matches, then conservative token overlap fallback. This endpoint is read-only and does not call external services.
+
 ## Opportunities
 
 - `GET /api/stores/:storeId/opportunities`
