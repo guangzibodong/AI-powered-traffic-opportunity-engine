@@ -143,6 +143,48 @@ export type ApiImportedQueryCluster = {
   top_pages?: string[];
 };
 
+export type ApiImportedGraphProduct = {
+  categories?: string[];
+  external_id?: string;
+  in_stock?: boolean;
+  match_score?: number;
+  match_terms?: string[];
+  name: string;
+  product_id: string;
+  sku?: string | null;
+  status?: string;
+};
+
+export type ApiImportedGraphPage = {
+  external_id?: string;
+  indexable?: boolean;
+  match_score?: number;
+  match_terms?: string[];
+  match_type?: string;
+  page_id: string;
+  page_type?: string;
+  status?: string;
+  title: string;
+  url: string;
+};
+
+export type ApiImportedGraphQueryCluster = ApiImportedQueryCluster & {
+  best_existing_page?: ApiImportedGraphPage | null;
+  matched_pages?: ApiImportedGraphPage[];
+  matched_products?: ApiImportedGraphProduct[];
+};
+
+export type ApiImportedGraphResponse = {
+  mode: "imported_graph";
+  query_clusters: ApiImportedGraphQueryCluster[];
+  store_id: string;
+  summary?: {
+    page_matches?: number;
+    product_matches?: number;
+    query_clusters?: number;
+  };
+};
+
 export type ApiImportedQueryClustersResponse = {
   mode: "csv_import";
   query_clusters: ApiImportedQueryCluster[];
@@ -236,6 +278,10 @@ export async function getSyncRuns(storeId: string, apiBaseUrl = getApiBaseUrl())
 
 export async function getAuditLogs(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiAuditLogsResponse>(`${storeApiPath(apiBaseUrl, storeId)}/audit-logs`);
+}
+
+export async function getImportedGraph(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiImportedGraphResponse>(`${storeApiPath(apiBaseUrl, storeId)}/imported-graph`);
 }
 
 export async function getImportedQueryClusters(storeId: string, apiBaseUrl = getApiBaseUrl()) {

@@ -15,6 +15,7 @@ import type {
 import type {
   ApiAuditLogsResponse,
   ApiEvidence,
+  ApiImportedGraphResponse,
   ApiImportedOpportunityResponse,
   ApiImportedOpportunitiesResponse,
   ApiImportedQueryClusterResponse,
@@ -151,6 +152,12 @@ export function mapApiAuditLogsToPreviews(response: ApiAuditLogsResponse): Audit
     safetyScope: entry.safety_scope ?? "local_tracking_only",
     target: `${entry.target_type}:${entry.target_id}`
   }));
+}
+
+export function mapApiImportedGraphToClusterPreviews(
+  response: ApiImportedGraphResponse
+): ImportedQueryClusterPreview[] {
+  return response.query_clusters.map(mapApiImportedQueryClusterToPreview);
 }
 
 export function mapApiImportedQueryClustersToPreviews(
