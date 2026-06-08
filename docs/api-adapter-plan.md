@@ -32,6 +32,7 @@ Move the V3 UI from static mock data toward API-backed demo planning without tou
 | `GET /api/stores/{store_id}/pages/{page_id}` | Returns one imported page/post row. | Same imported page store. |
 | `GET /api/stores/{store_id}/imported-graph` | Links imported query clusters to imported products and pages. | Deterministic local token/URL matching; no external calls. |
 | `GET /api/stores/{store_id}/imported-opportunities` | Generates read-only opportunities from imported graph rows. | Deterministic CTR refresh and collection gap previews only. |
+| `GET /api/stores/{store_id}/imported-opportunities/{opportunity_id}` | Returns one imported opportunity preview. | Same deterministic preview generated from imported data. |
 | `GET /api/stores/{store_id}/imported-tasks` | Generates read-only task previews from imported opportunity previews. | Recommend-only action plans with `new` status; no mutation, draft, or external write path. |
 | `GET /api/stores/{store_id}/imported-tasks/{task_id}` | Returns one imported task preview. | Same recommend-only preview generated from imported data. |
 | `GET /api/stores/{store_id}/sync-runs` | Lists local sync run tracking records. | Queued tracking-only records; no external job execution. |

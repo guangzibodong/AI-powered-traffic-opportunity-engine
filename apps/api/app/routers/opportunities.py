@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.services.demo_planning_service import build_demo_planning_payload, get_demo_opportunity
-from app.services.imported_opportunity_service import generate_imported_opportunities
+from app.services.imported_opportunity_service import generate_imported_opportunities, get_imported_opportunity
 
 
 router = APIRouter()
@@ -21,6 +21,14 @@ async def list_opportunities(store_id: str) -> dict:
 @router.get("/{store_id}/imported-opportunities")
 async def list_imported_opportunities(store_id: str) -> dict:
     return generate_imported_opportunities(store_id)
+
+
+@router.get("/{store_id}/imported-opportunities/{opportunity_id}")
+async def get_imported_opportunity_preview(store_id: str, opportunity_id: str) -> dict:
+    opportunity = get_imported_opportunity(store_id, opportunity_id)
+    if opportunity is None:
+        raise HTTPException(status_code=404, detail="Imported opportunity preview not found")
+    return {"mode": "imported_opportunities", "store_id": store_id, "opportunity": opportunity}
 
 
 @router.get("/{store_id}/opportunities/{opportunity_id}")

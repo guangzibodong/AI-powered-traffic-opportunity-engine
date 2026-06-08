@@ -28,6 +28,13 @@ def generate_imported_opportunities(store_id: str) -> dict[str, Any]:
     }
 
 
+def get_imported_opportunity(store_id: str, opportunity_id: str) -> dict[str, Any] | None:
+    for opportunity in generate_imported_opportunities(store_id)["opportunities"]:
+        if opportunity["id"] == opportunity_id:
+            return opportunity
+    return None
+
+
 def _opportunities_for_cluster(store_id: str, cluster: dict[str, Any]) -> list[dict[str, Any]]:
     opportunities = []
     if _is_low_ctr_refresh_candidate(cluster):

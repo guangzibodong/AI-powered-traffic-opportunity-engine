@@ -217,6 +217,7 @@ Product matches require at least three meaningful token overlaps. Page matches f
 - `GET /api/stores/:storeId/opportunities`
 - `GET /api/stores/:storeId/opportunities/:opportunityId`
 - `GET /api/stores/:storeId/imported-opportunities`
+- `GET /api/stores/:storeId/imported-opportunities/:opportunityId`
 - `POST /api/stores/:storeId/opportunities/:opportunityId/approve`
 - `POST /api/stores/:storeId/opportunities/:opportunityId/reject`
 
@@ -256,6 +257,8 @@ Current imported preview rules:
 - `collection_page_gap`: imported cluster has no best existing page and at least three matched imported products.
 
 This endpoint is read-only. It does not create tasks, assets, WordPress drafts, WooCommerce changes, or external sync jobs.
+
+`GET /api/stores/:storeId/imported-opportunities/:opportunityId` returns one preview as `{ "mode": "imported_opportunities", "store_id": "...", "opportunity": { ... } }`, or `404` when the preview id is unknown.
 
 ## Tasks
 

@@ -148,6 +148,20 @@ class ImportedOpportunityServiceTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["opportunities"], 0)
         self.assertEqual(payload["summary"]["by_rule"], {})
 
+    def test_imported_opportunity_detail_returns_one_preview_or_none(self):
+        from app.services.gsc_ingestion_service import import_gsc_csv
+        from app.services.imported_opportunity_service import generate_imported_opportunities, get_imported_opportunity
+        from app.services.page_sync_service import import_wordpress_pages
+        from app.services.product_sync_service import import_woocommerce_products
+
+        import_gsc_csv("store-demo-outdoor-coffee", CTR_GSC_CSV, window="28d")
+        import_woocommerce_products("store-demo-outdoor-coffee", CTR_PRODUCTS)
+        import_wordpress_pages("store-demo-outdoor-coffee", CTR_PAGES)
+        opportunity = generate_imported_opportunities("store-demo-outdoor-coffee")["opportunities"][0]
+
+        self.assertEqual(get_imported_opportunity("store-demo-outdoor-coffee", opportunity["id"])["id"], opportunity["id"])
+        self.assertIsNone(get_imported_opportunity("store-demo-outdoor-coffee", "missing-opportunity"))
+
 
 @unittest.skipIf(TestClient is None, "FastAPI is not installed in this local test runtime")
 class ImportedOpportunityApiTests(unittest.TestCase):
@@ -192,6 +206,30 @@ class ImportedOpportunityApiTests(unittest.TestCase):
         payload = response.json()
         self.assertEqual(payload["mode"], "imported_opportunities")
         self.assertEqual(payload["opportunities"][0]["rule_id"], "high_impression_low_ctr")
+
+    def test_imported_opportunity_detail_endpoint_returns_preview_and_404(self):
+        self.client.post(
+            "/api/stores/store-demo-outdoor-coffee/queries/import-csv",
+            json={"csv_text": CTR_GSC_CSV, "window": "28d"},
+        )
+        self.client.post(
+            "/api/stores/store-demo-outdoor-coffee/products/import-woocommerce",
+            json={"products": CTR_PRODUCTS},
+        )
+        self.client.post(
+            "/api/stores/store-demo-outdoor-coffee/pages/import-wordpress",
+            json={"pages": CTR_PAGES},
+        )
+        list_response = self.client.get("/api/stores/store-demo-outdoor-coffee/imported-opportunities")
+        opportunity_id = list_response.json()["opportunities"][0]["id"]
+
+        detail_response = self.client.get(f"/api/stores/store-demo-outdoor-coffee/imported-opportunities/{opportunity_id}")
+        missing_response = self.client.get("/api/stores/store-demo-outdoor-coffee/imported-opportunities/missing-opportunity")
+
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertEqual(detail_response.json()["mode"], "imported_opportunities")
+        self.assertEqual(detail_response.json()["opportunity"]["id"], opportunity_id)
+        self.assertEqual(missing_response.status_code, 404)
 
 
 if __name__ == "__main__":
