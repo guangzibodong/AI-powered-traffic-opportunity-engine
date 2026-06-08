@@ -7,6 +7,8 @@ import { localizeTaskTitle } from "../components/tasks/task-copy";
 import {
   getAuditLogs,
   getImportedGraph,
+  getImportedPages,
+  getImportedProducts,
   getImportedOpportunities,
   getImportedTasks,
   getIntegrations,
@@ -15,6 +17,10 @@ import {
   getTasks,
   isApiBoardEnabled,
   updateTaskStatus
+} from "../lib/api-client";
+import type {
+  ApiImportedPage,
+  ApiImportedProduct
 } from "../lib/api-client";
 import {
   boardViewModel,
@@ -77,7 +83,9 @@ type ImportedPreviewState = {
     product_matches?: number;
     query_clusters?: number;
   } | null;
+  pages: ApiImportedPage[];
   opportunities: Opportunity[];
+  products: ApiImportedProduct[];
   tasks: BoardViewModel["tasks"];
 };
 
@@ -190,7 +198,9 @@ export function App() {
     availability: "empty",
     clusters: [],
     graphSummary: null,
+    pages: [],
     opportunities: [],
+    products: [],
     tasks: []
   });
   const [selectedTaskId, setSelectedTaskId] = useState(taskDetail.id);
@@ -233,19 +243,28 @@ export function App() {
 
         Promise.all([
           getImportedGraph(demoStoreId),
+          getImportedProducts(demoStoreId),
+          getImportedPages(demoStoreId),
           getImportedOpportunities(demoStoreId),
           getImportedTasks(demoStoreId)
         ])
-          .then(([graphResponse, importedOpportunitiesResponse, importedTasksResponse]) => {
+          .then(([graphResponse, importedProductsResponse, importedPagesResponse, importedOpportunitiesResponse, importedTasksResponse]) => {
             if (!active) return;
             const clusters = mapApiImportedGraphToClusterPreviews(graphResponse);
+            const products = importedProductsResponse.products;
+            const pages = importedPagesResponse.pages;
             const opportunities = mapApiImportedOpportunitiesToOpportunities(importedOpportunitiesResponse);
             const tasks = mapApiImportedTasksToTasks(importedTasksResponse);
             setImportedPreviews({
-              availability: clusters.length > 0 || opportunities.length > 0 || tasks.length > 0 ? "ready" : "empty",
+              availability:
+                clusters.length > 0 || products.length > 0 || pages.length > 0 || opportunities.length > 0 || tasks.length > 0
+                  ? "ready"
+                  : "empty",
               clusters,
               graphSummary: graphResponse.summary ?? null,
+              pages,
               opportunities,
+              products,
               tasks
             });
           })
@@ -256,7 +275,9 @@ export function App() {
               clusters: [],
               error: importedError instanceof Error ? importedError.message : "Imported previews unavailable",
               graphSummary: null,
+              pages: [],
               opportunities: [],
+              products: [],
               tasks: []
             });
           });
@@ -264,7 +285,15 @@ export function App() {
       .catch((error: unknown) => {
         if (!active) return;
         setBaseBoard(boardViewModel);
-        setImportedPreviews({ availability: "empty", clusters: [], graphSummary: null, opportunities: [], tasks: [] });
+        setImportedPreviews({
+          availability: "empty",
+          clusters: [],
+          graphSummary: null,
+          pages: [],
+          opportunities: [],
+          products: [],
+          tasks: []
+        });
         setSafetySignals({ auditEvidence: [], syncRunPreviews: [] });
         setBoardDataState({
           error: error instanceof Error ? error.message : "Unknown API error",
@@ -691,11 +720,17 @@ function ImportedPreviewPanel({
   locale: Locale;
 }) {
   const visibleClusters = importedPreviews.clusters.slice(0, 2);
+  const visibleProducts = importedPreviews.products.slice(0, 2);
+  const visiblePages = importedPreviews.pages.slice(0, 2);
   const visibleOpportunities = importedPreviews.opportunities.slice(0, 2);
   const visibleTasks = importedPreviews.tasks.slice(0, 2);
   const hasImportedPreviews =
     importedPreviews.availability === "ready" &&
-    (visibleClusters.length > 0 || visibleOpportunities.length > 0 || visibleTasks.length > 0);
+    (visibleClusters.length > 0 ||
+      visibleProducts.length > 0 ||
+      visiblePages.length > 0 ||
+      visibleOpportunities.length > 0 ||
+      visibleTasks.length > 0);
 
   return (
     <section className="panel imported-preview-panel" aria-label="Imported preview panel">
@@ -734,6 +769,24 @@ function ImportedPreviewPanel({
               <p className="muted">
                 {cluster.impressions} impressions / {cluster.clicks} clicks / CTR {cluster.ctr}
               </p>
+            </article>
+          ))}
+          {visibleProducts.map((product) => (
+            <article className="rail-item" key={product.id}>
+              <span className="pill commerce">{locale === "zh" ? "商品" : "Product"}</span>
+              <h3>{product.name}</h3>
+              <p className="muted">
+                {locale === "zh"
+                  ? `SKU ${product.sku ?? "n/a"} / ${product.categories?.[0] ?? "未分类"}`
+                  : `SKU ${product.sku ?? "n/a"} / ${product.categories?.[0] ?? "uncategorized"}`}
+              </p>
+            </article>
+          ))}
+          {visiblePages.map((page) => (
+            <article className="rail-item" key={page.id}>
+              <span className="pill safe">{locale === "zh" ? "页面" : "Page"}</span>
+              <h3>{page.title}</h3>
+              <p className="muted">{page.url}</p>
             </article>
           ))}
           {visibleOpportunities.map((opportunity) => (

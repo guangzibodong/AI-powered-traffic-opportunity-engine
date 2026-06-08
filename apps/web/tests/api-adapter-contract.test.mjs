@@ -124,6 +124,8 @@ assert(app.includes("getIntegrations("), "App must read API-backed integration s
 assert(app.includes("getSyncRuns("), "App must read API-backed sync run tracking in API mode");
 assert(app.includes("getAuditLogs("), "App must read API-backed audit logs in API mode");
 assert(app.includes("getImportedGraph("), "App must read API-backed imported graph in API mode");
+assert(app.includes("getImportedProducts("), "App must read API-backed imported products in API mode");
+assert(app.includes("getImportedPages("), "App must read API-backed imported pages in API mode");
 assert(app.includes("getImportedOpportunities("), "App must read API-backed imported opportunities in API mode");
 assert(app.includes("getImportedTasks("), "App must read API-backed imported task previews in API mode");
 assert(app.includes("mapApiIntegrationsToIntegrationHealth("), "App must map API integration status into integration health rows");
