@@ -22,6 +22,8 @@ const taskState = read("lib/task-state.ts");
 const taskQueue = read("components/tasks/TaskQueue.tsx");
 const taskCopy = read("components/tasks/task-copy.ts");
 const statusPill = read("components/tasks/StatusPill.tsx");
+const apiClient = read("lib/api-client.ts");
+const viewModelAdapters = read("lib/view-model-adapters.ts");
 
 const forbiddenVisibleConcepts = [
   "published",
@@ -40,6 +42,8 @@ for (const concept of forbiddenVisibleConcepts) {
   assert(!taskState.includes(concept), `task-state.ts still exposes forbidden Sprint 1 concept: ${concept}`);
   assert(!taskQueue.includes(concept), `TaskQueue.tsx still exposes forbidden Sprint 1 concept: ${concept}`);
   assert(!taskCopy.includes(concept), `task-copy.ts still exposes forbidden Sprint 1 concept: ${concept}`);
+  assert(!apiClient.includes(concept), `api-client.ts still exposes forbidden Sprint 1 concept: ${concept}`);
+  assert(!viewModelAdapters.includes(concept), `view-model-adapters.ts still exposes forbidden Sprint 1 concept: ${concept}`);
 }
 
 for (const required of [
@@ -101,6 +105,9 @@ assert(!app.includes("actionLabel.includes"), "Task behavior must not depend on 
 assert(taskQueue.includes("onOpenTask"), "TaskQueue must expose a typed open-task callback");
 assert(taskCopy.includes("localizeTaskAction"), "task-copy.ts must own task action copy");
 assert(statusPill.includes("VisibleTaskStatus"), "StatusPill must use the visible Sprint 1 task status type");
+assert(apiClient.includes("VITE_API_BASE_URL"), "api-client.ts must support configurable API base URL");
+assert(viewModelAdapters.includes("mapApiPlanningToBoard"), "view-model-adapters.ts must expose board adapter");
+assert(viewModelAdapters.includes("draft_assist_future"), "view-model-adapters.ts must future-gate draft automation");
 
 assert(styles.includes("--bg: #0f1216"), "styles.css must use the V3 dark operational canvas token");
 assert(styles.includes("@media (max-width: 760px)"), "styles.css must include mobile responsive rules");

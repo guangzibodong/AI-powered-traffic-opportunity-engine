@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+
+from app.services.demo_planning_service import build_demo_planning_payload, get_demo_task
 
 
 router = APIRouter()
@@ -6,12 +8,21 @@ router = APIRouter()
 
 @router.get("/{store_id}/tasks")
 async def list_tasks(store_id: str) -> dict:
-    return {"store_id": store_id, "tasks": []}
+    payload = build_demo_planning_payload(store_id)
+    return {
+        "store_id": store_id,
+        "mode": payload["mode"],
+        "planning_run": payload["planning_run"],
+        "tasks": payload["tasks"],
+    }
 
 
 @router.get("/{store_id}/tasks/{task_id}")
 async def get_task(store_id: str, task_id: str) -> dict:
-    return {"store_id": store_id, "id": task_id}
+    task = get_demo_task(store_id, task_id)
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return {"store_id": store_id, "task": task}
 
 
 @router.patch("/{store_id}/tasks/{task_id}")
@@ -32,4 +43,3 @@ async def approve_task(store_id: str, task_id: str) -> dict:
 @router.post("/{store_id}/tasks/{task_id}/reject")
 async def reject_task(store_id: str, task_id: str) -> dict:
     return {"store_id": store_id, "task_id": task_id, "status": "rejected"}
-

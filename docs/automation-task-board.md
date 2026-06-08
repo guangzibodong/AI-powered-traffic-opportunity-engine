@@ -31,7 +31,7 @@ This board is the execution source of truth for the current sprint builder loop.
 |---|---:|---|---|---|---|
 | AUTO-001 | 1 | done | Frontend Product Engineer | Implement Sprint 1 task status persistence. | Approve, reject, and snooze update board/detail state, survive refresh, and keep forbidden future states out of UI contracts. |
 | AUTO-002 | 2 | done | Frontend Product Engineer | Extract task state and i18n support into small modules. | `App.tsx` shrinks, shared helpers are typed, and UI contract tests still pass. |
-| AUTO-003 | 3 | todo | Backend/API Engineer | Define frontend API adapter path for board/opportunity/task data. | Document endpoint/schema mapping and create a typed API client or adapter skeleton without external credentials. |
+| AUTO-003 | 3 | done | Backend/API Engineer | Define frontend API adapter path for board/opportunity/task data. | Document endpoint/schema mapping and create a typed API client or adapter skeleton without external credentials. |
 | AUTO-004 | 4 | todo | QA Lead | Add stronger frontend contract checks. | Tests cover visible status boundaries, bilingual copy, and no live publishing/action leakage. |
 | AUTO-005 | 5 | todo | Tech Lead | Push current branch and open PR when network allows. | Remote branch contains latest commits and PR link is available. |
 
