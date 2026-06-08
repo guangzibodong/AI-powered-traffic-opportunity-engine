@@ -2,6 +2,15 @@ import unittest
 
 
 class DemoDecisioningLoopTests(unittest.TestCase):
+    def test_demo_fixture_meets_sprint_one_depth(self):
+        from app.fixtures.demo_decisioning import load_demo_decisioning_fixture
+
+        fixture = load_demo_decisioning_fixture()
+
+        self.assertGreaterEqual(len(fixture.products), 20)
+        self.assertGreaterEqual(len(fixture.pages), 5)
+        self.assertGreaterEqual(len(fixture.metrics), 50)
+
     def test_graph_builder_identifies_collection_gap_cluster(self):
         from app.fixtures.demo_decisioning import load_demo_decisioning_fixture
         from app.services.graph_builder_service import GraphBuilderService
@@ -60,6 +69,23 @@ class DemoDecisioningLoopTests(unittest.TestCase):
 
         self.assertEqual(first_keys, second_keys)
         self.assertEqual(len(first_keys), len(set(first_keys)))
+
+    def test_demo_planning_generates_at_least_ten_tasks(self):
+        from app.services.demo_planning_service import build_demo_planning_payload
+
+        payload = build_demo_planning_payload("store-demo-outdoor-coffee")
+        tasks = payload["tasks"]
+        rule_ids = {
+            opportunity["rule_id"]
+            for opportunity in payload["opportunities"]
+        }
+
+        self.assertGreaterEqual(len(tasks), 10)
+        self.assertEqual(payload["planning_run"]["generated_tasks"], len(tasks))
+        self.assertIn("collection_page_gap", rule_ids)
+        self.assertIn("high_impression_low_ctr", rule_ids)
+        self.assertIn("ranking_push", rule_ids)
+        self.assertTrue(all(task["evidence"] for task in tasks))
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: API-backed board implementation.
+Current loop: Sprint 1 demo data depth.
 
 ## Status Legend
 
@@ -31,10 +31,10 @@ Current loop: API-backed board implementation.
 
 | ID | Priority | Status | Owner | Task | Definition of Done |
 |---|---:|---|---|---|---|
-| API-001 | 1 | done | Frontend Product Engineer | Add API-backed board loading with mock fallback. | Board uses demo API when enabled, shows source/loading/error state, and falls back to mock without breaking Sprint 1 UI. |
-| API-002 | 2 | done | QA Lead | Add API adapter contract tests. | Tests prove backend-style payload maps to safe Sprint 1 frontend statuses, rules, automation levels, and evidence. |
-| API-003 | 3 | done | Backend/API Engineer | Add a documented local API smoke command. | README/docs explain how to run backend and web together for demo planning. |
-| API-004 | 4 | done | Tech Lead | Verify and push API board loop. | Frontend contract, lint, build, backend tests, secret scan, commit, and push succeed. |
+| DEMO-001 | 1 | done | Backend Decisioning Engineer | Expand demo fixture to Sprint 1 acceptance depth. | Fixture has at least 20 products, 5 pages, and 50 GSC-like metric rows. |
+| DEMO-002 | 2 | done | Backend Decisioning Engineer | Generate at least 10 deterministic demo opportunities/tasks. | Demo planning payload returns at least 10 evidence-backed tasks while preserving all three Sprint 1 rule types. |
+| DEMO-003 | 3 | done | QA Lead | Add tests for fixture depth and demo task volume. | Backend tests fail before fixture expansion and pass after implementation. |
+| DEMO-004 | 4 | done | Tech Lead | Verify, document, commit, and push. | Backend tests, frontend contracts, lint, build, secret scan, commit, and push succeed. |
 
 ## Blockers
 
