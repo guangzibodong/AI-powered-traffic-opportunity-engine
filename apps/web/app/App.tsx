@@ -904,7 +904,12 @@ function ImportedPreviewPanel({
       {hasImportedPreviews ? (
         <div className="imported-preview-list">
           {visibleClusters.map((cluster) => (
-            <article className="rail-item" key={cluster.id}>
+            <article
+              className="rail-item"
+              data-preview-id={cluster.id}
+              data-preview-kind="cluster"
+              key={cluster.id}
+            >
               <span className="pill search">{locale === "zh" ? "查询簇" : "Cluster"}</span>
               <h3>{cluster.primaryQuery}</h3>
               <p className="muted">
@@ -920,7 +925,12 @@ function ImportedPreviewPanel({
             </p>
           ) : null}
           {visibleQueryRows.map((queryRow) => (
-            <article className="rail-item" key={queryRow.id}>
+            <article
+              className="rail-item"
+              data-preview-id={queryRow.id}
+              data-preview-kind="query_row"
+              key={queryRow.id}
+            >
               <span className="pill search">
                 {locale === "zh" ? `查询行 / ${queryRow.source}` : `Query row / ${queryRow.source}`}
               </span>
@@ -941,7 +951,12 @@ function ImportedPreviewPanel({
             </p>
           ) : null}
           {visibleProducts.map((product) => (
-            <article className="rail-item" key={product.id}>
+            <article
+              className="rail-item"
+              data-preview-id={product.id}
+              data-preview-kind="product"
+              key={product.id}
+            >
               <span className="pill commerce">
                 {locale === "zh" ? `商品 / ${product.source}` : `Product / ${product.source}`}
               </span>
@@ -958,7 +973,12 @@ function ImportedPreviewPanel({
             </p>
           ) : null}
           {visiblePages.map((page) => (
-            <article className="rail-item" key={page.id}>
+            <article
+              className="rail-item"
+              data-preview-id={page.id}
+              data-preview-kind="page"
+              key={page.id}
+            >
               <span className="pill safe">{locale === "zh" ? `页面 / ${page.source}` : `Page / ${page.source}`}</span>
               <h3>{page.title}</h3>
               <p className="muted">{page.detail}</p>
@@ -973,7 +993,12 @@ function ImportedPreviewPanel({
             </p>
           ) : null}
           {visibleOpportunities.map((opportunity) => (
-            <article className="rail-item" key={opportunity.id}>
+            <article
+              className="rail-item"
+              data-preview-id={opportunity.id}
+              data-preview-kind="opportunity"
+              key={opportunity.id}
+            >
               <span className="pill safe">{locale === "zh" ? "机会" : "Opportunity"}</span>
               <h3>{opportunity.title}</h3>
               <p className="muted">{opportunity.summary}</p>
@@ -987,7 +1012,12 @@ function ImportedPreviewPanel({
             </p>
           ) : null}
           {visibleTasks.map((task) => (
-            <article className="rail-item" key={task.id}>
+            <article
+              className="rail-item"
+              data-preview-id={task.id}
+              data-preview-kind="task_preview"
+              key={task.id}
+            >
               <span className="pill commerce">{locale === "zh" ? "任务预览" : "Task preview"}</span>
               <h3>{localizeTaskTitle(task.title, locale)}</h3>
               <p className="muted">
