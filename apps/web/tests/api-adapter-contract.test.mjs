@@ -151,6 +151,12 @@ assert(app.includes("productOverflowCount"), "Imported product preview UI must d
 assert(app.includes("pageOverflowCount"), "Imported page preview UI must disclose hidden page rows when the preview is truncated");
 assert(app.includes("more catalog products"), "Imported product overflow copy must stay read-only and non-actionable");
 assert(app.includes("more catalog pages"), "Imported page overflow copy must stay read-only and non-actionable");
+assert(app.includes("clusterOverflowCount"), "Imported cluster preview UI must disclose hidden query cluster rows when truncated");
+assert(app.includes("opportunityOverflowCount"), "Imported opportunity preview UI must disclose hidden opportunity rows when truncated");
+assert(app.includes("taskOverflowCount"), "Imported task preview UI must disclose hidden task rows when truncated");
+assert(app.includes("more query clusters"), "Imported cluster overflow copy must stay read-only and non-actionable");
+assert(app.includes("more opportunity previews"), "Imported opportunity overflow copy must stay read-only and non-actionable");
+assert(app.includes("more task previews"), "Imported task overflow copy must stay read-only and non-actionable");
 assert(app.includes("product.detail"), "Imported product preview UI must render safe product catalog detail");
 assert(app.includes("page.detail"), "Imported page preview UI must render safe page catalog detail");
 assert(app.includes("product.source"), "Imported product preview UI must render the safe product source label");

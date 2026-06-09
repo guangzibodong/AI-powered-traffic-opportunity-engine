@@ -666,7 +666,8 @@ tr:last-child td {
   overflow-wrap: anywhere;
 }
 
-.catalog-overflow {
+.catalog-overflow,
+.imported-preview-overflow {
   margin: -2px 0 2px;
   padding: 0 2px;
 }

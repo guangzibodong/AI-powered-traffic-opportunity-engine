@@ -751,8 +751,11 @@ function ImportedPreviewPanel({
   const visiblePages = importedPreviews.pages.slice(0, 2);
   const visibleOpportunities = importedPreviews.opportunities.slice(0, 2);
   const visibleTasks = importedPreviews.tasks.slice(0, 2);
+  const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
   const productOverflowCount = Math.max(importedPreviews.products.length - visibleProducts.length, 0);
   const pageOverflowCount = Math.max(importedPreviews.pages.length - visiblePages.length, 0);
+  const opportunityOverflowCount = Math.max(importedPreviews.opportunities.length - visibleOpportunities.length, 0);
+  const taskOverflowCount = Math.max(importedPreviews.tasks.length - visibleTasks.length, 0);
   const hasImportedPreviews =
     importedPreviews.availability === "ready" &&
     (visibleClusters.length > 0 ||
@@ -818,6 +821,13 @@ function ImportedPreviewPanel({
               </p>
             </article>
           ))}
+          {clusterOverflowCount > 0 ? (
+            <p className="muted imported-preview-overflow">
+              {locale === "zh"
+                ? `还有 ${clusterOverflowCount} 个查询簇未在预览中展示`
+                : `${clusterOverflowCount} more query clusters not shown in this preview`}
+            </p>
+          ) : null}
           {visibleProducts.map((product) => (
             <article className="rail-item" key={product.id}>
               <span className="pill commerce">
@@ -857,6 +867,13 @@ function ImportedPreviewPanel({
               <p className="muted">{opportunity.summary}</p>
             </article>
           ))}
+          {opportunityOverflowCount > 0 ? (
+            <p className="muted imported-preview-overflow">
+              {locale === "zh"
+                ? `还有 ${opportunityOverflowCount} 个机会预览未在预览中展示`
+                : `${opportunityOverflowCount} more opportunity previews not shown in this preview`}
+            </p>
+          ) : null}
           {visibleTasks.map((task) => (
             <article className="rail-item" key={task.id}>
               <span className="pill commerce">{locale === "zh" ? "任务预览" : "Task preview"}</span>
@@ -868,6 +885,13 @@ function ImportedPreviewPanel({
               </p>
             </article>
           ))}
+          {taskOverflowCount > 0 ? (
+            <p className="muted imported-preview-overflow">
+              {locale === "zh"
+                ? `还有 ${taskOverflowCount} 个任务预览未在预览中展示`
+                : `${taskOverflowCount} more task previews not shown in this preview`}
+            </p>
+          ) : null}
         </div>
       ) : importedPreviews.availability === "unavailable" ? (
         <div className="imported-preview-empty">
