@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 catalog overflow browser smoke coverage completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 non-catalog overflow browser smoke coverage completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -78,6 +78,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-CATALOG-032 | 44 | done | Frontend Product Engineer / QA Lead | Show imported catalog overflow indicators. | When more imported catalog products or pages exist than the preview rail displays, the UI shows read-only overflow counts so users know the compact preview is partial, without adding external navigation, edit, credential, sync, draft, publish, or commerce write controls. |
 | TASK-S2-IMPORT-033 | 45 | done | Frontend Product Engineer / QA Lead | Show imported non-catalog overflow indicators. | When more imported query clusters, opportunity previews, or task previews exist than the preview rail displays, the UI shows read-only overflow counts so users know the compact preview is partial, without adding review mutation, credential, sync, draft, publish, or commerce write controls. |
 | TASK-S2-QA-034 | 46 | done | Frontend Product Engineer / QA Lead | Add browser smoke coverage for catalog overflow indicators. | Browser smoke seeds more imported products and pages than the preview rail displays, verifies the read-only catalog overflow indicators, and still confirms no buttons, unsafe methods, credentials, sync, draft, publish, or commerce write controls. |
+| TASK-S2-QA-035 | 47 | done | Frontend Product Engineer / QA Lead | Add browser smoke coverage for non-catalog overflow indicators. | Browser smoke seeds more imported query clusters, opportunity previews, and task previews than the preview rail displays, verifies the read-only overflow indicators, and still confirms no buttons, unsafe methods, credentials, sync, draft, publish, or commerce write controls. |
 
 ## Blockers
 
@@ -167,6 +168,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported non-catalog overflow indicators are verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Catalog overflow browser smoke coverage is next because the UI contract checks overflow code statically, but the real browser smoke should exercise seeded catalog overflow in the rendered imported preview panel.
 - Catalog overflow browser smoke coverage is verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Non-catalog overflow browser smoke coverage is next because query cluster, opportunity, and task overflow indicators should also be exercised in a real rendered API-backed imported preview panel.
+- Non-catalog overflow browser smoke coverage is verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

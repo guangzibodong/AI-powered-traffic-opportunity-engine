@@ -21,6 +21,8 @@ const webUrl = `http://127.0.0.1:${webPort}`;
 const importedGscCsv = `Query,Page,Clicks,Impressions,CTR,Position
 portable espresso maker camping,https://example.com/camping-espresso,24,1200,2.0%,4.8
 camping portable espresso machine,https://example.com/camping-espresso,18,800,2.25%,5.2
+camping pour over kit,https://example.com/camping-pour-over,20,1100,1.8%,6.1
+trail cold brew bottle,https://example.com/trail-cold-brew,16,1050,1.5%,7.4
 `;
 
 const importedProducts = [
@@ -242,6 +244,9 @@ async function runSmoke() {
     await expectVisible(page.getByText("Camping Espresso Collection"), "imported page row");
     await expectVisible(page.getByText("1 more catalog products"), "catalog product overflow indicator");
     await expectVisible(page.getByText("1 more catalog pages"), "catalog page overflow indicator");
+    await expectVisible(page.getByText("1 more query clusters"), "query cluster overflow indicator");
+    await expectVisible(page.getByText("1 more opportunity previews"), "opportunity preview overflow indicator");
+    await expectVisible(page.getByText("1 more task previews"), "task preview overflow indicator");
     await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
 
     for (const target of ["/imported-graph", "/products", "/pages", "/imported-opportunities", "/imported-tasks"]) {
