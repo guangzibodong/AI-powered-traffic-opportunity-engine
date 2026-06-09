@@ -1071,6 +1071,8 @@ async function runSmoke() {
     await expectVisible(page.getByText("Buying guide gap task share"), "imported buying guide gap task share metric");
     await expectVisible(page.getByText("Ranking push opportunities"), "imported ranking push opportunity summary metric");
     await expectVisible(page.getByText("Ranking push task previews"), "imported ranking push task summary metric");
+    await expectVisible(page.getByText("Ranking push opportunity share"), "imported ranking push opportunity share metric");
+    await expectVisible(page.getByText("Ranking push task share"), "imported ranking push task share metric");
     await expectVisible(page.getByText("Recommend-only task previews"), "imported recommend-only task summary metric");
     await expectVisible(page.getByText("Recommend-only task share"), "imported recommend-only task share metric");
     await expectVisible(page.getByText("New task previews"), "imported new task summary metric");
@@ -1204,6 +1206,8 @@ async function runSmoke() {
         new_opportunity_share: "100%",
         product_seo_opportunity_share: "0%",
         product_seo_task_share: "0%",
+        ranking_push_opportunity_share: "0%",
+        ranking_push_task_share: "0%",
         recommend_only_task_share: "100%"
       },
       "initial"
@@ -1221,6 +1225,8 @@ async function runSmoke() {
         new_opportunity_share: { count: 4, percent: 100, total: 4 },
         product_seo_opportunity_share: { count: 0, percent: 0, total: 4 },
         product_seo_task_share: { count: 0, percent: 0, total: 4 },
+        ranking_push_opportunity_share: { count: 0, percent: 0, total: 4 },
+        ranking_push_task_share: { count: 0, percent: 0, total: 4 },
         recommend_only_task_share: { count: 4, percent: 100, total: 4 }
       },
       "initial"
@@ -1444,6 +1450,8 @@ async function runSmoke() {
         new_opportunity_share: "0%",
         product_seo_opportunity_share: "0%",
         product_seo_task_share: "0%",
+        ranking_push_opportunity_share: "0%",
+        ranking_push_task_share: "0%",
         recommend_only_task_share: "0%"
       },
       "resilient fallback"
@@ -1461,6 +1469,8 @@ async function runSmoke() {
         new_opportunity_share: { count: 0, percent: 0, total: 0 },
         product_seo_opportunity_share: { count: 0, percent: 0, total: 0 },
         product_seo_task_share: { count: 0, percent: 0, total: 0 },
+        ranking_push_opportunity_share: { count: 0, percent: 0, total: 0 },
+        ranking_push_task_share: { count: 0, percent: 0, total: 0 },
         recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
       "resilient fallback"
@@ -1624,6 +1634,8 @@ async function runSmoke() {
         new_opportunity_share: "0%",
         product_seo_opportunity_share: "0%",
         product_seo_task_share: "0%",
+        ranking_push_opportunity_share: "0%",
+        ranking_push_task_share: "0%",
         recommend_only_task_share: "0%"
       },
       "empty imported"
@@ -1641,6 +1653,8 @@ async function runSmoke() {
         new_opportunity_share: { count: 0, percent: 0, total: 0 },
         product_seo_opportunity_share: { count: 0, percent: 0, total: 0 },
         product_seo_task_share: { count: 0, percent: 0, total: 0 },
+        ranking_push_opportunity_share: { count: 0, percent: 0, total: 0 },
+        ranking_push_task_share: { count: 0, percent: 0, total: 0 },
         recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
       "empty imported"
@@ -2052,6 +2066,8 @@ async function runSmoke() {
         new_opportunity_share: "0%",
         product_seo_opportunity_share: "0%",
         product_seo_task_share: "0%",
+        ranking_push_opportunity_share: "0%",
+        ranking_push_task_share: "0%",
         recommend_only_task_share: "100%"
       },
       "opportunity-only failure"
@@ -2069,6 +2085,8 @@ async function runSmoke() {
         new_opportunity_share: { count: 0, percent: 0, total: 0 },
         product_seo_opportunity_share: { count: 0, percent: 0, total: 0 },
         product_seo_task_share: { count: 0, percent: 0, total: 4 },
+        ranking_push_opportunity_share: { count: 0, percent: 0, total: 0 },
+        ranking_push_task_share: { count: 0, percent: 0, total: 4 },
         recommend_only_task_share: { count: 4, percent: 100, total: 4 }
       },
       "opportunity-only failure"
@@ -2164,6 +2182,8 @@ async function runSmoke() {
         new_opportunity_share: "100%",
         product_seo_opportunity_share: "0%",
         product_seo_task_share: "0%",
+        ranking_push_opportunity_share: "0%",
+        ranking_push_task_share: "0%",
         recommend_only_task_share: "0%"
       },
       "task-only failure"
@@ -2181,6 +2201,8 @@ async function runSmoke() {
         new_opportunity_share: { count: 4, percent: 100, total: 4 },
         product_seo_opportunity_share: { count: 0, percent: 0, total: 4 },
         product_seo_task_share: { count: 0, percent: 0, total: 0 },
+        ranking_push_opportunity_share: { count: 0, percent: 0, total: 4 },
+        ranking_push_task_share: { count: 0, percent: 0, total: 0 },
         recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
       "task-only failure"
