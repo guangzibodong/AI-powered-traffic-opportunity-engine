@@ -429,8 +429,10 @@ async function assertImportedActionMixSummary(page, expectedValues, label) {
   const state = await summary.getAttribute("data-action-mix-state");
   const totalText = await summary.getAttribute("data-action-mix-total");
   const topKey = await summary.getAttribute("data-action-mix-top-key");
+  const topCountText = await summary.getAttribute("data-action-mix-top-count");
   const topShareText = await summary.getAttribute("data-action-mix-top-share");
   const total = Number(totalText);
+  const topCount = Number(topCountText);
   const topShare = Number(topShareText);
   assert(
     state === expectedValues.state,
@@ -445,6 +447,12 @@ async function assertImportedActionMixSummary(page, expectedValues, label) {
     `${label} imported action mix top key mismatch: expected ${expectedValues.topKey}, got ${topKey ?? "missing"}`
   );
   assert(
+    Number.isInteger(topCount) && topCount === expectedValues.topCount,
+    `${label} imported action mix top count mismatch: expected ${expectedValues.topCount}, got ${
+      topCountText ?? "missing"
+    }`
+  );
+  assert(
     Number.isInteger(topShare) && topShare === expectedValues.topShare,
     `${label} imported action mix top share mismatch: expected ${expectedValues.topShare}, got ${
       topShareText ?? "missing"
@@ -456,6 +464,10 @@ async function assertImportedActionMixSummary(page, expectedValues, label) {
   assert(
     summaryText.includes(expectedValues.state),
     `${label} imported action mix summary must show state ${expectedValues.state}`
+  );
+  assert(
+    summaryText.includes(String(expectedValues.topCount)),
+    `${label} imported action mix summary must show top count ${expectedValues.topCount}`
   );
 }
 
@@ -1332,7 +1344,7 @@ async function runSmoke() {
     );
     await assertImportedActionMixSummary(
       page,
-      { state: "concentrated", total: 8, topKey: "ctr_refresh", topShare: 75 },
+      { state: "concentrated", total: 8, topKey: "ctr_refresh", topCount: 6, topShare: 75 },
       "initial"
     );
     await assertImportedActionMixSummaryColor(page, "rgb(97, 32, 238)", "initial");
@@ -1490,7 +1502,7 @@ async function runSmoke() {
     await clickUnique(balancedMixPage.getByRole("button", { name: "EN" }), "balanced mix language switcher");
     await assertImportedActionMixSummary(
       balancedMixPage,
-      { state: "balanced", total: 10, topKey: "ctr_refresh", topShare: 20 },
+      { state: "balanced", total: 10, topKey: "ctr_refresh", topCount: 2, topShare: 20 },
       "balanced mix"
     );
     await assertImportedActionMixSummaryColor(balancedMixPage, "rgb(27, 27, 29)", "balanced mix");
@@ -1643,7 +1655,7 @@ async function runSmoke() {
     );
     await assertImportedActionMixSummary(
       resilientPage,
-      { state: "empty", total: 0, topKey: "none", topShare: 0 },
+      { state: "empty", total: 0, topKey: "none", topCount: 0, topShare: 0 },
       "resilient fallback"
     );
     await assertImportedActionMixSummaryColor(resilientPage, "rgb(107, 107, 114)", "resilient fallback");
@@ -1833,7 +1845,7 @@ async function runSmoke() {
     );
     await assertImportedActionMixSummary(
       emptyImportedPage,
-      { state: "empty", total: 0, topKey: "none", topShare: 0 },
+      { state: "empty", total: 0, topKey: "none", topCount: 0, topShare: 0 },
       "empty imported"
     );
     await assertImportedActionMixSummaryColor(emptyImportedPage, "rgb(107, 107, 114)", "empty imported");
@@ -2271,7 +2283,7 @@ async function runSmoke() {
     );
     await assertImportedActionMixSummary(
       opportunityFailurePage,
-      { state: "concentrated", total: 4, topKey: "ctr_refresh", topShare: 75 },
+      { state: "concentrated", total: 4, topKey: "ctr_refresh", topCount: 3, topShare: 75 },
       "opportunity-only failure"
     );
     await assertImportedPreviewItemKinds(
@@ -2392,7 +2404,7 @@ async function runSmoke() {
     );
     await assertImportedActionMixSummary(
       taskFailurePage,
-      { state: "concentrated", total: 4, topKey: "ctr_refresh", topShare: 75 },
+      { state: "concentrated", total: 4, topKey: "ctr_refresh", topCount: 3, topShare: 75 },
       "task-only failure"
     );
     await assertImportedPreviewItemKinds(

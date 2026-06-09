@@ -1034,9 +1034,10 @@ function ImportedPreviewPanel({
   ];
   const actionMixTotal = actionMixRows.reduce((total, row) => total + row.count, 0);
   const actionMixTopRow = actionMixRows.reduce((currentTop, row) => (row.count > currentTop.count ? row : currentTop));
+  const actionMixTopCount = actionMixTotal > 0 ? actionMixTopRow.count : 0;
   const actionMixTopKey = actionMixTotal > 0 ? actionMixTopRow.key : "none";
   const actionMixTopLabel = actionMixTotal > 0 ? actionMixTopRow.label : locale === "zh" ? "无" : "none";
-  const actionMixTopShare = getImportedMetricSharePercent(actionMixTotal > 0 ? actionMixTopRow.count : 0, actionMixTotal);
+  const actionMixTopShare = getImportedMetricSharePercent(actionMixTopCount, actionMixTotal);
   const actionMixState =
     actionMixTotal === 0 ? "empty" : actionMixTopShare >= 60 ? "concentrated" : "balanced";
   const actionMixStateLabel =
@@ -1387,13 +1388,14 @@ function ImportedPreviewPanel({
       <div
         className="section-health-summary action-mix-summary"
         data-action-mix-state={actionMixState}
+        data-action-mix-top-count={actionMixTopCount}
         data-action-mix-top-key={actionMixTopKey}
         data-action-mix-top-share={actionMixTopShare}
         data-action-mix-total={actionMixTotal}
       >
         <span>{locale === "zh" ? "动作组合" : "Action mix"}</span>
         <strong>
-          {actionMixStateLabel} / {actionMixTopLabel} / {actionMixTopShare}%
+          {actionMixStateLabel} / {actionMixTopLabel} / {actionMixTopCount} / {actionMixTopShare}%
         </strong>
       </div>
       <div

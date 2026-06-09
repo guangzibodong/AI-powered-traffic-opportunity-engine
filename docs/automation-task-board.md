@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only UI has verified action-mix summary state styling and is queuing action-mix top-count diagnostics next; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only UI has verified action-mix top-count diagnostics and is queuing action-mix category count diagnostics next; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -160,7 +160,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-114 | 126 | done | Frontend Product Engineer / QA Lead | Add action-share consistency browser coverage. | Browser smoke reconciles action-share numerator, denominator, raw percent, and visible percent for CTR refresh, collection page, product SEO, ranking push, and buying guide states across populated, empty, fallback, opportunity-only failure, and task-only failure cases, with no unsafe statuses or live integration controls. |
 | TASK-S2-UX-115 | 127 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported action-mix summary state. | Imported preview UI renders a compact read-only action-mix summary state derived from action share diagnostics, distinguishing empty, concentrated, and balanced imported action mixes without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-UX-116 | 128 | done | UI Systems Engineer / Frontend Product Engineer / QA Lead | Add action-mix summary state styling. | Action-mix summary states use compact read-only visual treatment for empty, concentrated, and balanced states with stable style hooks and browser coverage, without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
-| TASK-S2-UX-117 | 129 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show action-mix top action count diagnostics. | Action-mix summary exposes and displays the dominant action count with stable read-only diagnostics, reconciling top action count, total, and top share without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-UX-117 | 129 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show action-mix top action count diagnostics. | Action-mix summary exposes and displays the dominant action count with stable read-only diagnostics, reconciling top action count, total, and top share without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-UX-118 | 130 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show action-mix category count diagnostics. | Imported preview UI exposes compact read-only action-mix category rows for CTR refresh, collection page, product SEO, ranking push, and buying guide gap with stable combined count and share diagnostics, without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 
 ## Blockers
 
@@ -415,6 +416,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Action-mix summary state styling is next because the new read-only state should be visually scannable without implying an executable workflow.
 - Action-mix summary state styling is verified by UI contract red-green coverage for empty, concentrated, and balanced selectors plus browser computed-color coverage for concentrated, empty, and synthetic balanced states.
 - Action-mix top-count diagnostics are next because the summary should explain the dominant action count behind the displayed top share before any execution workflow exists.
+- Action-mix top-count diagnostics are verified by browser smoke red-green coverage across populated, fallback, empty, synthetic balanced, opportunity-only failure, and task-only failure states, with stable top-count diagnostics and visible count text.
+- Action-mix category count diagnostics are next because operators should see the component action counts behind the summary state without opening any execution workflow.
 
 ## Completion Rule
 
