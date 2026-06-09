@@ -32,6 +32,24 @@ const importedProducts = [
     slug: "trail-brew-portable-espresso-maker",
     status: "publish",
     stock_status: "instock"
+  },
+  {
+    attributes: [{ name: "Use case", options: ["Camping", "Manual brew"] }],
+    categories: [{ name: "Camping Coffee" }],
+    id: 102,
+    name: "Camp Kettle Pour Over Kit",
+    slug: "camp-kettle-pour-over-kit",
+    status: "publish",
+    stock_status: "instock"
+  },
+  {
+    attributes: [{ name: "Use case", options: ["Camping", "Cold brew"] }],
+    categories: [{ name: "Camping Coffee" }],
+    id: 103,
+    name: "Trail Cold Brew Bottle",
+    slug: "trail-cold-brew-bottle",
+    status: "publish",
+    stock_status: "instock"
   }
 ];
 
@@ -48,6 +66,34 @@ const importedPages = [
       description: "Compare portable espresso makers for camping.",
       robots: { index: "index" },
       title: "Camping Espresso Makers"
+    }
+  },
+  {
+    excerpt: { rendered: "Manual camp coffee brewing kits." },
+    id: 302,
+    link: "https://example.com/camping-pour-over",
+    slug: "camping-pour-over",
+    status: "publish",
+    title: { rendered: "Camping Pour Over Guide" },
+    type: "page",
+    yoast_head_json: {
+      description: "Choose pour over kits for camp coffee.",
+      robots: { index: "index" },
+      title: "Camping Pour Over Guide"
+    }
+  },
+  {
+    excerpt: { rendered: "Cold brew bottles for travel." },
+    id: 303,
+    link: "https://example.com/trail-cold-brew",
+    slug: "trail-cold-brew",
+    status: "publish",
+    title: { rendered: "Trail Cold Brew Bottles" },
+    type: "page",
+    yoast_head_json: {
+      description: "Compare cold brew bottles for trail coffee.",
+      robots: { index: "index" },
+      title: "Trail Cold Brew Bottles"
     }
   }
 ];
@@ -194,6 +240,8 @@ async function runSmoke() {
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
     await expectVisible(page.getByText("Trail Brew Portable Espresso Maker"), "imported product row");
     await expectVisible(page.getByText("Camping Espresso Collection"), "imported page row");
+    await expectVisible(page.getByText("1 more catalog products"), "catalog product overflow indicator");
+    await expectVisible(page.getByText("1 more catalog pages"), "catalog page overflow indicator");
     await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
 
     for (const target of ["/imported-graph", "/products", "/pages", "/imported-opportunities", "/imported-tasks"]) {
