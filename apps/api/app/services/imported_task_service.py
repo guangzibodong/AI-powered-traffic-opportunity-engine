@@ -12,6 +12,7 @@ def generate_imported_tasks(store_id: str) -> dict[str, Any]:
         "mode": "imported_task_previews",
         "store_id": store_id,
         "summary": {
+            "by_automation_level": _count_by_automation_level(tasks),
             "by_category": _count_by_category(tasks),
             "by_rule": _count_by_rule(tasks),
             "source_opportunities": opportunity_payload["summary"]["opportunities"],
@@ -124,6 +125,14 @@ def _count_by_category(tasks: list[dict[str, Any]]) -> dict[str, int]:
     counts: dict[str, int] = {}
     for task in tasks:
         counts[task["category"]] = counts.get(task["category"], 0) + 1
+    return counts
+
+
+def _count_by_automation_level(tasks: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for task in tasks:
+        automation_level = task["automation_level"]
+        counts[automation_level] = counts.get(automation_level, 0) + 1
     return counts
 
 

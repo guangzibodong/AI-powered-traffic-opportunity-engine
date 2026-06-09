@@ -123,6 +123,7 @@ class ImportedTaskServiceTests(unittest.TestCase):
         self.assertIn("Review existing page ranking evidence and SERP intent", task["action_plan"]["steps"])
         self.assertIn("Do not publish or update WordPress from this preview", task["action_plan"]["steps"])
         self.assertIn("No WordPress update is made by this preview", task["action_plan"]["acceptance_criteria"])
+        self.assertEqual(payload["summary"]["by_automation_level"]["recommend_only"], 1)
         self.assertEqual(payload["summary"]["by_category"]["ranking_push"], 1)
         self.assertEqual(payload["summary"]["by_rule"]["ranking_push"], 1)
 
@@ -147,6 +148,7 @@ class ImportedTaskServiceTests(unittest.TestCase):
 
         self.assertEqual(payload["tasks"], [])
         self.assertEqual(payload["summary"]["tasks"], 0)
+        self.assertEqual(payload["summary"]["by_automation_level"], {})
         self.assertEqual(payload["summary"]["by_category"], {})
         self.assertEqual(payload["summary"]["by_rule"], {})
 

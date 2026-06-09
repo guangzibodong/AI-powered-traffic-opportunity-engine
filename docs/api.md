@@ -289,6 +289,7 @@ This endpoint is read-only. It does not create tasks, assets, WordPress drafts, 
   "summary": {
     "tasks": 1,
     "source_opportunities": 1,
+    "by_automation_level": { "recommend_only": 1 },
     "by_category": { "ctr_refresh": 1 },
     "by_rule": { "high_impression_low_ctr": 1 }
   },

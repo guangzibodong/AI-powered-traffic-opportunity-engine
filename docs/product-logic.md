@@ -120,7 +120,7 @@ Sprint 2 imported task previews convert those imported opportunities into a safe
 
 - Generate deterministic task preview ids from imported opportunity dedupe keys.
 - Preserve source opportunity metadata, related page/product evidence, TrafScore, confidence, and source summaries.
-- Summarize task preview volume by category and source rule.
+- Summarize task preview volume by automation level, category, and source rule.
 - Emit category-specific action plans for `ctr_refresh`, `ranking_push`, `collection_page`, and imported `product_seo`.
 - Keep every imported task preview at `automation_level: recommend_only` and `status: new`.
 - Expose list/detail reads only; no approval, rejection, snooze, draft, publishing, or commerce write path exists for imported previews.
