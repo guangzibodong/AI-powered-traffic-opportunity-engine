@@ -940,6 +940,8 @@ function ImportedPreviewPanel({
   const recommendOnlyTaskTotal = importedPreviews.tasks.length;
   const newTaskCount = importedPreviews.summaryDiagnostics.newTasks;
   const newTaskTotal = importedPreviews.tasks.length;
+  const newOpportunityCount = importedPreviews.summaryDiagnostics.newOpportunities;
+  const newOpportunityTotal = importedPreviews.opportunities.length;
   const buyingGuideGapOpportunitySharePercent = getImportedMetricSharePercent(
     buyingGuideGapOpportunityCount,
     buyingGuideGapOpportunityTotal
@@ -950,10 +952,12 @@ function ImportedPreviewPanel({
   );
   const recommendOnlyTaskSharePercent = getImportedMetricSharePercent(recommendOnlyTaskCount, recommendOnlyTaskTotal);
   const newTaskSharePercent = getImportedMetricSharePercent(newTaskCount, newTaskTotal);
+  const newOpportunitySharePercent = getImportedMetricSharePercent(newOpportunityCount, newOpportunityTotal);
   const buyingGuideGapOpportunityShare = `${buyingGuideGapOpportunitySharePercent}%`;
   const buyingGuideGapTaskShare = `${buyingGuideGapTaskSharePercent}%`;
   const recommendOnlyTaskShare = `${recommendOnlyTaskSharePercent}%`;
   const newTaskShare = `${newTaskSharePercent}%`;
+  const newOpportunityShare = `${newOpportunitySharePercent}%`;
   const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
   const queryRowOverflowCount = Math.max(importedPreviews.queries.length - visibleQueryRows.length, 0);
   const productOverflowCount = Math.max(importedPreviews.products.length - visibleProducts.length, 0);
@@ -1177,6 +1181,16 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="new_opportunity_previews">
           <span>{locale === "zh" ? "新机会预览" : "New opportunity previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.newOpportunities}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-metric-key="new_opportunity_share"
+          data-share-count={newOpportunityCount}
+          data-share-percent={newOpportunitySharePercent}
+          data-share-total={newOpportunityTotal}
+        >
+          <span>{locale === "zh" ? "新机会占比" : "New opportunity share"}</span>
+          <strong>{newOpportunityShare}</strong>
         </div>
         <div className="kv-row" data-metric-key="product_seo_opportunities">
           <span>{locale === "zh" ? "Product SEO 机会" : "Product SEO opportunities"}</span>

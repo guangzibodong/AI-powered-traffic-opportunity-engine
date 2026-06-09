@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 safe new-task share metrics are verified; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 safe new-opportunity share metrics are verified; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -152,6 +152,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-106 | 118 | done | Frontend Product Engineer / QA Lead | Add numeric buying guide gap share percent diagnostics. | Buying guide gap share metric rows expose a stable read-only numeric percentage DOM attribute so browser QA can compare raw percent, numerator, denominator, and visible text without relying on localized copy, while adding no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-UX-107 | 119 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show recommend-only task share metrics. | Imported preview UI renders a read-only recommend-only task share percentage from imported task summary diagnostics and task preview totals, with stable metric keys and share diagnostics, while adding no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-UX-108 | 120 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show safe new-task share metrics. | Imported preview UI renders a read-only `new` task share percentage from imported task status summary diagnostics and task preview totals, with stable metric keys and share diagnostics, while adding no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-UX-109 | 121 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show safe new-opportunity share metrics. | Imported preview UI renders a read-only `new` opportunity share percentage from imported opportunity status summary diagnostics and opportunity preview totals, with stable metric keys and share diagnostics, while adding no review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 
 ## Blockers
 
@@ -389,6 +390,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Recommend-only task share metrics are verified by browser smoke red-green coverage across populated, fallback, empty, opportunity-only failure, and task-only failure states, with stable share diagnostics and no unsafe controls.
 - Safe new-task share metrics are next because operators should see that imported task previews remain in the allowed `new` status before any imported review mutation path exists.
 - Safe new-task share metrics are verified by browser smoke red-green coverage across populated, fallback, empty, opportunity-only failure, and task-only failure states, with stable share diagnostics and no unsafe controls.
+- Safe new-opportunity share metrics are next because operators should see that imported opportunity previews remain in the allowed `new` status before any imported opportunity review mutation path exists.
+- Safe new-opportunity share metrics are verified by browser smoke red-green coverage across populated, fallback, empty, opportunity-only failure, and task-only failure states, with stable share diagnostics and no unsafe controls.
 
 ## Completion Rule
 
