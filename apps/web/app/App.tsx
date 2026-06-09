@@ -90,6 +90,10 @@ type ImportedPreviewState = {
   products: ImportedCatalogPreview[];
   queries: ImportedQueryRowPreview[];
   summaryDiagnostics: {
+    collectionPageOpportunities: number;
+    collectionPageTasks: number;
+    ctrRefreshOpportunities: number;
+    ctrRefreshTasks: number;
     productSeoOpportunities: number;
     productSeoTasks: number;
   };
@@ -211,6 +215,10 @@ export function App() {
     products: [],
     queries: [],
     summaryDiagnostics: {
+      collectionPageOpportunities: 0,
+      collectionPageTasks: 0,
+      ctrRefreshOpportunities: 0,
+      ctrRefreshTasks: 0,
       productSeoOpportunities: 0,
       productSeoTasks: 0
     },
@@ -306,6 +314,22 @@ export function App() {
             const tasks =
               importedTasksResult.status === "fulfilled" ? mapApiImportedTasksToTasks(importedTasksResult.value) : [];
             const summaryDiagnostics = {
+              collectionPageOpportunities:
+                importedOpportunitiesResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "collection_page")
+                  : 0,
+              collectionPageTasks:
+                importedTasksResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedTasksResult.value.summary, "by_category", "collection_page")
+                  : 0,
+              ctrRefreshOpportunities:
+                importedOpportunitiesResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "ctr_refresh")
+                  : 0,
+              ctrRefreshTasks:
+                importedTasksResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedTasksResult.value.summary, "by_category", "ctr_refresh")
+                  : 0,
               productSeoOpportunities:
                 importedOpportunitiesResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "product_seo")
@@ -348,6 +372,10 @@ export function App() {
               products: [],
               queries: [],
               summaryDiagnostics: {
+                collectionPageOpportunities: 0,
+                collectionPageTasks: 0,
+                ctrRefreshOpportunities: 0,
+                ctrRefreshTasks: 0,
                 productSeoOpportunities: 0,
                 productSeoTasks: 0
               },
@@ -374,6 +402,10 @@ export function App() {
           products: [],
           queries: [],
           summaryDiagnostics: {
+            collectionPageOpportunities: 0,
+            collectionPageTasks: 0,
+            ctrRefreshOpportunities: 0,
+            ctrRefreshTasks: 0,
             productSeoOpportunities: 0,
             productSeoTasks: 0
           },
@@ -953,6 +985,22 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="task_previews">
           <span>{locale === "zh" ? "任务预览" : "Task previews"}</span>
           <strong>{importedPreviews.tasks.length}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="ctr_refresh_opportunities">
+          <span>{locale === "zh" ? "CTR 刷新机会" : "CTR refresh opportunities"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.ctrRefreshOpportunities}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="ctr_refresh_task_previews">
+          <span>{locale === "zh" ? "CTR 刷新任务预览" : "CTR refresh task previews"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.ctrRefreshTasks}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="collection_page_opportunities">
+          <span>{locale === "zh" ? "集合页机会" : "Collection page opportunities"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.collectionPageOpportunities}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="collection_page_task_previews">
+          <span>{locale === "zh" ? "集合页任务预览" : "Collection page task previews"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.collectionPageTasks}</strong>
         </div>
         <div className="kv-row" data-metric-key="product_seo_opportunities">
           <span>{locale === "zh" ? "Product SEO 机会" : "Product SEO opportunities"}</span>
