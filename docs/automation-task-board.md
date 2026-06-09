@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported buying guide adapter mapping is verified; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported buying guide summary metrics are verified; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -144,6 +144,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-OPP-098 | 110 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported buying guide gap opportunity preview rule. | Imported opportunities generate a read-only `buying_guide_gap` preview when commercial investigation queries map to multiple in-stock published imported products and no imported WordPress page, preserving safe `new` status, deterministic dedupe, evidence, summary diagnostics, and no task mutation, draft creation, publishing, credentials, sync execution, WordPress update, or commerce writes. |
 | TASK-S2-TASK-099 | 111 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported buying guide task preview action plan. | Imported `buying_guide_gap` opportunities convert into recommend-only `buying_guide` task previews with guide-specific action steps and acceptance criteria, preserving safe `new` status and no task mutation, draft creation, publishing, credentials, sync execution, WordPress update, or commerce writes. |
 | TASK-S2-FE-100 | 112 | done | Frontend Product Engineer / QA Lead | Preserve imported buying guide adapter mapping. | Frontend imported adapters and runtime fixtures preserve `buying_guide_gap` opportunity rule ids and `buying_guide` task categories from imported DTOs, while keeping recommend-only automation, safe `new` status clamps, and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-UX-101 | 113 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported buying guide summary metrics. | Imported preview UI renders read-only buying guide opportunity/task preview counts from imported summary diagnostics, with stable metric keys and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 
 ## Blockers
 
@@ -365,6 +366,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported buying guide task preview action plans are verified by backend red-green coverage, docs updates, full frontend checks, backend tests, browser smoke, diff check, and secret scan.
 - Imported buying guide adapter mapping is next because frontend imported DTO conversion should preserve `buying_guide_gap` and `buying_guide` instead of falling back to collection page defaults.
 - Imported buying guide adapter mapping is verified by frontend contract/runtime fixture red-green coverage, full frontend checks, backend tests, browser smoke, diff check, and secret scan.
+- Imported buying guide summary metrics are next because operators need read-only UI counts for buying guide opportunities and task previews alongside other action-type metrics before any draft or publishing workflow exists.
+- Imported buying guide summary metrics are verified by browser smoke red-green coverage across populated, empty, fallback, and single-failure imported preview states, with stable metric keys and no unsafe controls.
 
 ## Completion Rule
 

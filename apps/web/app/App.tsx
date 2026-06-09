@@ -90,6 +90,8 @@ type ImportedPreviewState = {
   products: ImportedCatalogPreview[];
   queries: ImportedQueryRowPreview[];
   summaryDiagnostics: {
+    buyingGuideOpportunities: number;
+    buyingGuideTasks: number;
     collectionPageOpportunities: number;
     collectionPageTasks: number;
     ctrRefreshOpportunities: number;
@@ -220,6 +222,8 @@ export function App() {
     products: [],
     queries: [],
     summaryDiagnostics: {
+      buyingGuideOpportunities: 0,
+      buyingGuideTasks: 0,
       collectionPageOpportunities: 0,
       collectionPageTasks: 0,
       ctrRefreshOpportunities: 0,
@@ -324,6 +328,14 @@ export function App() {
             const tasks =
               importedTasksResult.status === "fulfilled" ? mapApiImportedTasksToTasks(importedTasksResult.value) : [];
             const summaryDiagnostics = {
+              buyingGuideOpportunities:
+                importedOpportunitiesResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "buying_guide")
+                  : 0,
+              buyingGuideTasks:
+                importedTasksResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedTasksResult.value.summary, "by_category", "buying_guide")
+                  : 0,
               collectionPageOpportunities:
                 importedOpportunitiesResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "collection_page")
@@ -402,6 +414,8 @@ export function App() {
               products: [],
               queries: [],
               summaryDiagnostics: {
+                buyingGuideOpportunities: 0,
+                buyingGuideTasks: 0,
                 collectionPageOpportunities: 0,
                 collectionPageTasks: 0,
                 ctrRefreshOpportunities: 0,
@@ -437,6 +451,8 @@ export function App() {
           products: [],
           queries: [],
           summaryDiagnostics: {
+            buyingGuideOpportunities: 0,
+            buyingGuideTasks: 0,
             collectionPageOpportunities: 0,
             collectionPageTasks: 0,
             ctrRefreshOpportunities: 0,
@@ -1041,6 +1057,14 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="collection_page_task_previews">
           <span>{locale === "zh" ? "集合页任务预览" : "Collection page task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.collectionPageTasks}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="buying_guide_opportunities">
+          <span>{locale === "zh" ? "购买指南机会" : "Buying guide opportunities"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.buyingGuideOpportunities}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="buying_guide_task_previews">
+          <span>{locale === "zh" ? "购买指南任务预览" : "Buying guide task previews"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.buyingGuideTasks}</strong>
         </div>
         <div className="kv-row" data-metric-key="ranking_push_opportunities">
           <span>{locale === "zh" ? "排名推进机会" : "Ranking push opportunities"}</span>

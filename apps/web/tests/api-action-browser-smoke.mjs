@@ -1018,6 +1018,8 @@ async function runSmoke() {
     await expectVisible(page.getByText("CTR refresh task previews"), "imported CTR refresh task summary metric");
     await expectVisible(page.getByText("Collection page opportunities"), "imported collection page opportunity summary metric");
     await expectVisible(page.getByText("Collection page task previews"), "imported collection page task summary metric");
+    await expectVisible(page.getByText("Buying guide opportunities"), "imported buying guide opportunity summary metric");
+    await expectVisible(page.getByText("Buying guide task previews"), "imported buying guide task summary metric");
     await expectVisible(page.getByText("Ranking push opportunities"), "imported ranking push opportunity summary metric");
     await expectVisible(page.getByText("Ranking push task previews"), "imported ranking push task summary metric");
     await expectVisible(page.getByText("Recommend-only task previews"), "imported recommend-only task summary metric");
@@ -1114,6 +1116,8 @@ async function runSmoke() {
         graph_clusters: 3,
         matched_pages: 3,
         matched_products: 3,
+        buying_guide_opportunities: 0,
+        buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 3,
@@ -1316,6 +1320,8 @@ async function runSmoke() {
         graph_clusters: 0,
         matched_pages: 0,
         matched_products: 0,
+        buying_guide_opportunities: 0,
+        buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 0,
@@ -1458,6 +1464,8 @@ async function runSmoke() {
         graph_clusters: 0,
         matched_pages: 0,
         matched_products: 0,
+        buying_guide_opportunities: 0,
+        buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 0,
@@ -1576,6 +1584,8 @@ async function runSmoke() {
         graph_clusters: 3,
         matched_pages: 3,
         matched_products: 3,
+        buying_guide_opportunities: 0,
+        buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 3,
@@ -1694,6 +1704,8 @@ async function runSmoke() {
         graph_clusters: 3,
         matched_pages: 3,
         matched_products: 3,
+        buying_guide_opportunities: 0,
+        buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 3,
@@ -1765,6 +1777,8 @@ async function runSmoke() {
         graph_clusters: 0,
         matched_pages: 0,
         matched_products: 0,
+        buying_guide_opportunities: 0,
+        buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 3,
@@ -1836,6 +1850,8 @@ async function runSmoke() {
         graph_clusters: 3,
         matched_pages: 3,
         matched_products: 3,
+        buying_guide_opportunities: 0,
+        buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 0,
@@ -1910,6 +1926,8 @@ async function runSmoke() {
         graph_clusters: 3,
         matched_pages: 3,
         matched_products: 3,
+        buying_guide_opportunities: 0,
+        buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 3,
@@ -2000,6 +2018,8 @@ async function runSmoke() {
         graph_clusters: 0,
         matched_pages: 0,
         matched_products: 0,
+        buying_guide_opportunities: 0,
+        buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 0,
