@@ -211,6 +211,7 @@ async function assertImportedPreviewPanelIsReadOnly(page, label) {
 async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, label, expectedAssets = []) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel`);
+  await waitForAssetDraftCount(assetPanel, expectedDraftCount, label);
 
   const availability = await assetPanel.getAttribute("data-asset-workspace-availability");
   const draftCountText = await assetPanel.getAttribute("data-asset-draft-count");
@@ -243,7 +244,10 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
     buttons.map((button) => (button.textContent ?? "").trim())
   );
   for (const buttonName of buttonNames) {
-    assert(buttonName === "Review local draft", `${label} asset workspace exposes unsafe button: ${buttonName}`);
+    assert(
+      buttonName === "Review local draft" || buttonName === "审核本地草稿",
+      `${label} asset workspace exposes unsafe button: ${buttonName}`
+    );
   }
   await assertAssetEditorUiGate(assetPanel, label);
 
@@ -310,6 +314,19 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
       );
     }
   }
+}
+
+async function waitForAssetDraftCount(assetPanel, expectedDraftCount, label) {
+  const deadline = Date.now() + 10_000;
+  let lastCount = "missing";
+
+  while (Date.now() < deadline) {
+    lastCount = (await assetPanel.getAttribute("data-asset-draft-count")) ?? "missing";
+    if (lastCount === String(expectedDraftCount)) return;
+    await delay(100);
+  }
+
+  throw new Error(`${label} asset workspace draft count did not reach ${expectedDraftCount}; last ${lastCount}`);
 }
 
 async function assertAssetWorkspacePanelUnavailable(page, label) {
@@ -379,14 +396,27 @@ async function assertAssetEditorUiGate(assetPanel, label) {
   }
 }
 
-async function assertLocalAssetEditorCanSave(page, label) {
-  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+async function assertLocalAssetEditorCanSave(
+  page,
+  label,
+  {
+    entryName = "Review local draft",
+    externalWritesCopy = "External writes disabled",
+    localOnlyCopy = "Local draft only",
+    saveName = "Save local draft",
+    saveSuccessCopy = "Local draft saved",
+    titleValue = "Updated local camping espresso draft",
+    wordpressBlockedCopy = "WordPress draft creation blocked",
+    woocommerceBlockedCopy = "WooCommerce writes blocked"
+  } = {}
+) {
+  await clickUnique(page.getByRole("button", { name: entryName }).first(), `${label} local draft review entry`);
   const editor = page.locator(".asset-editor-panel");
   await expectVisible(editor, `${label} local asset editor`);
-  await expectVisible(page.getByText("Local draft only"), `${label} local-only editor copy`);
-  await expectVisible(page.getByText("External writes disabled"), `${label} external-write disabled editor copy`);
-  await expectVisible(page.getByText("WordPress draft creation blocked"), `${label} WordPress block editor copy`);
-  await expectVisible(page.getByText("WooCommerce writes blocked"), `${label} WooCommerce block editor copy`);
+  await expectVisible(page.getByText(localOnlyCopy), `${label} local-only editor copy`);
+  await expectVisible(page.getByText(externalWritesCopy), `${label} external-write disabled editor copy`);
+  await expectVisible(page.getByText(wordpressBlockedCopy), `${label} WordPress block editor copy`);
+  await expectVisible(page.getByText(woocommerceBlockedCopy), `${label} WooCommerce block editor copy`);
 
   const editorText = ((await editor.textContent()) ?? "").toLowerCase();
   for (const pattern of [/\bpublish\b/, /\bsync\b/, /\bconnect\b/, /\boauth\b/, /\bautopilot\b/]) {
@@ -406,10 +436,25 @@ async function assertLocalAssetEditorCanSave(page, label) {
   const forbiddenControlCount = await editor.locator(forbiddenControls).count();
   assert(forbiddenControlCount === 0, `${label} editor exposes unsafe navigation or credential controls`);
 
-  await editor.locator("input").first().fill("Updated local camping espresso draft");
+  await editor.locator("input").first().fill(titleValue);
   await editor.locator("textarea").first().fill("Compare portable espresso kits for camp coffee.");
-  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} local save button`);
-  await expectVisible(page.getByText("Local draft saved"), `${label} local save success copy`);
+  await clickUnique(editor.getByRole("button", { name: saveName }), `${label} local save button`);
+  await expectVisible(page.getByText(saveSuccessCopy), `${label} local save success copy`);
+  return editor;
+}
+
+async function assertEditorControlsStayWithinPanel(editor, label) {
+  const panelBox = await editor.boundingBox();
+  assert(panelBox, `${label} editor panel must have a bounding box`);
+  const controls = await editor.locator("input, textarea, button").all();
+  for (const [index, control] of controls.entries()) {
+    const box = await control.boundingBox();
+    assert(box, `${label} editor control ${index} must have a bounding box`);
+    assert(
+      box.x >= panelBox.x - 1 && box.x + box.width <= panelBox.x + panelBox.width + 1,
+      `${label} editor control ${index} overflows horizontally`
+    );
+  }
 }
 
 async function assertTrackedAssetMetricReconciles(page, expectedDraftCount, label) {
@@ -2035,6 +2080,106 @@ async function runSmoke() {
       `Local asset editor issued unsafe asset requests: ${JSON.stringify(unsafePopulatedAssetRequests)}`
     );
     await populatedAssetPage.close();
+
+    const mobileAssetPage = await context.newPage();
+    await mobileAssetPage.setViewportSize({ height: 844, width: 390 });
+    const mobileAssetRequests = [];
+    mobileAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        mobileAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await mobileAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_mobile",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_mobile",
+                title:
+                  "Very long local camping espresso collection draft title that should wrap inside the mobile editor panel"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await mobileAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_mobile`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        const payload = route.request().postDataJSON();
+        assert(payload.title === "移动端本地草稿保存验证标题", "Mobile asset PATCH must send edited Chinese title");
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_mobile",
+              qa_checks: [{ key: "seo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_mobile",
+              title: "移动端本地草稿保存验证标题"
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await mobileAssetPage.goto(webUrl);
+    await assertAssetWorkspacePanelIsReadOnly(mobileAssetPage, 1, "mobile Chinese asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_mobile",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title:
+          "Very long local camping espresso collection draft title that should wrap inside the mobile editor panel"
+      }
+    ]);
+    const mobileEditor = await assertLocalAssetEditorCanSave(mobileAssetPage, "mobile Chinese asset workspace", {
+      entryName: "审核本地草稿",
+      externalWritesCopy: "外部写入已关闭",
+      localOnlyCopy: "仅本地草稿",
+      saveName: "保存本地草稿",
+      saveSuccessCopy: "本地草稿已保存",
+      titleValue: "移动端本地草稿保存验证标题",
+      wordpressBlockedCopy: "WordPress 草稿创建已阻止",
+      woocommerceBlockedCopy: "WooCommerce 写入已阻止"
+    });
+    await assertEditorControlsStayWithinPanel(mobileEditor, "mobile Chinese asset workspace");
+    const mobileAssetPatchRequests = mobileAssetRequests.filter(
+      (request) => request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_mobile`)
+    );
+    assert(
+      mobileAssetPatchRequests.length === 1,
+      `Mobile local asset editor must issue exactly one safe asset PATCH, got ${JSON.stringify(mobileAssetRequests)}`
+    );
+    await mobileAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {

@@ -199,6 +199,7 @@ The first local editor slice is implemented with a conservative scope:
 - The editor saves title, slug, meta title, meta description, one structured section, and editor note through the safe `updateAsset` helper.
 - The editor keeps `Local draft only`, `External writes disabled`, `WordPress draft creation blocked`, and `WooCommerce writes blocked` visible.
 - Browser smoke proves the save path issues exactly one safe local asset PATCH and no unsafe asset requests.
+- Mobile browser smoke verifies the Chinese editor copy, a long local title, local save success, and horizontal containment of editor controls.
 
 Still gated:
 
@@ -208,6 +209,7 @@ Still gated:
 - Rich schema editor.
 - Rich text editor.
 - Mobile screenshot QA.
+- Save-failure browser coverage.
 
 ## Out Of Scope
 

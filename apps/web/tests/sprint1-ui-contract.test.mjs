@@ -175,10 +175,15 @@ assert(app.includes("updateAsset("), "Asset editor must use the safe local updat
 assert(app.includes("mapApiAssetResponseToPreview"), "Asset editor must map saved assets through the safe adapter");
 assert(app.includes("Review local draft"), "Asset workspace must use explicit local review entry copy");
 assert(app.includes("Save local draft"), "Asset editor must use explicit local save copy");
+assert(app.includes("保存本地草稿"), "Asset editor must use explicit Chinese local save copy");
 assert(app.includes("Local draft only"), "Asset editor must show local-only safety copy");
+assert(app.includes("仅本地草稿"), "Asset editor must show Chinese local-only safety copy");
 assert(app.includes("External writes disabled"), "Asset editor must show external write disabled safety copy");
+assert(app.includes("外部写入已关闭"), "Asset editor must show Chinese external write disabled safety copy");
 assert(app.includes("WordPress draft creation blocked"), "Asset editor must keep WordPress draft blocking visible");
+assert(app.includes("WordPress 草稿创建已阻止"), "Asset editor must keep Chinese WordPress draft blocking visible");
 assert(app.includes("WooCommerce writes blocked"), "Asset editor must keep WooCommerce write blocking visible");
+assert(app.includes("WooCommerce 写入已阻止"), "Asset editor must keep Chinese WooCommerce write blocking visible");
 assert(!app.includes("Create WordPress draft"), "Asset editor must not expose WordPress draft creation copy");
 assert(!app.includes("Push live"), "Asset editor must not expose live publishing copy");
 

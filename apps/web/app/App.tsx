@@ -946,11 +946,12 @@ function TrafficOperationsPage({
         </section>
         <aside className="side-rail">
           <DataHealthPanel integrations={board.integrations} locale={locale} t={t} />
-          <AssetWorkspacePanel assetWorkspace={assetWorkspace} onOpenAssetEditor={onOpenAssetEditor} />
+          <AssetWorkspacePanel assetWorkspace={assetWorkspace} locale={locale} onOpenAssetEditor={onOpenAssetEditor} />
           {selectedAsset && (
             <LocalAssetEditor
               asset={selectedAsset}
               feedback={assetSaveFeedback?.assetId === selectedAsset.id ? assetSaveFeedback : null}
+              locale={locale}
               onClose={onCloseAssetEditor}
               onSave={onSaveAsset}
             />
@@ -1070,11 +1071,14 @@ function DataHealthPanel({ integrations, locale, t }: SharedProps & { integratio
 
 function AssetWorkspacePanel({
   assetWorkspace,
+  locale,
   onOpenAssetEditor
 }: {
   assetWorkspace: AssetWorkspaceState;
+  locale: Locale;
   onOpenAssetEditor?: (assetId: string) => void;
 }) {
+  const reviewLocalDraftCopy = locale === "zh" ? "审核本地草稿" : "Review local draft";
   const visibleAssets = assetWorkspace.assets.slice(0, 2);
   const assetOverflowCount = Math.max(assetWorkspace.assets.length - visibleAssets.length, 0);
   const assetTypeEntries = Object.entries(
@@ -1190,7 +1194,7 @@ function AssetWorkspacePanel({
               </span>
               {onOpenAssetEditor && (
                 <button className="button" onClick={() => onOpenAssetEditor(asset.id)} type="button">
-                  Review local draft
+                  {reviewLocalDraftCopy}
                 </button>
               )}
             </div>
@@ -1215,11 +1219,13 @@ function AssetWorkspacePanel({
 function LocalAssetEditor({
   asset,
   feedback,
+  locale,
   onClose,
   onSave
 }: {
   asset: AssetDraftPreview;
   feedback: AssetSaveFeedback;
+  locale: Locale;
   onClose: () => void;
   onSave: (
     assetId: string,
@@ -1233,6 +1239,25 @@ function LocalAssetEditor({
     }
   ) => Promise<void>;
 }) {
+  const copy = {
+    close: locale === "zh" ? "关闭" : "Close",
+    editorNote: locale === "zh" ? "编辑备注" : "Editor note",
+    externalWritesDisabled: locale === "zh" ? "外部写入已关闭" : "External writes disabled",
+    localDraftOnly: locale === "zh" ? "仅本地草稿" : "Local draft only",
+    localOnlySaved: locale === "zh" ? "仅保存本地草稿字段。" : "Only local draft fields are saved.",
+    localSaveFailed: locale === "zh" ? "本地保存失败" : "Local save failed",
+    localSavePending: locale === "zh" ? "正在保存本地草稿" : "Saving local draft",
+    localSaveSuccess: locale === "zh" ? "本地草稿已保存" : "Local draft saved",
+    metaDescription: locale === "zh" ? "Meta 描述" : "Meta description",
+    metaTitle: locale === "zh" ? "Meta 标题" : "Meta title",
+    saveLocalDraft: locale === "zh" ? "保存本地草稿" : "Save local draft",
+    slug: locale === "zh" ? "Slug" : "Slug",
+    structuredSection: locale === "zh" ? "结构化段落" : "Structured section",
+    title: locale === "zh" ? "标题" : "Title",
+    titleHeading: locale === "zh" ? "本地资产编辑器" : "Local asset editor",
+    woocommerceBlocked: locale === "zh" ? "WooCommerce 写入已阻止" : "WooCommerce writes blocked",
+    wordpressBlocked: locale === "zh" ? "WordPress 草稿创建已阻止" : "WordPress draft creation blocked"
+  };
   const [title, setTitle] = useState(asset.title);
   const [slug, setSlug] = useState(asset.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
   const [metaTitle, setMetaTitle] = useState(asset.title);
@@ -1254,15 +1279,15 @@ function LocalAssetEditor({
     <section className="panel asset-editor-panel" data-asset-editor="local-only" data-asset-id={asset.id}>
       <div className="panel-heading">
         <div>
-          <h2>Local asset editor</h2>
-          <p className="muted">Local draft only</p>
+          <h2>{copy.titleHeading}</h2>
+          <p className="muted">{copy.localDraftOnly}</p>
         </div>
         <span className="status safe">local save</span>
       </div>
       <div className="asset-editor-safety" aria-label="Asset editor safety">
-        <span>External writes disabled</span>
-        <span>WordPress draft creation blocked</span>
-        <span>WooCommerce writes blocked</span>
+        <span>{copy.externalWritesDisabled}</span>
+        <span>{copy.wordpressBlocked}</span>
+        <span>{copy.woocommerceBlocked}</span>
       </div>
       <form
         className="asset-editor-form"
@@ -1281,43 +1306,43 @@ function LocalAssetEditor({
         }}
       >
         <label>
-          <span>Title</span>
+          <span>{copy.title}</span>
           <input value={title} onChange={(event) => setTitle(event.target.value)} />
         </label>
         <label>
-          <span>Slug</span>
+          <span>{copy.slug}</span>
           <input value={slug} onChange={(event) => setSlug(event.target.value)} />
         </label>
         <label>
-          <span>Meta title</span>
+          <span>{copy.metaTitle}</span>
           <input value={metaTitle} onChange={(event) => setMetaTitle(event.target.value)} />
         </label>
         <label>
-          <span>Meta description</span>
+          <span>{copy.metaDescription}</span>
           <textarea value={metaDescription} onChange={(event) => setMetaDescription(event.target.value)} />
         </label>
         <label>
-          <span>Structured section</span>
+          <span>{copy.structuredSection}</span>
           <textarea value={sectionBody} onChange={(event) => setSectionBody(event.target.value)} />
         </label>
         <label>
-          <span>Editor note</span>
+          <span>{copy.editorNote}</span>
           <textarea value={editorNote} onChange={(event) => setEditorNote(event.target.value)} />
         </label>
         <div className="asset-editor-actions">
           <button className="button primary" disabled={isSaving} type="submit">
-            {isSaving ? "Saving local draft" : "Save local draft"}
+            {isSaving ? copy.localSavePending : copy.saveLocalDraft}
           </button>
           <button className="button" onClick={onClose} type="button">
-            Close
+            {copy.close}
           </button>
         </div>
         <p aria-live="polite" className="muted">
           {feedback?.kind === "saved"
-            ? "Local draft saved"
+            ? copy.localSaveSuccess
             : feedback?.kind === "failed"
-              ? "Local save failed"
-              : "Only local draft fields are saved."}
+              ? copy.localSaveFailed
+              : copy.localOnlySaved}
         </p>
       </form>
     </section>
