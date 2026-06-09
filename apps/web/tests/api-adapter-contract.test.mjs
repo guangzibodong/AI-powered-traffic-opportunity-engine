@@ -143,6 +143,10 @@ assert(adapter.includes("mapApiImportedGraphToClusterPreviews"), "Adapter must e
 assert(app.includes("mapApiImportedGraphToClusterPreviews("), "App must map imported graph through the safe adapter");
 assert(app.includes("mapApiImportedProductsToCatalogPreviews("), "App must map imported products through the safe adapter");
 assert(app.includes("mapApiImportedPagesToCatalogPreviews("), "App must map imported pages through the safe adapter");
+assert(app.includes("Catalog products"), "Imported preview UI must distinguish imported catalog product count from graph matches");
+assert(app.includes("Catalog pages"), "Imported preview UI must distinguish imported catalog page count from graph matches");
+assert(app.includes("importedPreviews.products.length"), "Imported product count metric must use safe imported product previews");
+assert(app.includes("importedPreviews.pages.length"), "Imported page count metric must use safe imported page previews");
 assert(app.includes("product.detail"), "Imported product preview UI must render safe product catalog detail");
 assert(app.includes("page.detail"), "Imported page preview UI must render safe page catalog detail");
 assert(app.includes("product.source"), "Imported product preview UI must render the safe product source label");

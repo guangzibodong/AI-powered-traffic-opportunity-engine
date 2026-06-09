@@ -779,6 +779,14 @@ function ImportedPreviewPanel({
           <strong>{importedPreviews.graphSummary?.page_matches ?? 0}</strong>
         </div>
         <div className="kv-row">
+          <span>{locale === "zh" ? "Catalog 商品" : "Catalog products"}</span>
+          <strong>{importedPreviews.products.length}</strong>
+        </div>
+        <div className="kv-row">
+          <span>{locale === "zh" ? "Catalog 页面" : "Catalog pages"}</span>
+          <strong>{importedPreviews.pages.length}</strong>
+        </div>
+        <div className="kv-row">
           <span>{locale === "zh" ? "机会预览" : "Opportunity previews"}</span>
           <strong>{importedPreviews.opportunities.length}</strong>
         </div>

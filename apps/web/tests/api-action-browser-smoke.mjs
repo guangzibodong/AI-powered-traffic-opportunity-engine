@@ -189,6 +189,8 @@ async function runSmoke() {
     await clickUnique(page.getByRole("button", { name: "EN" }), "language switcher");
     await expectVisible(page.getByText("read-only imported previews"), "read-only imported preview badge");
     await expectVisible(page.getByText("Graph-linked clusters"), "graph-linked cluster metric");
+    await expectVisible(page.getByText("Catalog products"), "imported catalog product count metric");
+    await expectVisible(page.getByText("Catalog pages"), "imported catalog page count metric");
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
     await expectVisible(page.getByText("Trail Brew Portable Espresso Maker"), "imported product row");
     await expectVisible(page.getByText("Camping Espresso Collection"), "imported page row");
