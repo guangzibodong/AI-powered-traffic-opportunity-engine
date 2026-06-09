@@ -235,7 +235,8 @@ Product matches require at least three meaningful token overlaps. Page matches f
   "summary": {
     "opportunities": 1,
     "source_query_clusters": 1,
-    "by_rule": { "high_impression_low_ctr": 1 }
+    "by_rule": { "high_impression_low_ctr": 1 },
+    "by_task_type": { "ctr_refresh": 1 }
   },
   "opportunities": [
     {

@@ -177,6 +177,7 @@ class ImportedOpportunityServiceTests(unittest.TestCase):
         self.assertTrue(any(item["type"] == "product_fit" for item in opportunities[0]["evidence"]))
         self.assertTrue(any(item["type"] == "page_gap" for item in opportunities[0]["evidence"]))
         self.assertEqual(payload["summary"]["by_rule"]["product_seo"], 1)
+        self.assertEqual(payload["summary"]["by_task_type"]["product_seo"], 1)
 
     def test_imported_opportunities_return_empty_state_without_graph_inputs(self):
         from app.services.imported_opportunity_service import generate_imported_opportunities
@@ -186,6 +187,7 @@ class ImportedOpportunityServiceTests(unittest.TestCase):
         self.assertEqual(payload["opportunities"], [])
         self.assertEqual(payload["summary"]["opportunities"], 0)
         self.assertEqual(payload["summary"]["by_rule"], {})
+        self.assertEqual(payload["summary"]["by_task_type"], {})
 
     def test_imported_opportunity_detail_returns_one_preview_or_none(self):
         from app.services.gsc_ingestion_service import import_gsc_csv

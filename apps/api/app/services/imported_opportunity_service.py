@@ -22,6 +22,7 @@ def generate_imported_opportunities(store_id: str) -> dict[str, Any]:
         "store_id": store_id,
         "summary": {
             "by_rule": _count_by_rule(deduped),
+            "by_task_type": _count_by_task_type(deduped),
             "opportunities": len(deduped),
             "source_query_clusters": graph["summary"]["query_clusters"],
         },
@@ -270,6 +271,14 @@ def _count_by_rule(opportunities: list[dict[str, Any]]) -> dict[str, int]:
     counts: dict[str, int] = {}
     for opportunity in opportunities:
         counts[opportunity["rule_id"]] = counts.get(opportunity["rule_id"], 0) + 1
+    return counts
+
+
+def _count_by_task_type(opportunities: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for opportunity in opportunities:
+        task_type = opportunity["recommended_task_type"]
+        counts[task_type] = counts.get(task_type, 0) + 1
     return counts
 
 
