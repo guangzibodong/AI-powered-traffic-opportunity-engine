@@ -541,6 +541,18 @@ async function assertAssetWorkspaceUnavailableQaReadiness(page, label) {
   assert(qaReadinessRowCount === 0, `${label} must not render QA readiness row when asset workspace is unavailable`);
 }
 
+async function assertAssetExternalWriteClampReconciles(page, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for external write clamp`);
+  const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
+  assert(
+    externalWriteAllowed === "false",
+    `${label} external write clamp mismatch: expected false, got ${externalWriteAllowed ?? "missing"}`
+  );
+  await expectVisible(page.getByText("External writes"), `${label} external writes label`);
+  await expectVisible(assetPanel.locator(".kv-row").filter({ hasText: "External writes" }).getByText("false"), `${label} external writes visible false`);
+}
+
 async function assertAssetWorkspaceQaAggregateReconciles(page, hiddenQaCheckCount, hiddenQaPendingCount, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA aggregate reconciliation`);
@@ -1882,6 +1894,7 @@ async function runSmoke() {
     await assertAssetWorkspaceQaSummary(populatedAssetPage, 5, 4, "populated asset workspace");
     await assertWordPressDraftReadinessSummary(populatedAssetPage, 0, 3, "populated asset workspace");
     await assertWordPressDraftReadinessReconciles(populatedAssetPage, "populated asset workspace");
+    await assertAssetExternalWriteClampReconciles(populatedAssetPage, "populated asset workspace");
     await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
@@ -2000,6 +2013,7 @@ async function runSmoke() {
     await assertAssetWorkspaceBlockedCapabilities(assetFailurePage, ["asset_workspace_unavailable"], "asset-only failure");
     await assertAssetWorkspaceUnavailableQaReadiness(assetFailurePage, "asset-only failure");
     await assertWordPressDraftReadinessUnavailable(assetFailurePage, "asset-only failure");
+    await assertAssetExternalWriteClampReconciles(assetFailurePage, "asset-only failure");
     await assetFailurePage.close();
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
