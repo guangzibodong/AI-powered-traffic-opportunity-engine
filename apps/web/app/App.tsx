@@ -995,7 +995,14 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
   ).sort(([left], [right]) => left.localeCompare(right));
   const qaCheckTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
   const qaPendingTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaPendingCount, 0);
-  const qaReadinessState = qaCheckTotal === 0 ? "not_applicable" : qaPendingTotal > 0 ? "pending_qa" : "qa_clear";
+  const qaReadinessState =
+    assetWorkspace.availability === "unavailable"
+      ? "unavailable"
+      : qaCheckTotal === 0
+        ? "not_applicable"
+        : qaPendingTotal > 0
+          ? "pending_qa"
+          : "qa_clear";
   const blockedCapabilities =
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   return (

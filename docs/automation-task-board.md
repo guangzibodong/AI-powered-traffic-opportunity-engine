@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 QA readiness no-check coverage is verified and unavailable QA readiness coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 unavailable QA readiness coverage is verified and WordPress draft readiness diagnostics are queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -184,7 +184,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-UX-016 | 150 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset QA readiness state. | The asset workspace exposes a compact read-only QA readiness state from aggregate pending checks without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-QA-017 | 151 | done | Frontend Product Engineer / QA Lead | Add QA readiness clear-state coverage. | Browser smoke verifies the asset workspace can render a read-only `qa_clear` state when all local candidate QA checks are non-pending without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-QA-018 | 152 | done | Frontend Product Engineer / QA Lead | Add QA readiness no-check coverage. | Browser smoke verifies the asset workspace keeps a safe read-only `not_applicable` QA readiness state when local candidates have no QA checks without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
-| TASK-S3-QA-019 | 153 | todo | Frontend Product Engineer / QA Lead | Add unavailable QA readiness coverage. | Browser smoke verifies an unavailable asset workspace keeps QA readiness non-executable and does not render QA summary/readiness rows without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
+| TASK-S3-QA-019 | 153 | done | Frontend Product Engineer / QA Lead | Add unavailable QA readiness coverage. | Browser smoke verifies an unavailable asset workspace keeps QA readiness non-executable and does not render QA summary/readiness rows without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
+| TASK-S3-UX-020 | 154 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show WordPress draft readiness diagnostics. | The asset workspace exposes read-only WordPress draft readiness counts from the safe asset workspace summary while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
 
 ## Blockers
 
@@ -486,6 +487,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - QA readiness no-check coverage is next because the state machine should prove that missing QA checks do not imply readiness for draft creation or publishing.
 - QA readiness no-check coverage is verified by browser smoke coverage that keeps no-check local candidates in `not_applicable` without rendering executable-looking QA summary rows.
 - Unavailable QA readiness coverage is next because endpoint failure should also leave QA state non-executable and avoid implying draft readiness.
+- Unavailable QA readiness coverage is verified by browser smoke coverage that distinguishes asset endpoint failure as `unavailable` and keeps QA summary/readiness rows hidden.
+- WordPress draft readiness diagnostics are next because operators should see that local asset candidates are still not eligible for WordPress draft creation before any draft action is introduced.
 
 ## Completion Rule
 

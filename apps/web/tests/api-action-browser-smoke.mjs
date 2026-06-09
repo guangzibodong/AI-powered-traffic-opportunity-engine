@@ -476,6 +476,20 @@ async function assertAssetWorkspaceNoQaChecks(page, label) {
   assert(qaReadinessRowCount === 0, `${label} must not render QA readiness row when no QA checks exist`);
 }
 
+async function assertAssetWorkspaceUnavailableQaReadiness(page, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for unavailable QA diagnostics`);
+  const readinessState = await assetPanel.getAttribute("data-asset-qa-readiness-state");
+  assert(
+    readinessState === "unavailable",
+    `${label} unavailable QA readiness mismatch: expected unavailable, got ${readinessState ?? "missing"}`
+  );
+  const qaSummaryCount = await assetPanel.locator("[data-asset-qa-summary='true']").count();
+  const qaReadinessRowCount = await assetPanel.locator("[data-asset-qa-readiness='true']").count();
+  assert(qaSummaryCount === 0, `${label} must not render QA summary when asset workspace is unavailable`);
+  assert(qaReadinessRowCount === 0, `${label} must not render QA readiness row when asset workspace is unavailable`);
+}
+
 async function assertAssetWorkspaceQaAggregateReconciles(page, hiddenQaCheckCount, hiddenQaPendingCount, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA aggregate reconciliation`);
@@ -1931,6 +1945,7 @@ async function runSmoke() {
     await assertAssetWorkspacePanelUnavailable(assetFailurePage, "asset-only failure");
     await assertTrackedAssetMetricReconciles(assetFailurePage, 0, "asset-only failure");
     await assertAssetWorkspaceBlockedCapabilities(assetFailurePage, ["asset_workspace_unavailable"], "asset-only failure");
+    await assertAssetWorkspaceUnavailableQaReadiness(assetFailurePage, "asset-only failure");
     await assetFailurePage.close();
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
