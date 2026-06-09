@@ -876,6 +876,7 @@ function ImportedPreviewPanel({
                 {queryRow.displayImpressions} impressions / {queryRow.displayClicks} clicks / CTR {queryRow.displayCtr} / avg position{" "}
                 {queryRow.displayPosition} / window {queryRow.window}
               </p>
+              <p className="muted">{queryRow.displayEvidenceSummary}</p>
               <p className="muted catalog-reference">page {queryRow.displayPage}</p>
             </article>
           ))}

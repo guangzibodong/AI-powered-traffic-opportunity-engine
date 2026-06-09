@@ -243,6 +243,7 @@ async function runSmoke() {
     await expectVisible(page.getByText("Catalog pages"), "imported catalog page count metric");
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
     await expectVisible(page.getByText("Query row / Imported GSC"), "imported query row friendly source label");
+    await expectVisible(page.getByText("evidence 1 row / Imported GSC"), "imported query row evidence summary label");
     await expectVisible(page.getByText("1,200 impressions / 24 clicks"), "imported query row formatted count labels");
     await expectVisible(page.getByText("CTR 2.00%"), "imported query row formatted CTR label");
     await expectVisible(page.getByText("avg position 4.8"), "imported query row formatted position label");

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported query row evidence metric formatting completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported adapter fixture behavior coverage is queued after completing imported query row evidence summary display; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -22,11 +22,11 @@ These are internal execution-board statuses, not TrafScope product task review s
 
 | Role | Person/Agent | Current assignment |
 |---|---|---|
-| Product Manager | Main thread | Keep Sprint 1 review actions state-only and draft-safe. |
-| Backend/API Engineer | Main thread | Keep Sprint 2 imported preview APIs stable while frontend DTOs are added. |
-| Frontend Product Engineer | Main thread | Add stable API client DTOs and safe adapters for imported query clusters, opportunities, and task previews. |
-| QA Lead | Main thread | Add contract tests for imported preview reads, safe status fallback, and no execution controls. |
-| UI Systems Engineer | Banach | Reserved for later Sync run UI. |
+| Product Manager | Main thread | Keep Sprint 2 local/import-only boundaries explicit and sequence QA-only follow-up tasks. |
+| Backend/API Engineer | Main thread | Preserve existing read-only imported APIs; no live credentials, OAuth, publishing, or commerce writes. |
+| Frontend Product Engineer | Main thread | Implement safe imported preview view-model/UI improvements with contract coverage. |
+| QA Lead | Ptolemy / Main thread | Define and verify runtime fixture coverage for imported adapters and browser safety checks. |
+| UI Systems Engineer | Main thread | Keep imported preview cards compact, bilingual-safe, text-only, and free of external navigation controls. |
 
 ## Task Queue
 
@@ -90,6 +90,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-GSC-044 | 56 | done | Frontend Product Engineer / QA Lead | Format imported query row count labels. | Imported query row cards render clicks and impressions with stable display-safe number formatting, keep raw counts inside the safe view model, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 | TASK-S2-GSC-045 | 57 | done | Frontend Product Engineer / QA Lead | Format imported query row position labels. | Imported query row cards render average position with a clear display-safe label, keep raw position inside the safe view model, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 | TASK-S2-GSC-046 | 58 | done | Frontend Product Engineer / QA Lead | Format imported query row evidence metrics consistently. | Imported query row evidence rows reuse the same display-safe impressions, clicks, CTR, and average-position formatting as preview cards, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
+| TASK-S2-GSC-047 | 59 | done | Frontend Product Engineer / QA Lead | Show imported query row evidence summary labels. | Imported query row cards render a compact display-safe evidence summary from the row view model, keep the card text-only, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
+| TASK-S2-QA-048 | 60 | todo | QA Lead / Frontend Product Engineer | Add imported adapter fixture behavior coverage. | Runtime fixture tests verify imported task status and automation clamps, imported query row display formatting and fallbacks, safe source/window/page labels, and no live integration, draft, publish, credential, sync, or commerce write behavior. |
 
 ## Blockers
 
@@ -203,6 +205,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported query row position display formatting is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported query row evidence metric formatting is next because safe adapter evidence rows should not drift from the card-level display formatting.
 - Imported query row evidence metric formatting is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported query row evidence summary display is next because cards should expose that their metric text is backed by a safe evidence row without introducing review or navigation controls.
+- Imported query row evidence summary display is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported adapter fixture behavior coverage is next because static contract checks should be backed by runtime examples for safe imported DTO clamps and query row formatting.
 
 ## Completion Rule
 

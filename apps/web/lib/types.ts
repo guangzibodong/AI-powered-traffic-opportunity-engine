@@ -145,6 +145,7 @@ export type ImportedQueryRowPreview = {
   ctr: number;
   displayClicks: string;
   displayCtr: string;
+  displayEvidenceSummary: string;
   displayImpressions: string;
   displayPage: string;
   displayPosition: string;

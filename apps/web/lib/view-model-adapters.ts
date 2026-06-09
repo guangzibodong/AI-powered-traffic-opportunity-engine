@@ -257,12 +257,14 @@ function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["querie
   const displayCtr = formatImportedQueryRowCtr(row.ctr);
   const displayImpressions = formatImportedQueryRowCount(row.impressions);
   const displayPosition = formatImportedQueryRowPosition(row.position);
+  const displayEvidenceSummary = formatImportedQueryRowEvidenceSummary(1, source);
 
   return {
     clicks: row.clicks,
     ctr: row.ctr,
     displayClicks,
     displayCtr,
+    displayEvidenceSummary,
     displayImpressions,
     displayPage,
     displayPosition,
@@ -300,6 +302,10 @@ function formatImportedQueryRowCount(count: number): string {
 
 function formatImportedQueryRowPosition(position: number): string {
   return position.toFixed(1);
+}
+
+function formatImportedQueryRowEvidenceSummary(evidenceCount: number, source: string): string {
+  return `evidence ${evidenceCount} row${evidenceCount === 1 ? "" : "s"} / ${source}`;
 }
 
 function formatImportedQueryRowMetric(
