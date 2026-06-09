@@ -420,6 +420,45 @@ async function assertImportedPreviewSectionHealthSummaryColor(page, expectedColo
   );
 }
 
+async function assertImportedActionMixSummary(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const summary = importedPanel.locator("[data-action-mix-state]");
+  const summaryCount = await summary.count();
+  assert(summaryCount === 1, `${label} imported action mix summary must render exactly once`);
+
+  const state = await summary.getAttribute("data-action-mix-state");
+  const totalText = await summary.getAttribute("data-action-mix-total");
+  const topKey = await summary.getAttribute("data-action-mix-top-key");
+  const topShareText = await summary.getAttribute("data-action-mix-top-share");
+  const total = Number(totalText);
+  const topShare = Number(topShareText);
+  assert(
+    state === expectedValues.state,
+    `${label} imported action mix state mismatch: expected ${expectedValues.state}, got ${state ?? "missing"}`
+  );
+  assert(
+    Number.isInteger(total) && total === expectedValues.total,
+    `${label} imported action mix total mismatch: expected ${expectedValues.total}, got ${totalText ?? "missing"}`
+  );
+  assert(
+    topKey === expectedValues.topKey,
+    `${label} imported action mix top key mismatch: expected ${expectedValues.topKey}, got ${topKey ?? "missing"}`
+  );
+  assert(
+    Number.isInteger(topShare) && topShare === expectedValues.topShare,
+    `${label} imported action mix top share mismatch: expected ${expectedValues.topShare}, got ${
+      topShareText ?? "missing"
+    }`
+  );
+
+  const summaryText = ((await summary.textContent()) ?? "").toLowerCase();
+  assert(summaryText.includes("action mix"), `${label} imported action mix summary must show its label`);
+  assert(
+    summaryText.includes(expectedValues.state),
+    `${label} imported action mix summary must show state ${expectedValues.state}`
+  );
+}
+
 async function assertImportedPreviewEmptyState(page, expectedKey, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const emptyState = importedPanel.locator("[data-empty-state-key]");
@@ -1278,6 +1317,11 @@ async function runSmoke() {
       },
       "initial"
     );
+    await assertImportedActionMixSummary(
+      page,
+      { state: "concentrated", total: 8, topKey: "ctr_refresh", topShare: 75 },
+      "initial"
+    );
     await assertImportedPreviewOverflowValues(
       page,
       {
@@ -1522,6 +1566,11 @@ async function runSmoke() {
       },
       "resilient fallback"
     );
+    await assertImportedActionMixSummary(
+      resilientPage,
+      { state: "empty", total: 0, topKey: "none", topShare: 0 },
+      "resilient fallback"
+    );
     await assertImportedPreviewOverflowValues(
       resilientPage,
       {
@@ -1704,6 +1753,11 @@ async function runSmoke() {
         ranking_push_task_share: { count: 0, percent: 0, total: 0 },
         recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
+      "empty imported"
+    );
+    await assertImportedActionMixSummary(
+      emptyImportedPage,
+      { state: "empty", total: 0, topKey: "none", topShare: 0 },
       "empty imported"
     );
     await assertImportedPreviewOverflowValues(
@@ -2138,6 +2192,11 @@ async function runSmoke() {
       },
       "opportunity-only failure"
     );
+    await assertImportedActionMixSummary(
+      opportunityFailurePage,
+      { state: "concentrated", total: 4, topKey: "ctr_refresh", topShare: 75 },
+      "opportunity-only failure"
+    );
     await assertImportedPreviewItemKinds(
       opportunityFailurePage,
       {
@@ -2252,6 +2311,11 @@ async function runSmoke() {
         ranking_push_task_share: { count: 0, percent: 0, total: 0 },
         recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
+      "task-only failure"
+    );
+    await assertImportedActionMixSummary(
+      taskFailurePage,
+      { state: "concentrated", total: 4, topKey: "ctr_refresh", topShare: 75 },
       "task-only failure"
     );
     await assertImportedPreviewItemKinds(

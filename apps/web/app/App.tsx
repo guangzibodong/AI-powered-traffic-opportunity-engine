@@ -1005,6 +1005,52 @@ function ImportedPreviewPanel({
   const recommendOnlyTaskShare = `${recommendOnlyTaskSharePercent}%`;
   const newTaskShare = `${newTaskSharePercent}%`;
   const newOpportunityShare = `${newOpportunitySharePercent}%`;
+  const actionMixRows = [
+    {
+      count: ctrRefreshOpportunityCount + ctrRefreshTaskCount,
+      key: "ctr_refresh",
+      label: locale === "zh" ? "CTR 刷新" : "CTR refresh"
+    },
+    {
+      count: collectionPageOpportunityCount + collectionPageTaskCount,
+      key: "collection_page",
+      label: locale === "zh" ? "集合页" : "Collection page"
+    },
+    {
+      count: productSeoOpportunityCount + productSeoTaskCount,
+      key: "product_seo",
+      label: locale === "zh" ? "产品 SEO" : "Product SEO"
+    },
+    {
+      count: rankingPushOpportunityCount + rankingPushTaskCount,
+      key: "ranking_push",
+      label: locale === "zh" ? "排名推进" : "Ranking push"
+    },
+    {
+      count: buyingGuideGapOpportunityCount + buyingGuideGapTaskCount,
+      key: "buying_guide_gap",
+      label: locale === "zh" ? "购买指南缺口" : "Buying guide gap"
+    }
+  ];
+  const actionMixTotal = actionMixRows.reduce((total, row) => total + row.count, 0);
+  const actionMixTopRow = actionMixRows.reduce((currentTop, row) => (row.count > currentTop.count ? row : currentTop));
+  const actionMixTopKey = actionMixTotal > 0 ? actionMixTopRow.key : "none";
+  const actionMixTopLabel = actionMixTotal > 0 ? actionMixTopRow.label : locale === "zh" ? "无" : "none";
+  const actionMixTopShare = getImportedMetricSharePercent(actionMixTotal > 0 ? actionMixTopRow.count : 0, actionMixTotal);
+  const actionMixState =
+    actionMixTotal === 0 ? "empty" : actionMixTopShare >= 60 ? "concentrated" : "balanced";
+  const actionMixStateLabel =
+    actionMixState === "empty"
+      ? locale === "zh"
+        ? "空"
+        : "empty"
+      : actionMixState === "concentrated"
+        ? locale === "zh"
+          ? "集中"
+          : "concentrated"
+        : locale === "zh"
+          ? "均衡"
+          : "balanced";
   const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
   const queryRowOverflowCount = Math.max(importedPreviews.queries.length - visibleQueryRows.length, 0);
   const productOverflowCount = Math.max(importedPreviews.products.length - visibleProducts.length, 0);
@@ -1337,6 +1383,18 @@ function ImportedPreviewPanel({
           <span>{locale === "zh" ? "产品 SEO 任务占比" : "Product SEO task share"}</span>
           <strong>{productSeoTaskShare}</strong>
         </div>
+      </div>
+      <div
+        className="section-health-summary"
+        data-action-mix-state={actionMixState}
+        data-action-mix-top-key={actionMixTopKey}
+        data-action-mix-top-share={actionMixTopShare}
+        data-action-mix-total={actionMixTotal}
+      >
+        <span>{locale === "zh" ? "动作组合" : "Action mix"}</span>
+        <strong>
+          {actionMixStateLabel} / {actionMixTopLabel} / {actionMixTopShare}%
+        </strong>
       </div>
       <div
         className="section-health-summary"
