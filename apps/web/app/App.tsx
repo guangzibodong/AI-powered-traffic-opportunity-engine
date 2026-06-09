@@ -993,6 +993,8 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
       return counts;
     }, {})
   ).sort(([left], [right]) => left.localeCompare(right));
+  const qaCheckTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
+  const qaPendingTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaPendingCount, 0);
   const blockedCapabilities =
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   return (
@@ -1025,6 +1027,19 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
           >
             <span>Asset type mix</span>
             <strong>{assetTypeEntries.map(([assetType, count]) => `${assetType} ${count}`).join(" / ")}</strong>
+          </div>
+        )}
+        {qaCheckTotal > 0 && (
+          <div
+            className="kv-row"
+            data-asset-qa-check-count={qaCheckTotal}
+            data-asset-qa-pending-count={qaPendingTotal}
+            data-asset-qa-summary="true"
+          >
+            <span>QA checks</span>
+            <strong>
+              {qaPendingTotal}/{qaCheckTotal} pending
+            </strong>
           </div>
         )}
         <div className="kv-row">

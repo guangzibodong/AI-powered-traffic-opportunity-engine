@@ -423,6 +423,32 @@ async function assertAssetWorkspaceTypeSummary(page, expectedCounts, label) {
   }
 }
 
+async function assertAssetWorkspaceQaSummary(page, expectedQaCheckCount, expectedQaPendingCount, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for QA summary diagnostics`);
+  const summaryRow = assetPanel.locator("[data-asset-qa-summary='true']");
+  await expectVisible(summaryRow, `${label} asset QA summary row`);
+  const qaCheckCount = await summaryRow.getAttribute("data-asset-qa-check-count");
+  const qaPendingCount = await summaryRow.getAttribute("data-asset-qa-pending-count");
+  assert(
+    qaCheckCount === String(expectedQaCheckCount),
+    `${label} asset QA summary check count mismatch: expected ${expectedQaCheckCount}, got ${
+      qaCheckCount ?? "missing"
+    }`
+  );
+  assert(
+    qaPendingCount === String(expectedQaPendingCount),
+    `${label} asset QA summary pending count mismatch: expected ${expectedQaPendingCount}, got ${
+      qaPendingCount ?? "missing"
+    }`
+  );
+  const summaryText = (await summaryRow.textContent()) ?? "";
+  assert(
+    summaryText.includes(`${expectedQaPendingCount}/${expectedQaCheckCount} pending`),
+    `${label} asset QA summary must show pending ratio`
+  );
+}
+
 async function assertAssetWorkspaceRowAggregateReconciles(page, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for row aggregate diagnostics`);
@@ -1738,6 +1764,7 @@ async function runSmoke() {
       { buying_guide: 1, collection_page: 1, product_seo: 1 },
       "populated asset workspace"
     );
+    await assertAssetWorkspaceQaSummary(populatedAssetPage, 5, 4, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     await populatedAssetPage.close();
 
