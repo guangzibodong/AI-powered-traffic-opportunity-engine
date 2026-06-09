@@ -265,6 +265,7 @@ async function runSmoke() {
     await catalogFailurePage.goto(webUrl);
     await clickUnique(catalogFailurePage.getByRole("button", { name: "EN" }), "catalog failure language switcher");
     await expectVisible(catalogFailurePage.getByText("read-only imported previews"), "catalog failure imported preview badge");
+    await expectVisible(catalogFailurePage.getByText("Catalog reads unavailable"), "catalog failure unavailable message");
     await expectVisible(catalogFailurePage.getByText("Graph-linked clusters"), "catalog failure graph metric");
     await expectVisible(catalogFailurePage.getByText("portable espresso maker camping"), "catalog failure imported query cluster");
     await expectVisible(catalogFailurePage.getByText("recommend_only"), "catalog failure recommend-only task preview");

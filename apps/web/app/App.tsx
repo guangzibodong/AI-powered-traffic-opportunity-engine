@@ -87,6 +87,7 @@ type ImportedPreviewState = {
   opportunities: Opportunity[];
   products: ApiImportedProduct[];
   tasks: BoardViewModel["tasks"];
+  warnings: string[];
 };
 
 const demoStoreId = "store-demo-outdoor-coffee";
@@ -201,7 +202,8 @@ export function App() {
     pages: [],
     opportunities: [],
     products: [],
-    tasks: []
+    tasks: [],
+    warnings: []
   });
   const [selectedTaskId, setSelectedTaskId] = useState(taskDetail.id);
   const [taskStatuses, setTaskStatuses] = useState(loadTaskStatusMap);
@@ -262,6 +264,10 @@ export function App() {
             const clusters = graphResponse ? mapApiImportedGraphToClusterPreviews(graphResponse) : [];
             const products = importedProductsResult.status === "fulfilled" ? importedProductsResult.value.products : [];
             const pages = importedPagesResult.status === "fulfilled" ? importedPagesResult.value.pages : [];
+            const warnings =
+              importedProductsResult.status === "rejected" || importedPagesResult.status === "rejected"
+                ? ["catalog_unavailable"]
+                : [];
             const opportunities =
               importedOpportunitiesResult.status === "fulfilled"
                 ? mapApiImportedOpportunitiesToOpportunities(importedOpportunitiesResult.value)
@@ -278,7 +284,8 @@ export function App() {
               pages,
               opportunities,
               products,
-              tasks
+              tasks,
+              warnings
             });
           })
           .catch((importedError: unknown) => {
@@ -291,7 +298,8 @@ export function App() {
               pages: [],
               opportunities: [],
               products: [],
-              tasks: []
+              tasks: [],
+              warnings: []
             });
           });
       })
@@ -305,7 +313,8 @@ export function App() {
           pages: [],
           opportunities: [],
           products: [],
-          tasks: []
+          tasks: [],
+          warnings: []
         });
         setSafetySignals({ auditEvidence: [], syncRunPreviews: [] });
         setBoardDataState({
@@ -773,6 +782,16 @@ function ImportedPreviewPanel({
           <strong>{importedPreviews.tasks.length}</strong>
         </div>
       </div>
+      {importedPreviews.warnings.includes("catalog_unavailable") && (
+        <div className="imported-preview-empty">
+          <strong>{locale === "zh" ? "Catalog reads unavailable" : "Catalog reads unavailable"}</strong>
+          <p className="muted">
+            {locale === "zh"
+              ? "商品或页面预览暂不可用；图谱、机会和任务预览仍保持只读展示。"
+              : "Product or page preview reads are unavailable; graph, opportunity, and task previews remain read-only."}
+          </p>
+        </div>
+      )}
       {hasImportedPreviews ? (
         <div className="imported-preview-list">
           {visibleClusters.map((cluster) => (
