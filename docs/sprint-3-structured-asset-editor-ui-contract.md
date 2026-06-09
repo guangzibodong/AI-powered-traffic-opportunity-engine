@@ -201,6 +201,7 @@ The first local editor slice is implemented with a conservative scope:
 - Browser smoke proves the save path issues exactly one safe local asset PATCH and no unsafe asset requests.
 - Mobile browser smoke verifies the Chinese editor copy, a long local title, local save success, and horizontal containment of editor controls.
 - Browser smoke verifies a local asset PATCH failure keeps the editor open, shows `Local save failed`, re-enables `Save local draft`, and still records no WordPress draft, publish, sync, credential, external navigation, or commerce-write requests.
+- Browser smoke verifies retry-after-failure by failing the first local asset PATCH, succeeding on the second local PATCH, clearing the failure copy with `Local draft saved`, and still recording no unsafe requests.
 
 Still gated:
 
@@ -210,7 +211,7 @@ Still gated:
 - Rich schema editor.
 - Rich text editor.
 - Mobile screenshot QA.
-- Retry-after-failure browser coverage.
+- Close-without-write browser coverage.
 
 ## Out Of Scope
 

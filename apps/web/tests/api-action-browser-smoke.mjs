@@ -454,6 +454,19 @@ async function assertLocalAssetEditorSaveFailure(page, label) {
   assert(!saveButtonDisabled, `${label} local save button must be re-enabled after failure`);
 }
 
+async function assertLocalAssetEditorRetryAfterFailure(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} local asset editor`);
+  await editor.locator("input").first().fill("Recovered local save test");
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} first local save button`);
+  await expectVisible(page.getByText("Local save failed"), `${label} local save failure copy`);
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} retry local save button`);
+  await expectVisible(page.getByText("Local draft saved"), `${label} local save retry success copy`);
+  const failureCopyCount = await page.getByText("Local save failed").count();
+  assert(failureCopyCount === 0, `${label} local save failure copy must clear after retry success`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -2274,6 +2287,115 @@ async function runSmoke() {
       `Failed local save issued unsafe requests: ${JSON.stringify(unsafeFailedSaveRequests)}`
     );
     await failedSaveAssetPage.close();
+
+    const retrySaveAssetPage = await context.newPage();
+    const retrySaveAssetRequests = [];
+    let retrySavePatchAttempts = 0;
+    retrySaveAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        retrySaveAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await retrySaveAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_retry_save",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_retry_save",
+                title: "Retry patch recovery candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await retrySaveAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_retry_save`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        retrySavePatchAttempts += 1;
+        if (retrySavePatchAttempts === 1) {
+          await route.fulfill({
+            contentType: "application/json",
+            status: 500,
+            body: JSON.stringify({ detail: "first local save fixture failure" })
+          });
+          return;
+        }
+
+        const payload = route.request().postDataJSON();
+        assert(payload.title === "Recovered local save test", "Retry asset PATCH must send the edited title");
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_retry_save",
+              qa_checks: [{ key: "seo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_retry_save",
+              title: "Recovered local save test"
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await retrySaveAssetPage.goto(webUrl);
+    await clickUnique(retrySaveAssetPage.getByRole("button", { name: "EN" }), "retry save asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(retrySaveAssetPage, 1, "retry save asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_retry_save",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Retry patch recovery candidate"
+      }
+    ]);
+    await assertLocalAssetEditorRetryAfterFailure(retrySaveAssetPage, "retry save asset workspace");
+    const retrySavePatchRequests = retrySaveAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_retry_save`)
+    );
+    assert(
+      retrySavePatchRequests.length === 2,
+      `Retry local save should issue exactly two local PATCH requests, got ${JSON.stringify(retrySaveAssetRequests)}`
+    );
+    const unsafeRetrySaveRequests = retrySaveAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_retry_save`))
+    );
+    assert(
+      unsafeRetrySaveRequests.length === 0,
+      `Retry local save issued unsafe requests: ${JSON.stringify(unsafeRetrySaveRequests)}`
+    );
+    await retrySaveAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
