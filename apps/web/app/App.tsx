@@ -938,6 +938,8 @@ function ImportedPreviewPanel({
   const buyingGuideGapTaskTotal = importedPreviews.tasks.length;
   const recommendOnlyTaskCount = importedPreviews.summaryDiagnostics.recommendOnlyTasks;
   const recommendOnlyTaskTotal = importedPreviews.tasks.length;
+  const newTaskCount = importedPreviews.summaryDiagnostics.newTasks;
+  const newTaskTotal = importedPreviews.tasks.length;
   const buyingGuideGapOpportunitySharePercent = getImportedMetricSharePercent(
     buyingGuideGapOpportunityCount,
     buyingGuideGapOpportunityTotal
@@ -947,9 +949,11 @@ function ImportedPreviewPanel({
     buyingGuideGapTaskTotal
   );
   const recommendOnlyTaskSharePercent = getImportedMetricSharePercent(recommendOnlyTaskCount, recommendOnlyTaskTotal);
+  const newTaskSharePercent = getImportedMetricSharePercent(newTaskCount, newTaskTotal);
   const buyingGuideGapOpportunityShare = `${buyingGuideGapOpportunitySharePercent}%`;
   const buyingGuideGapTaskShare = `${buyingGuideGapTaskSharePercent}%`;
   const recommendOnlyTaskShare = `${recommendOnlyTaskSharePercent}%`;
+  const newTaskShare = `${newTaskSharePercent}%`;
   const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
   const queryRowOverflowCount = Math.max(importedPreviews.queries.length - visibleQueryRows.length, 0);
   const productOverflowCount = Math.max(importedPreviews.products.length - visibleProducts.length, 0);
@@ -1159,6 +1163,16 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="new_task_previews">
           <span>{locale === "zh" ? "新任务预览" : "New task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.newTasks}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-metric-key="new_task_share"
+          data-share-count={newTaskCount}
+          data-share-percent={newTaskSharePercent}
+          data-share-total={newTaskTotal}
+        >
+          <span>{locale === "zh" ? "新任务占比" : "New task share"}</span>
+          <strong>{newTaskShare}</strong>
         </div>
         <div className="kv-row" data-metric-key="new_opportunity_previews">
           <span>{locale === "zh" ? "新机会预览" : "New opportunity previews"}</span>
