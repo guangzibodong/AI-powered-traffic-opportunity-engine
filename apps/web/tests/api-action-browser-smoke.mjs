@@ -484,6 +484,42 @@ async function assertImportedActionMixSummaryColor(page, expectedColor, label) {
   );
 }
 
+async function assertImportedActionMixRows(page, expectedRows, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  for (const [actionKey, expectedRow] of Object.entries(expectedRows)) {
+    const row = importedPanel.locator(`[data-action-mix-key='${actionKey}']`);
+    const rowCount = await row.count();
+    assert(rowCount === 1, `${label} imported action mix row ${actionKey} must render exactly once`);
+
+    const countText = await row.getAttribute("data-action-mix-count");
+    const shareText = await row.getAttribute("data-action-mix-share");
+    const totalText = await row.getAttribute("data-action-mix-total");
+    const rowText = ((await row.textContent()) ?? "").toLowerCase();
+    assert(
+      countText === String(expectedRow.count),
+      `${label} imported action mix row ${actionKey} count mismatch: expected ${expectedRow.count}, got ${
+        countText ?? "missing"
+      }`
+    );
+    assert(
+      shareText === String(expectedRow.share),
+      `${label} imported action mix row ${actionKey} share mismatch: expected ${expectedRow.share}, got ${
+        shareText ?? "missing"
+      }`
+    );
+    assert(
+      totalText === String(expectedRow.total),
+      `${label} imported action mix row ${actionKey} total mismatch: expected ${expectedRow.total}, got ${
+        totalText ?? "missing"
+      }`
+    );
+    assert(
+      rowText.includes(String(expectedRow.count)) && rowText.includes(`${expectedRow.share}%`),
+      `${label} imported action mix row ${actionKey} must show count ${expectedRow.count} and share ${expectedRow.share}%`
+    );
+  }
+}
+
 async function assertImportedPreviewEmptyState(page, expectedKey, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const emptyState = importedPanel.locator("[data-empty-state-key]");
@@ -1348,6 +1384,17 @@ async function runSmoke() {
       "initial"
     );
     await assertImportedActionMixSummaryColor(page, "rgb(97, 32, 238)", "initial");
+    await assertImportedActionMixRows(
+      page,
+      {
+        buying_guide_gap: { count: 2, share: 25, total: 8 },
+        collection_page: { count: 0, share: 0, total: 8 },
+        ctr_refresh: { count: 6, share: 75, total: 8 },
+        product_seo: { count: 0, share: 0, total: 8 },
+        ranking_push: { count: 0, share: 0, total: 8 }
+      },
+      "initial"
+    );
     await assertImportedPreviewOverflowValues(
       page,
       {
@@ -1506,6 +1553,17 @@ async function runSmoke() {
       "balanced mix"
     );
     await assertImportedActionMixSummaryColor(balancedMixPage, "rgb(27, 27, 29)", "balanced mix");
+    await assertImportedActionMixRows(
+      balancedMixPage,
+      {
+        buying_guide_gap: { count: 2, share: 20, total: 10 },
+        collection_page: { count: 2, share: 20, total: 10 },
+        ctr_refresh: { count: 2, share: 20, total: 10 },
+        product_seo: { count: 2, share: 20, total: 10 },
+        ranking_push: { count: 2, share: 20, total: 10 }
+      },
+      "balanced mix"
+    );
     await balancedMixPage.close();
 
     const resilientPage = await context.newPage();
@@ -1659,6 +1717,17 @@ async function runSmoke() {
       "resilient fallback"
     );
     await assertImportedActionMixSummaryColor(resilientPage, "rgb(107, 107, 114)", "resilient fallback");
+    await assertImportedActionMixRows(
+      resilientPage,
+      {
+        buying_guide_gap: { count: 0, share: 0, total: 0 },
+        collection_page: { count: 0, share: 0, total: 0 },
+        ctr_refresh: { count: 0, share: 0, total: 0 },
+        product_seo: { count: 0, share: 0, total: 0 },
+        ranking_push: { count: 0, share: 0, total: 0 }
+      },
+      "resilient fallback"
+    );
     await assertImportedPreviewOverflowValues(
       resilientPage,
       {
@@ -1849,6 +1918,17 @@ async function runSmoke() {
       "empty imported"
     );
     await assertImportedActionMixSummaryColor(emptyImportedPage, "rgb(107, 107, 114)", "empty imported");
+    await assertImportedActionMixRows(
+      emptyImportedPage,
+      {
+        buying_guide_gap: { count: 0, share: 0, total: 0 },
+        collection_page: { count: 0, share: 0, total: 0 },
+        ctr_refresh: { count: 0, share: 0, total: 0 },
+        product_seo: { count: 0, share: 0, total: 0 },
+        ranking_push: { count: 0, share: 0, total: 0 }
+      },
+      "empty imported"
+    );
     await assertImportedPreviewOverflowValues(
       emptyImportedPage,
       {
@@ -2286,6 +2366,17 @@ async function runSmoke() {
       { state: "concentrated", total: 4, topKey: "ctr_refresh", topCount: 3, topShare: 75 },
       "opportunity-only failure"
     );
+    await assertImportedActionMixRows(
+      opportunityFailurePage,
+      {
+        buying_guide_gap: { count: 1, share: 25, total: 4 },
+        collection_page: { count: 0, share: 0, total: 4 },
+        ctr_refresh: { count: 3, share: 75, total: 4 },
+        product_seo: { count: 0, share: 0, total: 4 },
+        ranking_push: { count: 0, share: 0, total: 4 }
+      },
+      "opportunity-only failure"
+    );
     await assertImportedPreviewItemKinds(
       opportunityFailurePage,
       {
@@ -2405,6 +2496,17 @@ async function runSmoke() {
     await assertImportedActionMixSummary(
       taskFailurePage,
       { state: "concentrated", total: 4, topKey: "ctr_refresh", topCount: 3, topShare: 75 },
+      "task-only failure"
+    );
+    await assertImportedActionMixRows(
+      taskFailurePage,
+      {
+        buying_guide_gap: { count: 1, share: 25, total: 4 },
+        collection_page: { count: 0, share: 0, total: 4 },
+        ctr_refresh: { count: 3, share: 75, total: 4 },
+        product_seo: { count: 0, share: 0, total: 4 },
+        ranking_push: { count: 0, share: 0, total: 4 }
+      },
       "task-only failure"
     );
     await assertImportedPreviewItemKinds(

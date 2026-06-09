@@ -772,6 +772,35 @@ tr:last-child td {
   color: var(--text);
 }
 
+.action-mix-list {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 14px 14px;
+}
+
+.action-mix-row {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  min-height: 34px;
+  padding: 8px 0;
+}
+
+.action-mix-row span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.action-mix-row strong {
+  color: var(--text);
+  font-size: 12px;
+  text-align: right;
+}
+
 .section-health-row {
   align-items: center;
   border-bottom: 1px solid var(--line);

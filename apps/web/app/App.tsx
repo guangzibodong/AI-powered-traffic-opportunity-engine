@@ -1052,6 +1052,10 @@ function ImportedPreviewPanel({
         : locale === "zh"
           ? "均衡"
           : "balanced";
+  const actionMixDisplayRows = actionMixRows.map((row) => ({
+    ...row,
+    share: getImportedMetricSharePercent(row.count, actionMixTotal)
+  }));
   const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
   const queryRowOverflowCount = Math.max(importedPreviews.queries.length - visibleQueryRows.length, 0);
   const productOverflowCount = Math.max(importedPreviews.products.length - visibleProducts.length, 0);
@@ -1397,6 +1401,23 @@ function ImportedPreviewPanel({
         <strong>
           {actionMixStateLabel} / {actionMixTopLabel} / {actionMixTopCount} / {actionMixTopShare}%
         </strong>
+      </div>
+      <div className="action-mix-list" aria-label="Imported action mix categories">
+        {actionMixDisplayRows.map((row) => (
+          <div
+            className="action-mix-row"
+            data-action-mix-count={row.count}
+            data-action-mix-key={row.key}
+            data-action-mix-share={row.share}
+            data-action-mix-total={actionMixTotal}
+            key={row.key}
+          >
+            <span>{row.label}</span>
+            <strong>
+              {row.count} / {row.share}%
+            </strong>
+          </div>
+        ))}
       </div>
       <div
         className="section-health-summary"
