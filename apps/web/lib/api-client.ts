@@ -143,6 +143,31 @@ export type ApiImportedQueryCluster = {
   top_pages?: string[];
 };
 
+export type ApiImportedQueryRow = {
+  clicks: number;
+  ctr: number;
+  id: string;
+  impressions: number;
+  page: string;
+  position: number;
+  query: string;
+  source?: string;
+  store_id?: string;
+  window?: string;
+};
+
+export type ApiImportedQueriesResponse = {
+  mode: "csv_import";
+  queries: ApiImportedQueryRow[];
+  store_id: string;
+};
+
+export type ApiImportedQueryResponse = {
+  mode: "csv_import";
+  query: ApiImportedQueryRow;
+  store_id: string;
+};
+
 export type ApiImportedGraphProduct = {
   categories?: string[];
   external_id?: string;
@@ -343,6 +368,15 @@ export async function getAuditLogs(storeId: string, apiBaseUrl = getApiBaseUrl()
 
 export async function getImportedGraph(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiImportedGraphResponse>(`${storeApiPath(apiBaseUrl, storeId)}/imported-graph`);
+}
+
+export async function getImportedQueries(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiImportedQueriesResponse>(`${storeApiPath(apiBaseUrl, storeId)}/queries`);
+}
+
+export async function getImportedQuery(storeId: string, queryId: string, apiBaseUrl = getApiBaseUrl()) {
+  const encodedQueryId = encodeURIComponent(queryId);
+  return fetchJson<ApiImportedQueryResponse>(`${storeApiPath(apiBaseUrl, storeId)}/queries/${encodedQueryId}`);
 }
 
 export async function getImportedProducts(storeId: string, apiBaseUrl = getApiBaseUrl()) {

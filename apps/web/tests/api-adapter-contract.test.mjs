@@ -72,6 +72,9 @@ assert(apiClient.includes("ApiIntegrationsResponse"), "API client must type inte
 assert(apiClient.includes("ApiSyncRunsResponse"), "API client must type sync run responses");
 assert(apiClient.includes("ApiAuditLogsResponse"), "API client must type audit log responses");
 assert(apiClient.includes("ApiImportedGraphResponse"), "API client must type imported graph responses");
+assert(apiClient.includes("ApiImportedQueryRow"), "API client must type imported query row records");
+assert(apiClient.includes("ApiImportedQueriesResponse"), "API client must type imported query row list responses");
+assert(apiClient.includes("ApiImportedQueryResponse"), "API client must type imported query row detail responses");
 assert(apiClient.includes("ApiImportedProductsResponse"), "API client must type imported product list responses");
 assert(apiClient.includes("ApiImportedProductResponse"), "API client must type imported product detail responses");
 assert(apiClient.includes("ApiImportedPagesResponse"), "API client must type imported page list responses");
@@ -86,6 +89,8 @@ assert(apiClient.includes("getIntegrations"), "API client must expose integratio
 assert(apiClient.includes("getSyncRuns"), "API client must expose sync run reads");
 assert(apiClient.includes("getAuditLogs"), "API client must expose audit log reads");
 assert(apiClient.includes("getImportedGraph"), "API client must expose imported signal graph reads");
+assert(apiClient.includes("getImportedQueries"), "API client must expose imported query row reads");
+assert(apiClient.includes("getImportedQuery"), "API client must expose imported query row detail reads");
 assert(apiClient.includes("getImportedProducts"), "API client must expose imported product reads");
 assert(apiClient.includes("getImportedProduct"), "API client must expose imported product detail reads");
 assert(apiClient.includes("getImportedPages"), "API client must expose imported page reads");
@@ -97,13 +102,17 @@ assert(apiClient.includes("getImportedOpportunity"), "API client must expose imp
 assert(apiClient.includes("getImportedTasks"), "API client must expose imported task preview reads");
 assert(apiClient.includes("getImportedTask"), "API client must expose imported task preview detail reads");
 assert(apiClient.includes("/imported-tasks"), "Imported task client must target the read-only imported task endpoint");
-for (const importedReadFunction of ["getImportedGraph", "getImportedProducts", "getImportedProduct", "getImportedPages", "getImportedPage", "getImportedQueryClusters", "getImportedQueryCluster", "getImportedOpportunities", "getImportedOpportunity", "getImportedTasks", "getImportedTask"]) {
+for (const importedReadFunction of ["getImportedGraph", "getImportedQueries", "getImportedQuery", "getImportedProducts", "getImportedProduct", "getImportedPages", "getImportedPage", "getImportedQueryClusters", "getImportedQueryCluster", "getImportedOpportunities", "getImportedOpportunity", "getImportedTasks", "getImportedTask"]) {
   const functionBody = readExportedFunction(apiClient, importedReadFunction);
   for (const unsafeMethod of ['method: "POST"', 'method: "PATCH"', 'method: "PUT"', 'method: "DELETE"']) {
     assert(!functionBody.includes(unsafeMethod), `${importedReadFunction} must stay read-only and not use ${unsafeMethod}`);
   }
 }
 assert(readExportedFunction(apiClient, "getImportedGraph").includes("/imported-graph"), "Imported graph client must target the read-only imported graph endpoint");
+assert(readExportedFunction(apiClient, "getImportedQueries").includes("/queries"), "Imported query rows client must target the read-only queries endpoint");
+const importedQueryDetailClient = readExportedFunction(apiClient, "getImportedQuery");
+assert(importedQueryDetailClient.includes("/queries/${encodedQueryId}"), "Imported query detail client must target the encoded query id");
+assert(importedQueryDetailClient.includes("encodeURIComponent(queryId)"), "Imported query detail client must encode query path segments");
 assert(readExportedFunction(apiClient, "getImportedProducts").includes("/products"), "Imported products client must target the read-only products endpoint");
 const importedProductDetailClient = readExportedFunction(apiClient, "getImportedProduct");
 assert(importedProductDetailClient.includes("/products/${encodedProductId}"), "Imported product detail client must target the encoded product id");
