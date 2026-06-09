@@ -42,6 +42,8 @@ assert(adapter.includes("mapApiIntegrationsToIntegrationHealth"), "adapter must 
 assert(adapter.includes("mapApiSyncRunsToSyncRunPreviews"), "adapter must expose sync run DTO conversion");
 assert(adapter.includes("mapApiAuditLogsToEvidenceRows"), "adapter must expose audit log DTO conversion");
 assert(adapter.includes("mapApiImportedQueryClustersToPreviews"), "adapter must expose imported query cluster DTO conversion");
+assert(adapter.includes("mapApiImportedProductsToCatalogPreviews"), "adapter must expose imported product catalog preview conversion");
+assert(adapter.includes("mapApiImportedPagesToCatalogPreviews"), "adapter must expose imported page catalog preview conversion");
 assert(adapter.includes("mapApiImportedOpportunitiesToOpportunities"), "adapter must expose imported opportunity DTO conversion");
 assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose imported task preview DTO conversion");
 assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
@@ -133,6 +135,13 @@ assert(app.includes("mapApiSyncRunsToSyncRunPreviews("), "App must map API sync 
 assert(app.includes("mapApiAuditLogsToEvidenceRows("), "App must map audit logs into safe audit evidence rows");
 assert(adapter.includes("mapApiImportedGraphToClusterPreviews"), "Adapter must expose imported graph DTO conversion");
 assert(app.includes("mapApiImportedGraphToClusterPreviews("), "App must map imported graph through the safe adapter");
+assert(app.includes("mapApiImportedProductsToCatalogPreviews("), "App must map imported products through the safe adapter");
+assert(app.includes("mapApiImportedPagesToCatalogPreviews("), "App must map imported pages through the safe adapter");
+assert(app.includes("product.detail"), "Imported product preview UI must render safe product catalog detail");
+assert(app.includes("page.detail"), "Imported page preview UI must render safe page catalog detail");
+assert(!app.includes("product.sku"), "Imported product preview UI must not render raw product SKU DTO fields directly");
+assert(!app.includes("product.categories"), "Imported product preview UI must not render raw product category DTO fields directly");
+assert(!app.includes("page.url"), "Imported page preview UI must not render raw page URL DTO fields directly");
 assert(adapter.includes("mapApiImportedQueryClusterResponseToPreview"), "Adapter must expose imported query cluster detail DTO conversion");
 assert(app.includes("mapApiImportedOpportunitiesToOpportunities("), "App must map imported opportunities through the safe adapter");
 assert(app.includes("mapApiImportedTasksToTasks("), "App must map imported task previews through the safe adapter");

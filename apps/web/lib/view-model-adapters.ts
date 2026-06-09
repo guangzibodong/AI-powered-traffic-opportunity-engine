@@ -2,6 +2,7 @@ import type {
   BoardViewModel,
   AuditLogPreview,
   EvidenceRow,
+  ImportedCatalogPreview,
   ImportedQueryClusterPreview,
   IntegrationHealth,
   Opportunity,
@@ -16,8 +17,10 @@ import type {
   ApiAuditLogsResponse,
   ApiEvidence,
   ApiImportedGraphResponse,
+  ApiImportedPagesResponse,
   ApiImportedOpportunityResponse,
   ApiImportedOpportunitiesResponse,
+  ApiImportedProductsResponse,
   ApiImportedQueryClusterResponse,
   ApiImportedQueryClustersResponse,
   ApiImportedTaskResponse,
@@ -158,6 +161,30 @@ export function mapApiImportedGraphToClusterPreviews(
   response: ApiImportedGraphResponse
 ): ImportedQueryClusterPreview[] {
   return response.query_clusters.map(mapApiImportedQueryClusterToPreview);
+}
+
+export function mapApiImportedProductsToCatalogPreviews(
+  response: ApiImportedProductsResponse
+): ImportedCatalogPreview[] {
+  return response.products.map((product) => ({
+    detail: `SKU ${product.sku ?? "n/a"} / ${product.categories?.[0] ?? "uncategorized"}`,
+    href: product.permalink ?? undefined,
+    id: product.id,
+    kind: "product",
+    source: "WooCommerce",
+    title: product.name
+  }));
+}
+
+export function mapApiImportedPagesToCatalogPreviews(response: ApiImportedPagesResponse): ImportedCatalogPreview[] {
+  return response.pages.map((page) => ({
+    detail: `${page.page_type ?? "page"} / ${page.status ?? "unknown"}${page.indexable === false ? " / noindex" : ""}`,
+    href: page.url,
+    id: page.id,
+    kind: "page",
+    source: "WordPress",
+    title: page.title
+  }));
 }
 
 export function mapApiImportedQueryClustersToPreviews(

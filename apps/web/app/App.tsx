@@ -18,10 +18,6 @@ import {
   isApiBoardEnabled,
   updateTaskStatus
 } from "../lib/api-client";
-import type {
-  ApiImportedPage,
-  ApiImportedProduct
-} from "../lib/api-client";
 import {
   boardViewModel,
   boundaryCopy,
@@ -40,7 +36,9 @@ import { createTaskDetailViewModel } from "../lib/task-detail";
 import {
   mapApiAuditLogsToEvidenceRows,
   mapApiImportedGraphToClusterPreviews,
+  mapApiImportedPagesToCatalogPreviews,
   mapApiImportedOpportunitiesToOpportunities,
+  mapApiImportedProductsToCatalogPreviews,
   mapApiImportedTasksToTasks,
   mapApiIntegrationsToIntegrationHealth,
   mapApiPlanningToBoard,
@@ -49,6 +47,7 @@ import {
 import type {
   BoardViewModel,
   EvidenceRow,
+  ImportedCatalogPreview,
   ImportedQueryClusterPreview,
   IntegrationHealth,
   Locale,
@@ -83,9 +82,9 @@ type ImportedPreviewState = {
     product_matches?: number;
     query_clusters?: number;
   } | null;
-  pages: ApiImportedPage[];
+  pages: ImportedCatalogPreview[];
   opportunities: Opportunity[];
-  products: ApiImportedProduct[];
+  products: ImportedCatalogPreview[];
   tasks: BoardViewModel["tasks"];
   warnings: string[];
 };
@@ -262,8 +261,14 @@ export function App() {
 
             const graphResponse = graphResult.status === "fulfilled" ? graphResult.value : null;
             const clusters = graphResponse ? mapApiImportedGraphToClusterPreviews(graphResponse) : [];
-            const products = importedProductsResult.status === "fulfilled" ? importedProductsResult.value.products : [];
-            const pages = importedPagesResult.status === "fulfilled" ? importedPagesResult.value.pages : [];
+            const products =
+              importedProductsResult.status === "fulfilled"
+                ? mapApiImportedProductsToCatalogPreviews(importedProductsResult.value)
+                : [];
+            const pages =
+              importedPagesResult.status === "fulfilled"
+                ? mapApiImportedPagesToCatalogPreviews(importedPagesResult.value)
+                : [];
             const warnings =
               importedProductsResult.status === "rejected" || importedPagesResult.status === "rejected"
                 ? ["catalog_unavailable"]
@@ -806,19 +811,17 @@ function ImportedPreviewPanel({
           {visibleProducts.map((product) => (
             <article className="rail-item" key={product.id}>
               <span className="pill commerce">{locale === "zh" ? "商品" : "Product"}</span>
-              <h3>{product.name}</h3>
-              <p className="muted">
-                {locale === "zh"
-                  ? `SKU ${product.sku ?? "n/a"} / ${product.categories?.[0] ?? "未分类"}`
-                  : `SKU ${product.sku ?? "n/a"} / ${product.categories?.[0] ?? "uncategorized"}`}
-              </p>
+              <h3>{product.title}</h3>
+              <p className="muted">{product.detail}</p>
+              {product.href ? <p className="muted">{product.href}</p> : null}
             </article>
           ))}
           {visiblePages.map((page) => (
             <article className="rail-item" key={page.id}>
               <span className="pill safe">{locale === "zh" ? "页面" : "Page"}</span>
               <h3>{page.title}</h3>
-              <p className="muted">{page.url}</p>
+              <p className="muted">{page.detail}</p>
+              {page.href ? <p className="muted">{page.href}</p> : null}
             </article>
           ))}
           {visibleOpportunities.map((opportunity) => (

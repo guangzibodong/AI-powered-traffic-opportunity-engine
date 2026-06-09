@@ -140,6 +140,15 @@ export type ImportedQueryClusterPreview = {
   evidence: EvidenceRow[];
 };
 
+export type ImportedCatalogPreview = {
+  detail: string;
+  href?: string;
+  id: string;
+  kind: "product" | "page";
+  source: "WooCommerce" | "WordPress";
+  title: string;
+};
+
 export type PlanningRunViewModel = {
   runId: string;
   lastSuccessfulAt: string;
