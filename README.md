@@ -110,7 +110,7 @@ The first version is a working product experience, not a marketing landing page.
 
 ## Current Sprint Status
 
-Sprint 1 is complete. The current branch has started Sprint 2 with a demo-safe CSV import foundation for Google Search Console exports. This still does not connect real GSC OAuth, write WooCommerce data, or create WordPress drafts.
+Sprint 1 is complete. The Sprint 2 local/import-only loop is also complete and handed off in [Sprint 2 Local Import Handoff](docs/sprint-2-local-import-handoff.md). The current branch still does not connect real GSC OAuth, collect live credentials, write WooCommerce data, create WordPress drafts, update WordPress pages, or publish content.
 
 Completed capabilities in the current Sprint 1 slice:
 
@@ -125,7 +125,7 @@ Completed capabilities in the current Sprint 1 slice:
 - API-unavailable fallback feedback now exposes explicit `Retry sync` and `Keep local` controls, so the user can either re-attempt the demo API mutation or intentionally keep the local review state.
 - Automated browser smoke coverage is available through `pnpm --filter @trafscope/web run test:api-actions`; it launches isolated local API/web ports and verifies API success, API fallback, retry sync, keep-local confirmation, unsafe status rejection, and board/detail consistency.
 
-Sprint 2 capabilities completed so far:
+Sprint 2 local/import-only capabilities completed:
 
 1. CSV GSC import foundation: `POST /api/stores/{store_id}/queries/import-csv`.
 2. Imported query list/detail reads: `GET /queries` and `GET /queries/{query_id}`.
@@ -141,6 +141,9 @@ Sprint 2 capabilities completed so far:
 12. Stable frontend DTO conversion foundation: the API client and view-model adapters now type and safely convert integration status, sync run, and audit log payloads without changing the visible Sprint 1 UI.
 13. API-backed safety panel foundation: the React app now reads integration status, sync run tracking, and audit logs in API mode and feeds the existing Safety surface through safe read-only adapters.
 14. Imported preview frontend DTO foundation: the API client and adapters now type read-only imported query clusters, imported opportunities, and imported task previews for future UI rendering.
+15. API-backed imported preview UI renders read-only query clusters, catalog references, opportunity previews, task previews, section health, catalog overflow, action-share diagnostics, and action-mix diagnostics.
+16. Browser smoke coverage reconciles imported action-share and action-mix counts, shares, row states, styling, aggregate totals, and top-row diagnostics across populated, empty, balanced, fallback, and partial-failure states.
+17. Live integration handoff remains parked on credentials and boundary approval through `TASK-S2-LIVE-011`.
 
 Current product/engineering ownership:
 
@@ -278,7 +281,7 @@ Prove TrafScope can turn demo store data and GSC-like signals into trustworthy t
 
 ### Sprint 2: Real Store Sync
 
-Connect the decisioning loop to real WooCommerce and WordPress data.
+Connect the decisioning loop to real store data. The local/import-only slice is complete; real live connection work remains blocked until credential handling and safety boundaries are approved.
 
 - CSV GSC export import foundation for query/page metrics.
 - Deterministic lightweight query clustering over imported GSC rows.
@@ -292,6 +295,8 @@ Connect the decisioning loop to real WooCommerce and WordPress data.
 - Integration status and sync run tracking.
 - Audit logs.
 - Stable frontend DTO conversion.
+- API-backed imported preview UI and browser QA for imported action diagnostics.
+- Parked live integration handoff for GSC OAuth, WooCommerce reads, and WordPress reads.
 
 ### Sprint 3: Draft Asset and Feedback Loop
 
