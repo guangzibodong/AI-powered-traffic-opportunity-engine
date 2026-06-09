@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset workspace read-only handoff documentation is verified and safe local asset editor contract planning is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 safe local asset editor contract planning is verified and backend TDD for the local update contract is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -190,7 +190,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-022 | 156 | done | Frontend Product Engineer / QA Lead | Add unavailable WordPress draft readiness coverage. | Browser smoke verifies an unavailable asset workspace does not render WordPress draft readiness rows and keeps draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
 | TASK-S3-QA-023 | 157 | done | Frontend Product Engineer / QA Lead | Add asset external write clamp reconciliation. | Browser smoke verifies the asset workspace external write clamp is false in DOM and visible summary across populated and unavailable states while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
 | TASK-S3-DOC-024 | 158 | done | Product Manager / Documentation Lead / QA Lead | Document asset workspace read-only handoff. | Docs summarize the current local asset workspace UI/API capabilities, verification evidence, and remaining blocked editor/WordPress draft work without adding draft creation, publishing, credentials, sync execution, href navigation, asset update, or commerce-write controls. |
-| TASK-S3-PM-025 | 159 | todo | Product Manager / Backend/API Engineer / QA Lead | Plan safe local asset editor contract. | Documentation defines a future local-only asset edit contract, required tests, allowed fields, and hard blocks for WordPress draft creation, publishing, credentials, sync execution, href navigation, external writes, and commerce writes before any editor code is added. |
+| TASK-S3-PM-025 | 159 | done | Product Manager / Backend/API Engineer / QA Lead | Plan safe local asset editor contract. | Documentation defines a future local-only asset edit contract, required tests, allowed fields, and hard blocks for WordPress draft creation, publishing, credentials, sync execution, href navigation, external writes, and commerce writes before any editor code is added. |
+| TASK-S3-BE-026 | 160 | todo | Backend/API Engineer / QA Lead | Add failing tests for safe local asset update contract. | Backend tests define allowed local PATCH fields, forbidden external-write fields, credential rejection, unknown asset handling, persisted list/detail reads, and continued WordPress draft 403 behavior before runtime update code is added. |
 
 ## Blockers
 
@@ -504,6 +505,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset workspace read-only handoff documentation is next because this QA-heavy local asset slice is ready to be summarized before any editor or WordPress draft action is introduced.
 - Asset workspace read-only handoff documentation is verified in `docs/sprint-3-asset-workspace-handoff.md`, with README pointing to the safe handoff and remaining draft/editor gates.
 - Safe local asset editor contract planning is next because editing should be specified and tested before any asset update UI or route is introduced.
+- Safe local asset editor contract planning is verified in `docs/sprint-3-local-asset-editor-contract.md`, with API docs and README pointing to the future local-only editor boundary.
+- Backend TDD for the safe local asset update contract is next because tests should prove allowed local edits and rejected external-write payloads before `PATCH /assets/:assetId` is enabled.
 
 ## Completion Rule
 

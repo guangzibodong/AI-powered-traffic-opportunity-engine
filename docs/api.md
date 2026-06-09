@@ -359,6 +359,8 @@ Sprint 3 asset endpoints currently expose a safe local workspace boundary:
 - `PATCH /assets/:assetId` returns `403` and remains future-gated until local persistence and QA gates are approved.
 - `POST /assets/:assetId/publish-wordpress-draft` returns `403`; it does not create a WordPress draft, publish content, call WordPress, or write commerce data.
 
+The planned local-only editor contract is documented in [Sprint 3 Safe Local Asset Editor Contract](sprint-3-local-asset-editor-contract.md). It must be tested before any asset update behavior or editor UI is enabled.
+
 ## Performance
 
 - `GET /api/stores/:storeId/performance`
