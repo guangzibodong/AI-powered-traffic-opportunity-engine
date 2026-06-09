@@ -804,7 +804,9 @@ function ImportedPreviewPanel({
     <section
       className="panel imported-preview-panel"
       aria-label="Imported preview panel"
+      data-preview-availability={importedPreviews.availability}
       data-safety-scope="read-only-imported-preview"
+      data-warning-count={unavailableSectionCount}
     >
       <div className="panel-heading">
         <h2>{locale === "zh" ? "Imported 预览" : "Imported previews"}</h2>
