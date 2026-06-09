@@ -60,7 +60,8 @@ assert(types.includes("ImportedQueryRowPreview"), "types must expose a safe impo
 assert(types.includes("displayPage"), "Imported query row preview must expose a display-safe page field");
 assert(adapter.includes("mapApiImportedQueryRowToPreview"), "adapter must map raw imported query rows through a safe row preview helper");
 assert(adapter.includes("row.window ?? \"imported\""), "imported query row adapter must default missing windows to imported");
-assert(adapter.includes("row.source ?? \"Imported GSC\""), "imported query row adapter must default missing sources to Imported GSC");
+assert(adapter.includes("formatImportedQueryRowSource"), "imported query row adapter must centralize source label formatting");
+assert(adapter.includes('source === "csv_import"'), "imported query row adapter must hide raw csv_import source labels");
 assert(adapter.includes('type: "audit"'), "audit log DTO conversion must produce audit evidence rows");
 assert(adapter.includes('status === "connected_stub"'), "integration adapter must handle connected_stub status");
 assert(adapter.includes('status === "not_connected"'), "integration adapter must handle not_connected status");

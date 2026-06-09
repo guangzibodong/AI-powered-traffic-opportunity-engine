@@ -242,6 +242,7 @@ async function runSmoke() {
     await expectVisible(page.getByText("Catalog products"), "imported catalog product count metric");
     await expectVisible(page.getByText("Catalog pages"), "imported catalog page count metric");
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
+    await expectVisible(page.getByText("Query row / Imported GSC"), "imported query row friendly source label");
     await expectVisible(page.getByText("window 28d"), "imported query row window label");
     await expectVisible(page.getByText("Trail Brew Portable Espresso Maker"), "imported product row");
     await expectVisible(page.getByText("Camping Espresso Collection"), "imported page row");

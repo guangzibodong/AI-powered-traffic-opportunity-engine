@@ -250,7 +250,7 @@ function truncateCatalogHrefDisplay(displayHref: string): string {
 }
 
 function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["queries"][number]): ImportedQueryRowPreview {
-  const source = row.source ?? "Imported GSC";
+  const source = formatImportedQueryRowSource(row.source);
   const window = row.window ?? "imported";
   const displayPage = formatImportedQueryPageForDisplay(row.page);
 
@@ -280,6 +280,11 @@ function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["querie
 
 function formatImportedQueryPageForDisplay(page: string): string {
   return formatImportedCatalogHrefForDisplay(page) ?? "Unknown page";
+}
+
+function formatImportedQueryRowSource(source?: string | null): string {
+  if (!source || source === "csv_import") return "Imported GSC";
+  return source;
 }
 
 export function mapApiImportedQueryClustersToPreviews(
