@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only QA coverage is complete through imported task preview safety DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only QA coverage is complete through imported opportunity preview DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -107,6 +107,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-061 | 73 | done | QA Lead / UI Systems Engineer | Expose imported preview reference DOM diagnostics. | Browser smoke verifies query-row page references plus imported product/page display references expose stable `data-reference-kind` and safe reference text, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 | TASK-S2-QA-062 | 74 | done | QA Lead / UI Systems Engineer | Expose imported preview source DOM diagnostics. | Browser smoke verifies imported query row, product, and page source labels expose stable `data-source-kind` and safe source text, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 | TASK-S2-QA-063 | 75 | done | QA Lead / UI Systems Engineer | Expose imported task preview safety DOM diagnostics. | Browser smoke verifies imported task preview safety rows expose stable `data-task-preview-safety`, `data-automation-level`, `data-task-status`, `data-trafscore`, and `data-evidence-count` markers for recommend-only/new previews, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
+| TASK-S2-QA-064 | 76 | done | QA Lead / UI Systems Engineer | Expose imported opportunity preview DOM diagnostics. | Browser smoke verifies imported opportunity preview cards expose stable `data-opportunity-preview-safety`, `data-opportunity-type`, `data-rule-id`, `data-confidence`, and `data-trafscore` markers, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 
 ## Blockers
 
@@ -254,6 +255,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported preview source DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported task preview safety DOM diagnostics are next because recommend-only task previews should be verifiable with stable read-only safety markers instead of localized copy alone.
 - Imported task preview safety DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported opportunity preview DOM diagnostics are next because read-only opportunity cards should expose stable scoring and rule markers instead of relying on localized title and summary copy alone.
+- Imported opportunity preview DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

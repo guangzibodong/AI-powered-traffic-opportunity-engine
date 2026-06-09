@@ -1045,8 +1045,13 @@ function ImportedPreviewPanel({
           {visibleOpportunities.map((opportunity) => (
             <article
               className="rail-item"
+              data-confidence={opportunity.confidence}
+              data-opportunity-preview-safety="read_only"
+              data-opportunity-type={opportunity.opportunityType}
               data-preview-id={opportunity.id}
               data-preview-kind="opportunity"
+              data-rule-id={opportunity.ruleTrace.ruleId}
+              data-trafscore={opportunity.trafscore}
               key={opportunity.id}
             >
               <span className="pill safe">{locale === "zh" ? "机会" : "Opportunity"}</span>

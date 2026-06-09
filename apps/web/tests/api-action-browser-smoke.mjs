@@ -423,6 +423,51 @@ async function assertImportedTaskPreviewSafetyValues(page, expectedCount, label)
   }
 }
 
+async function assertImportedOpportunityPreviewDiagnosticValues(page, expectedCount, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const diagnosticCards = importedPanel.locator("[data-opportunity-preview-safety='read_only']");
+  const actualCount = await diagnosticCards.count();
+  assert(
+    actualCount === expectedCount,
+    `${label} imported opportunity diagnostic card count mismatch: expected ${expectedCount}, got ${actualCount}`
+  );
+
+  const allowedTypes = new Set(["collection_page_gap", "high_impression_low_ctr", "ranking_push"]);
+  for (let index = 0; index < actualCount; index += 1) {
+    const card = diagnosticCards.nth(index);
+    const opportunityType = await card.getAttribute("data-opportunity-type");
+    const ruleId = await card.getAttribute("data-rule-id");
+    const confidenceText = await card.getAttribute("data-confidence");
+    const trafscoreText = await card.getAttribute("data-trafscore");
+    const href = await card.getAttribute("href");
+
+    assert(
+      typeof opportunityType === "string" && allowedTypes.has(opportunityType),
+      `${label} imported opportunity ${index} must expose a safe data-opportunity-type`
+    );
+    assert(
+      ruleId === opportunityType,
+      `${label} imported opportunity ${index} rule marker mismatch: expected ${opportunityType}, got ${ruleId ?? "missing"}`
+    );
+
+    const confidence = Number(confidenceText);
+    assert(
+      Number.isFinite(confidence) && confidence >= 0 && confidence <= 1,
+      `${label} imported opportunity ${index} must expose confidence between 0 and 1`
+    );
+
+    const trafscore = Number(trafscoreText);
+    assert(
+      Number.isFinite(trafscore) && trafscore > 0,
+      `${label} imported opportunity ${index} must expose a positive numeric data-trafscore`
+    );
+    assert(
+      href === null,
+      `${label} imported opportunity ${index} diagnostic card must not expose href navigation`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -607,6 +652,7 @@ async function runSmoke() {
       "initial"
     );
     await assertImportedTaskPreviewSafetyValues(page, 2, "initial");
+    await assertImportedOpportunityPreviewDiagnosticValues(page, 2, "initial");
 
     const resilientPage = await context.newPage();
     await resilientPage.route("**/api/stores/**", async (route) => {
