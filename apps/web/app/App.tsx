@@ -98,6 +98,7 @@ type ImportedPreviewState = {
     productSeoTasks: number;
     rankingPushOpportunities: number;
     rankingPushTasks: number;
+    newOpportunities: number;
     newTasks: number;
     recommendOnlyTasks: number;
   };
@@ -227,6 +228,7 @@ export function App() {
       productSeoTasks: 0,
       rankingPushOpportunities: 0,
       rankingPushTasks: 0,
+      newOpportunities: 0,
       newTasks: 0,
       recommendOnlyTasks: 0
     },
@@ -350,6 +352,10 @@ export function App() {
                 importedTasksResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedTasksResult.value.summary, "by_automation_level", "recommend_only")
                   : 0,
+              newOpportunities:
+                importedOpportunitiesResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_status", "new")
+                  : 0,
               newTasks:
                 importedTasksResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedTasksResult.value.summary, "by_status", "new")
@@ -404,6 +410,7 @@ export function App() {
                 productSeoTasks: 0,
                 rankingPushOpportunities: 0,
                 rankingPushTasks: 0,
+                newOpportunities: 0,
                 newTasks: 0,
                 recommendOnlyTasks: 0
               },
@@ -438,6 +445,7 @@ export function App() {
             productSeoTasks: 0,
             rankingPushOpportunities: 0,
             rankingPushTasks: 0,
+            newOpportunities: 0,
             newTasks: 0,
             recommendOnlyTasks: 0
           },
@@ -1049,6 +1057,10 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="new_task_previews">
           <span>{locale === "zh" ? "新任务预览" : "New task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.newTasks}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="new_opportunity_previews">
+          <span>{locale === "zh" ? "新机会预览" : "New opportunity previews"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.newOpportunities}</strong>
         </div>
         <div className="kv-row" data-metric-key="product_seo_opportunities">
           <span>{locale === "zh" ? "Product SEO 机会" : "Product SEO opportunities"}</span>
