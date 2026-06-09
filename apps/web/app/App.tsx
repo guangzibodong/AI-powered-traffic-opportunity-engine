@@ -932,13 +932,17 @@ function ImportedPreviewPanel({
   const visiblePages = importedPreviews.pages.slice(0, 2);
   const visibleOpportunities = importedPreviews.opportunities.slice(0, 2);
   const visibleTasks = importedPreviews.tasks.slice(0, 2);
+  const buyingGuideGapOpportunityCount = importedPreviews.summaryDiagnostics.buyingGuideGapOpportunities;
+  const buyingGuideGapOpportunityTotal = importedPreviews.opportunities.length;
+  const buyingGuideGapTaskCount = importedPreviews.summaryDiagnostics.buyingGuideGapTasks;
+  const buyingGuideGapTaskTotal = importedPreviews.tasks.length;
   const buyingGuideGapOpportunityShare = formatImportedMetricShare(
-    importedPreviews.summaryDiagnostics.buyingGuideGapOpportunities,
-    importedPreviews.opportunities.length
+    buyingGuideGapOpportunityCount,
+    buyingGuideGapOpportunityTotal
   );
   const buyingGuideGapTaskShare = formatImportedMetricShare(
-    importedPreviews.summaryDiagnostics.buyingGuideGapTasks,
-    importedPreviews.tasks.length
+    buyingGuideGapTaskCount,
+    buyingGuideGapTaskTotal
   );
   const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
   const queryRowOverflowCount = Math.max(importedPreviews.queries.length - visibleQueryRows.length, 0);
@@ -1104,11 +1108,21 @@ function ImportedPreviewPanel({
           <span>{locale === "zh" ? "购买指南缺口任务预览" : "Buying guide gap task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.buyingGuideGapTasks}</strong>
         </div>
-        <div className="kv-row" data-metric-key="buying_guide_gap_opportunity_share">
+        <div
+          className="kv-row"
+          data-metric-key="buying_guide_gap_opportunity_share"
+          data-share-count={buyingGuideGapOpportunityCount}
+          data-share-total={buyingGuideGapOpportunityTotal}
+        >
           <span>{locale === "zh" ? "购买指南缺口机会占比" : "Buying guide gap opportunity share"}</span>
           <strong>{buyingGuideGapOpportunityShare}</strong>
         </div>
-        <div className="kv-row" data-metric-key="buying_guide_gap_task_share">
+        <div
+          className="kv-row"
+          data-metric-key="buying_guide_gap_task_share"
+          data-share-count={buyingGuideGapTaskCount}
+          data-share-total={buyingGuideGapTaskTotal}
+        >
           <span>{locale === "zh" ? "购买指南缺口任务占比" : "Buying guide gap task share"}</span>
           <strong>{buyingGuideGapTaskShare}</strong>
         </div>
