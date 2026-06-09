@@ -536,6 +536,72 @@ async function assertImportedQueryClusterDiagnosticValues(page, expectedCount, l
   }
 }
 
+async function assertImportedQueryRowDiagnosticValues(page, expectedCount, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const diagnosticCards = importedPanel.locator("[data-query-row-diagnostics='imported_gsc']");
+  const actualCount = await diagnosticCards.count();
+  assert(
+    actualCount === expectedCount,
+    `${label} imported query row diagnostic card count mismatch: expected ${expectedCount}, got ${actualCount}`
+  );
+
+  for (let index = 0; index < actualCount; index += 1) {
+    const card = diagnosticCards.nth(index);
+    const query = await card.getAttribute("data-query");
+    const windowLabel = await card.getAttribute("data-window");
+    const impressionsText = await card.getAttribute("data-impressions");
+    const clicksText = await card.getAttribute("data-clicks");
+    const ctrText = await card.getAttribute("data-ctr");
+    const positionText = await card.getAttribute("data-position");
+    const evidenceCountText = await card.getAttribute("data-evidence-count");
+    const href = await card.getAttribute("href");
+    const cardText = ((await card.textContent()) ?? "").trim();
+
+    assert(
+      typeof query === "string" && query.length > 0 && cardText.includes(query),
+      `${label} imported query row ${index} must expose a visible query marker`
+    );
+    assert(
+      windowLabel === "28d" && cardText.includes("window 28d"),
+      `${label} imported query row ${index} must expose the imported GSC window marker`
+    );
+
+    const impressions = Number(impressionsText);
+    assert(
+      Number.isInteger(impressions) && impressions > 0,
+      `${label} imported query row ${index} must expose positive integer impressions`
+    );
+
+    const clicks = Number(clicksText);
+    assert(
+      Number.isInteger(clicks) && clicks > 0,
+      `${label} imported query row ${index} must expose positive integer clicks`
+    );
+
+    const ctr = Number(ctrText);
+    assert(
+      Number.isFinite(ctr) && ctr > 0 && ctr <= 1,
+      `${label} imported query row ${index} must expose CTR between 0 and 1`
+    );
+
+    const position = Number(positionText);
+    assert(
+      Number.isFinite(position) && position > 0,
+      `${label} imported query row ${index} must expose positive average position`
+    );
+
+    const evidenceCount = Number(evidenceCountText);
+    assert(
+      Number.isInteger(evidenceCount) && evidenceCount > 0,
+      `${label} imported query row ${index} must expose positive evidence count`
+    );
+    assert(
+      href === null,
+      `${label} imported query row ${index} diagnostic card must not expose href navigation`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -722,6 +788,7 @@ async function runSmoke() {
     await assertImportedTaskPreviewSafetyValues(page, 2, "initial");
     await assertImportedOpportunityPreviewDiagnosticValues(page, 2, "initial");
     await assertImportedQueryClusterDiagnosticValues(page, 2, "initial");
+    await assertImportedQueryRowDiagnosticValues(page, 2, "initial");
 
     const resilientPage = await context.newPage();
     await resilientPage.route("**/api/stores/**", async (route) => {

@@ -941,8 +941,16 @@ function ImportedPreviewPanel({
           {visibleQueryRows.map((queryRow) => (
             <article
               className="rail-item"
+              data-clicks={queryRow.clicks}
+              data-ctr={queryRow.ctr}
+              data-evidence-count={queryRow.evidence.length}
+              data-impressions={queryRow.impressions}
+              data-position={queryRow.position}
               data-preview-id={queryRow.id}
               data-preview-kind="query_row"
+              data-query={queryRow.query}
+              data-query-row-diagnostics="imported_gsc"
+              data-window={queryRow.window}
               key={queryRow.id}
             >
               <span

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only QA coverage is complete through imported query cluster DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only QA coverage is complete through imported query row metric DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -109,6 +109,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-063 | 75 | done | QA Lead / UI Systems Engineer | Expose imported task preview safety DOM diagnostics. | Browser smoke verifies imported task preview safety rows expose stable `data-task-preview-safety`, `data-automation-level`, `data-task-status`, `data-trafscore`, and `data-evidence-count` markers for recommend-only/new previews, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 | TASK-S2-QA-064 | 76 | done | QA Lead / UI Systems Engineer | Expose imported opportunity preview DOM diagnostics. | Browser smoke verifies imported opportunity preview cards expose stable `data-opportunity-preview-safety`, `data-opportunity-type`, `data-rule-id`, `data-confidence`, and `data-trafscore` markers, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-QA-065 | 77 | done | QA Lead / UI Systems Engineer | Expose imported query cluster DOM diagnostics. | Browser smoke verifies imported query cluster cards expose stable `data-query-cluster-diagnostics`, `data-primary-query`, `data-query-count`, `data-impressions`, `data-clicks`, `data-ctr`, `data-position`, and `data-top-page-count` markers, while remaining non-interactive with no href navigation, embeddings, real GSC OAuth, sync execution, drafts, publishing, task creation, or commerce writes. |
+| TASK-S2-QA-066 | 78 | done | QA Lead / UI Systems Engineer | Expose imported query row metric DOM diagnostics. | Browser smoke verifies imported query row cards expose stable `data-query-row-diagnostics`, `data-query`, `data-window`, `data-impressions`, `data-clicks`, `data-ctr`, `data-position`, and `data-evidence-count` markers, while remaining non-interactive with no href navigation, import execution, real GSC OAuth, sync execution, drafts, publishing, task creation, or commerce writes. |
 
 ## Blockers
 
@@ -260,6 +261,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported opportunity preview DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported query cluster DOM diagnostics are next because read-only cluster cards should expose stable demand metrics for QA without relying on localized metric copy alone.
 - Imported query cluster DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported query row metric DOM diagnostics are next because read-only raw query cards should expose stable row metrics for QA without relying on localized metric copy alone.
+- Imported query row metric DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 
