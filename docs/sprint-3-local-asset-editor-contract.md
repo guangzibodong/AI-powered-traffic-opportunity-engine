@@ -224,14 +224,32 @@ The backend local-only PATCH contract has a red-green test path:
 
 - Red tests define allowed local fields, unknown asset handling, forbidden external-write fields, credential rejection, raw HTML rejection, persisted list/detail reads, and continued WordPress draft `403`.
 - The green implementation updates only the in-memory local asset draft and keeps `external_write_allowed: false`.
-- Frontend client exposure and editor UI remain gated.
+- Frontend client exposure is now limited to a safe local `updateAsset` helper with request-body allowlisting and adapter external-write clamping.
+- Editor UI remains gated.
+
+## Frontend Status
+
+The frontend local asset update client has a red-green contract path:
+
+- Red tests require `updateAsset` to encode asset paths, use only `PATCH /assets/:assetId`, send JSON, and strip unsafe top-level and nested content-block fields before fetch.
+- Adapter fixtures clamp unsafe backend asset responses to `externalWriteAllowed: false` and do not expose raw href or WordPress draft ids in the safe preview.
+- The visible app still does not render editor controls, WordPress draft controls, sync controls, credential fields, href navigation, or commerce-write controls.
+
+## Browser QA Status
+
+Browser smoke now proves the asset workspace UI gate remains closed:
+
+- Asset workspace panels expose no buttons, links, forms, inputs, textareas, contenteditable regions, role buttons, role links, or href navigation.
+- Credential-like inputs are absent.
+- Save, edit, sync, connect, credential, apply, autopilot, WordPress draft creation, and publish action copy is absent from the asset panel.
+- API-mode board loading still reads the asset workspace with GET and does not issue asset PATCH requests from the visible UI.
 
 ## Next Task
 
-The next safe implementation task is frontend contract TDD:
+The next safe implementation task is editor UI contract planning:
 
 ```txt
-TASK-S3-FE-028 Add frontend asset update client contract.
+TASK-S3-PM-030 Plan structured asset editor UI contract.
 ```
 
-That task should add failing frontend API-client and adapter tests for a safe local `updateAsset` helper before exposing any editor UI.
+That task should define the first visible editor workflow, layout, copy, bilingual states, and browser gates before any editable UI is added.

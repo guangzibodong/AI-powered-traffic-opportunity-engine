@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 safe local asset update backend TDD and implementation are verified; frontend asset update client contract is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 browser QA for the asset editor UI gate is verified; structured asset editor UI contract planning is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -193,7 +193,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-PM-025 | 159 | done | Product Manager / Backend/API Engineer / QA Lead | Plan safe local asset editor contract. | Documentation defines a future local-only asset edit contract, required tests, allowed fields, and hard blocks for WordPress draft creation, publishing, credentials, sync execution, href navigation, external writes, and commerce writes before any editor code is added. |
 | TASK-S3-BE-026 | 160 | done | Backend/API Engineer / QA Lead | Add failing tests for safe local asset update contract. | Backend tests define allowed local PATCH fields, forbidden external-write fields, credential rejection, empty/non-object payload rejection, store-scoped unknown asset handling, persisted list/detail reads, and continued WordPress draft 403 behavior before runtime update code is added. |
 | TASK-S3-BE-027 | 161 | done | Backend/API Engineer / QA Lead | Implement safe local asset update contract. | `PATCH /assets/{asset_id}` updates only allowed in-memory local draft fields, rejects unknown assets, empty/non-object payloads, forbidden external-write fields, credential-like fields, invalid block types, raw HTML, and keeps WordPress draft creation, publishing, sync, live connectors, and commerce writes blocked. |
-| TASK-S3-FE-028 | 162 | todo | Frontend Product Engineer / QA Lead | Add frontend asset update client contract. | Frontend API-client and adapter tests define a safe local `updateAsset` helper with encoded paths, allowlisted body fields, external-write clamping, forbidden key exclusion, and no editor UI, WordPress draft, sync, credential, href navigation, or commerce-write controls. |
+| TASK-S3-FE-028 | 162 | done | Frontend Product Engineer / QA Lead | Add frontend asset update client contract. | Frontend API-client and adapter tests define a safe local `updateAsset` helper with encoded paths, allowlisted body fields, nested content-block allowlisting, external-write clamping, forbidden key exclusion, and no editor UI, WordPress draft, sync, credential, href navigation, or commerce-write controls. |
+| TASK-S3-QA-029 | 163 | done | Frontend Product Engineer / QA Lead | Add browser coverage for asset editor UI gate. | Browser smoke proves the visible asset workspace still has no editor controls, no credential-like inputs, no href/link navigation, no WordPress draft/publish/sync controls, and no asset PATCH requests during board loading even though the safe client helper exists. |
+| TASK-S3-PM-030 | 164 | todo | Product Manager / UI Systems Engineer / QA Lead | Plan structured asset editor UI contract. | Documentation defines the first visible local editor workflow, layout, bilingual copy, save states, unavailable states, and browser gates while keeping WordPress draft creation, publishing, sync, credentials, href navigation, and commerce writes blocked. |
 
 ## Blockers
 
@@ -512,6 +514,10 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Backend TDD for the safe local asset update contract is verified by a red asset safety run that failed on the previous global 403 gate, followed by green asset safety tests for allowed local edits, rejected external-write and credential-like fields, empty/non-object payload rejection, store isolation, invalid block/html rejection, unknown asset 404, and continued WordPress draft 403.
 - Safe local asset update backend implementation is verified by the full backend unittest suite and keeps WordPress draft creation, publishing, sync, live connector, and commerce-write paths blocked.
 - Frontend asset update client contract is next because the backend local PATCH exists but the UI and frontend client should remain gated until API-client and adapter tests prove safe request/response clamping.
+- Frontend asset update client contract is verified by red-green API-client and adapter fixtures that require encoded local PATCH calls, top-level and nested request allowlisting, unsafe backend asset response clamping, and no WordPress draft publishing helper.
+- Browser QA for the asset editor UI gate is next because the safe client helper now exists, but the visible app must remain non-editable until an editor UI contract is approved.
+- Browser QA for the asset editor UI gate is verified by smoke coverage that requires no editor controls, no credential-like inputs, no href navigation, no unsafe action copy, and no asset PATCH requests during board loading.
+- Structured asset editor UI contract planning is next because visible edit controls should be designed and gated before any UI starts calling the safe local `updateAsset` helper.
 
 ## Completion Rule
 

@@ -357,6 +357,30 @@ export type ApiAssetResponse = {
   store_id: string;
 };
 
+export type ApiAssetContentBlockUpdate = {
+  body?: string;
+  heading?: string;
+  items?: string[];
+  type: "answer_summary" | "section" | "faq" | "internal_link_suggestions" | "metadata_only" | "product_grid_notes";
+};
+
+export type ApiAssetFaqItemUpdate = {
+  answer: string;
+  question: string;
+};
+
+export type ApiAssetUpdatePayload = {
+  content_blocks?: ApiAssetContentBlockUpdate[];
+  editor_note?: string;
+  faq_items?: ApiAssetFaqItemUpdate[];
+  internal_links?: string[];
+  meta_description?: string;
+  meta_title?: string;
+  schema_json?: Record<string, unknown>;
+  slug?: string;
+  title?: string;
+};
+
 declare global {
   interface ImportMetaEnv {
     readonly VITE_API_BASE_URL?: string;
@@ -476,6 +500,22 @@ export async function createAssetFromTask(storeId: string, taskId: string, apiBa
   });
 }
 
+export async function updateAsset(
+  storeId: string,
+  assetId: string,
+  payload: ApiAssetUpdatePayload,
+  apiBaseUrl = getApiBaseUrl()
+) {
+  const encodedAssetId = encodeURIComponent(assetId);
+  return fetchJson<ApiAssetResponse>(`${storeApiPath(apiBaseUrl, storeId)}/assets/${encodedAssetId}`, {
+    body: JSON.stringify(sanitizeAssetUpdatePayload(payload)),
+    headers: {
+      "Content-Type": "application/json"
+    },
+    method: "PATCH"
+  });
+}
+
 export async function updateTaskStatus(
   storeId: string,
   taskId: string,
@@ -502,4 +542,46 @@ async function fetchJson<TResponse>(url: string, init?: RequestInit): Promise<TR
     throw new Error(`TrafScope API request failed: ${response.status}`);
   }
   return response.json() as Promise<TResponse>;
+}
+
+function sanitizeAssetUpdatePayload(payload: ApiAssetUpdatePayload): ApiAssetUpdatePayload {
+  const safePayload: ApiAssetUpdatePayload = {};
+  const unsafePayload = payload as Record<string, unknown>;
+
+  if (Object.prototype.hasOwnProperty.call(unsafePayload, "title")) safePayload.title = payload.title;
+  if (Object.prototype.hasOwnProperty.call(unsafePayload, "slug")) safePayload.slug = payload.slug;
+  if (Object.prototype.hasOwnProperty.call(unsafePayload, "meta_title")) safePayload.meta_title = payload.meta_title;
+  if (Object.prototype.hasOwnProperty.call(unsafePayload, "meta_description")) {
+    safePayload.meta_description = payload.meta_description;
+  }
+  if (Object.prototype.hasOwnProperty.call(unsafePayload, "content_blocks")) {
+    safePayload.content_blocks = sanitizeAssetContentBlocks(payload.content_blocks);
+  }
+  if (Object.prototype.hasOwnProperty.call(unsafePayload, "faq_items")) {
+    safePayload.faq_items = sanitizeAssetFaqItems(payload.faq_items);
+  }
+  if (Object.prototype.hasOwnProperty.call(unsafePayload, "schema_json")) safePayload.schema_json = payload.schema_json;
+  if (Object.prototype.hasOwnProperty.call(unsafePayload, "internal_links")) safePayload.internal_links = payload.internal_links;
+  if (Object.prototype.hasOwnProperty.call(unsafePayload, "editor_note")) safePayload.editor_note = payload.editor_note;
+
+  return safePayload;
+}
+
+function sanitizeAssetContentBlocks(
+  contentBlocks: ApiAssetUpdatePayload["content_blocks"]
+): ApiAssetUpdatePayload["content_blocks"] {
+  return contentBlocks?.map((block) => {
+    const safeBlock: ApiAssetContentBlockUpdate = { type: block.type };
+    if (Object.prototype.hasOwnProperty.call(block, "heading")) safeBlock.heading = block.heading;
+    if (Object.prototype.hasOwnProperty.call(block, "body")) safeBlock.body = block.body;
+    if (Object.prototype.hasOwnProperty.call(block, "items")) safeBlock.items = block.items;
+    return safeBlock;
+  });
+}
+
+function sanitizeAssetFaqItems(faqItems: ApiAssetUpdatePayload["faq_items"]): ApiAssetUpdatePayload["faq_items"] {
+  return faqItems?.map((item) => ({
+    answer: item.answer,
+    question: item.question
+  }));
 }

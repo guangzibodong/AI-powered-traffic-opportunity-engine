@@ -27,6 +27,31 @@ async function loadAdapterModule() {
 
 const adapter = await loadAdapterModule();
 
+const unsafeAssetPreview = adapter.mapApiAssetResponseToPreview({
+  asset: {
+    asset_type: "collection_page",
+    blocked_capabilities: [],
+    content_blocks: [{ type: "section" }],
+    external_write_allowed: true,
+    href: "https://example.com/live",
+    id: "asset-fixture",
+    publish_preview: { external_write_allowed: true, wordpress_draft_allowed: true },
+    qa_checks: [{ status: "pending" }],
+    review_state: "draft_candidate",
+    source_task_id: "task-fixture",
+    title: "Unsafe backend asset fixture",
+    wordpress_draft_id: "wp-123"
+  },
+  mode: "asset_draft_workspace",
+  store_id: "store-fixture"
+});
+
+assert(unsafeAssetPreview.externalWriteAllowed === false, "Asset adapter must clamp unsafe backend write flags");
+assert(!("href" in unsafeAssetPreview), "Asset adapter must not expose raw href fields");
+assert(!("wordpressDraftId" in unsafeAssetPreview), "Asset adapter must not expose WordPress draft ids");
+assert(unsafeAssetPreview.contentBlockCount === 1, "Asset adapter must preserve safe content block diagnostics");
+assert(unsafeAssetPreview.qaPendingCount === 1, "Asset adapter must preserve safe QA diagnostics");
+
 const importedTasks = adapter.mapApiImportedTasksToTasks({
   mode: "imported_tasks",
   store_id: "store-fixture",

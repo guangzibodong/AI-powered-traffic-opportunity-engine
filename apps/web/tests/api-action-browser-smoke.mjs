@@ -249,6 +249,7 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
   ].join(", ");
   const interactiveCount = await assetPanel.locator(interactiveSelector).count();
   assert(interactiveCount === 0, `${label} asset workspace panel must not render interactive controls`);
+  await assertAssetEditorUiGate(assetPanel, label);
 
   const assetPanelText = ((await assetPanel.textContent()) ?? "").toLowerCase();
   for (const forbidden of ["connect", "credential", "oauth", "woocommerce write"]) {
@@ -329,6 +330,58 @@ async function assertAssetWorkspacePanelUnavailable(page, label) {
     `${label} unavailable asset workspace must clamp external writes to false, got ${externalWriteAllowed ?? "missing"}`
   );
   await expectVisible(page.getByText("Asset workspace unavailable"), `${label} unavailable asset copy`);
+  await assertAssetEditorUiGate(assetPanel, label);
+}
+
+async function assertAssetEditorUiGate(assetPanel, label) {
+  const editorControlSelector = [
+    "button",
+    "a",
+    "form",
+    "input",
+    "select",
+    "textarea",
+    "[contenteditable='true']",
+    "[href]",
+    "[role='button']",
+    "[role='link']"
+  ].join(", ");
+  const editorControlCount = await assetPanel.locator(editorControlSelector).count();
+  assert(editorControlCount === 0, `${label} asset editor gate must expose no controls or navigation`);
+
+  const credentialInputSelector = [
+    "input[type='password']",
+    "input[name*='token' i]",
+    "input[name*='secret' i]",
+    "input[name*='api' i]",
+    "input[name*='oauth' i]",
+    "input[name*='credential' i]",
+    "input[placeholder*='token' i]",
+    "input[placeholder*='secret' i]",
+    "input[placeholder*='api' i]",
+    "input[placeholder*='oauth' i]",
+    "input[placeholder*='credential' i]"
+  ].join(", ");
+  const credentialInputCount = await assetPanel.locator(credentialInputSelector).count();
+  assert(credentialInputCount === 0, `${label} asset editor gate must expose no credential-like inputs`);
+
+  const panelText = ((await assetPanel.textContent()) ?? "").toLowerCase();
+  const forbiddenActionCopy = [
+    /\bsave\b/,
+    /\bsync\b/,
+    /\bconnect\b/,
+    /\boauth\b/,
+    /\bcredential\b/,
+    /\bapply\b/,
+    /\bautopilot\b/,
+    /\bedit asset\b/,
+    /\bopen editor\b/,
+    /\bcreate wordpress draft\b/,
+    /\bpublish\b/
+  ];
+  for (const pattern of forbiddenActionCopy) {
+    assert(!pattern.test(panelText), `${label} asset editor gate exposes unsafe action copy: ${pattern}`);
+  }
 }
 
 async function assertTrackedAssetMetricReconciles(page, expectedDraftCount, label) {

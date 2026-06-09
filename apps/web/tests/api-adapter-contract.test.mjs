@@ -21,6 +21,13 @@ function readExportedFunction(content, name) {
   return content.slice(start, next === -1 ? content.length : next);
 }
 
+function readExportedType(content, name) {
+  const start = content.indexOf(`export type ${name} = {`);
+  assert(start >= 0, `Missing exported type: ${name}`);
+  const next = content.indexOf("\nexport type", start + 1);
+  return content.slice(start, next === -1 ? content.length : next);
+}
+
 const adapter = read("lib/view-model-adapters.ts");
 const apiClient = read("lib/api-client.ts");
 const app = read("app/App.tsx");
@@ -60,6 +67,14 @@ assert(adapter.includes("mapApiAssetWorkspaceToPreviews"), "adapter must expose 
 assert(adapter.includes("mapApiAssetResponseToPreview"), "adapter must expose asset detail DTO conversion");
 assert(adapter.includes("externalWriteAllowed: false"), "asset adapter must clamp external write state to false");
 assert(adapter.includes("blocked_capabilities"), "asset adapter must preserve blocked capability context");
+const assetDraftPreviewType = readExportedType(types, "AssetDraftPreview");
+assert(assetDraftPreviewType.includes("externalWriteAllowed: false"), "Asset draft preview must keep external write as literal false");
+for (const forbiddenAssetPreviewField of ["href", "publish", "sync", "credential", "commerce", "wordpressDraft"]) {
+  assert(
+    !assetDraftPreviewType.toLowerCase().includes(forbiddenAssetPreviewField.toLowerCase()),
+    `Asset draft preview must not expose ${forbiddenAssetPreviewField}`
+  );
+}
 assert(types.includes('"product_seo"'), "frontend task categories and rule ids must preserve imported product_seo previews");
 assert(adapter.includes('"product_seo"'), "imported opportunity adapter must preserve product_seo rule ids");
 assert(adapter.includes('category === "product_seo"'), "imported task adapter must preserve product_seo categories");
@@ -117,6 +132,7 @@ assert(apiClient.includes("ApiImportedOpportunityResponse"), "API client must ty
 assert(apiClient.includes("ApiImportedTasksResponse"), "API client must type imported task preview responses");
 assert(apiClient.includes("ApiImportedTaskResponse"), "API client must type imported task preview detail responses");
 assert(apiClient.includes("ApiAssetDraft"), "API client must type asset draft records");
+assert(apiClient.includes("ApiAssetUpdatePayload"), "API client must type safe local asset update payloads");
 assert(apiClient.includes("ApiAssetWorkspaceResponse"), "API client must type asset workspace list responses");
 assert(apiClient.includes("ApiAssetResponse"), "API client must type asset detail and creation responses");
 assert(apiClient.includes("getIntegrations"), "API client must expose integration status reads");
@@ -139,7 +155,13 @@ assert(apiClient.includes("getAssets"), "API client must expose asset workspace 
 assert(apiClient.includes("getAsset"), "API client must expose asset detail reads");
 assert(apiClient.includes("createAssetFromTask"), "API client must expose local asset creation from approved tasks");
 assert(!apiClient.includes("publishWordpressDraft"), "API client must not expose WordPress draft publishing");
-assert(!apiClient.includes("updateAsset"), "API client must not expose asset mutation before QA gates");
+assert(apiClient.includes("updateAsset"), "API client must expose safe local asset mutation after backend QA gates");
+const assetUpdateClient = readExportedFunction(apiClient, "updateAsset");
+assert(assetUpdateClient.includes("encodeURIComponent(assetId)"), "Asset update client must encode asset path segments");
+assert(assetUpdateClient.includes("/assets/${encodedAssetId}"), "Asset update client must target the encoded local asset id");
+assert(assetUpdateClient.includes('method: "PATCH"'), "Asset update client must use PATCH");
+assert(assetUpdateClient.includes("sanitizeAssetUpdatePayload(payload)"), "Asset update client must sanitize update payloads");
+assert(!assetUpdateClient.includes("publish-wordpress-draft"), "Asset update client must not target WordPress draft publishing");
 assert(apiClient.includes("/imported-tasks"), "Imported task client must target the read-only imported task endpoint");
 for (const importedReadFunction of ["getImportedGraph", "getImportedQueries", "getImportedQuery", "getImportedProducts", "getImportedProduct", "getImportedPages", "getImportedPage", "getImportedQueryClusters", "getImportedQueryCluster", "getImportedOpportunities", "getImportedOpportunity", "getImportedTasks", "getImportedTask"]) {
   const functionBody = readExportedFunction(apiClient, importedReadFunction);
