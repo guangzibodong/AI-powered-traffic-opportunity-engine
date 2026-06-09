@@ -1366,7 +1366,7 @@ async function runSmoke() {
     );
     await assertImportedPreviewSectionHealthSummary(
       emptyImportedPage,
-      { available: 0, empty: 6, state: "ready", unavailable: 0 },
+      { available: 0, empty: 6, state: "empty", unavailable: 0 },
       "empty imported"
     );
     await assertImportedPreviewSectionHealth(

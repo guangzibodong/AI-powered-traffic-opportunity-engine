@@ -853,7 +853,8 @@ function ImportedPreviewPanel({
   const availableRailSectionCount = sectionHealthRows.filter((section) => section.state === "available").length;
   const emptyRailSectionCount = sectionHealthRows.filter((section) => section.state === "empty").length;
   const unavailableRailSectionCount = sectionHealthRows.filter((section) => section.state === "unavailable").length;
-  const sectionHealthSummaryState = unavailableRailSectionCount > 0 ? "degraded" : "ready";
+  const sectionHealthSummaryState =
+    unavailableRailSectionCount > 0 ? "degraded" : emptyRailSectionCount === importedSectionCount ? "empty" : "ready";
   const sectionCountsReconciled =
     availableRailSectionCount + emptyRailSectionCount + unavailableRailSectionCount === importedSectionCount;
   const hasImportedPreviews =

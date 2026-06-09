@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only UX coverage is complete through imported preview section health empty-count aggregate diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only UX coverage is complete through imported preview section health empty-only summary state diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -122,6 +122,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-UX-076 | 88 | done | Product Manager / Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only imported preview section health aggregate summary. | The imported preview panel renders a compact text-only aggregate summary with stable `data-section-health-summary`, `data-section-health-available`, and `data-section-health-unavailable` markers for available/degraded imported sections across ready, empty, and partial-failure states, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-UX-077 | 89 | done | Product Manager / Frontend Product Engineer / UI Systems Engineer / QA Lead | Distinguish empty imported preview section health states. | Imported preview section health rows render stable `data-section-health-state="empty"` when a read-only imported section succeeds with zero records, while failed sections remain `unavailable`, populated sections remain `available`, and the panel exposes no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-UX-078 | 90 | done | Product Manager / Frontend Product Engineer / UI Systems Engineer / QA Lead | Add imported preview section health empty-count aggregate. | Imported preview panel and section health summary expose stable `data-empty-section-count` and `data-section-health-empty` markers plus compact visible empty-section copy, so populated, empty, and unavailable imported sections reconcile without adding href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
+| TASK-S2-UX-079 | 91 | done | Product Manager / Frontend Product Engineer / UI Systems Engineer / QA Lead | Add imported preview section health empty-only summary state. | Imported preview section health summary renders stable `data-section-health-summary="empty"` when every read-only imported section succeeds with zero records, while populated reads remain `ready`, failed reads remain `degraded`, and no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes are added. |
 
 ## Blockers
 
@@ -299,6 +300,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported preview empty section health states are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported preview section health empty-count aggregate is next because the summary should reconcile populated, empty, and unavailable imported sections instead of collapsing empty reads into available counts.
 - Imported preview section health empty-count aggregate is verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported preview section health empty-only summary state is next because all-empty read-only imports need a stable state distinct from populated ready imports.
+- Imported preview section health empty-only summary state is verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 
