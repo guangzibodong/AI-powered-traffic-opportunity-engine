@@ -986,15 +986,14 @@ function DataHealthPanel({ integrations, locale, t }: SharedProps & { integratio
 
 function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspaceState }) {
   const visibleAssets = assetWorkspace.assets.slice(0, 2);
-  const blockedCapability = assetWorkspace.blockedCapabilities.includes("wordpress_draft_creation")
-    ? "wordpress_draft_creation"
-    : assetWorkspace.blockedCapabilities[0] ?? "external_writes_disabled";
+  const blockedCapabilities =
+    assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   return (
     <section
       className="panel asset-workspace-panel"
       data-asset-draft-count={assetWorkspace.assets.length}
       data-asset-workspace-availability={assetWorkspace.availability}
-      data-blocked-capability-count={assetWorkspace.blockedCapabilities.length}
+      data-blocked-capability-count={blockedCapabilities.length}
       data-external-write-allowed="false"
     >
       <div className="panel-heading">
@@ -1014,8 +1013,8 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
           <strong>false</strong>
         </div>
         <div className="kv-row">
-          <span>Blocked capability</span>
-          <strong>{blockedCapability}</strong>
+          <span>Blocked capabilities</span>
+          <strong>{blockedCapabilities.join(" / ")}</strong>
         </div>
       </div>
       {visibleAssets.length > 0 ? (

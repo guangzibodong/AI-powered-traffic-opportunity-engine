@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 tracked asset metric reconciliation is verified and asset workspace blocked capability diagnostics are queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 asset workspace blocked capability diagnostics are verified and asset workspace overflow indicators are queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -173,7 +173,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-005 | 139 | done | Frontend Product Engineer / QA Lead | Add populated asset workspace browser coverage. | Browser smoke verifies a populated safe asset workspace response renders local asset candidate rows, stable counts, blocked capability context, and no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
 | TASK-S3-UX-006 | 140 | done | Frontend Product Engineer / QA Lead | Make asset workspace loading resilient. | If the safe asset workspace read fails, the API-backed board and imported preview UI remain usable, the asset panel shows a read-only unavailable state, and no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls are exposed. |
 | TASK-S3-QA-007 | 141 | done | Frontend Product Engineer / QA Lead | Add tracked asset metric reconciliation coverage. | Browser smoke verifies the board tracked-assets metric reconciles with the safe asset workspace count for empty, populated, and unavailable asset workspace states without adding asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
-| TASK-S3-QA-008 | 142 | todo | Frontend Product Engineer / QA Lead | Add asset workspace blocked capability diagnostics. | Browser smoke verifies the asset workspace blocked capability count and visible blocked capability context reconcile across empty, populated, and unavailable states without adding asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
+| TASK-S3-QA-008 | 142 | done | Frontend Product Engineer / QA Lead | Add asset workspace blocked capability diagnostics. | Browser smoke verifies the asset workspace blocked capability count and visible blocked capability context reconcile across empty, populated, and unavailable states without adding asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
+| TASK-S3-UX-009 | 143 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset workspace overflow indicators. | When more local asset candidates exist than the compact preview rail displays, the asset workspace shows a read-only overflow count without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -453,6 +454,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Tracked asset metric reconciliation is next because the top-level board metric should agree with the safe asset workspace count before an asset editor is introduced.
 - Tracked asset metric reconciliation is verified by browser smoke coverage that reconciles the top-level tracked asset metric with the safe asset workspace draft count across empty, populated, and unavailable states.
 - Asset workspace blocked capability diagnostics are next because QA should prove the panel keeps future WordPress draft, publishing, and commerce-write boundaries visible before an asset editor is introduced.
+- Asset workspace blocked capability diagnostics are verified by browser smoke coverage that reconciles blocked capability count and visible blocked capability context across empty, populated, and unavailable states.
+- Asset workspace overflow indicators are next because the compact local asset rail should reveal hidden candidates without introducing editor, draft, publishing, or write controls.
 
 ## Completion Rule
 

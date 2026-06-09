@@ -251,7 +251,7 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
   assert(interactiveCount === 0, `${label} asset workspace panel must not render interactive controls`);
 
   const assetPanelText = ((await assetPanel.textContent()) ?? "").toLowerCase();
-  for (const forbidden of ["publish", "connect", "credential", "oauth", "woocommerce write"]) {
+  for (const forbidden of ["connect", "credential", "oauth", "woocommerce write"]) {
     assert(!assetPanelText.includes(forbidden), `${label} asset workspace exposes unsafe copy: ${forbidden}`);
   }
 
@@ -319,6 +319,26 @@ async function assertTrackedAssetMetricReconciles(page, expectedDraftCount, labe
     visibleValue === String(panelDraftCount),
     `${label} tracked asset visible metric mismatch: expected ${panelDraftCount}, got ${visibleValue || "missing"}`
   );
+}
+
+async function assertAssetWorkspaceBlockedCapabilities(page, expectedCapabilities, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for blocked capability diagnostics`);
+  const blockedCountText = await assetPanel.getAttribute("data-blocked-capability-count");
+  const blockedCount = Number(blockedCountText);
+  assert(
+    Number.isInteger(blockedCount) && blockedCount === expectedCapabilities.length,
+    `${label} blocked capability count mismatch: expected ${expectedCapabilities.length}, got ${
+      blockedCountText ?? "missing"
+    }`
+  );
+  const panelText = (await assetPanel.textContent()) ?? "";
+  for (const capability of expectedCapabilities) {
+    assert(
+      panelText.includes(capability),
+      `${label} asset workspace missing visible blocked capability context: ${capability}`
+    );
+  }
 }
 
 async function assertImportedPreviewState(page, expectedAvailability, expectedWarningCount, label) {
@@ -1496,6 +1516,11 @@ async function runSmoke() {
     await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
     await assertAssetWorkspacePanelIsReadOnly(page, 0, "initial");
     await assertTrackedAssetMetricReconciles(page, 0, "initial");
+    await assertAssetWorkspaceBlockedCapabilities(
+      page,
+      ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+      "initial"
+    );
 
     for (const target of ["/imported-graph", "/queries", "/products", "/pages", "/imported-opportunities", "/imported-tasks"]) {
       assert(
@@ -1562,6 +1587,11 @@ async function runSmoke() {
       }
     ]);
     await assertTrackedAssetMetricReconciles(populatedAssetPage, 1, "populated asset workspace");
+    await assertAssetWorkspaceBlockedCapabilities(
+      populatedAssetPage,
+      ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+      "populated asset workspace"
+    );
     await populatedAssetPage.close();
 
     const assetFailurePage = await context.newPage();
@@ -1579,6 +1609,7 @@ async function runSmoke() {
     await expectVisible(assetFailurePage.getByText("read-only imported previews"), "asset failure imported preview remains available");
     await assertAssetWorkspacePanelUnavailable(assetFailurePage, "asset-only failure");
     await assertTrackedAssetMetricReconciles(assetFailurePage, 0, "asset-only failure");
+    await assertAssetWorkspaceBlockedCapabilities(assetFailurePage, ["asset_workspace_unavailable"], "asset-only failure");
     await assetFailurePage.close();
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
