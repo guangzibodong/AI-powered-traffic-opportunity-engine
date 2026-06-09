@@ -6,6 +6,17 @@ from app.services.scoring import ScoreComponents, calculate_trafscore
 
 
 RULE_VERSION = 1
+BUYING_GUIDE_INTENT_TERMS = {
+    "best",
+    "compare",
+    "comparison",
+    "guide",
+    "review",
+    "reviews",
+    "top",
+    "versus",
+    "vs",
+}
 
 
 def generate_imported_opportunities(store_id: str) -> dict[str, Any]:
@@ -43,6 +54,8 @@ def _opportunities_for_cluster(store_id: str, cluster: dict[str, Any]) -> list[d
         opportunities.append(_build_ctr_refresh_opportunity(store_id, cluster))
     if _is_ranking_push_candidate(cluster):
         opportunities.append(_build_ranking_push_opportunity(store_id, cluster))
+    if _is_buying_guide_gap_candidate(cluster):
+        opportunities.append(_build_buying_guide_gap_opportunity(store_id, cluster))
     if _is_collection_gap_candidate(cluster):
         opportunities.append(_build_collection_gap_opportunity(store_id, cluster))
     if _is_product_seo_candidate(cluster):
@@ -69,21 +82,47 @@ def _is_ranking_push_candidate(cluster: dict[str, Any]) -> bool:
 
 
 def _is_collection_gap_candidate(cluster: dict[str, Any]) -> bool:
-    return cluster["best_existing_page"] is None and len(cluster["matched_products"]) >= 3
+    return (
+        cluster["best_existing_page"] is None
+        and not _has_buying_guide_intent(cluster)
+        and len(cluster["matched_products"]) >= 3
+    )
 
 
 def _is_product_seo_candidate(cluster: dict[str, Any]) -> bool:
-    matched_products = [
-        product
-        for product in cluster["matched_products"]
-        if product["in_stock"] and product["status"] == "publish"
-    ]
+    matched_products = _eligible_products(cluster)
     return (
         cluster["best_existing_page"] is None
+        and not _has_buying_guide_intent(cluster)
         and 1 <= len(matched_products) <= 2
         and cluster["impressions"] >= 800
         and cluster["position"] <= 20
     )
+
+
+def _is_buying_guide_gap_candidate(cluster: dict[str, Any]) -> bool:
+    matched_products = _eligible_products(cluster)
+    return (
+        cluster["best_existing_page"] is None
+        and _has_buying_guide_intent(cluster)
+        and len(matched_products) >= 2
+        and cluster["impressions"] >= 800
+        and cluster["position"] <= 20
+    )
+
+
+def _eligible_products(cluster: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        product
+        for product in cluster["matched_products"]
+        if product["in_stock"] and product["status"] == "publish"
+    ]
+
+
+def _has_buying_guide_intent(cluster: dict[str, Any]) -> bool:
+    text = " ".join([cluster["primary_query"], *cluster["queries"]]).casefold()
+    tokens = set("".join(character if character.isalnum() else " " for character in text).split())
+    return bool(tokens.intersection(BUYING_GUIDE_INTENT_TERMS))
 
 
 def _build_ctr_refresh_opportunity(store_id: str, cluster: dict[str, Any]) -> dict[str, Any]:
@@ -245,11 +284,7 @@ def _build_collection_gap_opportunity(store_id: str, cluster: dict[str, Any]) ->
 
 
 def _build_product_seo_opportunity(store_id: str, cluster: dict[str, Any]) -> dict[str, Any]:
-    matched_products = [
-        product
-        for product in cluster["matched_products"]
-        if product["in_stock"] and product["status"] == "publish"
-    ][:2]
+    matched_products = _eligible_products(cluster)[:2]
     score_components = {
         "traffic_potential": min(100, cluster["impressions"] / 18),
         "intent_score": 82,
@@ -303,6 +338,68 @@ def _build_product_seo_opportunity(store_id: str, cluster: dict[str, Any]) -> di
         "status": "new",
         "summary": "Imported demand maps to a specific product, but no imported WordPress page matches it.",
         "title": f"Optimize product SEO for {primary_product['name']}",
+        "trafscore": _score(score_components),
+    }
+
+
+def _build_buying_guide_gap_opportunity(store_id: str, cluster: dict[str, Any]) -> dict[str, Any]:
+    matched_products = _eligible_products(cluster)[:5]
+    best_match_score = max(product["match_score"] for product in matched_products)
+    score_components = {
+        "traffic_potential": min(100, cluster["impressions"] / 16),
+        "intent_score": 92,
+        "product_fit_score": best_match_score,
+        "revenue_fit_score": 76,
+        "inventory_score": 90,
+        "gap_score": 92,
+        "timing_score": 78,
+        "execution_ease": 72,
+        "confidence_score": 80,
+    }
+    dedupe_key = f"{store_id}:imported:buying_guide_gap:{cluster['cluster_key']}"
+    return {
+        "confidence": 0.8,
+        "dedupe_key": dedupe_key,
+        "evidence": [
+            {
+                "type": "buying_guide_intent",
+                "text": f"{cluster['primary_query']} shows commercial investigation intent",
+                "metrics": {
+                    "cluster_key": cluster["cluster_key"],
+                    "impressions": cluster["impressions"],
+                    "position": cluster["position"],
+                    "primary_query": cluster["primary_query"],
+                    "query_count": cluster["query_count"],
+                },
+            },
+            {
+                "type": "product_fit",
+                "text": f"{len(matched_products)} imported products can support a buying guide",
+                "entityRefs": [
+                    {"type": "product", "id": product["product_id"]} for product in matched_products
+                ],
+                "metrics": {
+                    "matched_products": len(matched_products),
+                    "top_match_score": best_match_score,
+                },
+            },
+            {
+                "type": "page_gap",
+                "text": "No imported WordPress page matches this buying guide query cluster.",
+            },
+        ],
+        "id": _opportunity_id(dedupe_key),
+        "opportunity_type": "buying_guide_gap",
+        "recommended_task_type": "buying_guide",
+        "related_page": None,
+        "related_products": matched_products,
+        "rule_id": "buying_guide_gap",
+        "rule_version": RULE_VERSION,
+        "score_components": score_components,
+        "source_cluster": _source_cluster(cluster),
+        "status": "new",
+        "summary": "Imported demand shows buying-guide intent across multiple products, but no matching WordPress page exists.",
+        "title": f"Create buying guide for {cluster['primary_query'].title()}",
         "trafscore": _score(score_components),
     }
 

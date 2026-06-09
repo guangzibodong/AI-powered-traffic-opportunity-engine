@@ -254,8 +254,8 @@ Must show:
 
 | Rule | Timing | Notes |
 |---|---|---|
-| `product_seo` | Sprint 2 | Needs real WooCommerce product data. |
-| `buying_guide_gap` | Sprint 2/3 | Needs reliable intent and product graph. |
+| `product_seo` | Sprint 2 | Needs real WooCommerce product data and excludes buying-guide intent. |
+| `buying_guide_gap` | Sprint 2 | Local/import-only preview rule uses commercial investigation intent plus imported product graph; later sprints can add draft workflows. |
 | `comparison_page_gap` | Later | Requires source controls and competitor fact safety. |
 | `ai_citation_gap` | Later | Not MVP monitoring. Citation readiness lives in QA. |
 
@@ -403,4 +403,3 @@ MVP cannot be called ready unless:
 - Secrets are not exposed in responses, logs, snapshots, frontend state, or screenshots.
 - Write actions create audit logs.
 - WordPress publish path forces `status=draft`.
-

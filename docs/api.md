@@ -260,8 +260,9 @@ Current imported preview rules:
 
 - `high_impression_low_ctr`: imported cluster has an indexable existing page, at least 1,000 impressions, CTR at or below 3%, and average position of 20 or better.
 - `ranking_push`: imported cluster has an indexable existing page, at least 800 impressions, CTR above 3%, and average position from 4 through 20.
-- `collection_page_gap`: imported cluster has no best existing page and at least three matched imported products.
-- `product_seo`: imported cluster has no best existing page, maps to one or two in-stock published imported products, has at least 800 impressions, and average position of 20 or better.
+- `buying_guide_gap`: imported cluster has no best existing page, commercial investigation intent such as "best", "guide", "review", or "compare", at least two in-stock published imported products, at least 800 impressions, and average position of 20 or better.
+- `collection_page_gap`: imported cluster has no best existing page, no buying-guide intent, and at least three matched imported products.
+- `product_seo`: imported cluster has no best existing page, no buying-guide intent, maps to one or two in-stock published imported products, has at least 800 impressions, and average position of 20 or better.
 
 This endpoint is read-only. It does not create tasks, assets, WordPress drafts, WooCommerce changes, or external sync jobs.
 

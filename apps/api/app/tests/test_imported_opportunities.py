@@ -81,6 +81,31 @@ PRODUCT_SEO_PRODUCTS = [
     }
 ]
 
+BUYING_GUIDE_GSC_CSV = """Query,Page,Clicks,Impressions,CTR,Position
+best camping coffee maker,https://example.com/search/best-camping-coffee-maker,30,1500,2.0%,7.9
+"""
+
+BUYING_GUIDE_PRODUCTS = [
+    {
+        "id": 501,
+        "name": "Summit Camping Coffee Maker",
+        "slug": "summit-camping-coffee-maker",
+        "status": "publish",
+        "stock_status": "instock",
+        "categories": [{"name": "Camping Coffee"}],
+        "attributes": [{"name": "Use case", "options": ["Camping", "Coffee", "Maker"]}],
+    },
+    {
+        "id": 502,
+        "name": "Trail Camping Coffee Maker Kit",
+        "slug": "trail-camping-coffee-maker-kit",
+        "status": "publish",
+        "stock_status": "instock",
+        "categories": [{"name": "Camping Coffee"}],
+        "attributes": [{"name": "Use case", "options": ["Camping", "Coffee", "Maker"]}],
+    },
+]
+
 CTR_PAGES = [
     {
         "id": 301,
@@ -207,6 +232,32 @@ class ImportedOpportunityServiceTests(unittest.TestCase):
         self.assertTrue(any(item["type"] == "page_gap" for item in opportunities[0]["evidence"]))
         self.assertEqual(payload["summary"]["by_rule"]["product_seo"], 1)
         self.assertEqual(payload["summary"]["by_task_type"]["product_seo"], 1)
+
+    def test_imported_opportunities_generate_buying_guide_gap_for_commercial_investigation_cluster(self):
+        from app.services.gsc_ingestion_service import import_gsc_csv
+        from app.services.imported_opportunity_service import generate_imported_opportunities
+        from app.services.product_sync_service import import_woocommerce_products
+
+        import_gsc_csv("store-demo-outdoor-coffee", BUYING_GUIDE_GSC_CSV, window="28d")
+        import_woocommerce_products("store-demo-outdoor-coffee", BUYING_GUIDE_PRODUCTS)
+
+        payload = generate_imported_opportunities("store-demo-outdoor-coffee")
+        opportunities = payload["opportunities"]
+
+        self.assertEqual(len(opportunities), 1)
+        self.assertEqual(opportunities[0]["rule_id"], "buying_guide_gap")
+        self.assertEqual(opportunities[0]["opportunity_type"], "buying_guide_gap")
+        self.assertEqual(opportunities[0]["recommended_task_type"], "buying_guide")
+        self.assertEqual(opportunities[0]["status"], "new")
+        self.assertIsNone(opportunities[0]["related_page"])
+        self.assertEqual(len(opportunities[0]["related_products"]), 2)
+        self.assertTrue(opportunities[0]["dedupe_key"].startswith("store-demo-outdoor-coffee:imported:buying_guide_gap:"))
+        self.assertTrue(any(item["type"] == "buying_guide_intent" for item in opportunities[0]["evidence"]))
+        self.assertTrue(any(item["type"] == "product_fit" for item in opportunities[0]["evidence"]))
+        self.assertTrue(any(item["type"] == "page_gap" for item in opportunities[0]["evidence"]))
+        self.assertEqual(payload["summary"]["by_rule"]["buying_guide_gap"], 1)
+        self.assertEqual(payload["summary"]["by_status"]["new"], 1)
+        self.assertEqual(payload["summary"]["by_task_type"]["buying_guide"], 1)
 
     def test_imported_opportunities_return_empty_state_without_graph_inputs(self):
         from app.services.imported_opportunity_service import generate_imported_opportunities

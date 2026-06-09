@@ -164,13 +164,14 @@ Sprint 2 imported preview frontend DTOs prepare the UI for imported-data review 
 
 ## Sprint 1 Opportunity Rules
 
-Sprint 1 exposes only three user-visible rule types.
+The current local/imported opportunity layer exposes these rule types:
 
 | Rule ID | Trigger logic | Output |
 |---|---|---|
-| `collection_page_gap` | Query cluster has no best existing page and at least 3 matched products. | A collection page task. |
+| `collection_page_gap` | Query cluster has no best existing page, no buying-guide intent, and at least 3 matched products. | A collection page task. |
 | `high_impression_low_ctr` | Existing page exists, impressions are at least 1,000, CTR is 3% or lower, and average position is 20 or better. | A CTR refresh task. |
-| `product_seo` | Imported cluster has no best existing page and 1-2 in-stock published matched products. | A product SEO task preview in Sprint 2 imported mode. |
+| `buying_guide_gap` | Imported cluster has no best existing page, commercial investigation intent, and at least 2 in-stock published matched products. | A buying guide opportunity preview in Sprint 2 imported mode. |
+| `product_seo` | Imported cluster has no best existing page, no buying-guide intent, and 1-2 in-stock published matched products. | A product SEO task preview in Sprint 2 imported mode. |
 | `ranking_push` | Existing page exists, average position is 4-20, impressions are at least 800, and CTR is above 3%. | A ranking push task. |
 
 Each opportunity receives:
