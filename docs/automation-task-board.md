@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset workspace resilience is verified and tracked asset metric reconciliation is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 tracked asset metric reconciliation is verified and asset workspace blocked capability diagnostics are queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -172,7 +172,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-ASSET-004 | 138 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show read-only asset workspace summary in API mode. | API-backed UI reads the safe asset workspace, shows local draft count and blocked write context in a read-only panel, and exposes no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
 | TASK-S3-QA-005 | 139 | done | Frontend Product Engineer / QA Lead | Add populated asset workspace browser coverage. | Browser smoke verifies a populated safe asset workspace response renders local asset candidate rows, stable counts, blocked capability context, and no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
 | TASK-S3-UX-006 | 140 | done | Frontend Product Engineer / QA Lead | Make asset workspace loading resilient. | If the safe asset workspace read fails, the API-backed board and imported preview UI remain usable, the asset panel shows a read-only unavailable state, and no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls are exposed. |
-| TASK-S3-QA-007 | 141 | todo | Frontend Product Engineer / QA Lead | Add tracked asset metric reconciliation coverage. | Browser smoke verifies the board tracked-assets metric reconciles with the safe asset workspace count for empty, populated, and unavailable asset workspace states without adding asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
+| TASK-S3-QA-007 | 141 | done | Frontend Product Engineer / QA Lead | Add tracked asset metric reconciliation coverage. | Browser smoke verifies the board tracked-assets metric reconciles with the safe asset workspace count for empty, populated, and unavailable asset workspace states without adding asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
+| TASK-S3-QA-008 | 142 | todo | Frontend Product Engineer / QA Lead | Add asset workspace blocked capability diagnostics. | Browser smoke verifies the asset workspace blocked capability count and visible blocked capability context reconcile across empty, populated, and unavailable states without adding asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
 
 ## Blockers
 
@@ -450,6 +451,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset workspace loading resilience is next because a local asset read failure should not force the whole API-backed board into fallback mode.
 - Asset workspace loading resilience is verified by browser smoke coverage that aborts only `/assets`, keeps the API-backed board and imported preview UI available, and renders a read-only unavailable asset panel.
 - Tracked asset metric reconciliation is next because the top-level board metric should agree with the safe asset workspace count before an asset editor is introduced.
+- Tracked asset metric reconciliation is verified by browser smoke coverage that reconciles the top-level tracked asset metric with the safe asset workspace draft count across empty, populated, and unavailable states.
+- Asset workspace blocked capability diagnostics are next because QA should prove the panel keeps future WordPress draft, publishing, and commerce-write boundaries visible before an asset editor is introduced.
 
 ## Completion Rule
 

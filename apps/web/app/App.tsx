@@ -826,13 +826,26 @@ function TrafficOperationsPage({
       </section>
 
       <section className="metric-grid" aria-label="Traffic summary">
-        <Metric label={locale === "zh" ? "平均优先级分" : "Average priority score"} value={board.metrics.priorityAverage} />
-        <Metric label={locale === "zh" ? "查询缺口，12 个未映射页面" : "Query gaps, 12 unmapped to pages"} value={board.metrics.queryGaps} />
+        <Metric
+          label={locale === "zh" ? "平均优先级分" : "Average priority score"}
+          metricKey="priority_average"
+          value={board.metrics.priorityAverage}
+        />
+        <Metric
+          label={locale === "zh" ? "查询缺口，12 个未映射页面" : "Query gaps, 12 unmapped to pages"}
+          metricKey="query_gaps"
+          value={board.metrics.queryGaps}
+        />
         <Metric
           label={locale === "zh" ? "已分析商品，5 个高匹配候选" : "Analyzed products, 5 high-fit candidates"}
+          metricKey="products_ready"
           value={board.metrics.productsReady}
         />
-        <Metric label={locale === "zh" ? "追踪资产，3 个点击增长" : "Tracked assets, 3 gaining clicks"} value={board.metrics.trackedAssets} />
+        <Metric
+          label={locale === "zh" ? "追踪资产，3 个点击增长" : "Tracked assets, 3 gaining clicks"}
+          metricKey="tracked_assets"
+          value={board.metrics.trackedAssets}
+        />
       </section>
 
       <div className="workbench-grid">
@@ -939,9 +952,9 @@ function InfoCard({
   );
 }
 
-function Metric({ label, value }: { label: string; value: number }) {
+function Metric({ label, metricKey, value }: { label: string; metricKey: string; value: number }) {
   return (
-    <div className="metric-tile">
+    <div className="metric-tile" data-metric-key={metricKey} data-metric-value={value}>
       <strong>{value}</strong>
       <span>{label}</span>
     </div>

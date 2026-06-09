@@ -294,6 +294,33 @@ async function assertAssetWorkspacePanelUnavailable(page, label) {
   await expectVisible(page.getByText("Asset workspace unavailable"), `${label} unavailable asset copy`);
 }
 
+async function assertTrackedAssetMetricReconciles(page, expectedDraftCount, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for metric reconciliation`);
+  const panelDraftCountText = await assetPanel.getAttribute("data-asset-draft-count");
+  const panelDraftCount = Number(panelDraftCountText);
+  assert(
+    Number.isInteger(panelDraftCount) && panelDraftCount === expectedDraftCount,
+    `${label} asset panel draft count mismatch before metric reconciliation: expected ${expectedDraftCount}, got ${
+      panelDraftCountText ?? "missing"
+    }`
+  );
+
+  const metric = page.locator("[data-metric-key='tracked_assets']");
+  await expectVisible(metric, `${label} tracked asset summary metric`);
+  const metricValueText = await metric.getAttribute("data-metric-value");
+  const metricValue = Number(metricValueText);
+  assert(
+    Number.isInteger(metricValue) && metricValue === panelDraftCount,
+    `${label} tracked asset metric mismatch: expected ${panelDraftCount}, got ${metricValueText ?? "missing"}`
+  );
+  const visibleValue = ((await metric.locator("strong").first().textContent()) ?? "").trim();
+  assert(
+    visibleValue === String(panelDraftCount),
+    `${label} tracked asset visible metric mismatch: expected ${panelDraftCount}, got ${visibleValue || "missing"}`
+  );
+}
+
 async function assertImportedPreviewState(page, expectedAvailability, expectedWarningCount, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const availability = await importedPanel.getAttribute("data-preview-availability");
@@ -1468,6 +1495,7 @@ async function runSmoke() {
     await expectVisible(page.getByText("2 more task previews"), "task preview overflow indicator");
     await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
     await assertAssetWorkspacePanelIsReadOnly(page, 0, "initial");
+    await assertTrackedAssetMetricReconciles(page, 0, "initial");
 
     for (const target of ["/imported-graph", "/queries", "/products", "/pages", "/imported-opportunities", "/imported-tasks"]) {
       assert(
@@ -1533,6 +1561,7 @@ async function runSmoke() {
         title: "Create camping portable espresso collection page"
       }
     ]);
+    await assertTrackedAssetMetricReconciles(populatedAssetPage, 1, "populated asset workspace");
     await populatedAssetPage.close();
 
     const assetFailurePage = await context.newPage();
@@ -1549,6 +1578,7 @@ async function runSmoke() {
     await expectVisible(assetFailurePage.getByText("Demo API connected"), "asset failure API board remains connected");
     await expectVisible(assetFailurePage.getByText("read-only imported previews"), "asset failure imported preview remains available");
     await assertAssetWorkspacePanelUnavailable(assetFailurePage, "asset-only failure");
+    await assertTrackedAssetMetricReconciles(assetFailurePage, 0, "asset-only failure");
     await assetFailurePage.close();
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
