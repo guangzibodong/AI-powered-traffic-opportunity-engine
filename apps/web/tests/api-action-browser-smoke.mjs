@@ -360,6 +360,32 @@ async function assertAssetWorkspaceOverflow(page, expectedOverflowCount, label) 
   }
 }
 
+async function assertAssetWorkspaceTypeSummary(page, expectedCounts, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for type summary diagnostics`);
+  const summaryRow = assetPanel.locator("[data-asset-type-summary='true']");
+  await expectVisible(summaryRow, `${label} asset type summary row`);
+  const expectedEntries = Object.entries(expectedCounts);
+  const typeCountText = await summaryRow.getAttribute("data-asset-type-count");
+  const totalCountText = await summaryRow.getAttribute("data-asset-type-total");
+  const totalCount = expectedEntries.reduce((sum, [, count]) => sum + count, 0);
+  assert(
+    Number(typeCountText) === expectedEntries.length,
+    `${label} asset type count mismatch: expected ${expectedEntries.length}, got ${typeCountText ?? "missing"}`
+  );
+  assert(
+    Number(totalCountText) === totalCount,
+    `${label} asset type total mismatch: expected ${totalCount}, got ${totalCountText ?? "missing"}`
+  );
+  const summaryText = (await summaryRow.textContent()) ?? "";
+  for (const [assetType, count] of expectedEntries) {
+    assert(
+      summaryText.includes(`${assetType} ${count}`),
+      `${label} asset type summary missing ${assetType} ${count}`
+    );
+  }
+}
+
 async function assertImportedPreviewState(page, expectedAvailability, expectedWarningCount, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const availability = await importedPanel.getAttribute("data-preview-availability");
@@ -1638,6 +1664,11 @@ async function runSmoke() {
       "populated asset workspace"
     );
     await assertAssetWorkspaceOverflow(populatedAssetPage, 1, "populated asset workspace");
+    await assertAssetWorkspaceTypeSummary(
+      populatedAssetPage,
+      { buying_guide: 1, collection_page: 1, product_seo: 1 },
+      "populated asset workspace"
+    );
     await populatedAssetPage.close();
 
     const assetFailurePage = await context.newPage();

@@ -987,6 +987,12 @@ function DataHealthPanel({ integrations, locale, t }: SharedProps & { integratio
 function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspaceState }) {
   const visibleAssets = assetWorkspace.assets.slice(0, 2);
   const assetOverflowCount = Math.max(assetWorkspace.assets.length - visibleAssets.length, 0);
+  const assetTypeEntries = Object.entries(
+    assetWorkspace.assets.reduce<Record<string, number>>((counts, asset) => {
+      counts[asset.assetType] = (counts[asset.assetType] ?? 0) + 1;
+      return counts;
+    }, {})
+  ).sort(([left], [right]) => left.localeCompare(right));
   const blockedCapabilities =
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   return (
@@ -1010,6 +1016,17 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
           <span>Local candidates</span>
           <strong>{assetWorkspace.assets.length}</strong>
         </div>
+        {assetTypeEntries.length > 0 && (
+          <div
+            className="kv-row"
+            data-asset-type-count={assetTypeEntries.length}
+            data-asset-type-summary="true"
+            data-asset-type-total={assetWorkspace.assets.length}
+          >
+            <span>Asset type mix</span>
+            <strong>{assetTypeEntries.map(([assetType, count]) => `${assetType} ${count}`).join(" / ")}</strong>
+          </div>
+        )}
         <div className="kv-row">
           <span>External writes</span>
           <strong>false</strong>
