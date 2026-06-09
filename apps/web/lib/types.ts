@@ -143,7 +143,9 @@ export type ImportedQueryClusterPreview = {
 export type ImportedQueryRowPreview = {
   clicks: number;
   ctr: number;
+  displayClicks: string;
   displayCtr: string;
+  displayImpressions: string;
   displayPage: string;
   evidence: EvidenceRow[];
   id: string;

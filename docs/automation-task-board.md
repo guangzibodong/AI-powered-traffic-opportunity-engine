@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported query row CTR display formatting completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported query row count display formatting completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -87,6 +87,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-GSC-041 | 53 | done | Frontend Product Engineer / QA Lead | Show imported query row friendly source labels. | Imported query row cards hide raw internal source codes such as `csv_import`, render a human-friendly `Imported GSC` label, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 | TASK-S2-GSC-042 | 54 | done | Frontend Product Engineer / QA Lead | Show imported query row page reference labels. | Imported query row cards prefix sanitized page references with a clear `page` label, keep the reference as text only, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 | TASK-S2-GSC-043 | 55 | done | Frontend Product Engineer / QA Lead | Format imported query row CTR labels. | Imported query row cards render normalized CTR values as human-readable percentages, keep raw CTR values inside the safe view model, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
+| TASK-S2-GSC-044 | 56 | done | Frontend Product Engineer / QA Lead | Format imported query row count labels. | Imported query row cards render clicks and impressions with stable display-safe number formatting, keep raw counts inside the safe view model, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 
 ## Blockers
 
@@ -194,6 +195,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported query row page reference labels are verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported query row CTR display formatting is next because backend-normalized CTR decimals such as `0.02` should not leak into the user-facing preview card.
 - Imported query row CTR display formatting is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported query row count display formatting is next because raw impression counts such as `1200` should be scan-friendly in compact preview cards.
+- Imported query row count display formatting is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 

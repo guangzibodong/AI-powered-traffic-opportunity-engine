@@ -58,9 +58,12 @@ assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task p
 assert(adapter.includes("source: \"Imported GSC\""), "imported query cluster adapter must label imported GSC evidence");
 assert(types.includes("ImportedQueryRowPreview"), "types must expose a safe imported query row preview view model");
 assert(types.includes("displayCtr"), "Imported query row preview must expose a display-safe CTR field");
+assert(types.includes("displayClicks"), "Imported query row preview must expose a display-safe clicks field");
+assert(types.includes("displayImpressions"), "Imported query row preview must expose a display-safe impressions field");
 assert(types.includes("displayPage"), "Imported query row preview must expose a display-safe page field");
 assert(adapter.includes("mapApiImportedQueryRowToPreview"), "adapter must map raw imported query rows through a safe row preview helper");
 assert(adapter.includes("formatImportedQueryRowCtr"), "imported query row adapter must centralize CTR display formatting");
+assert(adapter.includes("formatImportedQueryRowCount"), "imported query row adapter must centralize count display formatting");
 assert(adapter.includes("row.window ?? \"imported\""), "imported query row adapter must default missing windows to imported");
 assert(adapter.includes("formatImportedQueryRowSource"), "imported query row adapter must centralize source label formatting");
 assert(adapter.includes('source === "csv_import"'), "imported query row adapter must hide raw csv_import source labels");
@@ -189,6 +192,8 @@ assert(app.includes("page.source"), "Imported page preview UI must render the sa
 assert(app.includes("product.displayHref"), "Imported product preview UI must render the sanitized display URL");
 assert(app.includes("page.displayHref"), "Imported page preview UI must render the sanitized display URL");
 assert(app.includes("queryRow.displayCtr"), "Imported query row preview UI must render display-safe CTR text");
+assert(app.includes("queryRow.displayClicks"), "Imported query row preview UI must render display-safe click count text");
+assert(app.includes("queryRow.displayImpressions"), "Imported query row preview UI must render display-safe impression count text");
 assert(app.includes("queryRow.displayPage"), "Imported query row preview UI must render the display-safe page label");
 assert(app.includes("page {queryRow.displayPage}"), "Imported query row preview UI must label display-safe page references");
 assert(app.includes("queryRow.source"), "Imported query row preview UI must render the safe query row source label");
