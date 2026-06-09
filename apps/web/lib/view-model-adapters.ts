@@ -424,7 +424,7 @@ function mapRuleId(ruleId: string): SprintOneRuleId {
 
 function inferRuleId(opportunityId: string, evidence: ApiEvidence[]): SprintOneRuleId {
   if (evidence.some((item) => item.type === "gsc_ctr")) return "high_impression_low_ctr";
-  if (evidence.some((item) => item.type === "gsc_position")) return "ranking_push";
+  if (evidence.some((item) => item.type === "gsc_position" || item.type === "ranking_position")) return "ranking_push";
   if (opportunityId.includes("ranking")) return "ranking_push";
   return "collection_page_gap";
 }

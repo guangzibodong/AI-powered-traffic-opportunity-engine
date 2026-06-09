@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only UX is complete through imported ranking push summary metrics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only frontend adapter QA is complete through imported ranking push DTO mapping coverage; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -134,6 +134,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-OPP-088 | 100 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported ranking push opportunity preview rule. | Imported opportunities generate a read-only `ranking_push` preview when imported search demand points to an existing indexable page with strong CTR but average position still between 4 and 20, preserving safe `new` status, deterministic dedupe, evidence, summary diagnostics, and no task mutation, draft creation, publishing, credentials, sync execution, or commerce writes. |
 | TASK-S2-TASK-089 | 101 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported ranking push task preview action plan. | Imported `ranking_push` opportunities convert into recommend-only task previews with ranking-specific safe action steps and acceptance criteria, preserving safe `new` status and no task mutation, draft creation, publishing, credentials, sync execution, WordPress update, or commerce writes. |
 | TASK-S2-UX-090 | 102 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported ranking push summary metrics. | Imported preview UI renders read-only ranking push opportunity/task preview counts from imported summary diagnostics alongside other action-type metrics, with stable metric keys and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-FE-091 | 103 | done | Frontend Product Engineer / QA Lead | Preserve imported ranking push adapter mapping. | Frontend imported adapter runtime fixtures preserve `ranking_push` opportunity and task categories/rule ids from imported DTOs, including `ranking_position` evidence, while keeping recommend-only automation and safe status clamps. |
 
 ## Blockers
 
@@ -335,6 +336,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported ranking push task preview action plans are verified by backend red-green coverage, docs updates, full frontend checks, backend tests, diff check, and secret scan.
 - Imported ranking push summary metrics are next because the read-only UI should expose ranking push opportunity/task volume alongside CTR refresh, collection page, and product SEO counts before any workflow mutation or external write path exists.
 - Imported ranking push summary metrics are verified by browser smoke red-green coverage across populated, empty, fallback, and single-failure imported preview states, with stable metric keys and no unsafe controls.
+- Imported ranking push adapter mapping is next because backend evidence uses `ranking_position`, and frontend task rule inference should preserve ranking push instead of falling back to collection-page defaults.
+- Imported ranking push adapter mapping is verified by runtime adapter fixture red-green coverage, full frontend checks, backend tests, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 
