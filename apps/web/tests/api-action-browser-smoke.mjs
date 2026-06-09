@@ -508,6 +508,7 @@ async function assertImportedPreviewMetricShareDiagnostics(page, expectedValues,
 
     const countText = (await metric.getAttribute("data-share-count")) ?? "";
     const totalText = (await metric.getAttribute("data-share-total")) ?? "";
+    const percentText = (await metric.getAttribute("data-share-percent")) ?? "";
     assert(
       countText === String(expectedValue.count),
       `${label} imported preview share metric ${metricKey} count mismatch: expected ${expectedValue.count}, got ${countText}`
@@ -515,6 +516,10 @@ async function assertImportedPreviewMetricShareDiagnostics(page, expectedValues,
     assert(
       totalText === String(expectedValue.total),
       `${label} imported preview share metric ${metricKey} total mismatch: expected ${expectedValue.total}, got ${totalText}`
+    );
+    assert(
+      percentText === String(expectedValue.percent),
+      `${label} imported preview share metric ${metricKey} percent mismatch: expected ${expectedValue.percent}, got ${percentText}`
     );
   }
 }
@@ -1188,8 +1193,8 @@ async function runSmoke() {
     await assertImportedPreviewMetricShareDiagnostics(
       page,
       {
-        buying_guide_gap_opportunity_share: { count: 1, total: 4 },
-        buying_guide_gap_task_share: { count: 1, total: 4 }
+        buying_guide_gap_opportunity_share: { count: 1, percent: 25, total: 4 },
+        buying_guide_gap_task_share: { count: 1, percent: 25, total: 4 }
       },
       "initial"
     );
@@ -1410,8 +1415,8 @@ async function runSmoke() {
     await assertImportedPreviewMetricShareDiagnostics(
       resilientPage,
       {
-        buying_guide_gap_opportunity_share: { count: 0, total: 0 },
-        buying_guide_gap_task_share: { count: 0, total: 0 }
+        buying_guide_gap_opportunity_share: { count: 0, percent: 0, total: 0 },
+        buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 }
       },
       "resilient fallback"
     );
@@ -1572,8 +1577,8 @@ async function runSmoke() {
     await assertImportedPreviewMetricShareDiagnostics(
       emptyImportedPage,
       {
-        buying_guide_gap_opportunity_share: { count: 0, total: 0 },
-        buying_guide_gap_task_share: { count: 0, total: 0 }
+        buying_guide_gap_opportunity_share: { count: 0, percent: 0, total: 0 },
+        buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 }
       },
       "empty imported"
     );
@@ -1982,8 +1987,8 @@ async function runSmoke() {
     await assertImportedPreviewMetricShareDiagnostics(
       opportunityFailurePage,
       {
-        buying_guide_gap_opportunity_share: { count: 0, total: 0 },
-        buying_guide_gap_task_share: { count: 1, total: 4 }
+        buying_guide_gap_opportunity_share: { count: 0, percent: 0, total: 0 },
+        buying_guide_gap_task_share: { count: 1, percent: 25, total: 4 }
       },
       "opportunity-only failure"
     );
@@ -2076,8 +2081,8 @@ async function runSmoke() {
     await assertImportedPreviewMetricShareDiagnostics(
       taskFailurePage,
       {
-        buying_guide_gap_opportunity_share: { count: 1, total: 4 },
-        buying_guide_gap_task_share: { count: 0, total: 0 }
+        buying_guide_gap_opportunity_share: { count: 1, percent: 25, total: 4 },
+        buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 }
       },
       "task-only failure"
     );

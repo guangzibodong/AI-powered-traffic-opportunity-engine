@@ -618,10 +618,10 @@ function readImportedSummaryCount(
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
-function formatImportedMetricShare(count: number, total: number) {
-  if (!Number.isFinite(count) || !Number.isFinite(total) || total <= 0) return "0%";
+function getImportedMetricSharePercent(count: number, total: number) {
+  if (!Number.isFinite(count) || !Number.isFinite(total) || total <= 0) return 0;
   const clampedCount = Math.min(Math.max(count, 0), total);
-  return `${Math.round((clampedCount / total) * 100)}%`;
+  return Math.round((clampedCount / total) * 100);
 }
 
 type SharedProps = {
@@ -936,14 +936,16 @@ function ImportedPreviewPanel({
   const buyingGuideGapOpportunityTotal = importedPreviews.opportunities.length;
   const buyingGuideGapTaskCount = importedPreviews.summaryDiagnostics.buyingGuideGapTasks;
   const buyingGuideGapTaskTotal = importedPreviews.tasks.length;
-  const buyingGuideGapOpportunityShare = formatImportedMetricShare(
+  const buyingGuideGapOpportunitySharePercent = getImportedMetricSharePercent(
     buyingGuideGapOpportunityCount,
     buyingGuideGapOpportunityTotal
   );
-  const buyingGuideGapTaskShare = formatImportedMetricShare(
+  const buyingGuideGapTaskSharePercent = getImportedMetricSharePercent(
     buyingGuideGapTaskCount,
     buyingGuideGapTaskTotal
   );
+  const buyingGuideGapOpportunityShare = `${buyingGuideGapOpportunitySharePercent}%`;
+  const buyingGuideGapTaskShare = `${buyingGuideGapTaskSharePercent}%`;
   const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
   const queryRowOverflowCount = Math.max(importedPreviews.queries.length - visibleQueryRows.length, 0);
   const productOverflowCount = Math.max(importedPreviews.products.length - visibleProducts.length, 0);
@@ -1112,6 +1114,7 @@ function ImportedPreviewPanel({
           className="kv-row"
           data-metric-key="buying_guide_gap_opportunity_share"
           data-share-count={buyingGuideGapOpportunityCount}
+          data-share-percent={buyingGuideGapOpportunitySharePercent}
           data-share-total={buyingGuideGapOpportunityTotal}
         >
           <span>{locale === "zh" ? "购买指南缺口机会占比" : "Buying guide gap opportunity share"}</span>
@@ -1121,6 +1124,7 @@ function ImportedPreviewPanel({
           className="kv-row"
           data-metric-key="buying_guide_gap_task_share"
           data-share-count={buyingGuideGapTaskCount}
+          data-share-percent={buyingGuideGapTaskSharePercent}
           data-share-total={buyingGuideGapTaskTotal}
         >
           <span>{locale === "zh" ? "购买指南缺口任务占比" : "Buying guide gap task share"}</span>

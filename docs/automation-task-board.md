@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 buying guide gap share consistency diagnostics are verified; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 numeric buying guide gap share diagnostics are verified; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -149,6 +149,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-UX-103 | 115 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported buying guide source-rule summary metrics. | Imported preview UI renders read-only `buying_guide_gap` opportunity/task source-rule counts from imported summary diagnostics, with stable metric keys and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-UX-104 | 116 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported buying guide gap share diagnostics. | Imported preview UI renders read-only buying guide gap opportunity/task share percentages from imported summary diagnostics and preview totals, with stable metric keys and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-QA-105 | 117 | done | Frontend Product Engineer / QA Lead | Add buying guide gap share consistency diagnostics. | Buying guide gap share metric rows expose stable read-only numerator and denominator DOM attributes so browser QA can reconcile count, total, and displayed percent without relying on localized copy, while adding no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-QA-106 | 118 | done | Frontend Product Engineer / QA Lead | Add numeric buying guide gap share percent diagnostics. | Buying guide gap share metric rows expose a stable read-only numeric percentage DOM attribute so browser QA can compare raw percent, numerator, denominator, and visible text without relying on localized copy, while adding no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 
 ## Blockers
 
@@ -380,6 +381,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported buying guide gap share diagnostics are verified by browser smoke red-green coverage across populated, fallback, empty, opportunity-only failure, and task-only failure states, with stable metric keys and no unsafe controls.
 - Imported buying guide gap share consistency diagnostics are next because QA should reconcile each share metric's count and total through stable DOM attributes instead of reverse-reading localized labels.
 - Imported buying guide gap share consistency diagnostics are verified by browser smoke red-green coverage across populated, fallback, empty, opportunity-only failure, and task-only failure states, with stable numerator/denominator DOM attributes and no unsafe controls.
+- Numeric buying guide gap share percent diagnostics are next because QA should verify the raw computed percentage independently from localized visible percent text.
+- Numeric buying guide gap share percent diagnostics are verified by browser smoke red-green coverage across populated, fallback, empty, opportunity-only failure, and task-only failure states, with stable raw percent DOM attributes and no unsafe controls.
 
 ## Completion Rule
 
