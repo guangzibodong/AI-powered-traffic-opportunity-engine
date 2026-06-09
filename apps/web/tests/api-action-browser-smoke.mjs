@@ -244,6 +244,7 @@ async function runSmoke() {
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
     await expectVisible(page.getByText("Query row / Imported GSC"), "imported query row friendly source label");
     await expectVisible(page.getByText("window 28d"), "imported query row window label");
+    await expectVisible(page.getByText("page example.com/camping-espresso"), "imported query row page reference label");
     await expectVisible(page.getByText("Trail Brew Portable Espresso Maker"), "imported product row");
     await expectVisible(page.getByText("Camping Espresso Collection"), "imported page row");
     await expectVisible(page.getByText("1 more catalog products"), "catalog product overflow indicator");

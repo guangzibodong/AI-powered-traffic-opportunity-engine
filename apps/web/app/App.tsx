@@ -876,7 +876,7 @@ function ImportedPreviewPanel({
                 {queryRow.impressions} impressions / {queryRow.clicks} clicks / CTR {queryRow.ctr} / position{" "}
                 {queryRow.position} / window {queryRow.window}
               </p>
-              <p className="muted catalog-reference">{queryRow.displayPage}</p>
+              <p className="muted catalog-reference">page {queryRow.displayPage}</p>
             </article>
           ))}
           {queryRowOverflowCount > 0 ? (
