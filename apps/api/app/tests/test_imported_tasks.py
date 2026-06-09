@@ -16,6 +16,7 @@ from app.tests.test_imported_opportunities import (
     GAP_PRODUCTS,
     PRODUCT_SEO_GSC_CSV,
     PRODUCT_SEO_PRODUCTS,
+    RANKING_PUSH_GSC_CSV,
 )
 
 
@@ -100,6 +101,30 @@ class ImportedTaskServiceTests(unittest.TestCase):
         self.assertIn("No WooCommerce product data is changed by this preview", task["action_plan"]["acceptance_criteria"])
         self.assertEqual(payload["summary"]["by_category"]["product_seo"], 1)
         self.assertEqual(payload["summary"]["by_rule"]["product_seo"], 1)
+
+    def test_imported_tasks_convert_ranking_push_to_safe_page_action_plan(self):
+        from app.services.gsc_ingestion_service import import_gsc_csv
+        from app.services.imported_task_service import generate_imported_tasks
+        from app.services.page_sync_service import import_wordpress_pages
+        from app.services.product_sync_service import import_woocommerce_products
+
+        import_gsc_csv("store-demo-outdoor-coffee", RANKING_PUSH_GSC_CSV, window="28d")
+        import_woocommerce_products("store-demo-outdoor-coffee", CTR_PRODUCTS)
+        import_wordpress_pages("store-demo-outdoor-coffee", CTR_PAGES)
+
+        payload = generate_imported_tasks("store-demo-outdoor-coffee")
+        task = payload["tasks"][0]
+
+        self.assertEqual(task["category"], "ranking_push")
+        self.assertEqual(task["automation_level"], "recommend_only")
+        self.assertEqual(task["status"], "new")
+        self.assertEqual(task["source_opportunity"]["rule_id"], "ranking_push")
+        self.assertEqual(task["related_page"]["url"], "https://example.com/camping-espresso")
+        self.assertIn("Review existing page ranking evidence and SERP intent", task["action_plan"]["steps"])
+        self.assertIn("Do not publish or update WordPress from this preview", task["action_plan"]["steps"])
+        self.assertIn("No WordPress update is made by this preview", task["action_plan"]["acceptance_criteria"])
+        self.assertEqual(payload["summary"]["by_category"]["ranking_push"], 1)
+        self.assertEqual(payload["summary"]["by_rule"]["ranking_push"], 1)
 
     def test_imported_task_detail_returns_one_preview_or_none(self):
         from app.services.gsc_ingestion_service import import_gsc_csv

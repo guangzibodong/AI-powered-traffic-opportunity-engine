@@ -74,6 +74,18 @@ def _action_plan_for_opportunity(opportunity: dict[str, Any]) -> dict[str, Any]:
             "Recommendation is reviewed by a human before execution",
             "No WordPress update is made by this preview",
         ]
+    elif opportunity["recommended_task_type"] == "ranking_push":
+        steps = [
+            "Review existing page ranking evidence and SERP intent",
+            "Draft internal link and on-page improvement recommendations for human review",
+            "Record baseline clicks, impressions, CTR, and position",
+            "Do not publish or update WordPress from this preview",
+        ]
+        acceptance_criteria = [
+            "Task preview references imported GSC and existing page evidence",
+            "Recommendation is reviewed by a human before execution",
+            "No WordPress update is made by this preview",
+        ]
     elif opportunity["recommended_task_type"] == "product_seo":
         steps = [
             "Review imported product match and query cluster evidence",
