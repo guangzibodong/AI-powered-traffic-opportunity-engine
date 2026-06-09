@@ -65,6 +65,7 @@ assert(types.includes("displayPosition"), "Imported query row preview must expos
 assert(adapter.includes("mapApiImportedQueryRowToPreview"), "adapter must map raw imported query rows through a safe row preview helper");
 assert(adapter.includes("formatImportedQueryRowCtr"), "imported query row adapter must centralize CTR display formatting");
 assert(adapter.includes("formatImportedQueryRowCount"), "imported query row adapter must centralize count display formatting");
+assert(adapter.includes("formatImportedQueryRowMetric"), "imported query row adapter must centralize evidence metric formatting");
 assert(adapter.includes("formatImportedQueryRowPosition"), "imported query row adapter must centralize position display formatting");
 assert(adapter.includes("row.window ?? \"imported\""), "imported query row adapter must default missing windows to imported");
 assert(adapter.includes("formatImportedQueryRowSource"), "imported query row adapter must centralize source label formatting");

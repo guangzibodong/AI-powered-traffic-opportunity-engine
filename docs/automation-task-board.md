@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported query row position display formatting completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported query row evidence metric formatting completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -89,6 +89,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-GSC-043 | 55 | done | Frontend Product Engineer / QA Lead | Format imported query row CTR labels. | Imported query row cards render normalized CTR values as human-readable percentages, keep raw CTR values inside the safe view model, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 | TASK-S2-GSC-044 | 56 | done | Frontend Product Engineer / QA Lead | Format imported query row count labels. | Imported query row cards render clicks and impressions with stable display-safe number formatting, keep raw counts inside the safe view model, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 | TASK-S2-GSC-045 | 57 | done | Frontend Product Engineer / QA Lead | Format imported query row position labels. | Imported query row cards render average position with a clear display-safe label, keep raw position inside the safe view model, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
+| TASK-S2-GSC-046 | 58 | done | Frontend Product Engineer / QA Lead | Format imported query row evidence metrics consistently. | Imported query row evidence rows reuse the same display-safe impressions, clicks, CTR, and average-position formatting as preview cards, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 
 ## Blockers
 
@@ -200,6 +201,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported query row count display formatting is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported query row position display formatting is next because raw position values should be labeled as average position before users compare query rows.
 - Imported query row position display formatting is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported query row evidence metric formatting is next because safe adapter evidence rows should not drift from the card-level display formatting.
+- Imported query row evidence metric formatting is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 

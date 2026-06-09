@@ -253,19 +253,23 @@ function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["querie
   const source = formatImportedQueryRowSource(row.source);
   const window = row.window ?? "imported";
   const displayPage = formatImportedQueryPageForDisplay(row.page);
+  const displayClicks = formatImportedQueryRowCount(row.clicks);
+  const displayCtr = formatImportedQueryRowCtr(row.ctr);
+  const displayImpressions = formatImportedQueryRowCount(row.impressions);
+  const displayPosition = formatImportedQueryRowPosition(row.position);
 
   return {
     clicks: row.clicks,
     ctr: row.ctr,
-    displayClicks: formatImportedQueryRowCount(row.clicks),
-    displayCtr: formatImportedQueryRowCtr(row.ctr),
-    displayImpressions: formatImportedQueryRowCount(row.impressions),
+    displayClicks,
+    displayCtr,
+    displayImpressions,
     displayPage,
-    displayPosition: formatImportedQueryRowPosition(row.position),
+    displayPosition,
     evidence: [
       {
         entity: row.query,
-        metric: `${formatImportedQueryRowCount(row.impressions)} impressions / ${formatImportedQueryRowCount(row.clicks)} clicks / CTR ${formatImportedQueryRowCtr(row.ctr)} / avg position ${formatImportedQueryRowPosition(row.position)}`,
+        metric: formatImportedQueryRowMetric(displayImpressions, displayClicks, displayCtr, displayPosition),
         reason: `Imported query row for ${displayPage}`,
         source,
         type: "search",
@@ -296,6 +300,15 @@ function formatImportedQueryRowCount(count: number): string {
 
 function formatImportedQueryRowPosition(position: number): string {
   return position.toFixed(1);
+}
+
+function formatImportedQueryRowMetric(
+  displayImpressions: string,
+  displayClicks: string,
+  displayCtr: string,
+  displayPosition: string
+): string {
+  return `${displayImpressions} impressions / ${displayClicks} clicks / CTR ${displayCtr} / avg position ${displayPosition}`;
 }
 
 function formatImportedQueryRowSource(source?: string | null): string {
