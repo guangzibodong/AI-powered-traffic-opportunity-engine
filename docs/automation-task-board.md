@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only opportunity generation is complete through imported product SEO opportunity previews; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only Action layer is complete through imported product SEO task preview action plans; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -126,6 +126,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-UX-080 | 92 | done | UI Systems Engineer / Frontend Product Engineer / QA Lead | Add imported preview section health summary state styling. | Imported preview section health summary has compact read-only visual treatment for `empty` and `degraded` states using existing neutral/risk tokens, while preserving dense layout and adding no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-QA-081 | 93 | done | QA Lead / UI Systems Engineer / Frontend Product Engineer | Add browser coverage for imported preview section health summary styling. | UI contract and browser smoke verify ready, empty, and degraded summary states use explicit read-only style hooks and expected computed colors, without adding href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-OPP-082 | 94 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported product SEO opportunity preview rule. | Imported opportunities generate a read-only `product_seo` preview when imported GSC demand maps to one or two in-stock published WooCommerce products and no imported WordPress page, while preserving `new` status, deterministic dedupe, safe evidence, and no task mutation, draft creation, publishing, credentials, sync execution, or commerce writes. |
+| TASK-S2-TASK-083 | 95 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported product SEO task preview action plan. | Imported `product_seo` opportunities convert into recommend-only task previews with product-specific action steps and acceptance criteria, preserving safe `new` status and no task mutation, draft creation, publishing, credentials, sync execution, or WooCommerce writes. |
 
 ## Blockers
 
@@ -311,6 +312,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported preview section health summary computed-style coverage is verified by frontend contract red-green coverage, browser smoke, backend tests, lint, build, diff check, and secret scan.
 - Imported product SEO opportunity previews are next because Sprint 2 product-owned WooCommerce imports should produce product-level SEO actions before any draft or commerce write workflow exists.
 - Imported product SEO opportunity previews are verified by backend red-green coverage, frontend adapter contract coverage, browser smoke, docs updates, lint, build, diff check, and secret scan.
+- Imported product SEO task preview action plans are next because the Action layer should translate product-level opportunities into safe recommend-only execution guidance before any draft or commerce write workflow exists.
+- Imported product SEO task preview action plans are verified by backend red-green coverage, docs updates, frontend contract, browser smoke, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

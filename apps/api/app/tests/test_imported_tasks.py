@@ -14,6 +14,8 @@ from app.tests.test_imported_opportunities import (
     CTR_PRODUCTS,
     GAP_GSC_CSV,
     GAP_PRODUCTS,
+    PRODUCT_SEO_GSC_CSV,
+    PRODUCT_SEO_PRODUCTS,
 )
 
 
@@ -76,6 +78,27 @@ class ImportedTaskServiceTests(unittest.TestCase):
         self.assertIsNone(task["related_page"])
         self.assertIn("Review matched imported products and query cluster", task["action_plan"]["steps"])
         self.assertIn("WordPress draft is not created by this preview", task["action_plan"]["acceptance_criteria"])
+
+    def test_imported_tasks_convert_product_seo_to_safe_product_action_plan(self):
+        from app.services.gsc_ingestion_service import import_gsc_csv
+        from app.services.imported_task_service import generate_imported_tasks
+        from app.services.product_sync_service import import_woocommerce_products
+
+        import_gsc_csv("store-demo-outdoor-coffee", PRODUCT_SEO_GSC_CSV, window="28d")
+        import_woocommerce_products("store-demo-outdoor-coffee", PRODUCT_SEO_PRODUCTS)
+
+        payload = generate_imported_tasks("store-demo-outdoor-coffee")
+        task = payload["tasks"][0]
+
+        self.assertEqual(task["category"], "product_seo")
+        self.assertEqual(task["automation_level"], "recommend_only")
+        self.assertEqual(task["status"], "new")
+        self.assertEqual(task["source_opportunity"]["rule_id"], "product_seo")
+        self.assertEqual(task["related_products"][0]["name"], "Portable Titanium Camp Mug")
+        self.assertIn("Review imported product match and query cluster evidence", task["action_plan"]["steps"])
+        self.assertIn("Do not update WooCommerce from this preview", task["action_plan"]["steps"])
+        self.assertIn("No WooCommerce product data is changed by this preview", task["action_plan"]["acceptance_criteria"])
+        self.assertEqual(payload["summary"]["by_category"]["product_seo"], 1)
 
     def test_imported_task_detail_returns_one_preview_or_none(self):
         from app.services.gsc_ingestion_service import import_gsc_csv

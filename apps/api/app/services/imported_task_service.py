@@ -73,6 +73,18 @@ def _action_plan_for_opportunity(opportunity: dict[str, Any]) -> dict[str, Any]:
             "Recommendation is reviewed by a human before execution",
             "No WordPress update is made by this preview",
         ]
+    elif opportunity["recommended_task_type"] == "product_seo":
+        steps = [
+            "Review imported product match and query cluster evidence",
+            "Draft product title, meta, and copy recommendations for human review",
+            "Record baseline clicks, impressions, CTR, and position",
+            "Do not update WooCommerce from this preview",
+        ]
+        acceptance_criteria = [
+            "Task preview references imported GSC and product evidence",
+            "Recommendation is reviewed by a human before execution",
+            "No WooCommerce product data is changed by this preview",
+        ]
     else:
         steps = [
             "Review imported opportunity evidence",
