@@ -873,7 +873,7 @@ function ImportedPreviewPanel({
               </span>
               <h3>{queryRow.query}</h3>
               <p className="muted">
-                {queryRow.impressions} impressions / {queryRow.clicks} clicks / CTR {queryRow.ctr} / position{" "}
+                {queryRow.impressions} impressions / {queryRow.clicks} clicks / CTR {queryRow.displayCtr} / position{" "}
                 {queryRow.position} / window {queryRow.window}
               </p>
               <p className="muted catalog-reference">page {queryRow.displayPage}</p>

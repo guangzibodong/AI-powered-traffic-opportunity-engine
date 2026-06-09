@@ -257,11 +257,12 @@ function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["querie
   return {
     clicks: row.clicks,
     ctr: row.ctr,
+    displayCtr: formatImportedQueryRowCtr(row.ctr),
     displayPage,
     evidence: [
       {
         entity: row.query,
-        metric: `${row.impressions} impressions / ${row.clicks} clicks / CTR ${row.ctr}`,
+        metric: `${row.impressions} impressions / ${row.clicks} clicks / CTR ${formatImportedQueryRowCtr(row.ctr)}`,
         reason: `Imported query row for ${displayPage}`,
         source,
         type: "search",
@@ -280,6 +281,10 @@ function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["querie
 
 function formatImportedQueryPageForDisplay(page: string): string {
   return formatImportedCatalogHrefForDisplay(page) ?? "Unknown page";
+}
+
+function formatImportedQueryRowCtr(ctr: number): string {
+  return `${(ctr * 100).toFixed(2)}%`;
 }
 
 function formatImportedQueryRowSource(source?: string | null): string {
