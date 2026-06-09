@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only QA coverage is complete through imported detail helper GET-only URL encoding checks; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only QA coverage is complete through imported graph/opportunity/task single-endpoint failure checks; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -25,7 +25,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Product Manager | Main thread | Keep Sprint 2 local/import-only boundaries explicit and sequence QA-only follow-up tasks. |
 | Backend/API Engineer | Main thread | Preserve existing read-only imported APIs; no live credentials, OAuth, publishing, or commerce writes. |
 | Frontend Product Engineer | Main thread | Implement safe imported preview view-model/UI improvements with contract coverage. |
-| QA Lead | Ptolemy / Main thread | Define and verify runtime fixture coverage for imported adapters and browser safety checks. |
+| QA Lead | Ptolemy / Main thread | Verify imported preview partial-failure browser coverage and no-control safety checks. |
 | UI Systems Engineer | Main thread | Keep imported preview cards compact, bilingual-safe, text-only, and free of external navigation controls. |
 
 ## Task Queue
@@ -93,6 +93,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-GSC-047 | 59 | done | Frontend Product Engineer / QA Lead | Show imported query row evidence summary labels. | Imported query row cards render a compact display-safe evidence summary from the row view model, keep the card text-only, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 | TASK-S2-QA-048 | 60 | done | QA Lead / Frontend Product Engineer | Add imported adapter fixture behavior coverage. | Runtime fixture tests verify imported task status and automation clamps, imported query row display formatting and fallbacks, safe source/window/page labels, and no live integration, draft, publish, credential, sync, or commerce write behavior. |
 | TASK-S2-QA-049 | 61 | done | QA Lead / Frontend Product Engineer | Add imported detail helper GET-only URL encoding coverage. | Runtime API-client tests verify imported query, product, page, query-cluster, opportunity, and task detail helpers encode store/entity path segments, use GET-only fetches, and expose no POST/PATCH/PUT/DELETE, credential, sync, draft, publish, or commerce write behavior. |
+| TASK-S2-QA-050 | 62 | done | QA Lead / Frontend Product Engineer | Add imported graph/opportunity/task single-failure browser coverage. | Browser smoke verifies `/imported-graph`, `/imported-opportunities`, and `/imported-tasks` can each fail independently while successful imported previews remain visible, the failed section shows read-only unavailable copy, and no retry, sync, credential, draft, publish, task creation, or commerce write controls appear. |
 
 ## Blockers
 
@@ -212,6 +213,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported adapter fixture behavior coverage is verified by runtime fixture contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported detail helper GET-only URL encoding coverage is next because read-only imported detail helpers should be locked by runtime client tests, not only static string checks.
 - Imported detail helper GET-only URL encoding coverage is verified by runtime API-client fixture coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported graph/opportunity/task single-failure browser coverage is next because derived imported preview reads should degrade independently instead of silently disappearing or collapsing successful catalog and query-row previews.
+- Imported graph/opportunity/task single-failure browser coverage is verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

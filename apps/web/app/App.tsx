@@ -281,10 +281,13 @@ export function App() {
                 ? mapApiImportedPagesToCatalogPreviews(importedPagesResult.value)
                 : [];
             const warnings = [
+              ...(graphResult.status === "rejected" ? ["graph_unavailable"] : []),
               ...(importedProductsResult.status === "rejected" || importedPagesResult.status === "rejected"
                 ? ["catalog_unavailable"]
                 : []),
-              ...(importedQueriesResult.status === "rejected" ? ["query_rows_unavailable"] : [])
+              ...(importedQueriesResult.status === "rejected" ? ["query_rows_unavailable"] : []),
+              ...(importedOpportunitiesResult.status === "rejected" ? ["opportunities_unavailable"] : []),
+              ...(importedTasksResult.status === "rejected" ? ["tasks_unavailable"] : [])
             ];
             const opportunities =
               importedOpportunitiesResult.status === "fulfilled"
@@ -845,6 +848,36 @@ function ImportedPreviewPanel({
             {locale === "zh"
               ? "原始 GSC 查询行读取暂不可用；聚类、商品、页面、机会和任务预览仍保持只读展示。"
               : "Raw GSC query row reads are unavailable; clusters, catalog, opportunity, and task previews remain read-only."}
+          </p>
+        </div>
+      )}
+      {importedPreviews.warnings.includes("graph_unavailable") && (
+        <div className="imported-preview-empty">
+          <strong>{locale === "zh" ? "图谱读取暂不可用" : "Graph reads unavailable"}</strong>
+          <p className="muted">
+            {locale === "zh"
+              ? "图谱关联簇暂不可用；查询行、Catalog、机会和任务预览仍保持只读展示。"
+              : "Graph-linked clusters are unavailable; query rows, catalog, opportunity, and task previews remain read-only."}
+          </p>
+        </div>
+      )}
+      {importedPreviews.warnings.includes("opportunities_unavailable") && (
+        <div className="imported-preview-empty">
+          <strong>{locale === "zh" ? "机会预览暂不可用" : "Opportunity previews unavailable"}</strong>
+          <p className="muted">
+            {locale === "zh"
+              ? "机会预览读取暂不可用；图谱、查询行、Catalog 和任务预览仍保持只读展示。"
+              : "Opportunity reads are unavailable; graph, query rows, catalog, and task previews remain read-only."}
+          </p>
+        </div>
+      )}
+      {importedPreviews.warnings.includes("tasks_unavailable") && (
+        <div className="imported-preview-empty">
+          <strong>{locale === "zh" ? "任务预览暂不可用" : "Task previews unavailable"}</strong>
+          <p className="muted">
+            {locale === "zh"
+              ? "任务预览读取暂不可用；图谱、查询行、Catalog 和机会预览仍保持只读展示。"
+              : "Task preview reads are unavailable; graph, query rows, catalog, and opportunities remain read-only."}
           </p>
         </div>
       )}
