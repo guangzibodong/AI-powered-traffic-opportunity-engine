@@ -691,6 +691,37 @@ async function assertImportedHiddenRailCounts(page, expectedValues, label) {
   }
 }
 
+async function assertImportedRailCountReconciliation(page, railKeys, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const previewList = importedPanel.locator(".imported-preview-list");
+  const previewListCount = await previewList.count();
+  assert(previewListCount === 1, `${label} imported preview list must render exactly once`);
+
+  const reconciled = await previewList.getAttribute("data-rail-counts-reconciled");
+  assert(
+    reconciled === "true",
+    `${label} imported preview list data-rail-counts-reconciled mismatch: expected true, got ${reconciled ?? "missing"}`
+  );
+
+  for (const railKey of railKeys) {
+    const totalText = await previewList.getAttribute(`data-total-${railKey}`);
+    const visibleText = await previewList.getAttribute(`data-visible-${railKey}`);
+    const hiddenText = await previewList.getAttribute(`data-hidden-${railKey}`);
+    const total = Number(totalText);
+    const visible = Number(visibleText);
+    const hidden = Number(hiddenText);
+
+    assert(
+      Number.isInteger(total) && Number.isInteger(visible) && Number.isInteger(hidden),
+      `${label} imported preview rail ${railKey} count markers must be integers`
+    );
+    assert(
+      Math.max(total - visible, 0) === hidden,
+      `${label} imported preview rail ${railKey} mismatch: total ${totalText}, visible ${visibleText}, hidden ${hiddenText}`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -920,6 +951,11 @@ async function runSmoke() {
         "data-hidden-query-rows": 2,
         "data-hidden-task-previews": 1
       },
+      "initial"
+    );
+    await assertImportedRailCountReconciliation(
+      page,
+      ["clusters", "opportunities", "pages", "products", "query-rows", "task-previews"],
       "initial"
     );
 

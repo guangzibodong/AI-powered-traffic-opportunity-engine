@@ -790,6 +790,13 @@ function ImportedPreviewPanel({
   const pageOverflowCount = Math.max(importedPreviews.pages.length - visiblePages.length, 0);
   const opportunityOverflowCount = Math.max(importedPreviews.opportunities.length - visibleOpportunities.length, 0);
   const taskOverflowCount = Math.max(importedPreviews.tasks.length - visibleTasks.length, 0);
+  const railCountsReconciled =
+    clusterOverflowCount === Math.max(importedPreviews.clusters.length - visibleClusters.length, 0) &&
+    queryRowOverflowCount === Math.max(importedPreviews.queries.length - visibleQueryRows.length, 0) &&
+    productOverflowCount === Math.max(importedPreviews.products.length - visibleProducts.length, 0) &&
+    pageOverflowCount === Math.max(importedPreviews.pages.length - visiblePages.length, 0) &&
+    opportunityOverflowCount === Math.max(importedPreviews.opportunities.length - visibleOpportunities.length, 0) &&
+    taskOverflowCount === Math.max(importedPreviews.tasks.length - visibleTasks.length, 0);
   const unavailableSectionCount = importedPreviews.warnings.length;
   const hasImportedPreviews =
     importedPreviews.availability === "ready" &&
@@ -906,6 +913,7 @@ function ImportedPreviewPanel({
       {hasImportedPreviews ? (
         <div
           className="imported-preview-list"
+          data-rail-counts-reconciled={railCountsReconciled ? "true" : "false"}
           data-hidden-clusters={clusterOverflowCount}
           data-hidden-opportunities={opportunityOverflowCount}
           data-hidden-pages={pageOverflowCount}
