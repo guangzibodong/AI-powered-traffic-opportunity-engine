@@ -356,10 +356,10 @@ Sprint 3 asset endpoints currently expose a safe local workspace boundary:
 - `GET /assets` returns `mode: "asset_draft_workspace"`, an empty `assets` list, summary counts, `external_write_allowed: false`, and blocked capabilities for WordPress draft creation, WordPress publishing, and WooCommerce writes.
 - `POST /assets/from-task/:taskId` creates or replaces an in-memory local asset draft candidate only when the source demo task is `approved`. It returns `403` for unapproved tasks and `404` for unknown tasks.
 - `GET /assets/:assetId` returns a local asset draft detail when it exists and `404` otherwise.
-- `PATCH /assets/:assetId` returns `403` and remains future-gated until local persistence and QA gates are approved.
+- `PATCH /assets/:assetId` updates only safe local editor fields (`title`, `slug`, `meta_title`, `meta_description`, `content_blocks`, `faq_items`, `schema_json`, `internal_links`, and `editor_note`) on an existing in-memory asset draft. It returns `404` for unknown local assets, rejects external-write or credential-like fields, keeps `external_write_allowed: false`, and does not call WordPress, WooCommerce, GSC, LLMs, sync jobs, or external services.
 - `POST /assets/:assetId/publish-wordpress-draft` returns `403`; it does not create a WordPress draft, publish content, call WordPress, or write commerce data.
 
-The planned local-only editor contract is documented in [Sprint 3 Safe Local Asset Editor Contract](sprint-3-local-asset-editor-contract.md). It must be tested before any asset update behavior or editor UI is enabled.
+The local-only editor contract is documented in [Sprint 3 Safe Local Asset Editor Contract](sprint-3-local-asset-editor-contract.md). Frontend client and editor UI exposure remain gated until their own contract and browser tests are added.
 
 ## Performance
 

@@ -1,9 +1,13 @@
-from fastapi import APIRouter, HTTPException
+from typing import Any
+
+from fastapi import APIRouter, Body, HTTPException
 
 from app.services.asset_workspace_service import (
+    AssetDraftUpdateError,
     create_asset_draft_from_task,
     get_asset_draft,
     list_asset_drafts,
+    update_asset_draft,
 )
 from app.services.demo_planning_service import get_demo_task
 
@@ -37,11 +41,14 @@ async def get_asset(store_id: str, asset_id: str) -> dict:
 
 
 @router.patch("/{store_id}/assets/{asset_id}")
-async def update_asset(store_id: str, asset_id: str, payload: dict) -> dict:
-    raise HTTPException(
-        status_code=403,
-        detail="Asset draft updates are future-gated until local asset persistence and QA are approved",
-    )
+async def update_asset(store_id: str, asset_id: str, payload: Any = Body(...)) -> dict:
+    try:
+        asset = update_asset_draft(store_id, asset_id, payload)
+    except AssetDraftUpdateError as error:
+        raise HTTPException(status_code=error.status_code, detail=error.detail) from error
+    if asset is None:
+        raise HTTPException(status_code=404, detail="Asset draft not found")
+    return {"mode": "asset_draft_workspace", "store_id": store_id, "asset": asset}
 
 
 @router.post("/{store_id}/assets/{asset_id}/publish-wordpress-draft")

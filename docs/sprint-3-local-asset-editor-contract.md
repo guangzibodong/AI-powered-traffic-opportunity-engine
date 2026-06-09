@@ -218,12 +218,20 @@ The first UI must not include:
 - Sync buttons.
 - Product price, stock, inventory, or status editors.
 
+## Backend Status
+
+The backend local-only PATCH contract has a red-green test path:
+
+- Red tests define allowed local fields, unknown asset handling, forbidden external-write fields, credential rejection, raw HTML rejection, persisted list/detail reads, and continued WordPress draft `403`.
+- The green implementation updates only the in-memory local asset draft and keeps `external_write_allowed: false`.
+- Frontend client exposure and editor UI remain gated.
+
 ## Next Task
 
-The next safe implementation task is backend TDD:
+The next safe implementation task is frontend contract TDD:
 
 ```txt
-TASK-S3-BE-026 Add failing tests for safe local asset update contract.
+TASK-S3-FE-028 Add frontend asset update client contract.
 ```
 
-That task should add tests only, verify they fail for the expected reason, and keep the current runtime behavior unchanged until the implementation task follows.
+That task should add failing frontend API-client and adapter tests for a safe local `updateAsset` helper before exposing any editor UI.
