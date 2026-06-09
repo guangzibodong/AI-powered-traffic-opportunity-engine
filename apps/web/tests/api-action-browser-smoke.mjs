@@ -223,6 +223,44 @@ async function assertImportedPreviewState(page, expectedAvailability, expectedWa
   );
 }
 
+async function assertImportedPreviewSectionCounts(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  await expectVisible(importedPanel, `${label} imported preview panel`);
+
+  const sectionCountText = await importedPanel.getAttribute("data-section-count");
+  const availableCountText = await importedPanel.getAttribute("data-available-section-count");
+  const unavailableCountText = await importedPanel.getAttribute("data-unavailable-section-count");
+  const reconciled = await importedPanel.getAttribute("data-section-counts-reconciled");
+  const sectionCount = Number(sectionCountText);
+  const availableCount = Number(availableCountText);
+  const unavailableCount = Number(unavailableCountText);
+
+  assert(
+    Number.isInteger(sectionCount) && sectionCount === expectedValues.sectionCount,
+    `${label} imported preview section count mismatch: expected ${expectedValues.sectionCount}, got ${sectionCountText ?? "missing"}`
+  );
+  assert(
+    Number.isInteger(availableCount) && availableCount === expectedValues.availableCount,
+    `${label} imported preview available section count mismatch: expected ${expectedValues.availableCount}, got ${
+      availableCountText ?? "missing"
+    }`
+  );
+  assert(
+    Number.isInteger(unavailableCount) && unavailableCount === expectedValues.unavailableCount,
+    `${label} imported preview unavailable section count mismatch: expected ${expectedValues.unavailableCount}, got ${
+      unavailableCountText ?? "missing"
+    }`
+  );
+  assert(
+    availableCount + unavailableCount === sectionCount,
+    `${label} imported preview section counts must reconcile: available ${availableCountText}, unavailable ${unavailableCountText}, section ${sectionCountText}`
+  );
+  assert(
+    reconciled === "true",
+    `${label} imported preview data-section-counts-reconciled mismatch: expected true, got ${reconciled ?? "missing"}`
+  );
+}
+
 async function assertImportedPreviewEmptyState(page, expectedKey, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const emptyState = importedPanel.locator("[data-empty-state-key]");
@@ -845,6 +883,11 @@ async function runSmoke() {
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
     await assertImportedPreviewState(page, "ready", 0, "initial");
+    await assertImportedPreviewSectionCounts(
+      page,
+      { availableCount: 6, sectionCount: 6, unavailableCount: 0 },
+      "initial"
+    );
     await assertImportedPreviewWarningKeys(page, [], "initial");
     await assertImportedPreviewMetricValues(
       page,
@@ -990,6 +1033,11 @@ async function runSmoke() {
     await expectVisible(resilientPage.getByText("Task previews unavailable"), "resilient task unavailable message");
     await assertImportedPreviewPanelIsReadOnly(resilientPage, "resilient fallback");
     await assertImportedPreviewState(resilientPage, "unavailable", 5, "resilient fallback");
+    await assertImportedPreviewSectionCounts(
+      resilientPage,
+      { availableCount: 0, sectionCount: 6, unavailableCount: 6 },
+      "resilient fallback"
+    );
     await assertImportedPreviewMetricValues(
       resilientPage,
       {
@@ -1084,6 +1132,11 @@ async function runSmoke() {
     );
     await assertImportedPreviewPanelIsReadOnly(emptyImportedPage, "empty imported");
     await assertImportedPreviewState(emptyImportedPage, "empty", 0, "empty imported");
+    await assertImportedPreviewSectionCounts(
+      emptyImportedPage,
+      { availableCount: 6, sectionCount: 6, unavailableCount: 0 },
+      "empty imported"
+    );
     await assertImportedPreviewEmptyState(emptyImportedPage, "no_imported_fixtures", "empty imported");
     await assertImportedPreviewWarningKeys(emptyImportedPage, [], "empty imported");
     await assertImportedPreviewMetricValues(
@@ -1145,6 +1198,11 @@ async function runSmoke() {
     await expectVisible(catalogFailurePage.getByText("recommend_only"), "catalog failure recommend-only task preview");
     await assertImportedPreviewPanelIsReadOnly(catalogFailurePage, "catalog-only failure");
     await assertImportedPreviewState(catalogFailurePage, "ready", 1, "catalog-only failure");
+    await assertImportedPreviewSectionCounts(
+      catalogFailurePage,
+      { availableCount: 4, sectionCount: 6, unavailableCount: 2 },
+      "catalog-only failure"
+    );
     await assertImportedPreviewWarningKeys(catalogFailurePage, ["catalog_unavailable"], "catalog-only failure");
     await assertImportedPreviewMetricValues(
       catalogFailurePage,
@@ -1205,6 +1263,11 @@ async function runSmoke() {
     await expectVisible(queryRowFailurePage.getByText("Trail Brew Portable Espresso Maker"), "query row failure imported product row");
     await assertImportedPreviewPanelIsReadOnly(queryRowFailurePage, "query-row-only failure");
     await assertImportedPreviewState(queryRowFailurePage, "ready", 1, "query-row-only failure");
+    await assertImportedPreviewSectionCounts(
+      queryRowFailurePage,
+      { availableCount: 5, sectionCount: 6, unavailableCount: 1 },
+      "query-row-only failure"
+    );
     await assertImportedPreviewWarningKeys(queryRowFailurePage, ["query_rows_unavailable"], "query-row-only failure");
     await assertImportedPreviewItemKinds(
       queryRowFailurePage,

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only QA coverage is complete through imported rail count reconciliation state DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only QA coverage is complete through imported preview section count reconciliation DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -115,6 +115,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-069 | 81 | done | QA Lead / UI Systems Engineer | Expose imported total rail count DOM diagnostics. | Browser smoke verifies the imported preview list exposes stable `data-total-clusters`, `data-total-query-rows`, `data-total-products`, `data-total-pages`, `data-total-opportunities`, and `data-total-task-previews` markers for the full imported read result behind the compact rail, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-QA-070 | 82 | done | QA Lead / UI Systems Engineer | Expose imported rail overflow reconciliation DOM diagnostics. | Browser smoke verifies the imported preview list exposes stable `data-hidden-clusters`, `data-hidden-query-rows`, `data-hidden-products`, `data-hidden-pages`, `data-hidden-opportunities`, and `data-hidden-task-previews` markers that reconcile full imported totals with visible compact rail counts, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-QA-071 | 83 | done | QA Lead / UI Systems Engineer | Expose imported rail count reconciliation state DOM diagnostics. | Browser smoke verifies the imported preview list exposes a stable `data-rail-counts-reconciled` marker and recomputes each rail as `total - visible = hidden` for clusters, query rows, products, pages, opportunities, and task previews, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
+| TASK-S2-QA-072 | 84 | done | QA Lead / UI Systems Engineer | Expose imported preview section count reconciliation DOM diagnostics. | Browser smoke verifies the imported preview panel exposes stable `data-section-count`, `data-available-section-count`, `data-unavailable-section-count`, and `data-section-counts-reconciled` markers for the six read-only imported sections, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 
 ## Blockers
 
@@ -278,6 +279,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported rail overflow reconciliation DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported rail count reconciliation state DOM diagnostics are next because QA should have a single stable health marker plus browser-computed count math for the compact imported rail.
 - Imported rail count reconciliation state DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported preview section count reconciliation DOM diagnostics are next because QA should verify how many of the six read-only imported sections are available or degraded without relying on localized warning copy.
+- Imported preview section count reconciliation DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

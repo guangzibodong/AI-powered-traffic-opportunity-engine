@@ -797,7 +797,16 @@ function ImportedPreviewPanel({
     pageOverflowCount === Math.max(importedPreviews.pages.length - visiblePages.length, 0) &&
     opportunityOverflowCount === Math.max(importedPreviews.opportunities.length - visibleOpportunities.length, 0) &&
     taskOverflowCount === Math.max(importedPreviews.tasks.length - visibleTasks.length, 0);
+  const importedSectionCount = 6;
   const unavailableSectionCount = importedPreviews.warnings.length;
+  const unavailableRailSectionCount =
+    (importedPreviews.warnings.includes("graph_unavailable") ? 1 : 0) +
+    (importedPreviews.warnings.includes("query_rows_unavailable") ? 1 : 0) +
+    (importedPreviews.warnings.includes("catalog_unavailable") ? 2 : 0) +
+    (importedPreviews.warnings.includes("opportunities_unavailable") ? 1 : 0) +
+    (importedPreviews.warnings.includes("tasks_unavailable") ? 1 : 0);
+  const availableRailSectionCount = Math.max(importedSectionCount - unavailableRailSectionCount, 0);
+  const sectionCountsReconciled = availableRailSectionCount + unavailableRailSectionCount === importedSectionCount;
   const hasImportedPreviews =
     importedPreviews.availability === "ready" &&
     (visibleClusters.length > 0 ||
@@ -811,8 +820,12 @@ function ImportedPreviewPanel({
     <section
       className="panel imported-preview-panel"
       aria-label="Imported preview panel"
+      data-available-section-count={availableRailSectionCount}
       data-preview-availability={importedPreviews.availability}
       data-safety-scope="read-only-imported-preview"
+      data-section-count={importedSectionCount}
+      data-section-counts-reconciled={sectionCountsReconciled ? "true" : "false"}
+      data-unavailable-section-count={unavailableRailSectionCount}
       data-warning-count={unavailableSectionCount}
     >
       <div className="panel-heading">
