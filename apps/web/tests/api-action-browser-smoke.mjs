@@ -220,6 +220,19 @@ async function assertImportedPreviewState(page, expectedAvailability, expectedWa
   );
 }
 
+async function assertImportedPreviewEmptyState(page, expectedKey, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const emptyState = importedPanel.locator("[data-empty-state-key]");
+  const emptyStateCount = await emptyState.count();
+  assert(emptyStateCount === 1, `${label} imported preview empty state must render exactly once`);
+
+  const emptyStateKey = await emptyState.getAttribute("data-empty-state-key");
+  assert(
+    emptyStateKey === expectedKey,
+    `${label} imported preview empty state key mismatch: expected ${expectedKey}, got ${emptyStateKey ?? "missing"}`
+  );
+}
+
 async function assertImportedPreviewWarningKeys(page, expectedKeys, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const actualKeys = await importedPanel.locator("[data-warning-key]").evaluateAll((nodes) =>
@@ -518,6 +531,109 @@ async function runSmoke() {
       "resilient fallback"
     );
     await resilientPage.close();
+
+    const emptyImportedPage = await context.newPage();
+    await emptyImportedPage.route("**/api/stores/**", async (route) => {
+      const url = route.request().url();
+      if (url.endsWith("/imported-graph")) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            mode: "imported_graph",
+            query_clusters: [],
+            store_id: storeId,
+            summary: { page_matches: 0, product_matches: 0, query_clusters: 0 }
+          })
+        });
+        return;
+      }
+      if (url.endsWith("/queries")) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({ mode: "csv_import", queries: [], store_id: storeId })
+        });
+        return;
+      }
+      if (url.endsWith("/products")) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({ mode: "woocommerce_import", products: [], store_id: storeId })
+        });
+        return;
+      }
+      if (url.endsWith("/pages")) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({ mode: "wordpress_import", pages: [], store_id: storeId })
+        });
+        return;
+      }
+      if (url.endsWith("/imported-opportunities")) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({ mode: "imported_opportunities", opportunities: [], store_id: storeId, summary: {} })
+        });
+        return;
+      }
+      if (url.endsWith("/imported-tasks")) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({ mode: "imported_task_previews", store_id: storeId, summary: {}, tasks: [] })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await emptyImportedPage.goto(webUrl);
+    await clickUnique(emptyImportedPage.getByRole("button", { name: "EN" }), "empty imported language switcher");
+    await expectVisible(
+      emptyImportedPage.getByText("no imported GSC, WooCommerce, or WordPress fixture data yet"),
+      "empty imported preview copy"
+    );
+    await assertImportedPreviewPanelIsReadOnly(emptyImportedPage, "empty imported");
+    await assertImportedPreviewState(emptyImportedPage, "empty", 0, "empty imported");
+    await assertImportedPreviewEmptyState(emptyImportedPage, "no_imported_fixtures", "empty imported");
+    await assertImportedPreviewWarningKeys(emptyImportedPage, [], "empty imported");
+    await assertImportedPreviewMetricValues(
+      emptyImportedPage,
+      {
+        catalog_pages: 0,
+        catalog_products: 0,
+        graph_clusters: 0,
+        matched_pages: 0,
+        matched_products: 0,
+        opportunity_previews: 0,
+        query_rows: 0,
+        task_previews: 0
+      },
+      "empty imported"
+    );
+    await assertImportedPreviewOverflowValues(
+      emptyImportedPage,
+      {
+        catalog_pages: 0,
+        catalog_products: 0,
+        opportunity_previews: 0,
+        query_clusters: 0,
+        query_rows: 0,
+        task_previews: 0
+      },
+      "empty imported"
+    );
+    await assertImportedPreviewItemKinds(
+      emptyImportedPage,
+      {
+        cluster: 0,
+        opportunity: 0,
+        page: 0,
+        product: 0,
+        query_row: 0,
+        task_preview: 0
+      },
+      "empty imported"
+    );
+    await emptyImportedPage.close();
 
     const catalogFailurePage = await context.newPage();
     await catalogFailurePage.route("**/api/stores/**", async (route) => {

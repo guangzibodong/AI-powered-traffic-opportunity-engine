@@ -1071,7 +1071,7 @@ function ImportedPreviewPanel({
           </p>
         </div>
       ) : (
-        <div className="imported-preview-empty">
+        <div className="imported-preview-empty" data-empty-state-key="no_imported_fixtures">
           <p className="muted">
             {locale === "zh"
               ? "本地 imported preview endpoint 已连接；当前会话还没有导入的 GSC、WooCommerce 或 WordPress fixture。"
