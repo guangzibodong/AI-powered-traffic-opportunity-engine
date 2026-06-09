@@ -449,6 +449,19 @@ async function assertAssetWorkspaceQaSummary(page, expectedQaCheckCount, expecte
   );
 }
 
+async function assertAssetWorkspaceQaReadiness(page, expectedReadinessState, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for QA readiness diagnostics`);
+  const readinessState = await assetPanel.getAttribute("data-asset-qa-readiness-state");
+  assert(
+    readinessState === expectedReadinessState,
+    `${label} QA readiness state mismatch: expected ${expectedReadinessState}, got ${readinessState ?? "missing"}`
+  );
+  const readinessRow = assetPanel.locator("[data-asset-qa-readiness='true']");
+  await expectVisible(readinessRow, `${label} asset QA readiness row`);
+  await expectVisible(page.getByText(expectedReadinessState), `${label} asset QA readiness visible state`);
+}
+
 async function assertAssetWorkspaceQaAggregateReconciles(page, hiddenQaCheckCount, hiddenQaPendingCount, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA aggregate reconciliation`);
@@ -1788,6 +1801,7 @@ async function runSmoke() {
       "populated asset workspace"
     );
     await assertAssetWorkspaceQaSummary(populatedAssetPage, 5, 4, "populated asset workspace");
+    await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     await populatedAssetPage.close();

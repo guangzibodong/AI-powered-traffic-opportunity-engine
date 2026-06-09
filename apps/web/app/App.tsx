@@ -995,6 +995,7 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
   ).sort(([left], [right]) => left.localeCompare(right));
   const qaCheckTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
   const qaPendingTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaPendingCount, 0);
+  const qaReadinessState = qaCheckTotal === 0 ? "not_applicable" : qaPendingTotal > 0 ? "pending_qa" : "qa_clear";
   const blockedCapabilities =
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   return (
@@ -1002,6 +1003,7 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
       className="panel asset-workspace-panel"
       data-asset-draft-count={assetWorkspace.assets.length}
       data-asset-overflow-count={assetOverflowCount}
+      data-asset-qa-readiness-state={qaReadinessState}
       data-asset-workspace-availability={assetWorkspace.availability}
       data-blocked-capability-count={blockedCapabilities.length}
       data-external-write-allowed="false"
@@ -1040,6 +1042,12 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
             <strong>
               {qaPendingTotal}/{qaCheckTotal} pending
             </strong>
+          </div>
+        )}
+        {qaCheckTotal > 0 && (
+          <div className="kv-row" data-asset-qa-readiness="true">
+            <span>QA readiness</span>
+            <strong>{qaReadinessState}</strong>
           </div>
         )}
         <div className="kv-row">
