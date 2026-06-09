@@ -187,6 +187,7 @@ assert(app.includes("product.displayHref"), "Imported product preview UI must re
 assert(app.includes("page.displayHref"), "Imported page preview UI must render the sanitized display URL");
 assert(app.includes("queryRow.displayPage"), "Imported query row preview UI must render the display-safe page label");
 assert(app.includes("queryRow.source"), "Imported query row preview UI must render the safe query row source label");
+assert(app.includes("queryRow.window"), "Imported query row preview UI must render the safe query row window label");
 assert(!app.includes("product.href ? <p"), "Imported product preview UI must not render raw href text directly");
 assert(!app.includes("page.href ? <p"), "Imported page preview UI must not render raw href text directly");
 assert(!app.includes("product.sku"), "Imported product preview UI must not render raw product SKU DTO fields directly");
