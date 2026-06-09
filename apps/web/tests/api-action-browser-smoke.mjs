@@ -486,6 +486,41 @@ async function assertImportedActionMixSummaryColor(page, expectedColor, label) {
 
 async function assertImportedActionMixRows(page, expectedRows, label) {
   const importedPanel = page.locator(".imported-preview-panel");
+  const summary = importedPanel.locator("[data-action-mix-state]");
+  const list = importedPanel.locator(".action-mix-list");
+  const listCount = await list.count();
+  assert(listCount === 1, `${label} imported action mix list must render exactly once`);
+
+  const summaryTotalText = await summary.getAttribute("data-action-mix-total");
+  const listTotalText = await list.getAttribute("data-action-mix-total");
+  const listRowCountText = await list.getAttribute("data-action-mix-row-count");
+  const summaryTotal = Number(summaryTotalText);
+  const listTotal = Number(listTotalText);
+  const listRowCount = Number(listRowCountText);
+  const rowElements = list.locator("[data-action-mix-key]");
+  const actualRowCount = await rowElements.count();
+  const expectedRowCount = Object.keys(expectedRows).length;
+
+  assert(
+    Number.isInteger(summaryTotal),
+    `${label} imported action mix summary total must be numeric, got ${summaryTotalText ?? "missing"}`
+  );
+  assert(
+    Number.isInteger(listTotal) && listTotal === summaryTotal,
+    `${label} imported action mix list total mismatch: expected ${summaryTotal}, got ${listTotalText ?? "missing"}`
+  );
+  assert(
+    Number.isInteger(listRowCount) && listRowCount === actualRowCount,
+    `${label} imported action mix list row count mismatch: expected ${actualRowCount}, got ${
+      listRowCountText ?? "missing"
+    }`
+  );
+  assert(
+    actualRowCount === expectedRowCount,
+    `${label} imported action mix row count mismatch: expected ${expectedRowCount}, got ${actualRowCount}`
+  );
+
+  let aggregateCount = 0;
   for (const [actionKey, expectedRow] of Object.entries(expectedRows)) {
     const row = importedPanel.locator(`[data-action-mix-key='${actionKey}']`);
     const rowCount = await row.count();
@@ -494,11 +529,16 @@ async function assertImportedActionMixRows(page, expectedRows, label) {
     const countText = await row.getAttribute("data-action-mix-count");
     const shareText = await row.getAttribute("data-action-mix-share");
     const totalText = await row.getAttribute("data-action-mix-total");
+    const actualCount = Number(countText);
+    const actualShare = Number(shareText);
+    const actualTotal = Number(totalText);
     const rowState = await row.getAttribute("data-action-mix-row-state");
     const rowText = ((await row.textContent()) ?? "").toLowerCase();
     const actualColor = await row.locator("strong").evaluate((element) => getComputedStyle(element).color);
     const expectedState = expectedRow.count > 0 ? "active" : "empty";
     const expectedColor = expectedState === "active" ? "rgb(27, 27, 29)" : "rgb(107, 107, 114)";
+    const expectedShare = calculateImportedSharePercent(actualCount, summaryTotal);
+    aggregateCount += actualCount;
     assert(
       countText === String(expectedRow.count),
       `${label} imported action mix row ${actionKey} count mismatch: expected ${expectedRow.count}, got ${
@@ -512,8 +552,20 @@ async function assertImportedActionMixRows(page, expectedRows, label) {
       }`
     );
     assert(
+      Number.isInteger(actualShare) && actualShare === expectedShare,
+      `${label} imported action mix row ${actionKey} share must reconcile with summary total ${summaryTotal}: expected ${expectedShare}, got ${
+        shareText ?? "missing"
+      }`
+    );
+    assert(
       totalText === String(expectedRow.total),
       `${label} imported action mix row ${actionKey} total mismatch: expected ${expectedRow.total}, got ${
+        totalText ?? "missing"
+      }`
+    );
+    assert(
+      Number.isInteger(actualTotal) && actualTotal === summaryTotal,
+      `${label} imported action mix row ${actionKey} total must match summary total ${summaryTotal}, got ${
         totalText ?? "missing"
       }`
     );
@@ -532,6 +584,10 @@ async function assertImportedActionMixRows(page, expectedRows, label) {
       `${label} imported action mix row ${actionKey} must show count ${expectedRow.count} and share ${expectedRow.share}%`
     );
   }
+  assert(
+    aggregateCount === summaryTotal,
+    `${label} imported action mix row aggregate mismatch: expected ${summaryTotal}, got ${aggregateCount}`
+  );
 }
 
 async function assertImportedPreviewEmptyState(page, expectedKey, label) {

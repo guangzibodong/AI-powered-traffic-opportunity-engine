@@ -1403,7 +1403,12 @@ function ImportedPreviewPanel({
           {actionMixStateLabel} / {actionMixTopLabel} / {actionMixTopCount} / {actionMixTopShare}%
         </strong>
       </div>
-      <div className="action-mix-list" aria-label="Imported action mix categories">
+      <div
+        className="action-mix-list"
+        aria-label="Imported action mix categories"
+        data-action-mix-row-count={actionMixDisplayRows.length}
+        data-action-mix-total={actionMixTotal}
+      >
         {actionMixDisplayRows.map((row) => (
           <div
             className="action-mix-row"
