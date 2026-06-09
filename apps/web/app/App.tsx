@@ -801,7 +801,11 @@ function ImportedPreviewPanel({
       visibleTasks.length > 0);
 
   return (
-    <section className="panel imported-preview-panel" aria-label="Imported preview panel">
+    <section
+      className="panel imported-preview-panel"
+      aria-label="Imported preview panel"
+      data-safety-scope="read-only-imported-preview"
+    >
       <div className="panel-heading">
         <h2>{locale === "zh" ? "Imported 预览" : "Imported previews"}</h2>
         <span className="status safe">read-only imported previews</span>

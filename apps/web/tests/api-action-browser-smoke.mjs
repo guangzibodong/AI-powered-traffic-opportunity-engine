@@ -151,6 +151,59 @@ async function expectVisible(locator, label) {
   assert(count >= 1, `Expected visible ${label}, found none`);
 }
 
+async function assertImportedPreviewPanelIsReadOnly(page, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  await expectVisible(importedPanel, `${label} imported preview panel`);
+
+  const safetyScope = await importedPanel.getAttribute("data-safety-scope");
+  assert(
+    safetyScope === "read-only-imported-preview",
+    `${label} imported preview panel must declare a read-only safety scope`
+  );
+
+  const interactiveSelector = [
+    "button",
+    "a",
+    "form",
+    "input",
+    "select",
+    "textarea",
+    "[href]",
+    "[role='button']",
+    "[role='link']"
+  ].join(", ");
+  const interactiveCount = await importedPanel.locator(interactiveSelector).count();
+  assert(
+    interactiveCount === 0,
+    `${label} imported preview panel must not render interactive controls, role controls, or href navigation`
+  );
+
+  const importedPanelText = ((await importedPanel.textContent()) ?? "").toLowerCase();
+  const forbiddenCopyPatterns = [
+    /\boauth\b/,
+    /\bsync\b/,
+    /\bconnect\b/,
+    /\bdraft\b/,
+    /\bpublish\b/,
+    /\bedit\b/,
+    /\bapply\b/,
+    /\bapprove\b/,
+    /\breject\b/,
+    /\bsnooze\b/,
+    /\bretry\b/,
+    /\bcredential\b/,
+    /\bwrite\b/,
+    /create task/,
+    /run planning/
+  ];
+  for (const pattern of forbiddenCopyPatterns) {
+    assert(
+      !pattern.test(importedPanelText),
+      `${label} imported preview panel exposes unsafe action copy: ${pattern}`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -272,25 +325,7 @@ async function runSmoke() {
       `Imported preview endpoints must be read-only GETs: ${JSON.stringify(unsafeImportedRequests)}`
     );
 
-    const importedPanel = page.locator(".imported-preview-panel");
-    assert((await importedPanel.locator("button").count()) === 0, "Imported preview panel must not render action buttons");
-    const importedPanelText = (await importedPanel.textContent()) ?? "";
-    for (const forbidden of [
-      "Retry sync",
-      "Connect later",
-      "Approve task",
-      "Publish",
-      "Apply",
-      "Create task",
-      "Run planning",
-      "credential",
-      "price edit",
-      "stock edit",
-      "product edit",
-      "commerce write"
-    ]) {
-      assert(!importedPanelText.includes(forbidden), `Imported preview panel exposes unsafe control copy: ${forbidden}`);
-    }
+    await assertImportedPreviewPanelIsReadOnly(page, "initial");
 
     const resilientPage = await context.newPage();
     await resilientPage.route("**/api/stores/**", async (route) => {
@@ -321,10 +356,7 @@ async function runSmoke() {
       "resilient opportunity unavailable message"
     );
     await expectVisible(resilientPage.getByText("Task previews unavailable"), "resilient task unavailable message");
-    assert(
-      (await resilientPage.locator(".imported-preview-panel button").count()) === 0,
-      "Resilient imported preview fallback must not render action buttons"
-    );
+    await assertImportedPreviewPanelIsReadOnly(resilientPage, "resilient fallback");
     await resilientPage.close();
 
     const catalogFailurePage = await context.newPage();
@@ -344,10 +376,7 @@ async function runSmoke() {
     await expectVisible(catalogFailurePage.getByText("Graph-linked clusters"), "catalog failure graph metric");
     await expectVisible(catalogFailurePage.getByText("portable espresso maker camping"), "catalog failure imported query cluster");
     await expectVisible(catalogFailurePage.getByText("recommend_only"), "catalog failure recommend-only task preview");
-    assert(
-      (await catalogFailurePage.locator(".imported-preview-panel button").count()) === 0,
-      "Catalog-only preview failure must not render action buttons"
-    );
+    await assertImportedPreviewPanelIsReadOnly(catalogFailurePage, "catalog-only failure");
     await catalogFailurePage.close();
 
     const queryRowFailurePage = await context.newPage();
@@ -367,10 +396,7 @@ async function runSmoke() {
     await expectVisible(queryRowFailurePage.getByText("Graph-linked clusters"), "query row failure graph metric");
     await expectVisible(queryRowFailurePage.getByText("portable espresso maker camping"), "query row failure imported query cluster");
     await expectVisible(queryRowFailurePage.getByText("Trail Brew Portable Espresso Maker"), "query row failure imported product row");
-    assert(
-      (await queryRowFailurePage.locator(".imported-preview-panel button").count()) === 0,
-      "Query-row-only preview failure must not render action buttons"
-    );
+    await assertImportedPreviewPanelIsReadOnly(queryRowFailurePage, "query-row-only failure");
     await queryRowFailurePage.close();
 
     const graphFailurePage = await context.newPage();
@@ -390,10 +416,7 @@ async function runSmoke() {
     await expectVisible(graphFailurePage.getByText("Query row / Imported GSC"), "graph failure query row preview");
     await expectVisible(graphFailurePage.getByText("Trail Brew Portable Espresso Maker"), "graph failure product preview");
     await expectVisible(graphFailurePage.getByText("recommend_only"), "graph failure task preview");
-    assert(
-      (await graphFailurePage.locator(".imported-preview-panel button").count()) === 0,
-      "Graph-only preview failure must not render action buttons"
-    );
+    await assertImportedPreviewPanelIsReadOnly(graphFailurePage, "graph-only failure");
     await graphFailurePage.close();
 
     const opportunityFailurePage = await context.newPage();
@@ -413,10 +436,7 @@ async function runSmoke() {
     await expectVisible(opportunityFailurePage.getByText("portable espresso maker camping"), "opportunity failure imported query cluster");
     await expectVisible(opportunityFailurePage.getByText("Trail Brew Portable Espresso Maker"), "opportunity failure product preview");
     await expectVisible(opportunityFailurePage.getByText("recommend_only"), "opportunity failure task preview");
-    assert(
-      (await opportunityFailurePage.locator(".imported-preview-panel button").count()) === 0,
-      "Opportunity-only preview failure must not render action buttons"
-    );
+    await assertImportedPreviewPanelIsReadOnly(opportunityFailurePage, "opportunity-only failure");
     await opportunityFailurePage.close();
 
     const taskFailurePage = await context.newPage();
@@ -439,10 +459,7 @@ async function runSmoke() {
       taskFailurePage.getByText("Improve CTR for portable espresso maker camping"),
       "task failure opportunity preview"
     );
-    assert(
-      (await taskFailurePage.locator(".imported-preview-panel button").count()) === 0,
-      "Task-only preview failure must not render action buttons"
-    );
+    await assertImportedPreviewPanelIsReadOnly(taskFailurePage, "task-only failure");
     await taskFailurePage.close();
 
     const derivedFailurePage = await context.newPage();
@@ -477,10 +494,7 @@ async function runSmoke() {
       (await derivedFailurePage.getByText("Imported previews unavailable").count()) === 0,
       "Derived preview failures must not hide successful catalog reads behind the global unavailable state"
     );
-    assert(
-      (await derivedFailurePage.locator(".imported-preview-panel button").count()) === 0,
-      "Derived preview failure must not render action buttons"
-    );
+    await assertImportedPreviewPanelIsReadOnly(derivedFailurePage, "derived-read failure");
     await derivedFailurePage.close();
 
     const firstTaskRow = page.locator("tr").filter({ hasText: taskTitle });
