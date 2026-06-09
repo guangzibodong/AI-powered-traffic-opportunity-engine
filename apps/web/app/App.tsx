@@ -940,6 +940,10 @@ function ImportedPreviewPanel({
   const collectionPageOpportunityTotal = importedPreviews.opportunities.length;
   const collectionPageTaskCount = importedPreviews.summaryDiagnostics.collectionPageTasks;
   const collectionPageTaskTotal = importedPreviews.tasks.length;
+  const productSeoOpportunityCount = importedPreviews.summaryDiagnostics.productSeoOpportunities;
+  const productSeoOpportunityTotal = importedPreviews.opportunities.length;
+  const productSeoTaskCount = importedPreviews.summaryDiagnostics.productSeoTasks;
+  const productSeoTaskTotal = importedPreviews.tasks.length;
   const buyingGuideGapOpportunityCount = importedPreviews.summaryDiagnostics.buyingGuideGapOpportunities;
   const buyingGuideGapOpportunityTotal = importedPreviews.opportunities.length;
   const buyingGuideGapTaskCount = importedPreviews.summaryDiagnostics.buyingGuideGapTasks;
@@ -963,6 +967,11 @@ function ImportedPreviewPanel({
     collectionPageTaskCount,
     collectionPageTaskTotal
   );
+  const productSeoOpportunitySharePercent = getImportedMetricSharePercent(
+    productSeoOpportunityCount,
+    productSeoOpportunityTotal
+  );
+  const productSeoTaskSharePercent = getImportedMetricSharePercent(productSeoTaskCount, productSeoTaskTotal);
   const buyingGuideGapOpportunitySharePercent = getImportedMetricSharePercent(
     buyingGuideGapOpportunityCount,
     buyingGuideGapOpportunityTotal
@@ -978,6 +987,8 @@ function ImportedPreviewPanel({
   const ctrRefreshTaskShare = `${ctrRefreshTaskSharePercent}%`;
   const collectionPageOpportunityShare = `${collectionPageOpportunitySharePercent}%`;
   const collectionPageTaskShare = `${collectionPageTaskSharePercent}%`;
+  const productSeoOpportunityShare = `${productSeoOpportunitySharePercent}%`;
+  const productSeoTaskShare = `${productSeoTaskSharePercent}%`;
   const buyingGuideGapOpportunityShare = `${buyingGuideGapOpportunitySharePercent}%`;
   const buyingGuideGapTaskShare = `${buyingGuideGapTaskSharePercent}%`;
   const recommendOnlyTaskShare = `${recommendOnlyTaskSharePercent}%`;
@@ -1264,6 +1275,26 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="product_seo_task_previews">
           <span>{locale === "zh" ? "Product SEO 任务预览" : "Product SEO task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.productSeoTasks}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-metric-key="product_seo_opportunity_share"
+          data-share-count={productSeoOpportunityCount}
+          data-share-percent={productSeoOpportunitySharePercent}
+          data-share-total={productSeoOpportunityTotal}
+        >
+          <span>{locale === "zh" ? "产品 SEO 机会占比" : "Product SEO opportunity share"}</span>
+          <strong>{productSeoOpportunityShare}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-metric-key="product_seo_task_share"
+          data-share-count={productSeoTaskCount}
+          data-share-percent={productSeoTaskSharePercent}
+          data-share-total={productSeoTaskTotal}
+        >
+          <span>{locale === "zh" ? "产品 SEO 任务占比" : "Product SEO task share"}</span>
+          <strong>{productSeoTaskShare}</strong>
         </div>
       </div>
       <div

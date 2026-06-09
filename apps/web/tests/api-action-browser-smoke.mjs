@@ -1079,6 +1079,8 @@ async function runSmoke() {
     await expectVisible(page.getByText("New opportunity share"), "imported new opportunity share metric");
     await expectVisible(page.getByText("Product SEO opportunities"), "imported product SEO opportunity summary metric");
     await expectVisible(page.getByText("Product SEO task previews"), "imported product SEO task summary metric");
+    await expectVisible(page.getByText("Product SEO opportunity share"), "imported product SEO opportunity share metric");
+    await expectVisible(page.getByText("Product SEO task share"), "imported product SEO task share metric");
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
     await expectVisible(page.getByText("Query row / Imported GSC"), "imported query row friendly source label");
     await expectVisible(page.getByText("evidence 1 row / Imported GSC"), "imported query row evidence summary label");
@@ -1200,6 +1202,8 @@ async function runSmoke() {
         ctr_refresh_task_share: "75%",
         new_task_share: "100%",
         new_opportunity_share: "100%",
+        product_seo_opportunity_share: "0%",
+        product_seo_task_share: "0%",
         recommend_only_task_share: "100%"
       },
       "initial"
@@ -1215,6 +1219,8 @@ async function runSmoke() {
         ctr_refresh_task_share: { count: 3, percent: 75, total: 4 },
         new_task_share: { count: 4, percent: 100, total: 4 },
         new_opportunity_share: { count: 4, percent: 100, total: 4 },
+        product_seo_opportunity_share: { count: 0, percent: 0, total: 4 },
+        product_seo_task_share: { count: 0, percent: 0, total: 4 },
         recommend_only_task_share: { count: 4, percent: 100, total: 4 }
       },
       "initial"
@@ -1436,6 +1442,8 @@ async function runSmoke() {
         ctr_refresh_task_share: "0%",
         new_task_share: "0%",
         new_opportunity_share: "0%",
+        product_seo_opportunity_share: "0%",
+        product_seo_task_share: "0%",
         recommend_only_task_share: "0%"
       },
       "resilient fallback"
@@ -1451,6 +1459,8 @@ async function runSmoke() {
         ctr_refresh_task_share: { count: 0, percent: 0, total: 0 },
         new_task_share: { count: 0, percent: 0, total: 0 },
         new_opportunity_share: { count: 0, percent: 0, total: 0 },
+        product_seo_opportunity_share: { count: 0, percent: 0, total: 0 },
+        product_seo_task_share: { count: 0, percent: 0, total: 0 },
         recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
       "resilient fallback"
@@ -1612,6 +1622,8 @@ async function runSmoke() {
         ctr_refresh_task_share: "0%",
         new_task_share: "0%",
         new_opportunity_share: "0%",
+        product_seo_opportunity_share: "0%",
+        product_seo_task_share: "0%",
         recommend_only_task_share: "0%"
       },
       "empty imported"
@@ -1627,6 +1639,8 @@ async function runSmoke() {
         ctr_refresh_task_share: { count: 0, percent: 0, total: 0 },
         new_task_share: { count: 0, percent: 0, total: 0 },
         new_opportunity_share: { count: 0, percent: 0, total: 0 },
+        product_seo_opportunity_share: { count: 0, percent: 0, total: 0 },
+        product_seo_task_share: { count: 0, percent: 0, total: 0 },
         recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
       "empty imported"
@@ -2036,6 +2050,8 @@ async function runSmoke() {
         ctr_refresh_task_share: "75%",
         new_task_share: "100%",
         new_opportunity_share: "0%",
+        product_seo_opportunity_share: "0%",
+        product_seo_task_share: "0%",
         recommend_only_task_share: "100%"
       },
       "opportunity-only failure"
@@ -2051,6 +2067,8 @@ async function runSmoke() {
         ctr_refresh_task_share: { count: 3, percent: 75, total: 4 },
         new_task_share: { count: 4, percent: 100, total: 4 },
         new_opportunity_share: { count: 0, percent: 0, total: 0 },
+        product_seo_opportunity_share: { count: 0, percent: 0, total: 0 },
+        product_seo_task_share: { count: 0, percent: 0, total: 4 },
         recommend_only_task_share: { count: 4, percent: 100, total: 4 }
       },
       "opportunity-only failure"
@@ -2144,6 +2162,8 @@ async function runSmoke() {
         ctr_refresh_task_share: "0%",
         new_task_share: "0%",
         new_opportunity_share: "100%",
+        product_seo_opportunity_share: "0%",
+        product_seo_task_share: "0%",
         recommend_only_task_share: "0%"
       },
       "task-only failure"
@@ -2159,6 +2179,8 @@ async function runSmoke() {
         ctr_refresh_task_share: { count: 0, percent: 0, total: 0 },
         new_task_share: { count: 0, percent: 0, total: 0 },
         new_opportunity_share: { count: 4, percent: 100, total: 4 },
+        product_seo_opportunity_share: { count: 0, percent: 0, total: 4 },
+        product_seo_task_share: { count: 0, percent: 0, total: 0 },
         recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
       "task-only failure"
