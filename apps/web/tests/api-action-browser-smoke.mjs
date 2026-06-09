@@ -475,6 +475,24 @@ async function assertWordPressDraftReadinessSummary(page, expectedReadyCount, ex
   );
 }
 
+async function assertWordPressDraftReadinessReconciles(page, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for WordPress draft readiness reconciliation`);
+  const summaryRow = assetPanel.locator("[data-wordpress-draft-readiness='blocked']");
+  await expectVisible(summaryRow, `${label} WordPress draft readiness reconciliation row`);
+  const draftCount = Number(await assetPanel.getAttribute("data-asset-draft-count"));
+  const readyCount = Number(await summaryRow.getAttribute("data-wordpress-draft-ready-count"));
+  const totalCount = Number(await summaryRow.getAttribute("data-wordpress-draft-total-count"));
+  assert(
+    totalCount === draftCount,
+    `${label} WordPress draft readiness total mismatch: expected draft count ${draftCount}, got ${totalCount}`
+  );
+  assert(
+    readyCount <= totalCount,
+    `${label} WordPress draft ready count must not exceed total: ready ${readyCount}, total ${totalCount}`
+  );
+}
+
 async function assertAssetWorkspaceQaReadiness(page, expectedReadinessState, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA readiness diagnostics`);
@@ -1856,6 +1874,7 @@ async function runSmoke() {
     );
     await assertAssetWorkspaceQaSummary(populatedAssetPage, 5, 4, "populated asset workspace");
     await assertWordPressDraftReadinessSummary(populatedAssetPage, 0, 3, "populated asset workspace");
+    await assertWordPressDraftReadinessReconciles(populatedAssetPage, "populated asset workspace");
     await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
