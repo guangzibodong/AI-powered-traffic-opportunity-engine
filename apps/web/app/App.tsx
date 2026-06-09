@@ -989,6 +989,10 @@ function ImportedPreviewPanel({
           {visibleProducts.map((product) => (
             <article
               className="rail-item"
+              data-catalog-kind="product"
+              data-catalog-source={product.source}
+              data-catalog-title={product.title}
+              data-has-display-url={product.displayHref ? "true" : "false"}
               data-preview-id={product.id}
               data-preview-kind="product"
               key={product.id}
@@ -1027,6 +1031,10 @@ function ImportedPreviewPanel({
           {visiblePages.map((page) => (
             <article
               className="rail-item"
+              data-catalog-kind="page"
+              data-catalog-source={page.source}
+              data-catalog-title={page.title}
+              data-has-display-url={page.displayHref ? "true" : "false"}
               data-preview-id={page.id}
               data-preview-kind="page"
               key={page.id}

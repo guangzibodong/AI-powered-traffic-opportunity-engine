@@ -602,6 +602,47 @@ async function assertImportedQueryRowDiagnosticValues(page, expectedCount, label
   }
 }
 
+async function assertImportedCatalogCardDiagnosticValues(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  for (const [catalogKind, expectedTitles] of Object.entries(expectedValues)) {
+    const cards = importedPanel.locator(`[data-catalog-kind='${catalogKind}']`);
+    const actualCount = await cards.count();
+    assert(
+      actualCount === expectedTitles.length,
+      `${label} imported catalog ${catalogKind} card count mismatch: expected ${expectedTitles.length}, got ${actualCount}`
+    );
+
+    const actualCards = await cards.evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        hasDisplayUrl: node.getAttribute("data-has-display-url") ?? "",
+        href: node.getAttribute("href"),
+        source: node.getAttribute("data-catalog-source") ?? "",
+        text: (node.textContent ?? "").trim(),
+        title: node.getAttribute("data-catalog-title") ?? ""
+      }))
+    );
+    const actualTitles = actualCards.map((card) => card.title).sort();
+    const sortedExpectedTitles = [...expectedTitles].sort();
+    assert(
+      JSON.stringify(actualTitles) === JSON.stringify(sortedExpectedTitles),
+      `${label} imported catalog ${catalogKind} titles mismatch: expected ${sortedExpectedTitles.join(", ")}, got ${actualTitles.join(", ")}`
+    );
+
+    const expectedSource = catalogKind === "product" ? "WooCommerce" : "WordPress";
+    for (const card of actualCards) {
+      assert(
+        card.source === expectedSource,
+        `${label} imported catalog ${catalogKind} source mismatch: expected ${expectedSource}, got ${card.source || "missing"}`
+      );
+      assert(
+        card.hasDisplayUrl === "true" && card.text.includes(card.title),
+        `${label} imported catalog ${catalogKind} must expose safe title text and a display URL marker`
+      );
+      assert(card.href === null, `${label} imported catalog ${catalogKind} card must not expose href navigation`);
+    }
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -789,6 +830,14 @@ async function runSmoke() {
     await assertImportedOpportunityPreviewDiagnosticValues(page, 2, "initial");
     await assertImportedQueryClusterDiagnosticValues(page, 2, "initial");
     await assertImportedQueryRowDiagnosticValues(page, 2, "initial");
+    await assertImportedCatalogCardDiagnosticValues(
+      page,
+      {
+        page: ["Camping Espresso Collection", "Camping Pour Over Guide"],
+        product: ["Camp Kettle Pour Over Kit", "Trail Brew Portable Espresso Maker"]
+      },
+      "initial"
+    );
 
     const resilientPage = await context.newPage();
     await resilientPage.route("**/api/stores/**", async (route) => {
