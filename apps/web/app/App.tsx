@@ -1054,6 +1054,7 @@ function ImportedPreviewPanel({
           : "balanced";
   const actionMixDisplayRows = actionMixRows.map((row) => ({
     ...row,
+    state: row.count > 0 ? "active" : "empty",
     share: getImportedMetricSharePercent(row.count, actionMixTotal)
   }));
   const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
@@ -1408,6 +1409,7 @@ function ImportedPreviewPanel({
             className="action-mix-row"
             data-action-mix-count={row.count}
             data-action-mix-key={row.key}
+            data-action-mix-row-state={row.state}
             data-action-mix-share={row.share}
             data-action-mix-total={actionMixTotal}
             key={row.key}

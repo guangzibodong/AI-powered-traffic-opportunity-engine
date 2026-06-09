@@ -494,7 +494,11 @@ async function assertImportedActionMixRows(page, expectedRows, label) {
     const countText = await row.getAttribute("data-action-mix-count");
     const shareText = await row.getAttribute("data-action-mix-share");
     const totalText = await row.getAttribute("data-action-mix-total");
+    const rowState = await row.getAttribute("data-action-mix-row-state");
     const rowText = ((await row.textContent()) ?? "").toLowerCase();
+    const actualColor = await row.locator("strong").evaluate((element) => getComputedStyle(element).color);
+    const expectedState = expectedRow.count > 0 ? "active" : "empty";
+    const expectedColor = expectedState === "active" ? "rgb(27, 27, 29)" : "rgb(107, 107, 114)";
     assert(
       countText === String(expectedRow.count),
       `${label} imported action mix row ${actionKey} count mismatch: expected ${expectedRow.count}, got ${
@@ -512,6 +516,16 @@ async function assertImportedActionMixRows(page, expectedRows, label) {
       `${label} imported action mix row ${actionKey} total mismatch: expected ${expectedRow.total}, got ${
         totalText ?? "missing"
       }`
+    );
+    assert(
+      rowState === expectedState,
+      `${label} imported action mix row ${actionKey} state mismatch: expected ${expectedState}, got ${
+        rowState ?? "missing"
+      }`
+    );
+    assert(
+      actualColor === expectedColor,
+      `${label} imported action mix row ${actionKey} color mismatch: expected ${expectedColor}, got ${actualColor}`
     );
     assert(
       rowText.includes(String(expectedRow.count)) && rowText.includes(`${expectedRow.share}%`),

@@ -801,6 +801,14 @@ tr:last-child td {
   text-align: right;
 }
 
+.action-mix-row[data-action-mix-row-state="active"] strong {
+  color: var(--text);
+}
+
+.action-mix-row[data-action-mix-row-state="empty"] strong {
+  color: var(--muted);
+}
+
 .section-health-row {
   align-items: center;
   border-bottom: 1px solid var(--line);

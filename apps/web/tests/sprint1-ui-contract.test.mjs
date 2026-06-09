@@ -222,6 +222,16 @@ assert(
   styles.includes('.action-mix-summary[data-action-mix-state="balanced"] strong'),
   "styles.css must style balanced imported action mix summaries"
 );
+assert(styles.includes(".action-mix-list"), "styles.css must style imported action mix row lists");
+assert(styles.includes(".action-mix-row"), "styles.css must style imported action mix rows");
+assert(
+  styles.includes('.action-mix-row[data-action-mix-row-state="active"] strong'),
+  "styles.css must style active imported action mix rows"
+);
+assert(
+  styles.includes('.action-mix-row[data-action-mix-row-state="empty"] strong'),
+  "styles.css must style empty imported action mix rows"
+);
 assert(!taskQueue.includes("<th>{labels.objects}</th>"), "TaskQueue must not duplicate object counts in a separate narrow desktop column");
 assert(!taskQueue.includes("data-label={labels.objects}"), "TaskQueue object counts should stay inside task metadata pills");
 assert(styles.includes("@media (max-width: 1320px)"), "styles.css must stack the side rail before evidence columns become unreadable");
