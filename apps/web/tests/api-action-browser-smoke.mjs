@@ -31,6 +31,7 @@ const importedProducts = [
     categories: [{ name: "Camping Coffee" }],
     id: 101,
     name: "Trail Brew Portable Espresso Maker",
+    permalink: "https://example.com/product/trail-brew-portable-espresso-maker",
     slug: "trail-brew-portable-espresso-maker",
     status: "publish",
     stock_status: "instock"
@@ -40,6 +41,7 @@ const importedProducts = [
     categories: [{ name: "Camping Coffee" }],
     id: 102,
     name: "Camp Kettle Pour Over Kit",
+    permalink: "https://example.com/product/camp-kettle-pour-over-kit",
     slug: "camp-kettle-pour-over-kit",
     status: "publish",
     stock_status: "instock"
@@ -49,6 +51,7 @@ const importedProducts = [
     categories: [{ name: "Camping Coffee" }],
     id: 103,
     name: "Trail Cold Brew Bottle",
+    permalink: "https://example.com/product/trail-cold-brew-bottle",
     slug: "trail-cold-brew-bottle",
     status: "publish",
     stock_status: "instock"
@@ -305,6 +308,43 @@ async function assertImportedPreviewOverflowValues(page, expectedValues, label) 
   }
 }
 
+async function assertImportedPreviewReferenceValues(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  for (const [referenceKind, expectedReferences] of Object.entries(expectedValues)) {
+    const references = importedPanel.locator(`[data-reference-kind='${referenceKind}']`);
+    const actualCount = await references.count();
+    assert(
+      actualCount === expectedReferences.length,
+      `${label} imported preview reference ${referenceKind} count mismatch: expected ${expectedReferences.length}, got ${actualCount}`
+    );
+
+    const actualReferences = await references.evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        href: node.getAttribute("href"),
+        text: (node.textContent ?? "").trim(),
+        value: node.getAttribute("data-reference-value") ?? ""
+      }))
+    );
+    const actualValues = actualReferences.map((reference) => reference.value).sort();
+    const sortedExpectedReferences = [...expectedReferences].sort();
+    assert(
+      JSON.stringify(actualValues) === JSON.stringify(sortedExpectedReferences),
+      `${label} imported preview reference ${referenceKind} values mismatch: expected ${sortedExpectedReferences.join(", ")}, got ${actualValues.join(", ")}`
+    );
+
+    for (const reference of actualReferences) {
+      assert(
+        reference.value.length > 0 && reference.text.includes(reference.value),
+        `${label} imported preview reference ${referenceKind} must expose safe reference text matching its data-reference-value`
+      );
+      assert(
+        reference.href === null,
+        `${label} imported preview reference ${referenceKind} must not expose href navigation`
+      );
+    }
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -464,6 +504,18 @@ async function runSmoke() {
         product: 2,
         query_row: 2,
         task_preview: 2
+      },
+      "initial"
+    );
+    await assertImportedPreviewReferenceValues(
+      page,
+      {
+        page_display_url: ["example.com/camping-espresso", "example.com/camping-pour-over"],
+        product_display_url: [
+          "example.com/product/camp-kettle-pour-over-kit",
+          "example.com/product/trail-brew-portable-espresso-maker"
+        ],
+        query_page: ["example.com/camping-espresso", "example.com/camping-pour-over"]
       },
       "initial"
     );

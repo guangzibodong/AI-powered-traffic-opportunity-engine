@@ -946,7 +946,13 @@ function ImportedPreviewPanel({
                 {queryRow.displayPosition} / window {queryRow.window}
               </p>
               <p className="muted">{queryRow.displayEvidenceSummary}</p>
-              <p className="muted catalog-reference">page {queryRow.displayPage}</p>
+              <p
+                className="muted catalog-reference"
+                data-reference-kind="query_page"
+                data-reference-value={queryRow.displayPage}
+              >
+                page {queryRow.displayPage}
+              </p>
             </article>
           ))}
           {queryRowOverflowCount > 0 ? (
@@ -972,7 +978,15 @@ function ImportedPreviewPanel({
               </span>
               <h3>{product.title}</h3>
               <p className="muted">{product.detail}</p>
-              {product.displayHref ? <p className="muted catalog-reference">{product.displayHref}</p> : null}
+              {product.displayHref ? (
+                <p
+                  className="muted catalog-reference"
+                  data-reference-kind="product_display_url"
+                  data-reference-value={product.displayHref}
+                >
+                  {product.displayHref}
+                </p>
+              ) : null}
             </article>
           ))}
           {productOverflowCount > 0 ? (
@@ -996,7 +1010,15 @@ function ImportedPreviewPanel({
               <span className="pill safe">{locale === "zh" ? `页面 / ${page.source}` : `Page / ${page.source}`}</span>
               <h3>{page.title}</h3>
               <p className="muted">{page.detail}</p>
-              {page.displayHref ? <p className="muted catalog-reference">{page.displayHref}</p> : null}
+              {page.displayHref ? (
+                <p
+                  className="muted catalog-reference"
+                  data-reference-kind="page_display_url"
+                  data-reference-value={page.displayHref}
+                >
+                  {page.displayHref}
+                </p>
+              ) : null}
             </article>
           ))}
           {pageOverflowCount > 0 ? (

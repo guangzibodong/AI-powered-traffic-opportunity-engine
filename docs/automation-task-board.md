@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only QA coverage is complete through imported preview empty-state DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only QA coverage is complete through imported preview reference DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -104,6 +104,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-058 | 70 | done | QA Lead / UI Systems Engineer | Expose imported preview overflow-key DOM diagnostics. | Browser smoke verifies each read-only imported preview overflow indicator exposes a stable `data-overflow-key` and numeric `data-overflow-count` for hidden query clusters, query rows, catalog products, catalog pages, opportunity previews, and task previews, without adding controls, navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 | TASK-S2-QA-059 | 71 | done | QA Lead / UI Systems Engineer | Expose imported preview state DOM diagnostics. | Browser smoke verifies the read-only imported preview panel exposes stable `data-preview-availability` and numeric `data-warning-count` markers across ready, unavailable, and partial-failure states, without adding controls, navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 | TASK-S2-QA-060 | 72 | done | QA Lead / UI Systems Engineer | Expose imported preview empty-state DOM diagnostics. | Browser smoke verifies empty read-only imported preview responses render an `empty` panel with stable `data-empty-state-key`, zero warnings, zero metrics, no warning keys, no preview items, no overflow indicators, and no controls, navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
+| TASK-S2-QA-061 | 73 | done | QA Lead / UI Systems Engineer | Expose imported preview reference DOM diagnostics. | Browser smoke verifies query-row page references plus imported product/page display references expose stable `data-reference-kind` and safe reference text, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 
 ## Blockers
 
@@ -245,6 +246,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported preview state DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported preview empty-state DOM diagnostics are next because connected-but-empty imported data should be verifiable with stable read-only DOM markers instead of localized copy alone.
 - Imported preview empty-state DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported preview reference DOM diagnostics are next because page and catalog references should be verifiable with stable read-only DOM markers instead of localized copy alone.
+- Imported preview reference DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 
