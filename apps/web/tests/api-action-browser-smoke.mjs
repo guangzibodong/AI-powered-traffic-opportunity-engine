@@ -449,6 +449,29 @@ async function assertAssetWorkspaceQaSummary(page, expectedQaCheckCount, expecte
   );
 }
 
+async function assertAssetWorkspaceQaAggregateReconciles(page, hiddenQaCheckCount, hiddenQaPendingCount, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for QA aggregate reconciliation`);
+  const summaryRow = assetPanel.locator("[data-asset-qa-summary='true']");
+  const summaryQaCheckCount = Number(await summaryRow.getAttribute("data-asset-qa-check-count"));
+  const summaryQaPendingCount = Number(await summaryRow.getAttribute("data-asset-qa-pending-count"));
+  const visibleRows = await assetPanel.locator("[data-asset-id]").all();
+  let visibleQaCheckCount = 0;
+  let visibleQaPendingCount = 0;
+  for (const row of visibleRows) {
+    visibleQaCheckCount += Number(await row.getAttribute("data-asset-qa-check-count"));
+    visibleQaPendingCount += Number(await row.getAttribute("data-asset-qa-pending-count"));
+  }
+  assert(
+    visibleQaCheckCount + hiddenQaCheckCount === summaryQaCheckCount,
+    `${label} QA aggregate check count mismatch: visible ${visibleQaCheckCount} + hidden ${hiddenQaCheckCount} != summary ${summaryQaCheckCount}`
+  );
+  assert(
+    visibleQaPendingCount + hiddenQaPendingCount === summaryQaPendingCount,
+    `${label} QA aggregate pending count mismatch: visible ${visibleQaPendingCount} + hidden ${hiddenQaPendingCount} != summary ${summaryQaPendingCount}`
+  );
+}
+
 async function assertAssetWorkspaceRowAggregateReconciles(page, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for row aggregate diagnostics`);
@@ -1765,6 +1788,7 @@ async function runSmoke() {
       "populated asset workspace"
     );
     await assertAssetWorkspaceQaSummary(populatedAssetPage, 5, 4, "populated asset workspace");
+    await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     await populatedAssetPage.close();
 
