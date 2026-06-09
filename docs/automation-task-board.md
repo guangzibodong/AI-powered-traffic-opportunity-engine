@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported buying guide source-rule summary metrics are verified; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported buying guide gap share diagnostics are verified; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -147,6 +147,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-UX-101 | 113 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported buying guide summary metrics. | Imported preview UI renders read-only buying guide opportunity/task preview counts from imported summary diagnostics, with stable metric keys and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-QA-102 | 114 | done | QA Lead / Frontend Product Engineer | Add positive browser smoke coverage for imported buying guide previews. | Browser smoke seeds a commercial-investigation imported query that generates read-only buying guide opportunity/task previews, verifies positive buying guide summary counts and rail totals, and keeps zero review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-UX-103 | 115 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported buying guide source-rule summary metrics. | Imported preview UI renders read-only `buying_guide_gap` opportunity/task source-rule counts from imported summary diagnostics, with stable metric keys and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-UX-104 | 116 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported buying guide gap share diagnostics. | Imported preview UI renders read-only buying guide gap opportunity/task share percentages from imported summary diagnostics and preview totals, with stable metric keys and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 
 ## Blockers
 
@@ -374,6 +375,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Positive imported buying guide browser coverage is verified by browser smoke red-green coverage with a seeded commercial-investigation query, full frontend checks, backend tests, diff check, and secret scan.
 - Imported buying guide source-rule summary metrics are next because operators and QA need to distinguish the `buying_guide_gap` rule count from the `buying_guide` action category before any draft workflow exists.
 - Imported buying guide source-rule summary metrics are verified by browser smoke red-green coverage across populated, empty, fallback, and single-failure states, with stable metric keys and no unsafe controls.
+- Imported buying guide gap share diagnostics are next because operators need a quick read-only scan of whether buying-guide gaps are isolated or a meaningful share of imported opportunity/task previews.
+- Imported buying guide gap share diagnostics are verified by browser smoke red-green coverage across populated, fallback, empty, opportunity-only failure, and task-only failure states, with stable metric keys and no unsafe controls.
 
 ## Completion Rule
 

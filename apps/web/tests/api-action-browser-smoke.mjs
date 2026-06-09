@@ -484,6 +484,21 @@ async function assertImportedPreviewMetricValues(page, expectedValues, label) {
   }
 }
 
+async function assertImportedPreviewMetricTexts(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  for (const [metricKey, expectedValue] of Object.entries(expectedValues)) {
+    const metric = importedPanel.locator(`[data-metric-key='${metricKey}']`);
+    const metricCount = await metric.count();
+    assert(metricCount === 1, `${label} imported preview metric ${metricKey} must render exactly once`);
+
+    const metricValueText = ((await metric.locator("strong").textContent()) ?? "").trim();
+    assert(
+      metricValueText === expectedValue,
+      `${label} imported preview metric ${metricKey} text mismatch: expected ${expectedValue}, got ${metricValueText}`
+    );
+  }
+}
+
 async function assertImportedPreviewOverflowValues(page, expectedValues, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   for (const [overflowKey, expectedValue] of Object.entries(expectedValues)) {
@@ -1023,6 +1038,8 @@ async function runSmoke() {
     await expectVisible(page.getByText("Buying guide task previews"), "imported buying guide task summary metric");
     await expectVisible(page.getByText("Buying guide gap opportunities"), "imported buying guide gap opportunity rule summary metric");
     await expectVisible(page.getByText("Buying guide gap task previews"), "imported buying guide gap task rule summary metric");
+    await expectVisible(page.getByText("Buying guide gap opportunity share"), "imported buying guide gap opportunity share metric");
+    await expectVisible(page.getByText("Buying guide gap task share"), "imported buying guide gap task share metric");
     await expectVisible(page.getByText("Ranking push opportunities"), "imported ranking push opportunity summary metric");
     await expectVisible(page.getByText("Ranking push task previews"), "imported ranking push task summary metric");
     await expectVisible(page.getByText("Recommend-only task previews"), "imported recommend-only task summary metric");
@@ -1137,6 +1154,14 @@ async function runSmoke() {
         product_seo_task_previews: 0,
         query_rows: 5,
         task_previews: 4
+      },
+      "initial"
+    );
+    await assertImportedPreviewMetricTexts(
+      page,
+      {
+        buying_guide_gap_opportunity_share: "25%",
+        buying_guide_gap_task_share: "25%"
       },
       "initial"
     );
@@ -1346,6 +1371,14 @@ async function runSmoke() {
       },
       "resilient fallback"
     );
+    await assertImportedPreviewMetricTexts(
+      resilientPage,
+      {
+        buying_guide_gap_opportunity_share: "0%",
+        buying_guide_gap_task_share: "0%"
+      },
+      "resilient fallback"
+    );
     await assertImportedPreviewOverflowValues(
       resilientPage,
       {
@@ -1489,6 +1522,14 @@ async function runSmoke() {
         product_seo_task_previews: 0,
         query_rows: 0,
         task_previews: 0
+      },
+      "empty imported"
+    );
+    await assertImportedPreviewMetricTexts(
+      emptyImportedPage,
+      {
+        buying_guide_gap_opportunity_share: "0%",
+        buying_guide_gap_task_share: "0%"
       },
       "empty imported"
     );
@@ -1886,6 +1927,14 @@ async function runSmoke() {
       },
       "opportunity-only failure"
     );
+    await assertImportedPreviewMetricTexts(
+      opportunityFailurePage,
+      {
+        buying_guide_gap_opportunity_share: "0%",
+        buying_guide_gap_task_share: "25%"
+      },
+      "opportunity-only failure"
+    );
     await assertImportedPreviewItemKinds(
       opportunityFailurePage,
       {
@@ -1961,6 +2010,14 @@ async function runSmoke() {
         product_seo_task_previews: 0,
         query_rows: 5,
         task_previews: 0
+      },
+      "task-only failure"
+    );
+    await assertImportedPreviewMetricTexts(
+      taskFailurePage,
+      {
+        buying_guide_gap_opportunity_share: "25%",
+        buying_guide_gap_task_share: "0%"
       },
       "task-only failure"
     );
