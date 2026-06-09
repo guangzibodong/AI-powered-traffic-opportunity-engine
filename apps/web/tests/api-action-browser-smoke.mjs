@@ -377,6 +377,52 @@ async function assertImportedPreviewSourceValues(page, expectedValues, label) {
   }
 }
 
+async function assertImportedTaskPreviewSafetyValues(page, expectedCount, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const safetyRows = importedPanel.locator("[data-task-preview-safety='recommend_only']");
+  const actualCount = await safetyRows.count();
+  assert(
+    actualCount === expectedCount,
+    `${label} imported task preview safety row count mismatch: expected ${expectedCount}, got ${actualCount}`
+  );
+
+  for (let index = 0; index < actualCount; index += 1) {
+    const row = safetyRows.nth(index);
+    const automationLevel = await row.getAttribute("data-automation-level");
+    const taskStatus = await row.getAttribute("data-task-status");
+    const trafscoreText = await row.getAttribute("data-trafscore");
+    const evidenceCountText = await row.getAttribute("data-evidence-count");
+    const href = await row.getAttribute("href");
+    const rowText = ((await row.textContent()) ?? "").trim();
+
+    assert(
+      automationLevel === "recommend_only",
+      `${label} imported task preview ${index} automation level mismatch: expected recommend_only, got ${automationLevel ?? "missing"}`
+    );
+    assert(
+      taskStatus === "new",
+      `${label} imported task preview ${index} status mismatch: expected new, got ${taskStatus ?? "missing"}`
+    );
+
+    const trafscore = Number(trafscoreText);
+    assert(
+      Number.isFinite(trafscore) && trafscore > 0,
+      `${label} imported task preview ${index} must expose a positive numeric data-trafscore`
+    );
+
+    const evidenceCount = Number(evidenceCountText);
+    assert(
+      Number.isInteger(evidenceCount) && evidenceCount > 0,
+      `${label} imported task preview ${index} must expose a positive integer data-evidence-count`
+    );
+    assert(rowText.includes("recommend_only"), `${label} imported task preview ${index} must show recommend_only safety text`);
+    assert(
+      href === null,
+      `${label} imported task preview ${index} safety row must not expose href navigation`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -560,6 +606,7 @@ async function runSmoke() {
       },
       "initial"
     );
+    await assertImportedTaskPreviewSafetyValues(page, 2, "initial");
 
     const resilientPage = await context.newPage();
     await resilientPage.route("**/api/stores/**", async (route) => {

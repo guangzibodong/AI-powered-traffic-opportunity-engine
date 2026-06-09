@@ -1074,7 +1074,14 @@ function ImportedPreviewPanel({
             >
               <span className="pill commerce">{locale === "zh" ? "任务预览" : "Task preview"}</span>
               <h3>{localizeTaskTitle(task.title, locale)}</h3>
-              <p className="muted">
+              <p
+                className="muted"
+                data-automation-level={task.automationLevel}
+                data-evidence-count={task.evidence.length}
+                data-task-preview-safety="recommend_only"
+                data-task-status={task.status}
+                data-trafscore={task.trafscore}
+              >
                 {locale === "zh"
                   ? `recommend_only / 分数 ${task.trafscore} / 证据 ${task.evidence.length}`
                   : `recommend_only / score ${task.trafscore} / evidence ${task.evidence.length}`}
