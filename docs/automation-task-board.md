@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported detail helper GET-only and URL encoding coverage is queued after completing imported adapter fixture behavior coverage; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only QA coverage is complete through imported detail helper GET-only URL encoding checks; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -92,7 +92,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-GSC-046 | 58 | done | Frontend Product Engineer / QA Lead | Format imported query row evidence metrics consistently. | Imported query row evidence rows reuse the same display-safe impressions, clicks, CTR, and average-position formatting as preview cards, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 | TASK-S2-GSC-047 | 59 | done | Frontend Product Engineer / QA Lead | Show imported query row evidence summary labels. | Imported query row cards render a compact display-safe evidence summary from the row view model, keep the card text-only, and add no import execution, real GSC OAuth, credential, sync, task, draft, publish, external navigation, or external write controls. |
 | TASK-S2-QA-048 | 60 | done | QA Lead / Frontend Product Engineer | Add imported adapter fixture behavior coverage. | Runtime fixture tests verify imported task status and automation clamps, imported query row display formatting and fallbacks, safe source/window/page labels, and no live integration, draft, publish, credential, sync, or commerce write behavior. |
-| TASK-S2-QA-049 | 61 | todo | QA Lead / Frontend Product Engineer | Add imported detail helper GET-only URL encoding coverage. | Runtime API-client tests verify imported query, product, page, query-cluster, opportunity, and task detail helpers encode store/entity path segments, use GET-only fetches, and expose no POST/PATCH/PUT/DELETE, credential, sync, draft, publish, or commerce write behavior. |
+| TASK-S2-QA-049 | 61 | done | QA Lead / Frontend Product Engineer | Add imported detail helper GET-only URL encoding coverage. | Runtime API-client tests verify imported query, product, page, query-cluster, opportunity, and task detail helpers encode store/entity path segments, use GET-only fetches, and expose no POST/PATCH/PUT/DELETE, credential, sync, draft, publish, or commerce write behavior. |
 
 ## Blockers
 
@@ -211,6 +211,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported adapter fixture behavior coverage is next because static contract checks should be backed by runtime examples for safe imported DTO clamps and query row formatting.
 - Imported adapter fixture behavior coverage is verified by runtime fixture contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported detail helper GET-only URL encoding coverage is next because read-only imported detail helpers should be locked by runtime client tests, not only static string checks.
+- Imported detail helper GET-only URL encoding coverage is verified by runtime API-client fixture coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 
