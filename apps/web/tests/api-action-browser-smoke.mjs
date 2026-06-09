@@ -1061,6 +1061,8 @@ async function runSmoke() {
     await expectVisible(page.getByText("CTR refresh task share"), "imported CTR refresh task share metric");
     await expectVisible(page.getByText("Collection page opportunities"), "imported collection page opportunity summary metric");
     await expectVisible(page.getByText("Collection page task previews"), "imported collection page task summary metric");
+    await expectVisible(page.getByText("Collection page opportunity share"), "imported collection page opportunity share metric");
+    await expectVisible(page.getByText("Collection page task share"), "imported collection page task share metric");
     await expectVisible(page.getByText("Buying guide opportunities"), "imported buying guide opportunity summary metric");
     await expectVisible(page.getByText("Buying guide task previews"), "imported buying guide task summary metric");
     await expectVisible(page.getByText("Buying guide gap opportunities"), "imported buying guide gap opportunity rule summary metric");
@@ -1192,6 +1194,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: "25%",
         buying_guide_gap_task_share: "25%",
+        collection_page_opportunity_share: "0%",
+        collection_page_task_share: "0%",
         ctr_refresh_opportunity_share: "75%",
         ctr_refresh_task_share: "75%",
         new_task_share: "100%",
@@ -1205,6 +1209,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: { count: 1, percent: 25, total: 4 },
         buying_guide_gap_task_share: { count: 1, percent: 25, total: 4 },
+        collection_page_opportunity_share: { count: 0, percent: 0, total: 4 },
+        collection_page_task_share: { count: 0, percent: 0, total: 4 },
         ctr_refresh_opportunity_share: { count: 3, percent: 75, total: 4 },
         ctr_refresh_task_share: { count: 3, percent: 75, total: 4 },
         new_task_share: { count: 4, percent: 100, total: 4 },
@@ -1424,6 +1430,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: "0%",
         buying_guide_gap_task_share: "0%",
+        collection_page_opportunity_share: "0%",
+        collection_page_task_share: "0%",
         ctr_refresh_opportunity_share: "0%",
         ctr_refresh_task_share: "0%",
         new_task_share: "0%",
@@ -1437,6 +1445,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: { count: 0, percent: 0, total: 0 },
         buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 },
+        collection_page_opportunity_share: { count: 0, percent: 0, total: 0 },
+        collection_page_task_share: { count: 0, percent: 0, total: 0 },
         ctr_refresh_opportunity_share: { count: 0, percent: 0, total: 0 },
         ctr_refresh_task_share: { count: 0, percent: 0, total: 0 },
         new_task_share: { count: 0, percent: 0, total: 0 },
@@ -1596,6 +1606,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: "0%",
         buying_guide_gap_task_share: "0%",
+        collection_page_opportunity_share: "0%",
+        collection_page_task_share: "0%",
         ctr_refresh_opportunity_share: "0%",
         ctr_refresh_task_share: "0%",
         new_task_share: "0%",
@@ -1609,6 +1621,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: { count: 0, percent: 0, total: 0 },
         buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 },
+        collection_page_opportunity_share: { count: 0, percent: 0, total: 0 },
+        collection_page_task_share: { count: 0, percent: 0, total: 0 },
         ctr_refresh_opportunity_share: { count: 0, percent: 0, total: 0 },
         ctr_refresh_task_share: { count: 0, percent: 0, total: 0 },
         new_task_share: { count: 0, percent: 0, total: 0 },
@@ -2016,6 +2030,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: "0%",
         buying_guide_gap_task_share: "25%",
+        collection_page_opportunity_share: "0%",
+        collection_page_task_share: "0%",
         ctr_refresh_opportunity_share: "0%",
         ctr_refresh_task_share: "75%",
         new_task_share: "100%",
@@ -2029,6 +2045,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: { count: 0, percent: 0, total: 0 },
         buying_guide_gap_task_share: { count: 1, percent: 25, total: 4 },
+        collection_page_opportunity_share: { count: 0, percent: 0, total: 0 },
+        collection_page_task_share: { count: 0, percent: 0, total: 4 },
         ctr_refresh_opportunity_share: { count: 0, percent: 0, total: 0 },
         ctr_refresh_task_share: { count: 3, percent: 75, total: 4 },
         new_task_share: { count: 4, percent: 100, total: 4 },
@@ -2120,6 +2138,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: "25%",
         buying_guide_gap_task_share: "0%",
+        collection_page_opportunity_share: "0%",
+        collection_page_task_share: "0%",
         ctr_refresh_opportunity_share: "75%",
         ctr_refresh_task_share: "0%",
         new_task_share: "0%",
@@ -2133,6 +2153,8 @@ async function runSmoke() {
       {
         buying_guide_gap_opportunity_share: { count: 1, percent: 25, total: 4 },
         buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 },
+        collection_page_opportunity_share: { count: 0, percent: 0, total: 4 },
+        collection_page_task_share: { count: 0, percent: 0, total: 0 },
         ctr_refresh_opportunity_share: { count: 3, percent: 75, total: 4 },
         ctr_refresh_task_share: { count: 0, percent: 0, total: 0 },
         new_task_share: { count: 0, percent: 0, total: 0 },
