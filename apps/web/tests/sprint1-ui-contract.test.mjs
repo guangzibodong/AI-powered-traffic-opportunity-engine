@@ -198,6 +198,14 @@ assert(styles.includes("--panel-soft: #f4f4f5"), "styles.css must use the Refero
 assert(styles.includes("--line: #e5e7eb"), "styles.css must use 1px neutral border tokens");
 assert(styles.includes("--text: #1b1b1d"), "styles.css must use near-black text on light canvas");
 assert(styles.includes("--shadow: none"), "styles.css must remove generic app card shadows");
+assert(
+  styles.includes('.section-health-summary[data-section-health-summary="empty"] strong'),
+  "styles.css must style empty imported section health summaries"
+);
+assert(
+  styles.includes('.section-health-summary[data-section-health-summary="degraded"] strong'),
+  "styles.css must style degraded imported section health summaries"
+);
 assert(!taskQueue.includes("<th>{labels.objects}</th>"), "TaskQueue must not duplicate object counts in a separate narrow desktop column");
 assert(!taskQueue.includes("data-label={labels.objects}"), "TaskQueue object counts should stay inside task metadata pills");
 assert(styles.includes("@media (max-width: 1320px)"), "styles.css must stack the side rail before evidence columns become unreadable");

@@ -732,6 +732,14 @@ tr:last-child td {
   text-align: right;
 }
 
+.section-health-summary[data-section-health-summary="empty"] strong {
+  color: var(--muted);
+}
+
+.section-health-summary[data-section-health-summary="degraded"] strong {
+  color: var(--risk);
+}
+
 .section-health-row {
   align-items: center;
   border-bottom: 1px solid var(--line);
