@@ -140,6 +140,20 @@ export type ImportedQueryClusterPreview = {
   evidence: EvidenceRow[];
 };
 
+export type ImportedQueryRowPreview = {
+  clicks: number;
+  ctr: number;
+  displayPage: string;
+  evidence: EvidenceRow[];
+  id: string;
+  impressions: number;
+  page: string;
+  position: number;
+  query: string;
+  source: string;
+  window: string;
+};
+
 export type ImportedCatalogPreview = {
   detail: string;
   displayHref?: string;

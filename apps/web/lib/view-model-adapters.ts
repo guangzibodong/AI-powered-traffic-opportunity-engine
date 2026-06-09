@@ -4,6 +4,7 @@ import type {
   EvidenceRow,
   ImportedCatalogPreview,
   ImportedQueryClusterPreview,
+  ImportedQueryRowPreview,
   IntegrationHealth,
   Opportunity,
   ScoreComponent,
@@ -25,6 +26,8 @@ import type {
   ApiImportedProductsResponse,
   ApiImportedQueryClusterResponse,
   ApiImportedQueryClustersResponse,
+  ApiImportedQueryResponse,
+  ApiImportedQueriesResponse,
   ApiImportedTaskResponse,
   ApiImportedTasksResponse,
   ApiIntegrationStatus,
@@ -172,6 +175,14 @@ export function mapApiImportedProductsToCatalogPreviews(
   return response.products.map(mapApiImportedProductToCatalogPreview);
 }
 
+export function mapApiImportedQueriesToPreviews(response: ApiImportedQueriesResponse): ImportedQueryRowPreview[] {
+  return response.queries.map(mapApiImportedQueryRowToPreview);
+}
+
+export function mapApiImportedQueryResponseToPreview(response: ApiImportedQueryResponse): ImportedQueryRowPreview {
+  return mapApiImportedQueryRowToPreview(response.query);
+}
+
 export function mapApiImportedProductResponseToCatalogPreview(
   response: ApiImportedProductResponse
 ): ImportedCatalogPreview {
@@ -236,6 +247,39 @@ function formatImportedCatalogHrefForDisplay(href?: string | null): string | und
 function truncateCatalogHrefDisplay(displayHref: string): string {
   if (displayHref.length <= catalogHrefDisplayMaxLength) return displayHref;
   return `${displayHref.slice(0, catalogHrefDisplayMaxLength - 3)}...`;
+}
+
+function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["queries"][number]): ImportedQueryRowPreview {
+  const source = row.source ?? "Imported GSC";
+  const window = row.window ?? "imported";
+  const displayPage = formatImportedQueryPageForDisplay(row.page);
+
+  return {
+    clicks: row.clicks,
+    ctr: row.ctr,
+    displayPage,
+    evidence: [
+      {
+        entity: row.query,
+        metric: `${row.impressions} impressions / ${row.clicks} clicks / CTR ${row.ctr}`,
+        reason: `Imported query row for ${displayPage}`,
+        source,
+        type: "search",
+        window
+      }
+    ],
+    id: row.id,
+    impressions: row.impressions,
+    page: row.page,
+    position: row.position,
+    query: row.query,
+    source,
+    window
+  };
+}
+
+function formatImportedQueryPageForDisplay(page: string): string {
+  return formatImportedCatalogHrefForDisplay(page) ?? "Unknown page";
 }
 
 export function mapApiImportedQueryClustersToPreviews(

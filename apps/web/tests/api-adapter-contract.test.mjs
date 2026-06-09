@@ -43,6 +43,8 @@ assert(adapter.includes("mapApiIntegrationsToIntegrationHealth"), "adapter must 
 assert(adapter.includes("mapApiSyncRunsToSyncRunPreviews"), "adapter must expose sync run DTO conversion");
 assert(adapter.includes("mapApiAuditLogsToEvidenceRows"), "adapter must expose audit log DTO conversion");
 assert(adapter.includes("mapApiImportedQueryClustersToPreviews"), "adapter must expose imported query cluster DTO conversion");
+assert(adapter.includes("mapApiImportedQueriesToPreviews"), "adapter must expose imported query row DTO conversion");
+assert(adapter.includes("mapApiImportedQueryResponseToPreview"), "adapter must expose imported query row detail DTO conversion");
 assert(adapter.includes("mapApiImportedProductsToCatalogPreviews"), "adapter must expose imported product catalog preview conversion");
 assert(adapter.includes("mapApiImportedPagesToCatalogPreviews"), "adapter must expose imported page catalog preview conversion");
 assert(adapter.includes("mapApiImportedProductResponseToCatalogPreview"), "adapter must expose imported product detail catalog preview conversion");
@@ -54,6 +56,11 @@ assert(adapter.includes("mapApiImportedOpportunitiesToOpportunities"), "adapter 
 assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose imported task preview DTO conversion");
 assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
 assert(adapter.includes("source: \"Imported GSC\""), "imported query cluster adapter must label imported GSC evidence");
+assert(types.includes("ImportedQueryRowPreview"), "types must expose a safe imported query row preview view model");
+assert(types.includes("displayPage"), "Imported query row preview must expose a display-safe page field");
+assert(adapter.includes("mapApiImportedQueryRowToPreview"), "adapter must map raw imported query rows through a safe row preview helper");
+assert(adapter.includes("row.window ?? \"imported\""), "imported query row adapter must default missing windows to imported");
+assert(adapter.includes("row.source ?? \"Imported GSC\""), "imported query row adapter must default missing sources to Imported GSC");
 assert(adapter.includes('type: "audit"'), "audit log DTO conversion must produce audit evidence rows");
 assert(adapter.includes('status === "connected_stub"'), "integration adapter must handle connected_stub status");
 assert(adapter.includes('status === "not_connected"'), "integration adapter must handle not_connected status");

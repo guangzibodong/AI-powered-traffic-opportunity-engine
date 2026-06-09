@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported query row read client foundation completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported query row view-model adapter foundation completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -80,6 +80,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-034 | 46 | done | Frontend Product Engineer / QA Lead | Add browser smoke coverage for catalog overflow indicators. | Browser smoke seeds more imported products and pages than the preview rail displays, verifies the read-only catalog overflow indicators, and still confirms no buttons, unsafe methods, credentials, sync, draft, publish, or commerce write controls. |
 | TASK-S2-QA-035 | 47 | done | Frontend Product Engineer / QA Lead | Add browser smoke coverage for non-catalog overflow indicators. | Browser smoke seeds more imported query clusters, opportunity previews, and task previews than the preview rail displays, verifies the read-only overflow indicators, and still confirms no buttons, unsafe methods, credentials, sync, draft, publish, or commerce write controls. |
 | TASK-S2-GSC-036 | 48 | done | Frontend Product Engineer / QA Lead | Add imported query row read client foundation. | Frontend API client exposes typed read-only list/detail helpers for imported GSC query rows, encodes store/query path segments, and adds no import execution, real GSC OAuth, credential, sync, task, draft, publish, or external write controls. |
+| TASK-S2-GSC-037 | 49 | done | Frontend Product Engineer / QA Lead | Add safe imported query row view-model adapters. | Frontend adapters map imported GSC query row list/detail DTOs into safe display previews with source/window defaults, compact page labels, evidence rows, and no import execution, real GSC OAuth, credential, sync, task, draft, publish, or external write controls. |
 
 ## Blockers
 
@@ -173,6 +174,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Non-catalog overflow browser smoke coverage is verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported query row read client foundation is next because backend CSV import rows already have safe list/detail read APIs, but the frontend client only exposes derived query cluster reads.
 - Imported query row read client foundation is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported query row view-model adapters are next because frontend UI should consume safe row previews instead of raw imported GSC query DTOs when a future read-only row panel is added.
+- Imported query row view-model adapters are verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 
