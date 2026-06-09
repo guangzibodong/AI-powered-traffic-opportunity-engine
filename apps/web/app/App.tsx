@@ -98,6 +98,7 @@ type ImportedPreviewState = {
     productSeoTasks: number;
     rankingPushOpportunities: number;
     rankingPushTasks: number;
+    recommendOnlyTasks: number;
   };
   tasks: BoardViewModel["tasks"];
   warnings: string[];
@@ -224,7 +225,8 @@ export function App() {
       productSeoOpportunities: 0,
       productSeoTasks: 0,
       rankingPushOpportunities: 0,
-      rankingPushTasks: 0
+      rankingPushTasks: 0,
+      recommendOnlyTasks: 0
     },
     tasks: [],
     warnings: []
@@ -342,6 +344,10 @@ export function App() {
                 importedTasksResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedTasksResult.value.summary, "by_category", "ranking_push")
                   : 0,
+              recommendOnlyTasks:
+                importedTasksResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedTasksResult.value.summary, "by_automation_level", "recommend_only")
+                  : 0,
               productSeoOpportunities:
                 importedOpportunitiesResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "product_seo")
@@ -391,7 +397,8 @@ export function App() {
                 productSeoOpportunities: 0,
                 productSeoTasks: 0,
                 rankingPushOpportunities: 0,
-                rankingPushTasks: 0
+                rankingPushTasks: 0,
+                recommendOnlyTasks: 0
               },
               tasks: [],
               warnings: [
@@ -423,7 +430,8 @@ export function App() {
             productSeoOpportunities: 0,
             productSeoTasks: 0,
             rankingPushOpportunities: 0,
-            rankingPushTasks: 0
+            rankingPushTasks: 0,
+            recommendOnlyTasks: 0
           },
           tasks: [],
           warnings: []
@@ -1025,6 +1033,10 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="ranking_push_task_previews">
           <span>{locale === "zh" ? "排名推进任务预览" : "Ranking push task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.rankingPushTasks}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="recommend_only_task_previews">
+          <span>{locale === "zh" ? "仅建议任务预览" : "Recommend-only task previews"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.recommendOnlyTasks}</strong>
         </div>
         <div className="kv-row" data-metric-key="product_seo_opportunities">
           <span>{locale === "zh" ? "Product SEO 机会" : "Product SEO opportunities"}</span>
