@@ -17,9 +17,11 @@ import type {
   ApiAuditLogsResponse,
   ApiEvidence,
   ApiImportedGraphResponse,
+  ApiImportedPageResponse,
   ApiImportedPagesResponse,
   ApiImportedOpportunityResponse,
   ApiImportedOpportunitiesResponse,
+  ApiImportedProductResponse,
   ApiImportedProductsResponse,
   ApiImportedQueryClusterResponse,
   ApiImportedQueryClustersResponse,
@@ -166,25 +168,49 @@ export function mapApiImportedGraphToClusterPreviews(
 export function mapApiImportedProductsToCatalogPreviews(
   response: ApiImportedProductsResponse
 ): ImportedCatalogPreview[] {
-  return response.products.map((product) => ({
+  return response.products.map(mapApiImportedProductToCatalogPreview);
+}
+
+export function mapApiImportedProductResponseToCatalogPreview(
+  response: ApiImportedProductResponse
+): ImportedCatalogPreview {
+  return mapApiImportedProductToCatalogPreview(response.product);
+}
+
+export function mapApiImportedPagesToCatalogPreviews(response: ApiImportedPagesResponse): ImportedCatalogPreview[] {
+  return response.pages.map(mapApiImportedPageToCatalogPreview);
+}
+
+export function mapApiImportedPageResponseToCatalogPreview(
+  response: ApiImportedPageResponse
+): ImportedCatalogPreview {
+  return mapApiImportedPageToCatalogPreview(response.page);
+}
+
+function mapApiImportedProductToCatalogPreview(
+  product: ApiImportedProductsResponse["products"][number]
+): ImportedCatalogPreview {
+  return {
     detail: `SKU ${product.sku ?? "n/a"} / ${product.categories?.[0] ?? "uncategorized"}`,
     href: product.permalink ?? undefined,
     id: product.id,
     kind: "product",
     source: "WooCommerce",
     title: product.name
-  }));
+  };
 }
 
-export function mapApiImportedPagesToCatalogPreviews(response: ApiImportedPagesResponse): ImportedCatalogPreview[] {
-  return response.pages.map((page) => ({
+function mapApiImportedPageToCatalogPreview(
+  page: ApiImportedPagesResponse["pages"][number]
+): ImportedCatalogPreview {
+  return {
     detail: `${page.page_type ?? "page"} / ${page.status ?? "unknown"}${page.indexable === false ? " / noindex" : ""}`,
     href: page.url,
     id: page.id,
     kind: "page",
     source: "WordPress",
     title: page.title
-  }));
+  };
 }
 
 export function mapApiImportedQueryClustersToPreviews(

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported catalog view-model adapters completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported catalog detail view-model adapters completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -70,6 +70,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-CATALOG-024 | 36 | done | Frontend Product Engineer / QA Lead | Make imported catalog preview loading partially resilient. | If imported WooCommerce product or WordPress page reads fail, the imported preview panel still renders graph clusters, opportunities, and recommend-only task previews from successful read-only endpoints, shows no write/retry/credential controls, and keeps the main API board usable. |
 | TASK-S2-CATALOG-025 | 37 | done | Frontend Product Engineer / QA Lead | Show imported catalog partial-failure messaging. | When product or page catalog reads fail but graph, opportunity, or task previews still render, the imported preview panel shows a read-only catalog unavailable message without retry, credential, sync, draft, publish, edit, or write controls. |
 | TASK-S2-CATALOG-026 | 38 | done | Frontend Product Engineer / QA Lead | Add safe imported catalog view-model adapters. | Imported product and page previews are mapped through frontend view-model adapters before rendering, preserving only safe display fields and keeping raw API catalog payloads out of the UI state. |
+| TASK-S2-CATALOG-027 | 39 | done | Frontend Product Engineer / QA Lead | Add safe imported catalog detail view-model adapters. | Imported product and page detail reads can be mapped through frontend view-model adapters into the same safe catalog preview shape, without exposing raw API catalog payloads or adding edit, credential, sync, draft, publish, or commerce write controls. |
 
 ## Blockers
 
@@ -143,6 +144,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported catalog partial-failure messaging is verified by browser red-green coverage, backend tests, frontend contract, lint, build, diff check, and secret scan.
 - Imported catalog view-model adapters are next because products and pages now render in the imported preview panel, but raw API catalog DTOs should be converted into stable safe display models first.
 - Imported catalog view-model adapters are verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported catalog detail view-model adapters are next because catalog list reads now use safe display models, but future read-only detail surfaces should share the same safe adapter boundary before any UI is added.
+- Imported catalog detail view-model adapters are verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 

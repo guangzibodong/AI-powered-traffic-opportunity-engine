@@ -44,6 +44,8 @@ assert(adapter.includes("mapApiAuditLogsToEvidenceRows"), "adapter must expose a
 assert(adapter.includes("mapApiImportedQueryClustersToPreviews"), "adapter must expose imported query cluster DTO conversion");
 assert(adapter.includes("mapApiImportedProductsToCatalogPreviews"), "adapter must expose imported product catalog preview conversion");
 assert(adapter.includes("mapApiImportedPagesToCatalogPreviews"), "adapter must expose imported page catalog preview conversion");
+assert(adapter.includes("mapApiImportedProductResponseToCatalogPreview"), "adapter must expose imported product detail catalog preview conversion");
+assert(adapter.includes("mapApiImportedPageResponseToCatalogPreview"), "adapter must expose imported page detail catalog preview conversion");
 assert(adapter.includes("mapApiImportedOpportunitiesToOpportunities"), "adapter must expose imported opportunity DTO conversion");
 assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose imported task preview DTO conversion");
 assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
