@@ -706,6 +706,32 @@ tr:last-child td {
   margin: 0 14px 14px;
 }
 
+.section-health-summary {
+  align-items: center;
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin: 0 14px 10px;
+  min-height: 36px;
+  padding: 8px 10px;
+}
+
+.section-health-summary span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.section-health-summary strong {
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: right;
+}
+
 .section-health-row {
   align-items: center;
   border-bottom: 1px solid var(--line);

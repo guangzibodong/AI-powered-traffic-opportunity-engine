@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only UX coverage is complete through read-only imported preview section health source labels; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only UX coverage is complete through a read-only imported preview section health aggregate summary; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -119,6 +119,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-UX-073 | 85 | done | Product Manager / Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only imported preview section health summary. | The imported preview panel renders compact text-only health rows for graph clusters, query rows, products, pages, opportunities, and task previews with stable `data-section-health-key` and `data-section-health-state` markers, shows unavailable sections during partial failures, and remains non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-UX-074 | 86 | done | Product Manager / Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only imported preview section health counts. | The imported preview section health rows expose stable `data-section-health-count` markers and compact visible counts for graph clusters, query rows, products, pages, opportunities, and task previews across ready, empty, and partial-failure states, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-UX-075 | 87 | done | Product Manager / Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only imported preview section health source labels. | The imported preview section health rows expose stable `data-section-health-source` markers and compact source labels for imported graph, GSC CSV rows, WooCommerce products, WordPress pages, opportunity previews, and task previews across ready and degraded states, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
+| TASK-S2-UX-076 | 88 | done | Product Manager / Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only imported preview section health aggregate summary. | The imported preview panel renders a compact text-only aggregate summary with stable `data-section-health-summary`, `data-section-health-available`, and `data-section-health-unavailable` markers for available/degraded imported sections across ready, empty, and partial-failure states, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 
 ## Blockers
 
@@ -290,6 +291,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported preview section health counts are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported preview section health source labels are next because operators should see which local/import-only read model feeds each health row before trusting the section count.
 - Imported preview section health source labels are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported preview section health aggregate summary is next because operators need a single read-only scan cue for available versus unavailable imported sections before inspecting each row.
+- Imported preview section health aggregate summary is verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

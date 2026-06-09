@@ -806,6 +806,7 @@ function ImportedPreviewPanel({
     (importedPreviews.warnings.includes("opportunities_unavailable") ? 1 : 0) +
     (importedPreviews.warnings.includes("tasks_unavailable") ? 1 : 0);
   const availableRailSectionCount = Math.max(importedSectionCount - unavailableRailSectionCount, 0);
+  const sectionHealthSummaryState = unavailableRailSectionCount > 0 ? "degraded" : "ready";
   const sectionCountsReconciled = availableRailSectionCount + unavailableRailSectionCount === importedSectionCount;
   const sectionHealthRows = [
     {
@@ -909,6 +910,17 @@ function ImportedPreviewPanel({
           <span>{locale === "zh" ? "任务预览" : "Task previews"}</span>
           <strong>{importedPreviews.tasks.length}</strong>
         </div>
+      </div>
+      <div
+        className="section-health-summary"
+        data-section-health-available={availableRailSectionCount}
+        data-section-health-summary={sectionHealthSummaryState}
+        data-section-health-unavailable={unavailableRailSectionCount}
+      >
+        <span>{locale === "zh" ? "分区健康" : "Section health"}</span>
+        <strong>
+          {availableRailSectionCount} available / {unavailableRailSectionCount} unavailable
+        </strong>
       </div>
       <div className="section-health-list" aria-label="Imported preview section health">
         {sectionHealthRows.map((section) => (

@@ -351,6 +351,44 @@ async function assertImportedPreviewSectionHealthSources(page, expectedSources, 
   }
 }
 
+async function assertImportedPreviewSectionHealthSummary(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const summary = importedPanel.locator("[data-section-health-summary]");
+  const summaryCount = await summary.count();
+  assert(summaryCount === 1, `${label} imported preview section health summary must render exactly once`);
+
+  const summaryState = await summary.getAttribute("data-section-health-summary");
+  const availableText = await summary.getAttribute("data-section-health-available");
+  const unavailableText = await summary.getAttribute("data-section-health-unavailable");
+  const available = Number(availableText);
+  const unavailable = Number(unavailableText);
+  assert(
+    summaryState === expectedValues.state,
+    `${label} imported preview section health summary state mismatch: expected ${expectedValues.state}, got ${
+      summaryState ?? "missing"
+    }`
+  );
+  assert(
+    Number.isInteger(available) && available === expectedValues.available,
+    `${label} imported preview section health summary available mismatch: expected ${expectedValues.available}, got ${
+      availableText ?? "missing"
+    }`
+  );
+  assert(
+    Number.isInteger(unavailable) && unavailable === expectedValues.unavailable,
+    `${label} imported preview section health summary unavailable mismatch: expected ${expectedValues.unavailable}, got ${
+      unavailableText ?? "missing"
+    }`
+  );
+
+  const summaryText = ((await summary.textContent()) ?? "").toLowerCase();
+  assert(
+    summaryText.includes(`${expectedValues.available} available`) &&
+      summaryText.includes(`${expectedValues.unavailable} unavailable`),
+    `${label} imported preview section health summary must show available and unavailable counts`
+  );
+}
+
 async function assertImportedPreviewEmptyState(page, expectedKey, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const emptyState = importedPanel.locator("[data-empty-state-key]");
@@ -978,6 +1016,11 @@ async function runSmoke() {
       { availableCount: 6, sectionCount: 6, unavailableCount: 0 },
       "initial"
     );
+    await assertImportedPreviewSectionHealthSummary(
+      page,
+      { available: 6, state: "ready", unavailable: 0 },
+      "initial"
+    );
     await assertImportedPreviewSectionHealth(
       page,
       {
@@ -1162,6 +1205,11 @@ async function runSmoke() {
     await assertImportedPreviewSectionCounts(
       resilientPage,
       { availableCount: 0, sectionCount: 6, unavailableCount: 6 },
+      "resilient fallback"
+    );
+    await assertImportedPreviewSectionHealthSummary(
+      resilientPage,
+      { available: 0, state: "degraded", unavailable: 6 },
       "resilient fallback"
     );
     await assertImportedPreviewSectionHealth(
@@ -1389,6 +1437,11 @@ async function runSmoke() {
       { availableCount: 4, sectionCount: 6, unavailableCount: 2 },
       "catalog-only failure"
     );
+    await assertImportedPreviewSectionHealthSummary(
+      catalogFailurePage,
+      { available: 4, state: "degraded", unavailable: 2 },
+      "catalog-only failure"
+    );
     await assertImportedPreviewSectionHealth(
       catalogFailurePage,
       {
@@ -1488,6 +1541,11 @@ async function runSmoke() {
     await assertImportedPreviewSectionCounts(
       queryRowFailurePage,
       { availableCount: 5, sectionCount: 6, unavailableCount: 1 },
+      "query-row-only failure"
+    );
+    await assertImportedPreviewSectionHealthSummary(
+      queryRowFailurePage,
+      { available: 5, state: "degraded", unavailable: 1 },
       "query-row-only failure"
     );
     await assertImportedPreviewSectionHealth(
