@@ -246,10 +246,10 @@ Browser smoke now proves the asset workspace UI gate remains closed:
 
 ## Next Task
 
-The next safe implementation task is editor UI contract planning:
+The next safe implementation task is editor UI contract testing:
 
 ```txt
-TASK-S3-PM-030 Plan structured asset editor UI contract.
+TASK-S3-QA-031 Add editor UI contract tests.
 ```
 
-That task should define the first visible editor workflow, layout, copy, bilingual states, and browser gates before any editable UI is added.
+That task should add failing UI contract tests for the first visible local editor before any editor implementation is added.
