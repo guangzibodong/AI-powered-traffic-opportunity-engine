@@ -1037,7 +1037,7 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
         </div>
       </div>
       {visibleAssets.length > 0 ? (
-        <div className="mini-list">
+        <div className="mini-list" data-asset-row-aggregate="true" data-visible-asset-count={visibleAssets.length}>
           {visibleAssets.map((asset) => (
             <div
               className="mini-card"

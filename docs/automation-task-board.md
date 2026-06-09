@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset type summary diagnostics are verified and asset workspace row aggregate reconciliation is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 asset workspace row aggregate reconciliation is verified and asset content block diagnostics are queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -176,7 +176,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-008 | 142 | done | Frontend Product Engineer / QA Lead | Add asset workspace blocked capability diagnostics. | Browser smoke verifies the asset workspace blocked capability count and visible blocked capability context reconcile across empty, populated, and unavailable states without adding asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
 | TASK-S3-UX-009 | 143 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset workspace overflow indicators. | When more local asset candidates exist than the compact preview rail displays, the asset workspace shows a read-only overflow count without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-UX-010 | 144 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset type summary diagnostics. | The asset workspace exposes compact read-only asset type counts for local draft candidates without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
-| TASK-S3-QA-011 | 145 | todo | Frontend Product Engineer / QA Lead | Add asset workspace row aggregate reconciliation. | Browser smoke verifies visible asset rows plus overflow count reconcile to the safe asset workspace draft count without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
+| TASK-S3-QA-011 | 145 | done | Frontend Product Engineer / QA Lead | Add asset workspace row aggregate reconciliation. | Browser smoke verifies visible asset rows plus overflow count reconcile to the safe asset workspace draft count without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
+| TASK-S3-UX-012 | 146 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset content block diagnostics. | Local asset candidate rows expose compact read-only content block type diagnostics from safe asset view models without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -462,6 +463,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset type summary diagnostics are next because operators should understand the local candidate mix before any structured asset editor is introduced.
 - Asset type summary diagnostics are verified by browser smoke coverage that reconciles compact read-only type counts for collection page, buying guide, and product SEO asset candidates.
 - Asset workspace row aggregate reconciliation is next because QA should prove the compact rail's visible rows and hidden overflow add back up to the asset workspace draft count.
+- Asset workspace row aggregate reconciliation is verified by browser smoke coverage that proves visible asset rows plus overflow count reconcile to the asset workspace draft count.
+- Asset content block diagnostics are next because the read-only candidate rows should show what structured draft sections exist before any editor or WordPress draft flow is introduced.
 
 ## Completion Rule
 

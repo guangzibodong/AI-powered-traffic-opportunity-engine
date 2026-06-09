@@ -386,6 +386,25 @@ async function assertAssetWorkspaceTypeSummary(page, expectedCounts, label) {
   }
 }
 
+async function assertAssetWorkspaceRowAggregateReconciles(page, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for row aggregate diagnostics`);
+  const miniList = assetPanel.locator("[data-asset-row-aggregate='true']");
+  await expectVisible(miniList, `${label} asset row aggregate list`);
+  const draftCount = Number(await assetPanel.getAttribute("data-asset-draft-count"));
+  const overflowCount = Number(await assetPanel.getAttribute("data-asset-overflow-count"));
+  const visibleCount = Number(await miniList.getAttribute("data-visible-asset-count"));
+  const actualVisibleRows = await miniList.locator("[data-asset-id]").count();
+  assert(
+    Number.isInteger(visibleCount) && visibleCount === actualVisibleRows,
+    `${label} visible asset row count mismatch: expected DOM ${actualVisibleRows}, got ${visibleCount}`
+  );
+  assert(
+    visibleCount + overflowCount === draftCount,
+    `${label} asset row aggregate mismatch: visible ${visibleCount} + overflow ${overflowCount} != draft ${draftCount}`
+  );
+}
+
 async function assertImportedPreviewState(page, expectedAvailability, expectedWarningCount, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const availability = await importedPanel.getAttribute("data-preview-availability");
@@ -1669,6 +1688,7 @@ async function runSmoke() {
       { buying_guide: 1, collection_page: 1, product_seo: 1 },
       "populated asset workspace"
     );
+    await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     await populatedAssetPage.close();
 
     const assetFailurePage = await context.newPage();
