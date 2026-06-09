@@ -41,6 +41,7 @@ import type {
 } from "./api-client";
 
 const sprintOneRules = new Set<SprintOneRuleId>([
+  "buying_guide_gap",
   "collection_page_gap",
   "high_impression_low_ctr",
   "product_seo",
@@ -87,7 +88,7 @@ export function mapApiTaskToTask(task: ApiTask): Task {
     evidence: task.evidence.map(mapApiEvidenceToEvidenceRow),
     id: task.id,
     objects: countObjects(task.evidence),
-    ruleId: inferRuleId(task.opportunity_id, task.evidence),
+    ruleId: mapRuleId(task.source_opportunity?.rule_id ?? inferRuleId(task.opportunity_id, task.evidence)),
     status: mapVisibleTaskStatus(task.status),
     title: task.title,
     trafscore: task.priority_score
@@ -425,6 +426,7 @@ function mapRuleId(ruleId: string): SprintOneRuleId {
 function inferRuleId(opportunityId: string, evidence: ApiEvidence[]): SprintOneRuleId {
   if (evidence.some((item) => item.type === "gsc_ctr")) return "high_impression_low_ctr";
   if (evidence.some((item) => item.type === "gsc_position" || item.type === "ranking_position")) return "ranking_push";
+  if (evidence.some((item) => item.type === "buying_guide_intent")) return "buying_guide_gap";
   if (opportunityId.includes("ranking")) return "ranking_push";
   return "collection_page_gap";
 }
@@ -432,6 +434,7 @@ function inferRuleId(opportunityId: string, evidence: ApiEvidence[]): SprintOneR
 function mapTaskCategory(category: string): TaskCategory {
   if (
     category === "ctr_refresh" ||
+    category === "buying_guide" ||
     category === "product_seo" ||
     category === "ranking_push" ||
     category === "collection_page"

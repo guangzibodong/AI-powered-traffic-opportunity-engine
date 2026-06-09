@@ -58,6 +58,11 @@ assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task p
 assert(types.includes('"product_seo"'), "frontend task categories and rule ids must preserve imported product_seo previews");
 assert(adapter.includes('"product_seo"'), "imported opportunity adapter must preserve product_seo rule ids");
 assert(adapter.includes('category === "product_seo"'), "imported task adapter must preserve product_seo categories");
+assert(types.includes('"buying_guide"'), "frontend task categories must preserve imported buying_guide previews");
+assert(types.includes('"buying_guide_gap"'), "frontend rule ids must preserve imported buying_guide_gap previews");
+assert(adapter.includes('"buying_guide_gap"'), "imported opportunity adapter must preserve buying_guide_gap rule ids");
+assert(adapter.includes('category === "buying_guide"'), "imported task adapter must preserve buying_guide categories");
+assert(adapter.includes("source_opportunity?.rule_id"), "imported task adapter must read source opportunity rule ids");
 assert(adapter.includes("source: \"Imported GSC\""), "imported query cluster adapter must label imported GSC evidence");
 assert(types.includes("ImportedQueryRowPreview"), "types must expose a safe imported query row preview view model");
 assert(types.includes("displayCtr"), "Imported query row preview must expose a display-safe CTR field");

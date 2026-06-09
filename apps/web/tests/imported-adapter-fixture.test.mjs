@@ -121,6 +121,81 @@ assert(rankingPushTasks[0].ruleId === "ranking_push", "Imported ranking push tas
 assert(rankingPushTasks[0].automationLevel === "recommend_only", "Imported ranking push tasks must clamp automation to recommend_only");
 assert(rankingPushTasks[0].status === "new", "Imported ranking push tasks must clamp unsafe statuses to new");
 
+const buyingGuideOpportunities = adapter.mapApiImportedOpportunitiesToOpportunities({
+  mode: "imported_opportunities",
+  opportunities: [
+    {
+      confidence: 0.8,
+      dedupe_key: "store-fixture:imported:buying_guide_gap:cluster-fixture",
+      evidence: [
+        {
+          metrics: { primary_query: "best camping coffee maker" },
+          text: "best camping coffee maker shows commercial investigation intent",
+          type: "buying_guide_intent"
+        }
+      ],
+      id: "impopp_buying_guide_fixture",
+      opportunity_type: "buying_guide_gap",
+      recommended_task_type: "buying_guide",
+      rule_id: "buying_guide_gap",
+      rule_version: 1,
+      score_components: { traffic_potential: 88 },
+      status: "new",
+      summary: "Buying guide intent with no matching page.",
+      title: "Create buying guide for Best Camping Coffee Maker",
+      trafscore: 81
+    }
+  ],
+  store_id: "store-fixture",
+  summary: { by_rule: { buying_guide_gap: 1 }, by_task_type: { buying_guide: 1 }, opportunities: 1, source_query_clusters: 1 }
+});
+
+assert(buyingGuideOpportunities.length === 1, "Buying guide opportunity fixture should map one opportunity");
+assert(
+  buyingGuideOpportunities[0].opportunityType === "buying_guide_gap",
+  "Imported buying guide opportunities must preserve the buying_guide_gap opportunity type"
+);
+assert(
+  buyingGuideOpportunities[0].ruleTrace.ruleId === "buying_guide_gap",
+  "Imported buying guide opportunities must preserve the buying_guide_gap rule trace"
+);
+
+const buyingGuideTasks = adapter.mapApiImportedTasksToTasks({
+  mode: "imported_task_previews",
+  store_id: "store-fixture",
+  summary: { by_category: { buying_guide: 1 }, by_rule: { buying_guide_gap: 1 }, source_opportunities: 1, tasks: 1 },
+  tasks: [
+    {
+      action_plan: { steps: ["Review buying-guide query intent and imported product evidence"] },
+      automation_level: "one_click_apply",
+      category: "buying_guide",
+      evidence: [
+        {
+          metrics: { primary_query: "best camping coffee maker" },
+          text: "best camping coffee maker shows commercial investigation intent",
+          type: "buying_guide_intent"
+        }
+      ],
+      id: "imported-buying-guide-task-fixture",
+      opportunity_id: "impopp_buying_guide_fixture",
+      priority_score: 81,
+      source_opportunity: {
+        dedupe_key: "store-fixture:imported:buying_guide_gap:cluster-fixture",
+        rule_id: "buying_guide_gap",
+        rule_version: 1
+      },
+      status: "published",
+      title: "Create buying guide for Best Camping Coffee Maker"
+    }
+  ]
+});
+
+assert(buyingGuideTasks.length === 1, "Buying guide task fixture should map one task");
+assert(buyingGuideTasks[0].category === "buying_guide", "Imported buying guide tasks must preserve category");
+assert(buyingGuideTasks[0].ruleId === "buying_guide_gap", "Imported buying guide tasks must preserve source rule id");
+assert(buyingGuideTasks[0].automationLevel === "recommend_only", "Imported buying guide tasks must clamp automation to recommend_only");
+assert(buyingGuideTasks[0].status === "new", "Imported buying guide tasks must clamp unsafe statuses to new");
+
 const importedRows = adapter.mapApiImportedQueriesToPreviews({
   mode: "csv_import",
   queries: [

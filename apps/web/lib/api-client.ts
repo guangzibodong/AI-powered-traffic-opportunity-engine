@@ -38,6 +38,11 @@ export type ApiTask = {
   id: string;
   opportunity_id: string;
   priority_score: number;
+  source_opportunity?: {
+    dedupe_key?: string;
+    rule_id?: string;
+    rule_version?: number;
+  };
   status: string;
   title: string;
 };
