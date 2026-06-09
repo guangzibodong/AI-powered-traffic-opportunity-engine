@@ -44,6 +44,7 @@ const sprintOneRules = new Set<SprintOneRuleId>([
 ]);
 
 const visibleTaskStatuses = new Set<VisibleTaskStatus>(["new", "approved", "rejected", "snoozed"]);
+const catalogHrefDisplayMaxLength = 72;
 
 export function mapApiPlanningToBoard(
   tasksResponse: ApiTasksResponse,
@@ -219,13 +220,22 @@ function mapApiImportedPageToCatalogPreview(
 function formatImportedCatalogHrefForDisplay(href?: string | null): string | undefined {
   if (!href) return undefined;
 
+  let displayHref: string;
   try {
     const url = new URL(href);
     const displayPath = `${url.hostname}${url.pathname}`.replace(/\/$/, "");
-    return displayPath || url.hostname;
+    displayHref = displayPath || url.hostname;
   } catch {
-    return href.replace(/^https?:\/\//, "").replace(/\/$/, "") || undefined;
+    displayHref = href.replace(/^https?:\/\//, "").replace(/\/$/, "");
   }
+
+  if (!displayHref) return undefined;
+  return truncateCatalogHrefDisplay(displayHref);
+}
+
+function truncateCatalogHrefDisplay(displayHref: string): string {
+  if (displayHref.length <= catalogHrefDisplayMaxLength) return displayHref;
+  return `${displayHref.slice(0, catalogHrefDisplayMaxLength - 3)}...`;
 }
 
 export function mapApiImportedQueryClustersToPreviews(

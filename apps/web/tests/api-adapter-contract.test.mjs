@@ -49,6 +49,7 @@ assert(adapter.includes("mapApiImportedProductResponseToCatalogPreview"), "adapt
 assert(adapter.includes("mapApiImportedPageResponseToCatalogPreview"), "adapter must expose imported page detail catalog preview conversion");
 assert(types.includes("displayHref"), "Imported catalog preview view model must expose a sanitized display URL field");
 assert(adapter.includes("formatImportedCatalogHrefForDisplay"), "adapter must centralize imported catalog URL display formatting");
+assert(adapter.includes("catalogHrefDisplayMaxLength"), "adapter must cap imported catalog display URL length");
 assert(adapter.includes("mapApiImportedOpportunitiesToOpportunities"), "adapter must expose imported opportunity DTO conversion");
 assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose imported task preview DTO conversion");
 assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
