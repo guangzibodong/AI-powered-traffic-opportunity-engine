@@ -229,10 +229,12 @@ async function assertImportedPreviewSectionCounts(page, expectedValues, label) {
 
   const sectionCountText = await importedPanel.getAttribute("data-section-count");
   const availableCountText = await importedPanel.getAttribute("data-available-section-count");
+  const emptyCountText = await importedPanel.getAttribute("data-empty-section-count");
   const unavailableCountText = await importedPanel.getAttribute("data-unavailable-section-count");
   const reconciled = await importedPanel.getAttribute("data-section-counts-reconciled");
   const sectionCount = Number(sectionCountText);
   const availableCount = Number(availableCountText);
+  const emptyCount = Number(emptyCountText);
   const unavailableCount = Number(unavailableCountText);
 
   assert(
@@ -246,14 +248,20 @@ async function assertImportedPreviewSectionCounts(page, expectedValues, label) {
     }`
   );
   assert(
+    Number.isInteger(emptyCount) && emptyCount === expectedValues.emptyCount,
+    `${label} imported preview empty section count mismatch: expected ${expectedValues.emptyCount}, got ${
+      emptyCountText ?? "missing"
+    }`
+  );
+  assert(
     Number.isInteger(unavailableCount) && unavailableCount === expectedValues.unavailableCount,
     `${label} imported preview unavailable section count mismatch: expected ${expectedValues.unavailableCount}, got ${
       unavailableCountText ?? "missing"
     }`
   );
   assert(
-    availableCount + unavailableCount === sectionCount,
-    `${label} imported preview section counts must reconcile: available ${availableCountText}, unavailable ${unavailableCountText}, section ${sectionCountText}`
+    availableCount + emptyCount + unavailableCount === sectionCount,
+    `${label} imported preview section counts must reconcile: available ${availableCountText}, empty ${emptyCountText}, unavailable ${unavailableCountText}, section ${sectionCountText}`
   );
   assert(
     reconciled === "true",
@@ -359,8 +367,10 @@ async function assertImportedPreviewSectionHealthSummary(page, expectedValues, l
 
   const summaryState = await summary.getAttribute("data-section-health-summary");
   const availableText = await summary.getAttribute("data-section-health-available");
+  const emptyText = await summary.getAttribute("data-section-health-empty");
   const unavailableText = await summary.getAttribute("data-section-health-unavailable");
   const available = Number(availableText);
+  const empty = Number(emptyText);
   const unavailable = Number(unavailableText);
   assert(
     summaryState === expectedValues.state,
@@ -375,6 +385,12 @@ async function assertImportedPreviewSectionHealthSummary(page, expectedValues, l
     }`
   );
   assert(
+    Number.isInteger(empty) && empty === expectedValues.empty,
+    `${label} imported preview section health summary empty mismatch: expected ${expectedValues.empty}, got ${
+      emptyText ?? "missing"
+    }`
+  );
+  assert(
     Number.isInteger(unavailable) && unavailable === expectedValues.unavailable,
     `${label} imported preview section health summary unavailable mismatch: expected ${expectedValues.unavailable}, got ${
       unavailableText ?? "missing"
@@ -384,8 +400,9 @@ async function assertImportedPreviewSectionHealthSummary(page, expectedValues, l
   const summaryText = ((await summary.textContent()) ?? "").toLowerCase();
   assert(
     summaryText.includes(`${expectedValues.available} available`) &&
+      summaryText.includes(`${expectedValues.empty} empty`) &&
       summaryText.includes(`${expectedValues.unavailable} unavailable`),
-    `${label} imported preview section health summary must show available and unavailable counts`
+    `${label} imported preview section health summary must show available, empty, and unavailable counts`
   );
 }
 
@@ -1013,12 +1030,12 @@ async function runSmoke() {
     await assertImportedPreviewState(page, "ready", 0, "initial");
     await assertImportedPreviewSectionCounts(
       page,
-      { availableCount: 6, sectionCount: 6, unavailableCount: 0 },
+      { availableCount: 6, emptyCount: 0, sectionCount: 6, unavailableCount: 0 },
       "initial"
     );
     await assertImportedPreviewSectionHealthSummary(
       page,
-      { available: 6, state: "ready", unavailable: 0 },
+      { available: 6, empty: 0, state: "ready", unavailable: 0 },
       "initial"
     );
     await assertImportedPreviewSectionHealth(
@@ -1191,7 +1208,7 @@ async function runSmoke() {
     await resilientPage.goto(webUrl);
     await clickUnique(resilientPage.getByRole("button", { name: "EN" }), "resilient language switcher");
     await expectVisible(resilientPage.getByText("Imported previews unavailable"), "resilient imported preview fallback");
-    await expectVisible(resilientPage.getByText("5 imported sections unavailable"), "resilient imported unavailable count");
+    await expectVisible(resilientPage.getByText("6 imported sections unavailable"), "resilient imported unavailable count");
     await expectVisible(resilientPage.getByText("Graph reads unavailable"), "resilient graph unavailable message");
     await expectVisible(resilientPage.getByText("Query rows unavailable"), "resilient query rows unavailable message");
     await expectVisible(resilientPage.getByText("Catalog reads unavailable"), "resilient catalog unavailable message");
@@ -1204,12 +1221,12 @@ async function runSmoke() {
     await assertImportedPreviewState(resilientPage, "unavailable", 5, "resilient fallback");
     await assertImportedPreviewSectionCounts(
       resilientPage,
-      { availableCount: 0, sectionCount: 6, unavailableCount: 6 },
+      { availableCount: 0, emptyCount: 0, sectionCount: 6, unavailableCount: 6 },
       "resilient fallback"
     );
     await assertImportedPreviewSectionHealthSummary(
       resilientPage,
-      { available: 0, state: "degraded", unavailable: 6 },
+      { available: 0, empty: 0, state: "degraded", unavailable: 6 },
       "resilient fallback"
     );
     await assertImportedPreviewSectionHealth(
@@ -1344,7 +1361,12 @@ async function runSmoke() {
     await assertImportedPreviewState(emptyImportedPage, "empty", 0, "empty imported");
     await assertImportedPreviewSectionCounts(
       emptyImportedPage,
-      { availableCount: 6, sectionCount: 6, unavailableCount: 0 },
+      { availableCount: 0, emptyCount: 6, sectionCount: 6, unavailableCount: 0 },
+      "empty imported"
+    );
+    await assertImportedPreviewSectionHealthSummary(
+      emptyImportedPage,
+      { available: 0, empty: 6, state: "ready", unavailable: 0 },
       "empty imported"
     );
     await assertImportedPreviewSectionHealth(
@@ -1426,6 +1448,7 @@ async function runSmoke() {
     await catalogFailurePage.goto(webUrl);
     await clickUnique(catalogFailurePage.getByRole("button", { name: "EN" }), "catalog failure language switcher");
     await expectVisible(catalogFailurePage.getByText("read-only imported previews"), "catalog failure imported preview badge");
+    await expectVisible(catalogFailurePage.getByText("2 imported sections unavailable"), "catalog failure unavailable count");
     await expectVisible(catalogFailurePage.getByText("Catalog reads unavailable"), "catalog failure unavailable message");
     await expectVisible(catalogFailurePage.getByText("Graph-linked clusters"), "catalog failure graph metric");
     await expectVisible(catalogFailurePage.getByText("portable espresso maker camping"), "catalog failure imported query cluster");
@@ -1434,12 +1457,12 @@ async function runSmoke() {
     await assertImportedPreviewState(catalogFailurePage, "ready", 1, "catalog-only failure");
     await assertImportedPreviewSectionCounts(
       catalogFailurePage,
-      { availableCount: 4, sectionCount: 6, unavailableCount: 2 },
+      { availableCount: 4, emptyCount: 0, sectionCount: 6, unavailableCount: 2 },
       "catalog-only failure"
     );
     await assertImportedPreviewSectionHealthSummary(
       catalogFailurePage,
-      { available: 4, state: "degraded", unavailable: 2 },
+      { available: 4, empty: 0, state: "degraded", unavailable: 2 },
       "catalog-only failure"
     );
     await assertImportedPreviewSectionHealth(
@@ -1531,6 +1554,7 @@ async function runSmoke() {
     });
     await queryRowFailurePage.goto(webUrl);
     await clickUnique(queryRowFailurePage.getByRole("button", { name: "EN" }), "query row failure language switcher");
+    await expectVisible(queryRowFailurePage.getByText("1 imported sections unavailable"), "query row failure unavailable count");
     await expectVisible(queryRowFailurePage.getByText("read-only imported previews"), "query row failure imported preview badge");
     await expectVisible(queryRowFailurePage.getByText("Query rows unavailable"), "query row failure unavailable message");
     await expectVisible(queryRowFailurePage.getByText("Graph-linked clusters"), "query row failure graph metric");
@@ -1540,12 +1564,12 @@ async function runSmoke() {
     await assertImportedPreviewState(queryRowFailurePage, "ready", 1, "query-row-only failure");
     await assertImportedPreviewSectionCounts(
       queryRowFailurePage,
-      { availableCount: 5, sectionCount: 6, unavailableCount: 1 },
+      { availableCount: 5, emptyCount: 0, sectionCount: 6, unavailableCount: 1 },
       "query-row-only failure"
     );
     await assertImportedPreviewSectionHealthSummary(
       queryRowFailurePage,
-      { available: 5, state: "degraded", unavailable: 1 },
+      { available: 5, empty: 0, state: "degraded", unavailable: 1 },
       "query-row-only failure"
     );
     await assertImportedPreviewSectionHealth(

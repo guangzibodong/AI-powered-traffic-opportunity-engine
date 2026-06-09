@@ -798,16 +798,7 @@ function ImportedPreviewPanel({
     opportunityOverflowCount === Math.max(importedPreviews.opportunities.length - visibleOpportunities.length, 0) &&
     taskOverflowCount === Math.max(importedPreviews.tasks.length - visibleTasks.length, 0);
   const importedSectionCount = 6;
-  const unavailableSectionCount = importedPreviews.warnings.length;
-  const unavailableRailSectionCount =
-    (importedPreviews.warnings.includes("graph_unavailable") ? 1 : 0) +
-    (importedPreviews.warnings.includes("query_rows_unavailable") ? 1 : 0) +
-    (importedPreviews.warnings.includes("catalog_unavailable") ? 2 : 0) +
-    (importedPreviews.warnings.includes("opportunities_unavailable") ? 1 : 0) +
-    (importedPreviews.warnings.includes("tasks_unavailable") ? 1 : 0);
-  const availableRailSectionCount = Math.max(importedSectionCount - unavailableRailSectionCount, 0);
-  const sectionHealthSummaryState = unavailableRailSectionCount > 0 ? "degraded" : "ready";
-  const sectionCountsReconciled = availableRailSectionCount + unavailableRailSectionCount === importedSectionCount;
+  const warningCount = importedPreviews.warnings.length;
   const getSectionHealthState = (isUnavailable: boolean, count: number) => {
     if (isUnavailable) return "unavailable";
     return count === 0 ? "empty" : "available";
@@ -859,6 +850,12 @@ function ImportedPreviewPanel({
       state: getSectionHealthState(importedPreviews.warnings.includes("tasks_unavailable"), importedPreviews.tasks.length)
     }
   ];
+  const availableRailSectionCount = sectionHealthRows.filter((section) => section.state === "available").length;
+  const emptyRailSectionCount = sectionHealthRows.filter((section) => section.state === "empty").length;
+  const unavailableRailSectionCount = sectionHealthRows.filter((section) => section.state === "unavailable").length;
+  const sectionHealthSummaryState = unavailableRailSectionCount > 0 ? "degraded" : "ready";
+  const sectionCountsReconciled =
+    availableRailSectionCount + emptyRailSectionCount + unavailableRailSectionCount === importedSectionCount;
   const hasImportedPreviews =
     importedPreviews.availability === "ready" &&
     (visibleClusters.length > 0 ||
@@ -873,12 +870,13 @@ function ImportedPreviewPanel({
       className="panel imported-preview-panel"
       aria-label="Imported preview panel"
       data-available-section-count={availableRailSectionCount}
+      data-empty-section-count={emptyRailSectionCount}
       data-preview-availability={importedPreviews.availability}
       data-safety-scope="read-only-imported-preview"
       data-section-count={importedSectionCount}
       data-section-counts-reconciled={sectionCountsReconciled ? "true" : "false"}
       data-unavailable-section-count={unavailableRailSectionCount}
-      data-warning-count={unavailableSectionCount}
+      data-warning-count={warningCount}
     >
       <div className="panel-heading">
         <h2>{locale === "zh" ? "Imported 预览" : "Imported previews"}</h2>
@@ -921,12 +919,13 @@ function ImportedPreviewPanel({
       <div
         className="section-health-summary"
         data-section-health-available={availableRailSectionCount}
+        data-section-health-empty={emptyRailSectionCount}
         data-section-health-summary={sectionHealthSummaryState}
         data-section-health-unavailable={unavailableRailSectionCount}
       >
         <span>{locale === "zh" ? "分区健康" : "Section health"}</span>
         <strong>
-          {availableRailSectionCount} available / {unavailableRailSectionCount} unavailable
+          {availableRailSectionCount} available / {emptyRailSectionCount} empty / {unavailableRailSectionCount} unavailable
         </strong>
       </div>
       <div className="section-health-list" aria-label="Imported preview section health">
@@ -946,11 +945,11 @@ function ImportedPreviewPanel({
           </div>
         ))}
       </div>
-      {unavailableSectionCount > 0 ? (
+      {unavailableRailSectionCount > 0 ? (
         <p className="muted imported-preview-overflow">
           {locale === "zh"
-            ? `${unavailableSectionCount} 个 imported 分区暂不可用`
-            : `${unavailableSectionCount} imported sections unavailable`}
+            ? `${unavailableRailSectionCount} 个 imported 分区暂不可用`
+            : `${unavailableRailSectionCount} imported sections unavailable`}
         </p>
       ) : null}
       {importedPreviews.warnings.includes("catalog_unavailable") && (
