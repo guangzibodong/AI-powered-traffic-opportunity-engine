@@ -99,6 +99,7 @@ class ImportedTaskServiceTests(unittest.TestCase):
         self.assertIn("Do not update WooCommerce from this preview", task["action_plan"]["steps"])
         self.assertIn("No WooCommerce product data is changed by this preview", task["action_plan"]["acceptance_criteria"])
         self.assertEqual(payload["summary"]["by_category"]["product_seo"], 1)
+        self.assertEqual(payload["summary"]["by_rule"]["product_seo"], 1)
 
     def test_imported_task_detail_returns_one_preview_or_none(self):
         from app.services.gsc_ingestion_service import import_gsc_csv
@@ -122,6 +123,7 @@ class ImportedTaskServiceTests(unittest.TestCase):
         self.assertEqual(payload["tasks"], [])
         self.assertEqual(payload["summary"]["tasks"], 0)
         self.assertEqual(payload["summary"]["by_category"], {})
+        self.assertEqual(payload["summary"]["by_rule"], {})
 
 
 @unittest.skipIf(TestClient is None, "FastAPI is not installed in this local test runtime")
