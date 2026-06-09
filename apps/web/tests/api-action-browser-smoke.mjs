@@ -261,6 +261,41 @@ async function assertImportedPreviewSectionCounts(page, expectedValues, label) {
   );
 }
 
+async function assertImportedPreviewSectionHealth(page, expectedStates, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const healthRows = importedPanel.locator("[data-section-health-key]");
+  const actualCount = await healthRows.count();
+  const expectedKeys = Object.keys(expectedStates).sort();
+
+  assert(
+    actualCount === expectedKeys.length,
+    `${label} imported preview section health row count mismatch: expected ${expectedKeys.length}, got ${actualCount}`
+  );
+
+  for (const [sectionKey, expectedState] of Object.entries(expectedStates)) {
+    const healthRow = importedPanel.locator(`[data-section-health-key='${sectionKey}']`);
+    const healthRowCount = await healthRow.count();
+    assert(
+      healthRowCount === 1,
+      `${label} imported preview section health ${sectionKey} must render exactly once`
+    );
+
+    const actualState = await healthRow.getAttribute("data-section-health-state");
+    assert(
+      actualState === expectedState,
+      `${label} imported preview section health ${sectionKey} mismatch: expected ${expectedState}, got ${
+        actualState ?? "missing"
+      }`
+    );
+
+    const healthText = ((await healthRow.textContent()) ?? "").toLowerCase();
+    assert(
+      healthText.includes(expectedState),
+      `${label} imported preview section health ${sectionKey} must show ${expectedState} text`
+    );
+  }
+}
+
 async function assertImportedPreviewEmptyState(page, expectedKey, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const emptyState = importedPanel.locator("[data-empty-state-key]");
@@ -888,6 +923,18 @@ async function runSmoke() {
       { availableCount: 6, sectionCount: 6, unavailableCount: 0 },
       "initial"
     );
+    await assertImportedPreviewSectionHealth(
+      page,
+      {
+        graph_clusters: "available",
+        opportunities: "available",
+        pages: "available",
+        products: "available",
+        query_rows: "available",
+        task_previews: "available"
+      },
+      "initial"
+    );
     await assertImportedPreviewWarningKeys(page, [], "initial");
     await assertImportedPreviewMetricValues(
       page,
@@ -1038,6 +1085,18 @@ async function runSmoke() {
       { availableCount: 0, sectionCount: 6, unavailableCount: 6 },
       "resilient fallback"
     );
+    await assertImportedPreviewSectionHealth(
+      resilientPage,
+      {
+        graph_clusters: "unavailable",
+        opportunities: "unavailable",
+        pages: "unavailable",
+        products: "unavailable",
+        query_rows: "unavailable",
+        task_previews: "unavailable"
+      },
+      "resilient fallback"
+    );
     await assertImportedPreviewMetricValues(
       resilientPage,
       {
@@ -1137,6 +1196,18 @@ async function runSmoke() {
       { availableCount: 6, sectionCount: 6, unavailableCount: 0 },
       "empty imported"
     );
+    await assertImportedPreviewSectionHealth(
+      emptyImportedPage,
+      {
+        graph_clusters: "available",
+        opportunities: "available",
+        pages: "available",
+        products: "available",
+        query_rows: "available",
+        task_previews: "available"
+      },
+      "empty imported"
+    );
     await assertImportedPreviewEmptyState(emptyImportedPage, "no_imported_fixtures", "empty imported");
     await assertImportedPreviewWarningKeys(emptyImportedPage, [], "empty imported");
     await assertImportedPreviewMetricValues(
@@ -1203,6 +1274,18 @@ async function runSmoke() {
       { availableCount: 4, sectionCount: 6, unavailableCount: 2 },
       "catalog-only failure"
     );
+    await assertImportedPreviewSectionHealth(
+      catalogFailurePage,
+      {
+        graph_clusters: "available",
+        opportunities: "available",
+        pages: "unavailable",
+        products: "unavailable",
+        query_rows: "available",
+        task_previews: "available"
+      },
+      "catalog-only failure"
+    );
     await assertImportedPreviewWarningKeys(catalogFailurePage, ["catalog_unavailable"], "catalog-only failure");
     await assertImportedPreviewMetricValues(
       catalogFailurePage,
@@ -1266,6 +1349,18 @@ async function runSmoke() {
     await assertImportedPreviewSectionCounts(
       queryRowFailurePage,
       { availableCount: 5, sectionCount: 6, unavailableCount: 1 },
+      "query-row-only failure"
+    );
+    await assertImportedPreviewSectionHealth(
+      queryRowFailurePage,
+      {
+        graph_clusters: "available",
+        opportunities: "available",
+        pages: "available",
+        products: "available",
+        query_rows: "unavailable",
+        task_previews: "available"
+      },
       "query-row-only failure"
     );
     await assertImportedPreviewWarningKeys(queryRowFailurePage, ["query_rows_unavailable"], "query-row-only failure");

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only QA coverage is complete through imported preview section count reconciliation DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only UX coverage is complete through a read-only imported preview section health summary; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -116,6 +116,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-070 | 82 | done | QA Lead / UI Systems Engineer | Expose imported rail overflow reconciliation DOM diagnostics. | Browser smoke verifies the imported preview list exposes stable `data-hidden-clusters`, `data-hidden-query-rows`, `data-hidden-products`, `data-hidden-pages`, `data-hidden-opportunities`, and `data-hidden-task-previews` markers that reconcile full imported totals with visible compact rail counts, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-QA-071 | 83 | done | QA Lead / UI Systems Engineer | Expose imported rail count reconciliation state DOM diagnostics. | Browser smoke verifies the imported preview list exposes a stable `data-rail-counts-reconciled` marker and recomputes each rail as `total - visible = hidden` for clusters, query rows, products, pages, opportunities, and task previews, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-QA-072 | 84 | done | QA Lead / UI Systems Engineer | Expose imported preview section count reconciliation DOM diagnostics. | Browser smoke verifies the imported preview panel exposes stable `data-section-count`, `data-available-section-count`, `data-unavailable-section-count`, and `data-section-counts-reconciled` markers for the six read-only imported sections, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
+| TASK-S2-UX-073 | 85 | done | Product Manager / Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only imported preview section health summary. | The imported preview panel renders compact text-only health rows for graph clusters, query rows, products, pages, opportunities, and task previews with stable `data-section-health-key` and `data-section-health-state` markers, shows unavailable sections during partial failures, and remains non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 
 ## Blockers
 
@@ -281,6 +282,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported rail count reconciliation state DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported preview section count reconciliation DOM diagnostics are next because QA should verify how many of the six read-only imported sections are available or degraded without relying on localized warning copy.
 - Imported preview section count reconciliation DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported preview section health summary is next because operators need a visible read-only scan cue for which imported sources are available or degraded before trusting the compact rail.
+- Imported preview section health summary is verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

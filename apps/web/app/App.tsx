@@ -807,6 +807,38 @@ function ImportedPreviewPanel({
     (importedPreviews.warnings.includes("tasks_unavailable") ? 1 : 0);
   const availableRailSectionCount = Math.max(importedSectionCount - unavailableRailSectionCount, 0);
   const sectionCountsReconciled = availableRailSectionCount + unavailableRailSectionCount === importedSectionCount;
+  const sectionHealthRows = [
+    {
+      key: "graph_clusters",
+      label: locale === "zh" ? "图谱集群" : "Graph clusters",
+      state: importedPreviews.warnings.includes("graph_unavailable") ? "unavailable" : "available"
+    },
+    {
+      key: "query_rows",
+      label: locale === "zh" ? "查询行" : "Query rows",
+      state: importedPreviews.warnings.includes("query_rows_unavailable") ? "unavailable" : "available"
+    },
+    {
+      key: "products",
+      label: locale === "zh" ? "商品" : "Products",
+      state: importedPreviews.warnings.includes("catalog_unavailable") ? "unavailable" : "available"
+    },
+    {
+      key: "pages",
+      label: locale === "zh" ? "页面" : "Pages",
+      state: importedPreviews.warnings.includes("catalog_unavailable") ? "unavailable" : "available"
+    },
+    {
+      key: "opportunities",
+      label: locale === "zh" ? "机会" : "Opportunities",
+      state: importedPreviews.warnings.includes("opportunities_unavailable") ? "unavailable" : "available"
+    },
+    {
+      key: "task_previews",
+      label: locale === "zh" ? "任务预览" : "Task previews",
+      state: importedPreviews.warnings.includes("tasks_unavailable") ? "unavailable" : "available"
+    }
+  ];
   const hasImportedPreviews =
     importedPreviews.availability === "ready" &&
     (visibleClusters.length > 0 ||
@@ -865,6 +897,19 @@ function ImportedPreviewPanel({
           <span>{locale === "zh" ? "任务预览" : "Task previews"}</span>
           <strong>{importedPreviews.tasks.length}</strong>
         </div>
+      </div>
+      <div className="section-health-list" aria-label="Imported preview section health">
+        {sectionHealthRows.map((section) => (
+          <div
+            className="section-health-row"
+            data-section-health-key={section.key}
+            data-section-health-state={section.state}
+            key={section.key}
+          >
+            <span>{section.label}</span>
+            <strong>{section.state}</strong>
+          </div>
+        ))}
       </div>
       {unavailableSectionCount > 0 ? (
         <p className="muted imported-preview-overflow">

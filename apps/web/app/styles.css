@@ -698,6 +698,47 @@ tr:last-child td {
   line-height: 1.35;
 }
 
+.section-health-list {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 14px 14px;
+}
+
+.section-health-row {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  min-height: 34px;
+  padding: 8px 0;
+}
+
+.section-health-row:nth-child(odd) {
+  margin-right: 14px;
+}
+
+.section-health-row span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.section-health-row strong {
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.section-health-row[data-section-health-state="unavailable"] strong {
+  color: var(--risk);
+}
+
 .decision {
   align-items: flex-start;
   background: var(--panel-soft);
