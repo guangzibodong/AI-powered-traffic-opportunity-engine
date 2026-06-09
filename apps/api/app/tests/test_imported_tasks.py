@@ -9,6 +9,8 @@ except ModuleNotFoundError:
     create_app = None
 
 from app.tests.test_imported_opportunities import (
+    BUYING_GUIDE_GSC_CSV,
+    BUYING_GUIDE_PRODUCTS,
     CTR_GSC_CSV,
     CTR_PAGES,
     CTR_PRODUCTS,
@@ -101,6 +103,29 @@ class ImportedTaskServiceTests(unittest.TestCase):
         self.assertIn("No WooCommerce product data is changed by this preview", task["action_plan"]["acceptance_criteria"])
         self.assertEqual(payload["summary"]["by_category"]["product_seo"], 1)
         self.assertEqual(payload["summary"]["by_rule"]["product_seo"], 1)
+
+    def test_imported_tasks_convert_buying_guide_gap_to_safe_guide_action_plan(self):
+        from app.services.gsc_ingestion_service import import_gsc_csv
+        from app.services.imported_task_service import generate_imported_tasks
+        from app.services.product_sync_service import import_woocommerce_products
+
+        import_gsc_csv("store-demo-outdoor-coffee", BUYING_GUIDE_GSC_CSV, window="28d")
+        import_woocommerce_products("store-demo-outdoor-coffee", BUYING_GUIDE_PRODUCTS)
+
+        payload = generate_imported_tasks("store-demo-outdoor-coffee")
+        task = payload["tasks"][0]
+
+        self.assertEqual(task["category"], "buying_guide")
+        self.assertEqual(task["automation_level"], "recommend_only")
+        self.assertEqual(task["status"], "new")
+        self.assertEqual(task["source_opportunity"]["rule_id"], "buying_guide_gap")
+        self.assertEqual(len(task["related_products"]), 2)
+        self.assertIsNone(task["related_page"])
+        self.assertIn("Review buying-guide query intent and imported product evidence", task["action_plan"]["steps"])
+        self.assertIn("Do not create a WordPress draft from this preview", task["action_plan"]["steps"])
+        self.assertIn("No WordPress draft or product update is created by this preview", task["action_plan"]["acceptance_criteria"])
+        self.assertEqual(payload["summary"]["by_category"]["buying_guide"], 1)
+        self.assertEqual(payload["summary"]["by_rule"]["buying_guide_gap"], 1)
 
     def test_imported_tasks_convert_ranking_push_to_safe_page_action_plan(self):
         from app.services.gsc_ingestion_service import import_gsc_csv

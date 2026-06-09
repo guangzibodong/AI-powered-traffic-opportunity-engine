@@ -322,7 +322,7 @@ This endpoint is read-only. It does not create tasks, assets, WordPress drafts, 
 
 Imported task previews are read-only recommendation objects. They always use `automation_level: "recommend_only"` and `status: "new"`. They do not expose review mutation routes, create persistent tasks, generate assets, create WordPress drafts, publish content, write WooCommerce data, or call external services.
 
-Imported task action plans cover `ctr_refresh`, `ranking_push`, `collection_page`, and `product_seo` recommendation previews while preserving the same read-only safety boundary.
+Imported task action plans cover `ctr_refresh`, `ranking_push`, `collection_page`, `buying_guide`, and `product_seo` recommendation previews while preserving the same read-only safety boundary.
 
 ### Demo task status contract
 

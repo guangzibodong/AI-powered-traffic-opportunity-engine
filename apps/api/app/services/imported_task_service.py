@@ -88,6 +88,18 @@ def _action_plan_for_opportunity(opportunity: dict[str, Any]) -> dict[str, Any]:
             "Recommendation is reviewed by a human before execution",
             "No WordPress update is made by this preview",
         ]
+    elif opportunity["recommended_task_type"] == "buying_guide":
+        steps = [
+            "Review buying-guide query intent and imported product evidence",
+            "Draft comparison criteria, outline, and product inclusion notes for human review",
+            "Record baseline impressions, CTR, and average position",
+            "Do not create a WordPress draft from this preview",
+        ]
+        acceptance_criteria = [
+            "Task preview references buying-guide intent and product evidence",
+            "Product inclusion criteria are reviewed by a human before execution",
+            "No WordPress draft or product update is created by this preview",
+        ]
     elif opportunity["recommended_task_type"] == "product_seo":
         steps = [
             "Review imported product match and query cluster evidence",

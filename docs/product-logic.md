@@ -111,8 +111,9 @@ Sprint 2 imported opportunity previews apply a small rule set to the imported gr
 
 - `high_impression_low_ctr`: best existing imported page exists, impressions are at least 1,000, CTR is 3% or lower, and average position is 20 or better.
 - `ranking_push`: best existing imported page exists, impressions are at least 800, CTR is above 3%, and average position is from 4 through 20.
-- `collection_page_gap`: no best existing imported page exists and at least three imported products match the cluster.
-- `product_seo`: no best existing imported page exists, one or two in-stock published imported products match the cluster, impressions are at least 800, and average position is 20 or better.
+- `buying_guide_gap`: no best existing imported page exists, commercial investigation intent is present, at least two in-stock published imported products match the cluster, impressions are at least 800, and average position is 20 or better.
+- `collection_page_gap`: no best existing imported page exists, no buying-guide intent is present, and at least three imported products match the cluster.
+- `product_seo`: no best existing imported page exists, no buying-guide intent is present, one or two in-stock published imported products match the cluster, impressions are at least 800, and average position is 20 or better.
 
 Preview opportunities include rule metadata, task-type and status summary counts, dedupe keys, TrafScore components, evidence, related products/pages, and status `new`. They do not create tasks, drafts, assets, sync jobs, or external writes.
 
@@ -121,7 +122,7 @@ Sprint 2 imported task previews convert those imported opportunities into a safe
 - Generate deterministic task preview ids from imported opportunity dedupe keys.
 - Preserve source opportunity metadata, related page/product evidence, TrafScore, confidence, and source summaries.
 - Summarize task preview volume by automation level, category, source rule, and safe status.
-- Emit category-specific action plans for `ctr_refresh`, `ranking_push`, `collection_page`, and imported `product_seo`.
+- Emit category-specific action plans for `ctr_refresh`, `ranking_push`, `collection_page`, imported `buying_guide`, and imported `product_seo`.
 - Keep every imported task preview at `automation_level: recommend_only` and `status: new`.
 - Expose list/detail reads only; no approval, rejection, snooze, draft, publishing, or commerce write path exists for imported previews.
 
