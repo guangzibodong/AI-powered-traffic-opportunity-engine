@@ -462,6 +462,20 @@ async function assertAssetWorkspaceQaReadiness(page, expectedReadinessState, lab
   await expectVisible(page.getByText(expectedReadinessState), `${label} asset QA readiness visible state`);
 }
 
+async function assertAssetWorkspaceNoQaChecks(page, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for no-QA diagnostics`);
+  const readinessState = await assetPanel.getAttribute("data-asset-qa-readiness-state");
+  assert(
+    readinessState === "not_applicable",
+    `${label} no-QA readiness state mismatch: expected not_applicable, got ${readinessState ?? "missing"}`
+  );
+  const qaSummaryCount = await assetPanel.locator("[data-asset-qa-summary='true']").count();
+  const qaReadinessRowCount = await assetPanel.locator("[data-asset-qa-readiness='true']").count();
+  assert(qaSummaryCount === 0, `${label} must not render QA summary when no QA checks exist`);
+  assert(qaReadinessRowCount === 0, `${label} must not render QA readiness row when no QA checks exist`);
+}
+
 async function assertAssetWorkspaceQaAggregateReconciles(page, hiddenQaCheckCount, hiddenQaPendingCount, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA aggregate reconciliation`);
@@ -1856,6 +1870,50 @@ async function runSmoke() {
     await assertAssetWorkspaceQaSummary(qaClearAssetPage, 2, 0, "QA clear asset workspace");
     await assertAssetWorkspaceQaReadiness(qaClearAssetPage, "qa_clear", "QA clear asset workspace");
     await qaClearAssetPage.close();
+
+    const noQaAssetPage = await context.newPage();
+    await noQaAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "product_seo",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "metadata_only" }],
+                external_write_allowed: false,
+                id: "asset_task_no_qa",
+                review_state: "draft_candidate",
+                source_task_id: "task_no_qa",
+                title: "No QA product SEO candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await noQaAssetPage.goto(webUrl);
+    await clickUnique(noQaAssetPage.getByRole("button", { name: "EN" }), "No-QA asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(noQaAssetPage, 1, "No-QA asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["metadata_only"],
+        id: "asset_task_no_qa",
+        reviewState: "draft_candidate",
+        title: "No QA product SEO candidate"
+      }
+    ]);
+    await assertAssetWorkspaceNoQaChecks(noQaAssetPage, "No-QA asset workspace");
+    await noQaAssetPage.close();
 
     const assetFailurePage = await context.newPage();
     await assetFailurePage.route(`**/api/stores/${storeId}/assets`, async (route) => {
