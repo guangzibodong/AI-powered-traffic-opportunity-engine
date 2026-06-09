@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only UX is complete through imported new task summary metrics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only Opportunity layer is complete through imported opportunity status summary diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -139,6 +139,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-UX-093 | 105 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported recommend-only task summary metric. | Imported preview UI renders a read-only recommend-only task preview count from imported task `by_automation_level` summary diagnostics, with a stable metric key and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-TASK-094 | 106 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported task status summary diagnostics. | Imported task preview summary exposes deterministic `by_status` counts, including empty-state `{}`, so operators and QA can verify safe `new` preview volume without adding review mutation, draft creation, publishing, credentials, sync execution, WordPress update, or commerce writes. |
 | TASK-S2-UX-095 | 107 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported new task summary metric. | Imported preview UI renders a read-only `new` task preview count from imported task `by_status` summary diagnostics, with a stable metric key and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-OPP-096 | 108 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported opportunity status summary diagnostics. | Imported opportunity preview summary exposes deterministic `by_status` counts, including empty-state `{}`, so operators and QA can verify safe `new` opportunity volume without adding opportunity review mutation, task creation, draft creation, publishing, credentials, sync execution, WordPress update, or commerce writes. |
 
 ## Blockers
 
@@ -350,6 +351,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported task status summary diagnostics are verified by backend red-green coverage, docs updates, full frontend checks, backend tests, browser smoke, diff check, and secret scan.
 - Imported new task summary metrics are next because the read-only UI should expose safe `new` preview volume before any imported review mutation path is introduced.
 - Imported new task summary metrics are verified by browser smoke red-green coverage across populated, empty, fallback, and single-failure imported preview states, with a stable metric key and no unsafe controls.
+- Imported opportunity status summary diagnostics are next because the read-only Opportunity layer should summarize safe `new` preview volume explicitly before any imported opportunity review mutation path is introduced.
+- Imported opportunity status summary diagnostics are verified by backend red-green coverage, docs updates, full frontend checks, backend tests, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 

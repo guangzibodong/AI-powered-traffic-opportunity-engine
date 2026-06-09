@@ -114,7 +114,7 @@ Sprint 2 imported opportunity previews apply a small rule set to the imported gr
 - `collection_page_gap`: no best existing imported page exists and at least three imported products match the cluster.
 - `product_seo`: no best existing imported page exists, one or two in-stock published imported products match the cluster, impressions are at least 800, and average position is 20 or better.
 
-Preview opportunities include rule metadata, task-type summary counts, dedupe keys, TrafScore components, evidence, related products/pages, and status `new`. They do not create tasks, drafts, assets, sync jobs, or external writes.
+Preview opportunities include rule metadata, task-type and status summary counts, dedupe keys, TrafScore components, evidence, related products/pages, and status `new`. They do not create tasks, drafts, assets, sync jobs, or external writes.
 
 Sprint 2 imported task previews convert those imported opportunities into a safe Action layer:
 

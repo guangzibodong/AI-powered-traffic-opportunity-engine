@@ -163,6 +163,7 @@ class ImportedOpportunityServiceTests(unittest.TestCase):
         self.assertTrue(opportunities[0]["dedupe_key"].startswith("store-demo-outdoor-coffee:imported:ranking_push:"))
         self.assertTrue(any(item["type"] == "ranking_position" for item in opportunities[0]["evidence"]))
         self.assertEqual(payload["summary"]["by_rule"]["ranking_push"], 1)
+        self.assertEqual(payload["summary"]["by_status"]["new"], 1)
         self.assertEqual(payload["summary"]["by_task_type"]["ranking_push"], 1)
 
     def test_imported_opportunities_generate_collection_gap_without_existing_page(self):
@@ -215,6 +216,7 @@ class ImportedOpportunityServiceTests(unittest.TestCase):
         self.assertEqual(payload["opportunities"], [])
         self.assertEqual(payload["summary"]["opportunities"], 0)
         self.assertEqual(payload["summary"]["by_rule"], {})
+        self.assertEqual(payload["summary"]["by_status"], {})
         self.assertEqual(payload["summary"]["by_task_type"], {})
 
     def test_imported_opportunity_detail_returns_one_preview_or_none(self):
