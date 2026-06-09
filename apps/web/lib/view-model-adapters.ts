@@ -250,18 +250,24 @@ function truncateCatalogHrefDisplay(displayHref: string): string {
 }
 
 function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["queries"][number]): ImportedQueryRowPreview {
+  const clicks = normalizeImportedQueryRowNumber(row.clicks);
+  const ctr = normalizeImportedQueryRowNumber(row.ctr);
+  const impressions = normalizeImportedQueryRowNumber(row.impressions);
+  const page = row.page ?? "";
+  const position = normalizeImportedQueryRowNumber(row.position);
+  const query = row.query ?? "Unknown query";
   const source = formatImportedQueryRowSource(row.source);
   const window = row.window ?? "imported";
-  const displayPage = formatImportedQueryPageForDisplay(row.page);
-  const displayClicks = formatImportedQueryRowCount(row.clicks);
-  const displayCtr = formatImportedQueryRowCtr(row.ctr);
-  const displayImpressions = formatImportedQueryRowCount(row.impressions);
-  const displayPosition = formatImportedQueryRowPosition(row.position);
+  const displayPage = formatImportedQueryPageForDisplay(page);
+  const displayClicks = formatImportedQueryRowCount(clicks);
+  const displayCtr = formatImportedQueryRowCtr(ctr);
+  const displayImpressions = formatImportedQueryRowCount(impressions);
+  const displayPosition = formatImportedQueryRowPosition(position);
   const displayEvidenceSummary = formatImportedQueryRowEvidenceSummary(1, source);
 
   return {
-    clicks: row.clicks,
-    ctr: row.ctr,
+    clicks,
+    ctr,
     displayClicks,
     displayCtr,
     displayEvidenceSummary,
@@ -270,7 +276,7 @@ function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["querie
     displayPosition,
     evidence: [
       {
-        entity: row.query,
+        entity: query,
         metric: formatImportedQueryRowMetric(displayImpressions, displayClicks, displayCtr, displayPosition),
         reason: `Imported query row for ${displayPage}`,
         source,
@@ -279,10 +285,10 @@ function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["querie
       }
     ],
     id: row.id,
-    impressions: row.impressions,
-    page: row.page,
-    position: row.position,
-    query: row.query,
+    impressions,
+    page,
+    position,
+    query,
     source,
     window
   };
@@ -301,7 +307,12 @@ function formatImportedQueryRowCount(count: number): string {
 }
 
 function formatImportedQueryRowPosition(position: number): string {
+  if (position <= 0) return "n/a";
   return position.toFixed(1);
+}
+
+function normalizeImportedQueryRowNumber(value: number | null | undefined): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
 function formatImportedQueryRowEvidenceSummary(evidenceCount: number, source: string): string {
