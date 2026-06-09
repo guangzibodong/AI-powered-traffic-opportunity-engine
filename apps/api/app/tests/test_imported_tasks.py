@@ -126,6 +126,7 @@ class ImportedTaskServiceTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["by_automation_level"]["recommend_only"], 1)
         self.assertEqual(payload["summary"]["by_category"]["ranking_push"], 1)
         self.assertEqual(payload["summary"]["by_rule"]["ranking_push"], 1)
+        self.assertEqual(payload["summary"]["by_status"]["new"], 1)
 
     def test_imported_task_detail_returns_one_preview_or_none(self):
         from app.services.gsc_ingestion_service import import_gsc_csv
@@ -151,6 +152,7 @@ class ImportedTaskServiceTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["by_automation_level"], {})
         self.assertEqual(payload["summary"]["by_category"], {})
         self.assertEqual(payload["summary"]["by_rule"], {})
+        self.assertEqual(payload["summary"]["by_status"], {})
 
 
 @unittest.skipIf(TestClient is None, "FastAPI is not installed in this local test runtime")

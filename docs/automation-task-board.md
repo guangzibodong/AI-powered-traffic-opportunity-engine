@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only UX is complete through imported recommend-only task summary metrics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only Action layer is complete through imported task status summary diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -137,6 +137,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-FE-091 | 103 | done | Frontend Product Engineer / QA Lead | Preserve imported ranking push adapter mapping. | Frontend imported adapter runtime fixtures preserve `ranking_push` opportunity and task categories/rule ids from imported DTOs, including `ranking_position` evidence, while keeping recommend-only automation and safe status clamps. |
 | TASK-S2-TASK-092 | 104 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported task automation-level summary diagnostics. | Imported task preview summary exposes deterministic `by_automation_level` counts, including empty-state `{}`, so operators and QA can verify recommend-only preview volume without adding review mutation, draft creation, publishing, credentials, sync execution, WordPress update, or commerce writes. |
 | TASK-S2-UX-093 | 105 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported recommend-only task summary metric. | Imported preview UI renders a read-only recommend-only task preview count from imported task `by_automation_level` summary diagnostics, with a stable metric key and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-TASK-094 | 106 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported task status summary diagnostics. | Imported task preview summary exposes deterministic `by_status` counts, including empty-state `{}`, so operators and QA can verify safe `new` preview volume without adding review mutation, draft creation, publishing, credentials, sync execution, WordPress update, or commerce writes. |
 
 ## Blockers
 
@@ -344,6 +345,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported task automation-level summary diagnostics are verified by backend red-green coverage, docs updates, full frontend checks, backend tests, browser smoke, diff check, and secret scan.
 - Imported recommend-only task summary metrics are next because operators should see that imported Action previews remain recommend-only before any future draft-assist or execution mode is introduced.
 - Imported recommend-only task summary metrics are verified by browser smoke red-green coverage across populated, empty, fallback, and single-failure imported preview states, with a stable metric key and no unsafe controls.
+- Imported task status summary diagnostics are next because the read-only Action layer should summarize safe `new` preview volume explicitly before any review mutation path is introduced.
+- Imported task status summary diagnostics are verified by backend red-green coverage, docs updates, full frontend checks, backend tests, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 

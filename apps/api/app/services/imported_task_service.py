@@ -15,6 +15,7 @@ def generate_imported_tasks(store_id: str) -> dict[str, Any]:
             "by_automation_level": _count_by_automation_level(tasks),
             "by_category": _count_by_category(tasks),
             "by_rule": _count_by_rule(tasks),
+            "by_status": _count_by_status(tasks),
             "source_opportunities": opportunity_payload["summary"]["opportunities"],
             "tasks": len(tasks),
         },
@@ -141,6 +142,14 @@ def _count_by_rule(tasks: list[dict[str, Any]]) -> dict[str, int]:
     for task in tasks:
         rule_id = task["source_opportunity"]["rule_id"]
         counts[rule_id] = counts.get(rule_id, 0) + 1
+    return counts
+
+
+def _count_by_status(tasks: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for task in tasks:
+        status = task["status"]
+        counts[status] = counts.get(status, 0) + 1
     return counts
 
 
