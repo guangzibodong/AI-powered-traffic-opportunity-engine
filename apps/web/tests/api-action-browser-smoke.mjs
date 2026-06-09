@@ -1015,6 +1015,7 @@ async function runSmoke() {
     await expectVisible(page.getByText("Ranking push opportunities"), "imported ranking push opportunity summary metric");
     await expectVisible(page.getByText("Ranking push task previews"), "imported ranking push task summary metric");
     await expectVisible(page.getByText("Recommend-only task previews"), "imported recommend-only task summary metric");
+    await expectVisible(page.getByText("New task previews"), "imported new task summary metric");
     await expectVisible(page.getByText("Product SEO opportunities"), "imported product SEO opportunity summary metric");
     await expectVisible(page.getByText("Product SEO task previews"), "imported product SEO task summary metric");
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
@@ -1113,6 +1114,7 @@ async function runSmoke() {
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 3,
+        new_task_previews: 3,
         opportunity_previews: 3,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
@@ -1313,6 +1315,7 @@ async function runSmoke() {
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 0,
+        new_task_previews: 0,
         opportunity_previews: 0,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
@@ -1453,6 +1456,7 @@ async function runSmoke() {
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 0,
+        new_task_previews: 0,
         opportunity_previews: 0,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
@@ -1569,6 +1573,7 @@ async function runSmoke() {
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 3,
+        new_task_previews: 3,
         opportunity_previews: 3,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
@@ -1685,6 +1690,7 @@ async function runSmoke() {
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 3,
+        new_task_previews: 3,
         opportunity_previews: 3,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
@@ -1754,6 +1760,7 @@ async function runSmoke() {
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 3,
+        new_task_previews: 3,
         opportunity_previews: 3,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
@@ -1823,6 +1830,7 @@ async function runSmoke() {
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 3,
+        new_task_previews: 3,
         opportunity_previews: 0,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
@@ -1895,6 +1903,7 @@ async function runSmoke() {
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 0,
+        new_task_previews: 0,
         opportunity_previews: 3,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
@@ -1983,6 +1992,7 @@ async function runSmoke() {
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 0,
+        new_task_previews: 0,
         opportunity_previews: 0,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,

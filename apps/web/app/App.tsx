@@ -98,6 +98,7 @@ type ImportedPreviewState = {
     productSeoTasks: number;
     rankingPushOpportunities: number;
     rankingPushTasks: number;
+    newTasks: number;
     recommendOnlyTasks: number;
   };
   tasks: BoardViewModel["tasks"];
@@ -226,6 +227,7 @@ export function App() {
       productSeoTasks: 0,
       rankingPushOpportunities: 0,
       rankingPushTasks: 0,
+      newTasks: 0,
       recommendOnlyTasks: 0
     },
     tasks: [],
@@ -348,6 +350,10 @@ export function App() {
                 importedTasksResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedTasksResult.value.summary, "by_automation_level", "recommend_only")
                   : 0,
+              newTasks:
+                importedTasksResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedTasksResult.value.summary, "by_status", "new")
+                  : 0,
               productSeoOpportunities:
                 importedOpportunitiesResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "product_seo")
@@ -398,6 +404,7 @@ export function App() {
                 productSeoTasks: 0,
                 rankingPushOpportunities: 0,
                 rankingPushTasks: 0,
+                newTasks: 0,
                 recommendOnlyTasks: 0
               },
               tasks: [],
@@ -431,6 +438,7 @@ export function App() {
             productSeoTasks: 0,
             rankingPushOpportunities: 0,
             rankingPushTasks: 0,
+            newTasks: 0,
             recommendOnlyTasks: 0
           },
           tasks: [],
@@ -1037,6 +1045,10 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="recommend_only_task_previews">
           <span>{locale === "zh" ? "仅建议任务预览" : "Recommend-only task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.recommendOnlyTasks}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="new_task_previews">
+          <span>{locale === "zh" ? "新任务预览" : "New task previews"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.newTasks}</strong>
         </div>
         <div className="kv-row" data-metric-key="product_seo_opportunities">
           <span>{locale === "zh" ? "Product SEO 机会" : "Product SEO opportunities"}</span>
