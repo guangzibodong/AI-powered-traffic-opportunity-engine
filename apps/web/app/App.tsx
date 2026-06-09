@@ -1407,6 +1407,9 @@ function ImportedPreviewPanel({
         className="action-mix-list"
         aria-label="Imported action mix categories"
         data-action-mix-row-count={actionMixDisplayRows.length}
+        data-action-mix-top-count={actionMixTopCount}
+        data-action-mix-top-key={actionMixTopKey}
+        data-action-mix-top-share={actionMixTopShare}
         data-action-mix-total={actionMixTotal}
       >
         {actionMixDisplayRows.map((row) => (

@@ -492,14 +492,29 @@ async function assertImportedActionMixRows(page, expectedRows, label) {
   assert(listCount === 1, `${label} imported action mix list must render exactly once`);
 
   const summaryTotalText = await summary.getAttribute("data-action-mix-total");
+  const summaryTopKey = await summary.getAttribute("data-action-mix-top-key");
+  const summaryTopCountText = await summary.getAttribute("data-action-mix-top-count");
+  const summaryTopShareText = await summary.getAttribute("data-action-mix-top-share");
   const listTotalText = await list.getAttribute("data-action-mix-total");
   const listRowCountText = await list.getAttribute("data-action-mix-row-count");
+  const listTopKey = await list.getAttribute("data-action-mix-top-key");
+  const listTopCountText = await list.getAttribute("data-action-mix-top-count");
+  const listTopShareText = await list.getAttribute("data-action-mix-top-share");
   const summaryTotal = Number(summaryTotalText);
+  const summaryTopCount = Number(summaryTopCountText);
+  const summaryTopShare = Number(summaryTopShareText);
   const listTotal = Number(listTotalText);
   const listRowCount = Number(listRowCountText);
+  const listTopCount = Number(listTopCountText);
+  const listTopShare = Number(listTopShareText);
   const rowElements = list.locator("[data-action-mix-key]");
   const actualRowCount = await rowElements.count();
   const expectedRowCount = Object.keys(expectedRows).length;
+  const actionKeysInDomOrder = await rowElements.evaluateAll((nodes) =>
+    nodes
+      .map((node) => node.getAttribute("data-action-mix-key"))
+      .filter((key) => typeof key === "string" && key.length > 0)
+  );
 
   assert(
     Number.isInteger(summaryTotal),
@@ -516,12 +531,34 @@ async function assertImportedActionMixRows(page, expectedRows, label) {
     }`
   );
   assert(
+    listTopKey === summaryTopKey,
+    `${label} imported action mix list top key mismatch: expected ${summaryTopKey ?? "missing"}, got ${
+      listTopKey ?? "missing"
+    }`
+  );
+  assert(
+    Number.isInteger(listTopCount) && listTopCount === summaryTopCount,
+    `${label} imported action mix list top count mismatch: expected ${summaryTopCountText ?? "missing"}, got ${
+      listTopCountText ?? "missing"
+    }`
+  );
+  assert(
+    Number.isInteger(listTopShare) && listTopShare === summaryTopShare,
+    `${label} imported action mix list top share mismatch: expected ${summaryTopShareText ?? "missing"}, got ${
+      listTopShareText ?? "missing"
+    }`
+  );
+  assert(
     actualRowCount === expectedRowCount,
     `${label} imported action mix row count mismatch: expected ${expectedRowCount}, got ${actualRowCount}`
   );
 
   let aggregateCount = 0;
-  for (const [actionKey, expectedRow] of Object.entries(expectedRows)) {
+  let reconciledTopKey = "none";
+  let reconciledTopCount = 0;
+  for (const actionKey of actionKeysInDomOrder) {
+    const expectedRow = expectedRows[actionKey];
+    assert(expectedRow, `${label} imported action mix row ${actionKey} must be covered by expected rows`);
     const row = importedPanel.locator(`[data-action-mix-key='${actionKey}']`);
     const rowCount = await row.count();
     assert(rowCount === 1, `${label} imported action mix row ${actionKey} must render exactly once`);
@@ -539,6 +576,10 @@ async function assertImportedActionMixRows(page, expectedRows, label) {
     const expectedColor = expectedState === "active" ? "rgb(27, 27, 29)" : "rgb(107, 107, 114)";
     const expectedShare = calculateImportedSharePercent(actualCount, summaryTotal);
     aggregateCount += actualCount;
+    if (actualCount > reconciledTopCount) {
+      reconciledTopKey = actionKey;
+      reconciledTopCount = actualCount;
+    }
     assert(
       countText === String(expectedRow.count),
       `${label} imported action mix row ${actionKey} count mismatch: expected ${expectedRow.count}, got ${
@@ -587,6 +628,25 @@ async function assertImportedActionMixRows(page, expectedRows, label) {
   assert(
     aggregateCount === summaryTotal,
     `${label} imported action mix row aggregate mismatch: expected ${summaryTotal}, got ${aggregateCount}`
+  );
+  const reconciledTopShare = calculateImportedSharePercent(reconciledTopCount, summaryTotal);
+  assert(
+    summaryTopKey === reconciledTopKey,
+    `${label} imported action mix summary top key must reconcile to row counts: expected ${reconciledTopKey}, got ${
+      summaryTopKey ?? "missing"
+    }`
+  );
+  assert(
+    Number.isInteger(summaryTopCount) && summaryTopCount === reconciledTopCount,
+    `${label} imported action mix summary top count must reconcile to row counts: expected ${reconciledTopCount}, got ${
+      summaryTopCountText ?? "missing"
+    }`
+  );
+  assert(
+    Number.isInteger(summaryTopShare) && summaryTopShare === reconciledTopShare,
+    `${label} imported action mix summary top share must reconcile to row counts: expected ${reconciledTopShare}, got ${
+      summaryTopShareText ?? "missing"
+    }`
   );
 }
 

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only UI has verified action-mix row aggregate reconciliation and is queuing action-mix top-row reconciliation next; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only UI has verified action-mix top-row reconciliation and is queuing Sprint 2 local/import-only loop closure next; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -164,7 +164,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-UX-118 | 130 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show action-mix category count diagnostics. | Imported preview UI exposes compact read-only action-mix category rows for CTR refresh, collection page, product SEO, ranking push, and buying guide gap with stable combined count and share diagnostics, without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-QA-119 | 131 | done | UI Systems Engineer / QA Lead | Add action-mix category row style coverage. | UI contract and browser smoke verify action-mix category rows keep compact read-only styling and stable computed colors across populated, empty, and balanced states, without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-QA-120 | 132 | done | Frontend Product Engineer / QA Lead | Add action-mix row aggregate reconciliation. | Browser smoke verifies action-mix category row counts sum to the summary total and row shares reconcile against the summary total across populated, empty, balanced, and partial-failure states, without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
-| TASK-S2-QA-121 | 133 | todo | Frontend Product Engineer / QA Lead | Add action-mix top-row reconciliation coverage. | Browser smoke verifies action-mix summary top key, top count, and top share reconcile to the highest category row across populated, empty, balanced tie, and partial-failure states, without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-QA-121 | 133 | done | Frontend Product Engineer / QA Lead | Add action-mix top-row reconciliation coverage. | Browser smoke verifies action-mix summary top key, top count, and top share reconcile to the highest category row across populated, empty, balanced tie, and partial-failure states, without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
+| TASK-S2-PM-122 | 134 | todo | Product Manager / QA Lead / Documentation Lead | Close Sprint 2 local/import-only loop and park live integration handoff. | Documentation confirms all local/import-only Sprint 2 tasks are done, `TASK-S2-LIVE-011` remains blocked on credentials and boundary approval, and no credential, sync execution, draft, publishing, WordPress update, or commerce-write controls were introduced. |
 
 ## Blockers
 
@@ -427,6 +428,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Action-mix row aggregate reconciliation is next because QA should prove the component rows add back up to the action-mix summary total before more rollups are added.
 - Action-mix row aggregate reconciliation is verified by browser smoke red-green coverage that requires list-level aggregate diagnostics and reconciles DOM row counts, totals, and formula-derived shares across populated, empty, balanced, and partial-failure states.
 - Action-mix top-row reconciliation coverage is next because the compact summary should prove its dominant action key, count, and share come from the same category rows before future rollups are added.
+- Action-mix top-row reconciliation coverage is verified by browser smoke red-green coverage that requires list-level top diagnostics and reconciles summary top key, count, and share against DOM row order and counts across populated, empty, balanced tie, and partial-failure states.
+- Sprint 2 local/import-only loop closure is next because the remaining live integration work is blocked on credentials and boundary approval, while the safe imported-data QA queue is now ready for handoff.
 
 ## Completion Rule
 
