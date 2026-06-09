@@ -329,7 +329,13 @@ export function App() {
               products: [],
               queries: [],
               tasks: [],
-              warnings: []
+              warnings: [
+                "graph_unavailable",
+                "catalog_unavailable",
+                "query_rows_unavailable",
+                "opportunities_unavailable",
+                "tasks_unavailable"
+              ]
             });
           });
       })

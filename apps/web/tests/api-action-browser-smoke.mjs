@@ -312,6 +312,14 @@ async function runSmoke() {
     await resilientPage.goto(webUrl);
     await clickUnique(resilientPage.getByRole("button", { name: "EN" }), "resilient language switcher");
     await expectVisible(resilientPage.getByText("Imported previews unavailable"), "resilient imported preview fallback");
+    await expectVisible(resilientPage.getByText("Graph reads unavailable"), "resilient graph unavailable message");
+    await expectVisible(resilientPage.getByText("Query rows unavailable"), "resilient query rows unavailable message");
+    await expectVisible(resilientPage.getByText("Catalog reads unavailable"), "resilient catalog unavailable message");
+    await expectVisible(
+      resilientPage.getByText("Opportunity previews unavailable"),
+      "resilient opportunity unavailable message"
+    );
+    await expectVisible(resilientPage.getByText("Task previews unavailable"), "resilient task unavailable message");
     assert(
       (await resilientPage.locator(".imported-preview-panel button").count()) === 0,
       "Resilient imported preview fallback must not render action buttons"
