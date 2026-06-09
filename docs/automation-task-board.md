@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported catalog item count metrics completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported catalog overflow indicators completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -75,6 +75,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-CATALOG-029 | 41 | done | Frontend Product Engineer / QA Lead | Add safe imported catalog URL display. | Imported product and page cards render a sanitized display URL from the catalog view model instead of raw href text, keeping long links layout-safe and avoiding external navigation controls, edit controls, credentials, sync execution, drafts, publishing, or commerce writes. |
 | TASK-S2-CATALOG-030 | 42 | done | Frontend Product Engineer / QA Lead | Clamp imported catalog display URL length. | Imported catalog display URLs are capped to a compact fixed length with an ASCII ellipsis, preserving read-only reference context without allowing long URLs to stretch preview cards or adding external navigation, edit, credential, sync, draft, publish, or commerce write controls. |
 | TASK-S2-CATALOG-031 | 43 | done | Frontend Product Engineer / QA Lead | Show imported catalog item count metrics. | Imported preview metrics distinguish graph-matched products/pages from the actual imported product/page counts, using only already-read safe catalog view models and adding no external navigation, edit, credential, sync, draft, publish, or commerce write controls. |
+| TASK-S2-CATALOG-032 | 44 | done | Frontend Product Engineer / QA Lead | Show imported catalog overflow indicators. | When more imported catalog products or pages exist than the preview rail displays, the UI shows read-only overflow counts so users know the compact preview is partial, without adding external navigation, edit, credential, sync, draft, publish, or commerce write controls. |
 
 ## Blockers
 
@@ -158,6 +159,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported catalog URL truncation is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported catalog item count metrics are next because matched product/page counts can be lower than the actual imported catalog volume, and users need to tell imported volume from graph matches without any write controls.
 - Imported catalog item count metrics are verified by frontend contract and browser red-green coverage, backend tests, lint, build, diff check, and secret scan.
+- Imported catalog overflow indicators are next because the preview rail intentionally shows only the first few catalog records and should disclose when additional imported products or pages are hidden.
+- Imported catalog overflow indicators are verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 
 ## Completion Rule
 

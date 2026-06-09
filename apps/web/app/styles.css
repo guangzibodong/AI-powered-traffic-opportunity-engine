@@ -666,6 +666,11 @@ tr:last-child td {
   overflow-wrap: anywhere;
 }
 
+.catalog-overflow {
+  margin: -2px 0 2px;
+  padding: 0 2px;
+}
+
 .kv-list {
   display: grid;
   gap: 9px;

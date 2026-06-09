@@ -147,6 +147,10 @@ assert(app.includes("Catalog products"), "Imported preview UI must distinguish i
 assert(app.includes("Catalog pages"), "Imported preview UI must distinguish imported catalog page count from graph matches");
 assert(app.includes("importedPreviews.products.length"), "Imported product count metric must use safe imported product previews");
 assert(app.includes("importedPreviews.pages.length"), "Imported page count metric must use safe imported page previews");
+assert(app.includes("productOverflowCount"), "Imported product preview UI must disclose hidden product rows when the preview is truncated");
+assert(app.includes("pageOverflowCount"), "Imported page preview UI must disclose hidden page rows when the preview is truncated");
+assert(app.includes("more catalog products"), "Imported product overflow copy must stay read-only and non-actionable");
+assert(app.includes("more catalog pages"), "Imported page overflow copy must stay read-only and non-actionable");
 assert(app.includes("product.detail"), "Imported product preview UI must render safe product catalog detail");
 assert(app.includes("page.detail"), "Imported page preview UI must render safe page catalog detail");
 assert(app.includes("product.source"), "Imported product preview UI must render the safe product source label");

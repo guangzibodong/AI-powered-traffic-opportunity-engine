@@ -751,6 +751,8 @@ function ImportedPreviewPanel({
   const visiblePages = importedPreviews.pages.slice(0, 2);
   const visibleOpportunities = importedPreviews.opportunities.slice(0, 2);
   const visibleTasks = importedPreviews.tasks.slice(0, 2);
+  const productOverflowCount = Math.max(importedPreviews.products.length - visibleProducts.length, 0);
+  const pageOverflowCount = Math.max(importedPreviews.pages.length - visiblePages.length, 0);
   const hasImportedPreviews =
     importedPreviews.availability === "ready" &&
     (visibleClusters.length > 0 ||
@@ -826,6 +828,13 @@ function ImportedPreviewPanel({
               {product.displayHref ? <p className="muted catalog-reference">{product.displayHref}</p> : null}
             </article>
           ))}
+          {productOverflowCount > 0 ? (
+            <p className="muted catalog-overflow">
+              {locale === "zh"
+                ? `还有 ${productOverflowCount} 个 catalog 商品未在预览中展示`
+                : `${productOverflowCount} more catalog products not shown in this preview`}
+            </p>
+          ) : null}
           {visiblePages.map((page) => (
             <article className="rail-item" key={page.id}>
               <span className="pill safe">{locale === "zh" ? `页面 / ${page.source}` : `Page / ${page.source}`}</span>
@@ -834,6 +843,13 @@ function ImportedPreviewPanel({
               {page.displayHref ? <p className="muted catalog-reference">{page.displayHref}</p> : null}
             </article>
           ))}
+          {pageOverflowCount > 0 ? (
+            <p className="muted catalog-overflow">
+              {locale === "zh"
+                ? `还有 ${pageOverflowCount} 个 catalog 页面未在预览中展示`
+                : `${pageOverflowCount} more catalog pages not shown in this preview`}
+            </p>
+          ) : null}
           {visibleOpportunities.map((opportunity) => (
             <article className="rail-item" key={opportunity.id}>
               <span className="pill safe">{locale === "zh" ? "机会" : "Opportunity"}</span>
