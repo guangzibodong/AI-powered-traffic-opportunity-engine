@@ -280,10 +280,12 @@ export function App() {
               importedPagesResult.status === "fulfilled"
                 ? mapApiImportedPagesToCatalogPreviews(importedPagesResult.value)
                 : [];
-            const warnings =
-              importedProductsResult.status === "rejected" || importedPagesResult.status === "rejected"
+            const warnings = [
+              ...(importedProductsResult.status === "rejected" || importedPagesResult.status === "rejected"
                 ? ["catalog_unavailable"]
-                : [];
+                : []),
+              ...(importedQueriesResult.status === "rejected" ? ["query_rows_unavailable"] : [])
+            ];
             const opportunities =
               importedOpportunitiesResult.status === "fulfilled"
                 ? mapApiImportedOpportunitiesToOpportunities(importedOpportunitiesResult.value)
@@ -833,6 +835,16 @@ function ImportedPreviewPanel({
             {locale === "zh"
               ? "商品或页面预览暂不可用；图谱、机会和任务预览仍保持只读展示。"
               : "Product or page preview reads are unavailable; graph, opportunity, and task previews remain read-only."}
+          </p>
+        </div>
+      )}
+      {importedPreviews.warnings.includes("query_rows_unavailable") && (
+        <div className="imported-preview-empty">
+          <strong>{locale === "zh" ? "查询行暂不可用" : "Query rows unavailable"}</strong>
+          <p className="muted">
+            {locale === "zh"
+              ? "原始 GSC 查询行读取暂不可用；聚类、商品、页面、机会和任务预览仍保持只读展示。"
+              : "Raw GSC query row reads are unavailable; clusters, catalog, opportunity, and task previews remain read-only."}
           </p>
         </div>
       )}

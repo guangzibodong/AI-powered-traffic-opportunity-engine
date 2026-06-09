@@ -200,6 +200,8 @@ assert(adapter.includes("mapApiImportedTaskResponseToTask"), "Adapter must expos
 assert(app.includes("integrations={board.integrations}"), "Safety page must render board integrations, including API-backed integrations");
 assert(app.includes("ImportedPreviewPanel"), "Board must expose an imported preview panel for API-backed imported data");
 assert(app.includes("read-only imported previews"), "Imported preview UI must state that previews are read-only");
+assert(app.includes("query_rows_unavailable"), "Imported preview UI must preserve a query row partial-failure warning");
+assert(app.includes("Query rows unavailable"), "Imported preview UI must explain when query row reads are unavailable");
 assert(app.includes("updateTaskStatus("), "App must call the demo task status API when API-backed board data is available");
 assert(app.includes('boardDataState.source === "api"'), "App must gate task status API mutations to the connected API board state");
 assert(app.includes("applyApiTaskStatusToBoard"), "App must apply successful API task status responses to the board state");

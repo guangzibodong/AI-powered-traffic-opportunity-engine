@@ -334,6 +334,29 @@ async function runSmoke() {
     );
     await catalogFailurePage.close();
 
+    const queryRowFailurePage = await context.newPage();
+    await queryRowFailurePage.route("**/api/stores/**", async (route) => {
+      const url = route.request().url();
+      if (url.endsWith("/queries")) {
+        await route.abort("failed");
+        return;
+      }
+
+      await route.continue();
+    });
+    await queryRowFailurePage.goto(webUrl);
+    await clickUnique(queryRowFailurePage.getByRole("button", { name: "EN" }), "query row failure language switcher");
+    await expectVisible(queryRowFailurePage.getByText("read-only imported previews"), "query row failure imported preview badge");
+    await expectVisible(queryRowFailurePage.getByText("Query rows unavailable"), "query row failure unavailable message");
+    await expectVisible(queryRowFailurePage.getByText("Graph-linked clusters"), "query row failure graph metric");
+    await expectVisible(queryRowFailurePage.getByText("portable espresso maker camping"), "query row failure imported query cluster");
+    await expectVisible(queryRowFailurePage.getByText("Trail Brew Portable Espresso Maker"), "query row failure imported product row");
+    assert(
+      (await queryRowFailurePage.locator(".imported-preview-panel button").count()) === 0,
+      "Query-row-only preview failure must not render action buttons"
+    );
+    await queryRowFailurePage.close();
+
     const firstTaskRow = page.locator("tr").filter({ hasText: taskTitle });
     assert((await firstTaskRow.count()) === 1, "Expected first demo task row to be visible");
     await clickUnique(firstTaskRow.getByRole("button", { name: "Draft later" }), "first task action");
