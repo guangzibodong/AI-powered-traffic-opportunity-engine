@@ -110,7 +110,7 @@ The first version is a working product experience, not a marketing landing page.
 
 ## Current Sprint Status
 
-Sprint 1 is complete. The Sprint 2 local/import-only loop is also complete and handed off in [Sprint 2 Local Import Handoff](docs/sprint-2-local-import-handoff.md). The current branch still does not connect real GSC OAuth, collect live credentials, write WooCommerce data, create WordPress drafts, update WordPress pages, or publish content.
+Sprint 1 is complete. The Sprint 2 local/import-only loop is also complete and handed off in [Sprint 2 Local Import Handoff](docs/sprint-2-local-import-handoff.md). The Sprint 3 local asset workspace read-only slice is handed off in [Sprint 3 Asset Workspace Read-Only Handoff](docs/sprint-3-asset-workspace-handoff.md). The current branch still does not connect real GSC OAuth, collect live credentials, write WooCommerce data, create WordPress drafts, update WordPress pages, or publish content.
 
 Completed capabilities in the current Sprint 1 slice:
 

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset external write clamp reconciliation is verified and asset workspace read-only handoff documentation is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 asset workspace read-only handoff documentation is verified and safe local asset editor contract planning is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -189,7 +189,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-021 | 155 | done | Frontend Product Engineer / QA Lead | Add WordPress draft readiness reconciliation. | Browser smoke verifies WordPress draft readiness totals reconcile with safe asset workspace draft counts while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
 | TASK-S3-QA-022 | 156 | done | Frontend Product Engineer / QA Lead | Add unavailable WordPress draft readiness coverage. | Browser smoke verifies an unavailable asset workspace does not render WordPress draft readiness rows and keeps draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
 | TASK-S3-QA-023 | 157 | done | Frontend Product Engineer / QA Lead | Add asset external write clamp reconciliation. | Browser smoke verifies the asset workspace external write clamp is false in DOM and visible summary across populated and unavailable states while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
-| TASK-S3-DOC-024 | 158 | todo | Product Manager / Documentation Lead / QA Lead | Document asset workspace read-only handoff. | Docs summarize the current local asset workspace UI/API capabilities, verification evidence, and remaining blocked editor/WordPress draft work without adding draft creation, publishing, credentials, sync execution, href navigation, asset update, or commerce-write controls. |
+| TASK-S3-DOC-024 | 158 | done | Product Manager / Documentation Lead / QA Lead | Document asset workspace read-only handoff. | Docs summarize the current local asset workspace UI/API capabilities, verification evidence, and remaining blocked editor/WordPress draft work without adding draft creation, publishing, credentials, sync execution, href navigation, asset update, or commerce-write controls. |
+| TASK-S3-PM-025 | 159 | todo | Product Manager / Backend/API Engineer / QA Lead | Plan safe local asset editor contract. | Documentation defines a future local-only asset edit contract, required tests, allowed fields, and hard blocks for WordPress draft creation, publishing, credentials, sync execution, href navigation, external writes, and commerce writes before any editor code is added. |
 
 ## Blockers
 
@@ -501,6 +502,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset external write clamp reconciliation is next because the safety panel should prove external writes remain false in both DOM diagnostics and visible summary copy.
 - Asset external write clamp reconciliation is verified by browser smoke coverage that checks DOM clamp and visible summary copy across populated and unavailable asset workspace states.
 - Asset workspace read-only handoff documentation is next because this QA-heavy local asset slice is ready to be summarized before any editor or WordPress draft action is introduced.
+- Asset workspace read-only handoff documentation is verified in `docs/sprint-3-asset-workspace-handoff.md`, with README pointing to the safe handoff and remaining draft/editor gates.
+- Safe local asset editor contract planning is next because editing should be specified and tested before any asset update UI or route is introduced.
 
 ## Completion Rule
 
