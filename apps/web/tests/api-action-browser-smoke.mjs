@@ -255,6 +255,27 @@ async function assertImportedPreviewMetricValues(page, expectedValues, label) {
   }
 }
 
+async function assertImportedPreviewOverflowValues(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  for (const [overflowKey, expectedValue] of Object.entries(expectedValues)) {
+    const overflow = importedPanel.locator(`[data-overflow-key='${overflowKey}']`);
+    const overflowCount = await overflow.count();
+
+    if (expectedValue === 0) {
+      assert(overflowCount === 0, `${label} imported preview overflow ${overflowKey} must not render`);
+      continue;
+    }
+
+    assert(overflowCount === 1, `${label} imported preview overflow ${overflowKey} must render exactly once`);
+    const overflowValueText = (await overflow.getAttribute("data-overflow-count")) ?? "";
+    const overflowValue = Number(overflowValueText);
+    assert(
+      Number.isFinite(overflowValue) && overflowValue === expectedValue,
+      `${label} imported preview overflow ${overflowKey} value mismatch: expected ${expectedValue}, got ${overflowValueText}`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -392,6 +413,18 @@ async function runSmoke() {
       },
       "initial"
     );
+    await assertImportedPreviewOverflowValues(
+      page,
+      {
+        catalog_pages: 1,
+        catalog_products: 1,
+        opportunity_previews: 1,
+        query_clusters: 1,
+        query_rows: 2,
+        task_previews: 1
+      },
+      "initial"
+    );
     await assertImportedPreviewItemKinds(
       page,
       {
@@ -449,6 +482,18 @@ async function runSmoke() {
       },
       "resilient fallback"
     );
+    await assertImportedPreviewOverflowValues(
+      resilientPage,
+      {
+        catalog_pages: 0,
+        catalog_products: 0,
+        opportunity_previews: 0,
+        query_clusters: 0,
+        query_rows: 0,
+        task_previews: 0
+      },
+      "resilient fallback"
+    );
     await assertImportedPreviewWarningKeys(
       resilientPage,
       ["catalog_unavailable", "graph_unavailable", "opportunities_unavailable", "query_rows_unavailable", "tasks_unavailable"],
@@ -486,6 +531,18 @@ async function runSmoke() {
         opportunity_previews: 3,
         query_rows: 4,
         task_previews: 3
+      },
+      "catalog-only failure"
+    );
+    await assertImportedPreviewOverflowValues(
+      catalogFailurePage,
+      {
+        catalog_pages: 0,
+        catalog_products: 0,
+        opportunity_previews: 1,
+        query_clusters: 1,
+        query_rows: 2,
+        task_previews: 1
       },
       "catalog-only failure"
     );
@@ -534,6 +591,18 @@ async function runSmoke() {
       },
       "query-row-only failure"
     );
+    await assertImportedPreviewOverflowValues(
+      queryRowFailurePage,
+      {
+        catalog_pages: 1,
+        catalog_products: 1,
+        opportunity_previews: 1,
+        query_clusters: 1,
+        query_rows: 0,
+        task_previews: 1
+      },
+      "query-row-only failure"
+    );
     await queryRowFailurePage.close();
 
     const graphFailurePage = await context.newPage();
@@ -566,6 +635,18 @@ async function runSmoke() {
         opportunity_previews: 3,
         query_rows: 4,
         task_previews: 3
+      },
+      "graph-only failure"
+    );
+    await assertImportedPreviewOverflowValues(
+      graphFailurePage,
+      {
+        catalog_pages: 1,
+        catalog_products: 1,
+        opportunity_previews: 1,
+        query_clusters: 0,
+        query_rows: 2,
+        task_previews: 1
       },
       "graph-only failure"
     );
@@ -614,6 +695,18 @@ async function runSmoke() {
       },
       "opportunity-only failure"
     );
+    await assertImportedPreviewOverflowValues(
+      opportunityFailurePage,
+      {
+        catalog_pages: 1,
+        catalog_products: 1,
+        opportunity_previews: 0,
+        query_clusters: 1,
+        query_rows: 2,
+        task_previews: 1
+      },
+      "opportunity-only failure"
+    );
     await opportunityFailurePage.close();
 
     const taskFailurePage = await context.newPage();
@@ -647,6 +740,18 @@ async function runSmoke() {
         product: 2,
         query_row: 2,
         task_preview: 0
+      },
+      "task-only failure"
+    );
+    await assertImportedPreviewOverflowValues(
+      taskFailurePage,
+      {
+        catalog_pages: 1,
+        catalog_products: 1,
+        opportunity_previews: 1,
+        query_clusters: 1,
+        query_rows: 2,
+        task_previews: 0
       },
       "task-only failure"
     );
@@ -699,6 +804,18 @@ async function runSmoke() {
         matched_pages: 0,
         matched_products: 0,
         opportunity_previews: 0,
+        query_rows: 0,
+        task_previews: 0
+      },
+      "derived-read failure"
+    );
+    await assertImportedPreviewOverflowValues(
+      derivedFailurePage,
+      {
+        catalog_pages: 1,
+        catalog_products: 1,
+        opportunity_previews: 0,
+        query_clusters: 0,
         query_rows: 0,
         task_previews: 0
       },

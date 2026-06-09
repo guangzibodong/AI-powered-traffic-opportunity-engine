@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only QA coverage is complete through imported preview metric-key DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only QA coverage is complete through imported preview overflow-key DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -101,6 +101,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-055 | 67 | done | QA Lead / UI Systems Engineer | Expose imported preview warning-key DOM diagnostics. | Browser smoke verifies each read-only imported preview warning renders a stable `data-warning-key` for graph, query rows, catalog, opportunities, and tasks across full and partial failure states, without adding controls, navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 | TASK-S2-QA-056 | 68 | done | QA Lead / UI Systems Engineer | Expose imported preview item-kind DOM diagnostics. | Browser smoke verifies rendered read-only imported preview cards expose stable `data-preview-kind` and `data-preview-id` markers for clusters, query rows, products, pages, opportunities, and task previews across ready and partial-failure states, without adding controls, navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 | TASK-S2-QA-057 | 69 | done | QA Lead / UI Systems Engineer | Expose imported preview metric-key DOM diagnostics. | Browser smoke verifies the read-only imported preview metric rows expose stable `data-metric-key` markers and numeric values for graph clusters, query rows, matched products, matched pages, catalog products, catalog pages, opportunity previews, and task previews across ready and partial-failure states, without adding controls, navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
+| TASK-S2-QA-058 | 70 | done | QA Lead / UI Systems Engineer | Expose imported preview overflow-key DOM diagnostics. | Browser smoke verifies each read-only imported preview overflow indicator exposes a stable `data-overflow-key` and numeric `data-overflow-count` for hidden query clusters, query rows, catalog products, catalog pages, opportunity previews, and task previews, without adding controls, navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 
 ## Blockers
 
@@ -236,6 +237,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported preview item-kind DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported preview metric-key DOM diagnostics are next because compact counts should be verifiable with stable read-only DOM markers instead of localized labels alone.
 - Imported preview metric-key DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported preview overflow-key DOM diagnostics are next because hidden-row counts should be verified with stable read-only DOM markers instead of localized copy alone.
+- Imported preview overflow-key DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

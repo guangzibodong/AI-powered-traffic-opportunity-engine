@@ -918,7 +918,11 @@ function ImportedPreviewPanel({
             </article>
           ))}
           {clusterOverflowCount > 0 ? (
-            <p className="muted imported-preview-overflow">
+            <p
+              className="muted imported-preview-overflow"
+              data-overflow-count={clusterOverflowCount}
+              data-overflow-key="query_clusters"
+            >
               {locale === "zh"
                 ? `还有 ${clusterOverflowCount} 个查询簇未在预览中展示`
                 : `${clusterOverflowCount} more query clusters not shown in this preview`}
@@ -944,7 +948,11 @@ function ImportedPreviewPanel({
             </article>
           ))}
           {queryRowOverflowCount > 0 ? (
-            <p className="muted imported-preview-overflow">
+            <p
+              className="muted imported-preview-overflow"
+              data-overflow-count={queryRowOverflowCount}
+              data-overflow-key="query_rows"
+            >
               {locale === "zh"
                 ? `还有 ${queryRowOverflowCount} 条查询行未在预览中展示`
                 : `${queryRowOverflowCount} more query rows not shown in this preview`}
@@ -966,7 +974,11 @@ function ImportedPreviewPanel({
             </article>
           ))}
           {productOverflowCount > 0 ? (
-            <p className="muted catalog-overflow">
+            <p
+              className="muted catalog-overflow"
+              data-overflow-count={productOverflowCount}
+              data-overflow-key="catalog_products"
+            >
               {locale === "zh"
                 ? `还有 ${productOverflowCount} 个 catalog 商品未在预览中展示`
                 : `${productOverflowCount} more catalog products not shown in this preview`}
@@ -986,7 +998,11 @@ function ImportedPreviewPanel({
             </article>
           ))}
           {pageOverflowCount > 0 ? (
-            <p className="muted catalog-overflow">
+            <p
+              className="muted catalog-overflow"
+              data-overflow-count={pageOverflowCount}
+              data-overflow-key="catalog_pages"
+            >
               {locale === "zh"
                 ? `还有 ${pageOverflowCount} 个 catalog 页面未在预览中展示`
                 : `${pageOverflowCount} more catalog pages not shown in this preview`}
@@ -1005,7 +1021,11 @@ function ImportedPreviewPanel({
             </article>
           ))}
           {opportunityOverflowCount > 0 ? (
-            <p className="muted imported-preview-overflow">
+            <p
+              className="muted imported-preview-overflow"
+              data-overflow-count={opportunityOverflowCount}
+              data-overflow-key="opportunity_previews"
+            >
               {locale === "zh"
                 ? `还有 ${opportunityOverflowCount} 个机会预览未在预览中展示`
                 : `${opportunityOverflowCount} more opportunity previews not shown in this preview`}
@@ -1028,7 +1048,11 @@ function ImportedPreviewPanel({
             </article>
           ))}
           {taskOverflowCount > 0 ? (
-            <p className="muted imported-preview-overflow">
+            <p
+              className="muted imported-preview-overflow"
+              data-overflow-count={taskOverflowCount}
+              data-overflow-key="task_previews"
+            >
               {locale === "zh"
                 ? `还有 ${taskOverflowCount} 个任务预览未在预览中展示`
                 : `${taskOverflowCount} more task previews not shown in this preview`}
