@@ -809,31 +809,37 @@ function ImportedPreviewPanel({
   const sectionCountsReconciled = availableRailSectionCount + unavailableRailSectionCount === importedSectionCount;
   const sectionHealthRows = [
     {
+      count: importedPreviews.clusters.length,
       key: "graph_clusters",
       label: locale === "zh" ? "图谱集群" : "Graph clusters",
       state: importedPreviews.warnings.includes("graph_unavailable") ? "unavailable" : "available"
     },
     {
+      count: importedPreviews.queries.length,
       key: "query_rows",
       label: locale === "zh" ? "查询行" : "Query rows",
       state: importedPreviews.warnings.includes("query_rows_unavailable") ? "unavailable" : "available"
     },
     {
+      count: importedPreviews.products.length,
       key: "products",
       label: locale === "zh" ? "商品" : "Products",
       state: importedPreviews.warnings.includes("catalog_unavailable") ? "unavailable" : "available"
     },
     {
+      count: importedPreviews.pages.length,
       key: "pages",
       label: locale === "zh" ? "页面" : "Pages",
       state: importedPreviews.warnings.includes("catalog_unavailable") ? "unavailable" : "available"
     },
     {
+      count: importedPreviews.opportunities.length,
       key: "opportunities",
       label: locale === "zh" ? "机会" : "Opportunities",
       state: importedPreviews.warnings.includes("opportunities_unavailable") ? "unavailable" : "available"
     },
     {
+      count: importedPreviews.tasks.length,
       key: "task_previews",
       label: locale === "zh" ? "任务预览" : "Task previews",
       state: importedPreviews.warnings.includes("tasks_unavailable") ? "unavailable" : "available"
@@ -902,12 +908,15 @@ function ImportedPreviewPanel({
         {sectionHealthRows.map((section) => (
           <div
             className="section-health-row"
+            data-section-health-count={section.count}
             data-section-health-key={section.key}
             data-section-health-state={section.state}
             key={section.key}
           >
             <span>{section.label}</span>
-            <strong>{section.state}</strong>
+            <strong>
+              {section.state} / {section.count}
+            </strong>
           </div>
         ))}
       </div>
