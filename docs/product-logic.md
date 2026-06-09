@@ -110,6 +110,7 @@ This graph layer is deterministic and read-only. It does not call embeddings, LL
 Sprint 2 imported opportunity previews apply a small rule set to the imported graph:
 
 - `high_impression_low_ctr`: best existing imported page exists, impressions are at least 1,000, CTR is 3% or lower, and average position is 20 or better.
+- `ranking_push`: best existing imported page exists, impressions are at least 800, CTR is above 3%, and average position is from 4 through 20.
 - `collection_page_gap`: no best existing imported page exists and at least three imported products match the cluster.
 - `product_seo`: no best existing imported page exists, one or two in-stock published imported products match the cluster, impressions are at least 800, and average position is 20 or better.
 

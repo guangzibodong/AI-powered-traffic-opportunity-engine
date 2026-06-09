@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only UX is complete through imported action-type summary metrics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only Opportunity layer is complete through imported ranking push previews; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -131,6 +131,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-TASK-085 | 97 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported task source-rule summary diagnostics. | Imported task preview summary exposes deterministic `by_rule` counts from each source opportunity alongside `by_category`, including empty-state `{}`, so operators can distinguish source rule volume without adding review mutation, draft creation, publishing, credentials, sync execution, or commerce writes. |
 | TASK-S2-UX-086 | 98 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported product SEO summary metrics. | Imported preview UI stores read-only imported opportunity/task summary diagnostics and renders product SEO opportunity/task preview counts with stable metric keys, without adding review mutation, draft creation, publishing, credentials, sync execution, href navigation, or commerce writes. |
 | TASK-S2-UX-087 | 99 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported action-type summary metrics. | Imported preview UI renders read-only CTR refresh and collection page opportunity/task preview counts from imported summary diagnostics alongside product SEO counts, with stable metric keys and no review mutation, draft creation, publishing, credentials, sync execution, href navigation, or commerce writes. |
+| TASK-S2-OPP-088 | 100 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported ranking push opportunity preview rule. | Imported opportunities generate a read-only `ranking_push` preview when imported search demand points to an existing indexable page with strong CTR but average position still between 4 and 20, preserving safe `new` status, deterministic dedupe, evidence, summary diagnostics, and no task mutation, draft creation, publishing, credentials, sync execution, or commerce writes. |
 
 ## Blockers
 
@@ -326,6 +327,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported product SEO summary metrics are verified by browser smoke red-green coverage for populated, empty, fallback, and single-failure imported preview states, with stable metric keys and zero unsafe controls.
 - Imported action-type summary metrics are next because the read-only UI should expose the full imported action mix for CTR refresh, collection page, and product SEO previews before any workflow mutation or external write path exists.
 - Imported action-type summary metrics are verified by browser smoke red-green coverage for CTR refresh and collection page opportunity/task summary counts across populated, empty, fallback, and single-failure imported preview states.
+- Imported ranking push opportunity previews are next because strong-CTR imported pages with mid-pack rankings should surface as read-only optimization opportunities before any task mutation, draft, publishing, sync, or commerce-write workflow exists.
+- Imported ranking push opportunity previews are verified by backend red-green coverage, docs updates, full frontend checks, backend tests, diff check, and secret scan.
 
 ## Completion Rule
 

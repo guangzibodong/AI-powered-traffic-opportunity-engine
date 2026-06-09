@@ -40,6 +40,8 @@ def _opportunities_for_cluster(store_id: str, cluster: dict[str, Any]) -> list[d
     opportunities = []
     if _is_low_ctr_refresh_candidate(cluster):
         opportunities.append(_build_ctr_refresh_opportunity(store_id, cluster))
+    if _is_ranking_push_candidate(cluster):
+        opportunities.append(_build_ranking_push_opportunity(store_id, cluster))
     if _is_collection_gap_candidate(cluster):
         opportunities.append(_build_collection_gap_opportunity(store_id, cluster))
     if _is_product_seo_candidate(cluster):
@@ -53,6 +55,15 @@ def _is_low_ctr_refresh_candidate(cluster: dict[str, Any]) -> bool:
         and cluster["impressions"] >= 1000
         and cluster["ctr"] <= 0.03
         and cluster["position"] <= 20
+    )
+
+
+def _is_ranking_push_candidate(cluster: dict[str, Any]) -> bool:
+    return (
+        cluster["best_existing_page"] is not None
+        and cluster["impressions"] >= 800
+        and cluster["ctr"] > 0.03
+        and 4 <= cluster["position"] <= 20
     )
 
 
@@ -122,6 +133,58 @@ def _build_ctr_refresh_opportunity(store_id: str, cluster: dict[str, Any]) -> di
         "status": "new",
         "summary": "Imported search data shows strong impressions but weak CTR on an existing page.",
         "title": f"Improve CTR for {cluster['primary_query']}",
+        "trafscore": _score(score_components),
+    }
+
+
+def _build_ranking_push_opportunity(store_id: str, cluster: dict[str, Any]) -> dict[str, Any]:
+    page = cluster["best_existing_page"]
+    assert page is not None
+    score_components = {
+        "traffic_potential": min(100, cluster["impressions"] / 18),
+        "intent_score": 82,
+        "product_fit_score": 80 if cluster["matched_products"] else 64,
+        "revenue_fit_score": 72,
+        "inventory_score": 82,
+        "gap_score": 72,
+        "timing_score": 78,
+        "execution_ease": 86,
+        "confidence_score": 80,
+    }
+    dedupe_key = f"{store_id}:imported:ranking_push:{cluster['cluster_key']}:{page['page_id']}"
+    return {
+        "confidence": 0.8,
+        "dedupe_key": dedupe_key,
+        "evidence": [
+            {
+                "type": "ranking_position",
+                "text": f"{cluster['primary_query']} averages position {cluster['position']:.1f} with {cluster['ctr']:.1%} CTR",
+                "metrics": {
+                    "clicks": cluster["clicks"],
+                    "ctr": cluster["ctr"],
+                    "impressions": cluster["impressions"],
+                    "position": cluster["position"],
+                    "primary_query": cluster["primary_query"],
+                },
+            },
+            {
+                "type": "existing_page",
+                "text": f"Existing page can be pushed higher: {page['title']}",
+                "entityRefs": [{"type": "page", "id": page["page_id"]}],
+            },
+        ],
+        "id": _opportunity_id(dedupe_key),
+        "opportunity_type": "ranking_push",
+        "recommended_task_type": "ranking_push",
+        "related_page": page,
+        "related_products": cluster["matched_products"],
+        "rule_id": "ranking_push",
+        "rule_version": RULE_VERSION,
+        "score_components": score_components,
+        "source_cluster": _source_cluster(cluster),
+        "status": "new",
+        "summary": "Imported search data shows a page with strong CTR that could be pushed higher in rankings.",
+        "title": f"Push ranking for {cluster['primary_query']}",
         "trafscore": _score(score_components),
     }
 

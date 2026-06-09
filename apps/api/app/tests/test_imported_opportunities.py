@@ -14,6 +14,10 @@ portable espresso maker camping,https://example.com/camping-espresso,24,1200,2.0
 camping portable espresso machine,https://example.com/camping-espresso,18,800,2.25%,5.2
 """
 
+RANKING_PUSH_GSC_CSV = """Query,Page,Clicks,Impressions,CTR,Position
+portable espresso maker camping,https://example.com/camping-espresso,68,1300,5.23%,8.6
+"""
+
 GAP_GSC_CSV = """Query,Page,Clicks,Impressions,CTR,Position
 camping espresso gift set,https://example.com/search/camping-espresso-gift-set,12,1400,0.86%,11.2
 portable camping espresso kit,https://example.com/search/camping-espresso-gift-set,9,900,1.0%,12.4
@@ -136,6 +140,30 @@ class ImportedOpportunityServiceTests(unittest.TestCase):
         self.assertEqual(opportunities[0]["source_cluster"]["primary_query"], "portable espresso maker camping")
         self.assertTrue(opportunities[0]["dedupe_key"].startswith("store-demo-outdoor-coffee:imported:high_impression_low_ctr:"))
         self.assertTrue(any(item["type"] == "gsc_ctr" for item in opportunities[0]["evidence"]))
+
+    def test_imported_opportunities_generate_ranking_push_from_existing_strong_ctr_page(self):
+        from app.services.gsc_ingestion_service import import_gsc_csv
+        from app.services.imported_opportunity_service import generate_imported_opportunities
+        from app.services.page_sync_service import import_wordpress_pages
+        from app.services.product_sync_service import import_woocommerce_products
+
+        import_gsc_csv("store-demo-outdoor-coffee", RANKING_PUSH_GSC_CSV, window="28d")
+        import_woocommerce_products("store-demo-outdoor-coffee", CTR_PRODUCTS)
+        import_wordpress_pages("store-demo-outdoor-coffee", CTR_PAGES)
+
+        payload = generate_imported_opportunities("store-demo-outdoor-coffee")
+        opportunities = payload["opportunities"]
+
+        self.assertEqual(len(opportunities), 1)
+        self.assertEqual(opportunities[0]["rule_id"], "ranking_push")
+        self.assertEqual(opportunities[0]["opportunity_type"], "ranking_push")
+        self.assertEqual(opportunities[0]["recommended_task_type"], "ranking_push")
+        self.assertEqual(opportunities[0]["status"], "new")
+        self.assertEqual(opportunities[0]["related_page"]["url"], "https://example.com/camping-espresso")
+        self.assertTrue(opportunities[0]["dedupe_key"].startswith("store-demo-outdoor-coffee:imported:ranking_push:"))
+        self.assertTrue(any(item["type"] == "ranking_position" for item in opportunities[0]["evidence"]))
+        self.assertEqual(payload["summary"]["by_rule"]["ranking_push"], 1)
+        self.assertEqual(payload["summary"]["by_task_type"]["ranking_push"], 1)
 
     def test_imported_opportunities_generate_collection_gap_without_existing_page(self):
         from app.services.gsc_ingestion_service import import_gsc_csv

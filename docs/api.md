@@ -258,6 +258,7 @@ Product matches require at least three meaningful token overlaps. Page matches f
 Current imported preview rules:
 
 - `high_impression_low_ctr`: imported cluster has an indexable existing page, at least 1,000 impressions, CTR at or below 3%, and average position of 20 or better.
+- `ranking_push`: imported cluster has an indexable existing page, at least 800 impressions, CTR above 3%, and average position from 4 through 20.
 - `collection_page_gap`: imported cluster has no best existing page and at least three matched imported products.
 - `product_seo`: imported cluster has no best existing page, maps to one or two in-stock published imported products, has at least 800 impressions, and average position of 20 or better.
 
