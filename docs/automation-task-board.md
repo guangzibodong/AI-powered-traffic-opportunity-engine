@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only UI has verified ranking push share metrics and is queuing action-share consistency browser coverage next; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only UI has verified action-share consistency browser coverage and is queuing an action-mix summary state next; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -157,7 +157,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-UX-111 | 123 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show collection page share metrics. | Imported preview UI renders read-only collection page opportunity/task share percentages from imported summary diagnostics and preview totals, with stable metric keys and share diagnostics, while adding no review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-UX-112 | 124 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show product SEO share metrics. | Imported preview UI renders read-only product SEO opportunity/task share percentages from imported summary diagnostics and preview totals, with stable metric keys and share diagnostics, while adding no review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 | TASK-S2-UX-113 | 125 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show ranking push share metrics. | Imported preview UI renders read-only ranking push opportunity/task share percentages from imported summary diagnostics and preview totals, with stable metric keys and share diagnostics, while adding no review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
-| TASK-S2-QA-114 | 126 | todo | Frontend Product Engineer / QA Lead | Add action-share consistency browser coverage. | Browser smoke reconciles action-share numerator, denominator, raw percent, and visible percent for CTR refresh, collection page, product SEO, ranking push, and buying guide states across populated, empty, fallback, opportunity-only failure, and task-only failure cases, with no unsafe statuses or live integration controls. |
+| TASK-S2-QA-114 | 126 | done | Frontend Product Engineer / QA Lead | Add action-share consistency browser coverage. | Browser smoke reconciles action-share numerator, denominator, raw percent, and visible percent for CTR refresh, collection page, product SEO, ranking push, and buying guide states across populated, empty, fallback, opportunity-only failure, and task-only failure cases, with no unsafe statuses or live integration controls. |
+| TASK-S2-UX-115 | 127 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported action-mix summary state. | Imported preview UI renders a compact read-only action-mix summary state derived from action share diagnostics, distinguishing empty, concentrated, and balanced imported action mixes without adding review mutation, task creation, draft creation, publishing, credentials, sync execution, href navigation, WordPress update, or commerce writes. |
 
 ## Blockers
 
@@ -406,6 +407,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Ranking push share metrics are next because operators should see whether imported action volume includes rank-improvement opportunities and task previews before any WordPress update, execution, or publishing workflow exists.
 - Ranking push share metrics are verified by main-thread browser smoke red-green coverage across populated, fallback, empty, opportunity-only failure, and task-only failure states, with stable share diagnostics and no unsafe controls.
 - Action-share consistency browser coverage is next because the growing share-metric surface should reconcile numerator, denominator, raw percent, and visible percent in one stable QA pass before adding more action-mix UI.
+- Action-share consistency browser coverage is verified by red-green browser smoke coverage that requires action share scope markers and reconciles numerator, denominator, raw percent, and visible text across populated, fallback, empty, opportunity-only failure, and task-only failure states.
+- Imported action-mix summary state is next because operators need a compact read-only interpretation of whether imported actions are empty, concentrated, or balanced before any execution workflow exists.
 
 ## Completion Rule
 

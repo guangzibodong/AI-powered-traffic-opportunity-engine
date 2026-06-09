@@ -1148,6 +1148,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="ctr_refresh_opportunity_share"
+          data-share-scope="action"
           data-share-count={ctrRefreshOpportunityCount}
           data-share-percent={ctrRefreshOpportunitySharePercent}
           data-share-total={ctrRefreshOpportunityTotal}
@@ -1158,6 +1159,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="ctr_refresh_task_share"
+          data-share-scope="action"
           data-share-count={ctrRefreshTaskCount}
           data-share-percent={ctrRefreshTaskSharePercent}
           data-share-total={ctrRefreshTaskTotal}
@@ -1176,6 +1178,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="collection_page_opportunity_share"
+          data-share-scope="action"
           data-share-count={collectionPageOpportunityCount}
           data-share-percent={collectionPageOpportunitySharePercent}
           data-share-total={collectionPageOpportunityTotal}
@@ -1186,6 +1189,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="collection_page_task_share"
+          data-share-scope="action"
           data-share-count={collectionPageTaskCount}
           data-share-percent={collectionPageTaskSharePercent}
           data-share-total={collectionPageTaskTotal}
@@ -1212,6 +1216,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="buying_guide_gap_opportunity_share"
+          data-share-scope="action"
           data-share-count={buyingGuideGapOpportunityCount}
           data-share-percent={buyingGuideGapOpportunitySharePercent}
           data-share-total={buyingGuideGapOpportunityTotal}
@@ -1222,6 +1227,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="buying_guide_gap_task_share"
+          data-share-scope="action"
           data-share-count={buyingGuideGapTaskCount}
           data-share-percent={buyingGuideGapTaskSharePercent}
           data-share-total={buyingGuideGapTaskTotal}
@@ -1240,6 +1246,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="ranking_push_opportunity_share"
+          data-share-scope="action"
           data-share-count={rankingPushOpportunityCount}
           data-share-percent={rankingPushOpportunitySharePercent}
           data-share-total={rankingPushOpportunityTotal}
@@ -1250,6 +1257,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="ranking_push_task_share"
+          data-share-scope="action"
           data-share-count={rankingPushTaskCount}
           data-share-percent={rankingPushTaskSharePercent}
           data-share-total={rankingPushTaskTotal}
@@ -1310,6 +1318,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="product_seo_opportunity_share"
+          data-share-scope="action"
           data-share-count={productSeoOpportunityCount}
           data-share-percent={productSeoOpportunitySharePercent}
           data-share-total={productSeoOpportunityTotal}
@@ -1320,6 +1329,7 @@ function ImportedPreviewPanel({
         <div
           className="kv-row"
           data-metric-key="product_seo_task_share"
+          data-share-scope="action"
           data-share-count={productSeoTaskCount}
           data-share-percent={productSeoTaskSharePercent}
           data-share-total={productSeoTaskTotal}

@@ -499,8 +499,32 @@ async function assertImportedPreviewMetricTexts(page, expectedValues, label) {
   }
 }
 
+const importedActionShareMetricKeys = [
+  "buying_guide_gap_opportunity_share",
+  "buying_guide_gap_task_share",
+  "collection_page_opportunity_share",
+  "collection_page_task_share",
+  "ctr_refresh_opportunity_share",
+  "ctr_refresh_task_share",
+  "product_seo_opportunity_share",
+  "product_seo_task_share",
+  "ranking_push_opportunity_share",
+  "ranking_push_task_share"
+];
+
+function calculateImportedSharePercent(count, total) {
+  return total > 0 ? Math.round((count / total) * 100) : 0;
+}
+
 async function assertImportedPreviewMetricShareDiagnostics(page, expectedValues, label) {
   const importedPanel = page.locator(".imported-preview-panel");
+  for (const metricKey of importedActionShareMetricKeys) {
+    assert(
+      Object.prototype.hasOwnProperty.call(expectedValues, metricKey),
+      `${label} imported preview action share metric ${metricKey} must be covered by browser diagnostics`
+    );
+  }
+
   for (const [metricKey, expectedValue] of Object.entries(expectedValues)) {
     const metric = importedPanel.locator(`[data-metric-key='${metricKey}']`);
     const metricCount = await metric.count();
@@ -509,6 +533,10 @@ async function assertImportedPreviewMetricShareDiagnostics(page, expectedValues,
     const countText = (await metric.getAttribute("data-share-count")) ?? "";
     const totalText = (await metric.getAttribute("data-share-total")) ?? "";
     const percentText = (await metric.getAttribute("data-share-percent")) ?? "";
+    const metricValueText = ((await metric.locator("strong").textContent()) ?? "").trim();
+    const countValue = Number(countText);
+    const totalValue = Number(totalText);
+    const percentValue = Number(percentText);
     assert(
       countText === String(expectedValue.count),
       `${label} imported preview share metric ${metricKey} count mismatch: expected ${expectedValue.count}, got ${countText}`
@@ -521,6 +549,25 @@ async function assertImportedPreviewMetricShareDiagnostics(page, expectedValues,
       percentText === String(expectedValue.percent),
       `${label} imported preview share metric ${metricKey} percent mismatch: expected ${expectedValue.percent}, got ${percentText}`
     );
+    assert(
+      Number.isFinite(countValue) && Number.isFinite(totalValue) && Number.isFinite(percentValue),
+      `${label} imported preview share metric ${metricKey} must expose numeric count, total, and percent diagnostics`
+    );
+    assert(
+      calculateImportedSharePercent(countValue, totalValue) === percentValue,
+      `${label} imported preview share metric ${metricKey} percent must reconcile with count ${countText} and total ${totalText}`
+    );
+    assert(
+      metricValueText === `${percentValue}%`,
+      `${label} imported preview share metric ${metricKey} visible text must match raw percent ${percentText}`
+    );
+    if (importedActionShareMetricKeys.includes(metricKey)) {
+      const shareScope = (await metric.getAttribute("data-share-scope")) ?? "";
+      assert(
+        shareScope === "action",
+        `${label} imported preview action share metric ${metricKey} must expose data-share-scope=action`
+      );
+    }
   }
 }
 
