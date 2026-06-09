@@ -986,12 +986,14 @@ function DataHealthPanel({ integrations, locale, t }: SharedProps & { integratio
 
 function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspaceState }) {
   const visibleAssets = assetWorkspace.assets.slice(0, 2);
+  const assetOverflowCount = Math.max(assetWorkspace.assets.length - visibleAssets.length, 0);
   const blockedCapabilities =
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   return (
     <section
       className="panel asset-workspace-panel"
       data-asset-draft-count={assetWorkspace.assets.length}
+      data-asset-overflow-count={assetOverflowCount}
       data-asset-workspace-availability={assetWorkspace.availability}
       data-blocked-capability-count={blockedCapabilities.length}
       data-external-write-allowed="false"
@@ -1033,6 +1035,11 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
               </span>
             </div>
           ))}
+          {assetOverflowCount > 0 && (
+            <p className="muted" data-asset-overflow-label={assetOverflowCount}>
+              {assetOverflowCount} more asset candidates
+            </p>
+          )}
         </div>
       ) : (
         <p className="muted">

@@ -341,6 +341,25 @@ async function assertAssetWorkspaceBlockedCapabilities(page, expectedCapabilitie
   }
 }
 
+async function assertAssetWorkspaceOverflow(page, expectedOverflowCount, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for overflow diagnostics`);
+  const overflowCountText = await assetPanel.getAttribute("data-asset-overflow-count");
+  const overflowCount = Number(overflowCountText);
+  assert(
+    Number.isInteger(overflowCount) && overflowCount === expectedOverflowCount,
+    `${label} asset overflow count mismatch: expected ${expectedOverflowCount}, got ${
+      overflowCountText ?? "missing"
+    }`
+  );
+  if (expectedOverflowCount > 0) {
+    await expectVisible(
+      page.getByText(`${expectedOverflowCount} more asset candidates`),
+      `${label} asset overflow indicator`
+    );
+  }
+}
+
 async function assertImportedPreviewState(page, expectedAvailability, expectedWarningCount, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const availability = await importedPanel.getAttribute("data-preview-availability");
@@ -1562,13 +1581,33 @@ async function runSmoke() {
                 review_state: "draft_candidate",
                 source_task_id: "task_002",
                 title: "Create camping portable espresso collection page"
+              },
+              {
+                asset_type: "buying_guide",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }, { type: "faq" }],
+                external_write_allowed: false,
+                id: "asset_task_003",
+                review_state: "draft_candidate",
+                source_task_id: "task_003",
+                title: "Draft camping espresso buying guide"
+              },
+              {
+                asset_type: "product_seo",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "metadata_only" }],
+                external_write_allowed: false,
+                id: "asset_task_004",
+                review_state: "draft_candidate",
+                source_task_id: "task_004",
+                title: "Refresh portable espresso product SEO"
               }
             ],
             blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
             external_write_allowed: false,
             mode: "asset_draft_workspace",
             store_id: storeId,
-            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+            summary: { asset_drafts: 3, ready_for_wordpress_draft: 0 }
           })
         });
         return;
@@ -1578,20 +1617,27 @@ async function runSmoke() {
     });
     await populatedAssetPage.goto(webUrl);
     await clickUnique(populatedAssetPage.getByRole("button", { name: "EN" }), "populated asset language switcher");
-    await assertAssetWorkspacePanelIsReadOnly(populatedAssetPage, 1, "populated asset workspace", [
+    await assertAssetWorkspacePanelIsReadOnly(populatedAssetPage, 3, "populated asset workspace", [
       {
         contentBlockCount: 3,
         id: "asset_task_002",
         reviewState: "draft_candidate",
         title: "Create camping portable espresso collection page"
+      },
+      {
+        contentBlockCount: 2,
+        id: "asset_task_003",
+        reviewState: "draft_candidate",
+        title: "Draft camping espresso buying guide"
       }
     ]);
-    await assertTrackedAssetMetricReconciles(populatedAssetPage, 1, "populated asset workspace");
+    await assertTrackedAssetMetricReconciles(populatedAssetPage, 3, "populated asset workspace");
     await assertAssetWorkspaceBlockedCapabilities(
       populatedAssetPage,
       ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
       "populated asset workspace"
     );
+    await assertAssetWorkspaceOverflow(populatedAssetPage, 1, "populated asset workspace");
     await populatedAssetPage.close();
 
     const assetFailurePage = await context.newPage();
