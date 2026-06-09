@@ -449,6 +449,32 @@ async function assertAssetWorkspaceQaSummary(page, expectedQaCheckCount, expecte
   );
 }
 
+async function assertWordPressDraftReadinessSummary(page, expectedReadyCount, expectedTotalCount, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for WordPress draft readiness`);
+  const summaryRow = assetPanel.locator("[data-wordpress-draft-readiness='blocked']");
+  await expectVisible(summaryRow, `${label} WordPress draft readiness row`);
+  const readyCount = await summaryRow.getAttribute("data-wordpress-draft-ready-count");
+  const totalCount = await summaryRow.getAttribute("data-wordpress-draft-total-count");
+  assert(
+    readyCount === String(expectedReadyCount),
+    `${label} WordPress draft ready count mismatch: expected ${expectedReadyCount}, got ${
+      readyCount ?? "missing"
+    }`
+  );
+  assert(
+    totalCount === String(expectedTotalCount),
+    `${label} WordPress draft total count mismatch: expected ${expectedTotalCount}, got ${
+      totalCount ?? "missing"
+    }`
+  );
+  const summaryText = (await summaryRow.textContent()) ?? "";
+  assert(
+    summaryText.includes(`${expectedReadyCount}/${expectedTotalCount} ready`),
+    `${label} WordPress draft readiness row must show ready ratio`
+  );
+}
+
 async function assertAssetWorkspaceQaReadiness(page, expectedReadinessState, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA readiness diagnostics`);
@@ -1829,6 +1855,7 @@ async function runSmoke() {
       "populated asset workspace"
     );
     await assertAssetWorkspaceQaSummary(populatedAssetPage, 5, 4, "populated asset workspace");
+    await assertWordPressDraftReadinessSummary(populatedAssetPage, 0, 3, "populated asset workspace");
     await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");

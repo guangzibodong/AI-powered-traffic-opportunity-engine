@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 unavailable QA readiness coverage is verified and WordPress draft readiness diagnostics are queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 WordPress draft readiness diagnostics are verified and WordPress draft readiness reconciliation is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -185,7 +185,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-017 | 151 | done | Frontend Product Engineer / QA Lead | Add QA readiness clear-state coverage. | Browser smoke verifies the asset workspace can render a read-only `qa_clear` state when all local candidate QA checks are non-pending without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-QA-018 | 152 | done | Frontend Product Engineer / QA Lead | Add QA readiness no-check coverage. | Browser smoke verifies the asset workspace keeps a safe read-only `not_applicable` QA readiness state when local candidates have no QA checks without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-QA-019 | 153 | done | Frontend Product Engineer / QA Lead | Add unavailable QA readiness coverage. | Browser smoke verifies an unavailable asset workspace keeps QA readiness non-executable and does not render QA summary/readiness rows without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
-| TASK-S3-UX-020 | 154 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show WordPress draft readiness diagnostics. | The asset workspace exposes read-only WordPress draft readiness counts from the safe asset workspace summary while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
+| TASK-S3-UX-020 | 154 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show WordPress draft readiness diagnostics. | The asset workspace exposes read-only WordPress draft readiness counts from the safe asset workspace summary while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
+| TASK-S3-QA-021 | 155 | todo | Frontend Product Engineer / QA Lead | Add WordPress draft readiness reconciliation. | Browser smoke verifies WordPress draft readiness totals reconcile with safe asset workspace draft counts while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
 
 ## Blockers
 
@@ -489,6 +490,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Unavailable QA readiness coverage is next because endpoint failure should also leave QA state non-executable and avoid implying draft readiness.
 - Unavailable QA readiness coverage is verified by browser smoke coverage that distinguishes asset endpoint failure as `unavailable` and keeps QA summary/readiness rows hidden.
 - WordPress draft readiness diagnostics are next because operators should see that local asset candidates are still not eligible for WordPress draft creation before any draft action is introduced.
+- WordPress draft readiness diagnostics are verified by browser smoke coverage that renders read-only ready/total counts from the safe asset workspace summary.
+- WordPress draft readiness reconciliation is next because QA should prove the readiness total agrees with the local asset draft count before any executable WordPress draft path exists.
 
 ## Completion Rule
 

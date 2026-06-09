@@ -83,6 +83,8 @@ type AssetWorkspaceState = {
   assets: AssetDraftPreview[];
   availability: "empty" | "ready" | "unavailable";
   blockedCapabilities: string[];
+  wordpressDraftReadyCount: number;
+  wordpressDraftTotalCount: number;
 };
 
 type ImportedPreviewState = {
@@ -227,7 +229,9 @@ export function App() {
   const [assetWorkspace, setAssetWorkspace] = useState<AssetWorkspaceState>({
     assets: [],
     availability: "empty",
-    blockedCapabilities: ["wordpress_draft_creation"]
+    blockedCapabilities: ["wordpress_draft_creation"],
+    wordpressDraftReadyCount: 0,
+    wordpressDraftTotalCount: 0
   });
   const [importedPreviews, setImportedPreviews] = useState<ImportedPreviewState>({
     availability: "empty",
@@ -309,7 +313,9 @@ export function App() {
             setAssetWorkspace({
               assets,
               availability: assets.length > 0 ? "ready" : "empty",
-              blockedCapabilities: assetsResponse.blocked_capabilities ?? ["wordpress_draft_creation"]
+              blockedCapabilities: assetsResponse.blocked_capabilities ?? ["wordpress_draft_creation"],
+              wordpressDraftReadyCount: assetsResponse.summary?.ready_for_wordpress_draft ?? 0,
+              wordpressDraftTotalCount: assetsResponse.summary?.asset_drafts ?? assets.length
             });
             setBaseBoard((current) => ({
               ...current,
@@ -324,7 +330,9 @@ export function App() {
             setAssetWorkspace({
               assets: [],
               availability: "unavailable",
-              blockedCapabilities: ["asset_workspace_unavailable"]
+              blockedCapabilities: ["asset_workspace_unavailable"],
+              wordpressDraftReadyCount: 0,
+              wordpressDraftTotalCount: 0
             });
           });
 
@@ -532,7 +540,13 @@ export function App() {
           warnings: []
         });
         setSafetySignals({ auditEvidence: [], syncRunPreviews: [] });
-        setAssetWorkspace({ assets: [], availability: "empty", blockedCapabilities: ["wordpress_draft_creation"] });
+        setAssetWorkspace({
+          assets: [],
+          availability: "empty",
+          blockedCapabilities: ["wordpress_draft_creation"],
+          wordpressDraftReadyCount: 0,
+          wordpressDraftTotalCount: 0
+        });
         setBoardDataState({
           error: error instanceof Error ? error.message : "Unknown API error",
           loading: false,
@@ -1055,6 +1069,19 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
           <div className="kv-row" data-asset-qa-readiness="true">
             <span>QA readiness</span>
             <strong>{qaReadinessState}</strong>
+          </div>
+        )}
+        {assetWorkspace.wordpressDraftTotalCount > 0 && (
+          <div
+            className="kv-row"
+            data-wordpress-draft-readiness="blocked"
+            data-wordpress-draft-ready-count={assetWorkspace.wordpressDraftReadyCount}
+            data-wordpress-draft-total-count={assetWorkspace.wordpressDraftTotalCount}
+          >
+            <span>WordPress draft readiness</span>
+            <strong>
+              {assetWorkspace.wordpressDraftReadyCount}/{assetWorkspace.wordpressDraftTotalCount} ready
+            </strong>
           </div>
         )}
         <div className="kv-row">
