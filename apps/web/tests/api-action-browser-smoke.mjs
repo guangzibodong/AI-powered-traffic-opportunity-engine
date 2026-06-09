@@ -406,6 +406,19 @@ async function assertImportedPreviewSectionHealthSummary(page, expectedValues, l
   );
 }
 
+async function assertImportedPreviewSectionHealthSummaryColor(page, expectedColor, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const summaryValue = await importedPanel.locator("[data-section-health-summary]").getAttribute("data-section-health-summary");
+  const actualColor = await importedPanel.locator("[data-section-health-summary] strong").evaluate((element) => {
+    return getComputedStyle(element).color;
+  });
+
+  assert(
+    actualColor === expectedColor,
+    `${label} imported preview section health summary color mismatch for ${summaryValue ?? "missing"}: expected ${expectedColor}, got ${actualColor}`
+  );
+}
+
 async function assertImportedPreviewEmptyState(page, expectedKey, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const emptyState = importedPanel.locator("[data-empty-state-key]");
@@ -1038,6 +1051,7 @@ async function runSmoke() {
       { available: 6, empty: 0, state: "ready", unavailable: 0 },
       "initial"
     );
+    await assertImportedPreviewSectionHealthSummaryColor(page, "rgb(27, 27, 29)", "initial");
     await assertImportedPreviewSectionHealth(
       page,
       {
@@ -1229,6 +1243,7 @@ async function runSmoke() {
       { available: 0, empty: 0, state: "degraded", unavailable: 6 },
       "resilient fallback"
     );
+    await assertImportedPreviewSectionHealthSummaryColor(resilientPage, "rgb(239, 68, 68)", "resilient fallback");
     await assertImportedPreviewSectionHealth(
       resilientPage,
       {
@@ -1369,6 +1384,7 @@ async function runSmoke() {
       { available: 0, empty: 6, state: "empty", unavailable: 0 },
       "empty imported"
     );
+    await assertImportedPreviewSectionHealthSummaryColor(emptyImportedPage, "rgb(107, 107, 114)", "empty imported");
     await assertImportedPreviewSectionHealth(
       emptyImportedPage,
       {

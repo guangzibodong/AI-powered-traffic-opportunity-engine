@@ -199,6 +199,10 @@ assert(styles.includes("--line: #e5e7eb"), "styles.css must use 1px neutral bord
 assert(styles.includes("--text: #1b1b1d"), "styles.css must use near-black text on light canvas");
 assert(styles.includes("--shadow: none"), "styles.css must remove generic app card shadows");
 assert(
+  styles.includes('.section-health-summary[data-section-health-summary="ready"] strong'),
+  "styles.css must style ready imported section health summaries"
+);
+assert(
   styles.includes('.section-health-summary[data-section-health-summary="empty"] strong'),
   "styles.css must style empty imported section health summaries"
 );
