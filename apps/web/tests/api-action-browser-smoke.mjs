@@ -324,6 +324,33 @@ async function assertImportedPreviewSectionHealthCounts(page, expectedCounts, la
   }
 }
 
+async function assertImportedPreviewSectionHealthSources(page, expectedSources, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+
+  for (const [sectionKey, expectedSource] of Object.entries(expectedSources)) {
+    const healthRow = importedPanel.locator(`[data-section-health-key='${sectionKey}']`);
+    const healthRowCount = await healthRow.count();
+    assert(
+      healthRowCount === 1,
+      `${label} imported preview section health ${sectionKey} must render exactly once`
+    );
+
+    const actualSource = await healthRow.getAttribute("data-section-health-source");
+    assert(
+      actualSource === expectedSource,
+      `${label} imported preview section health ${sectionKey} source mismatch: expected ${expectedSource}, got ${
+        actualSource ?? "missing"
+      }`
+    );
+
+    const healthText = ((await healthRow.textContent()) ?? "").toLowerCase();
+    assert(
+      healthText.includes(expectedSource.toLowerCase()),
+      `${label} imported preview section health ${sectionKey} must show source ${expectedSource}`
+    );
+  }
+}
+
 async function assertImportedPreviewEmptyState(page, expectedKey, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const emptyState = importedPanel.locator("[data-empty-state-key]");
@@ -975,6 +1002,18 @@ async function runSmoke() {
       },
       "initial"
     );
+    await assertImportedPreviewSectionHealthSources(
+      page,
+      {
+        graph_clusters: "Imported graph",
+        opportunities: "Opportunity previews",
+        pages: "WordPress import",
+        products: "WooCommerce import",
+        query_rows: "GSC CSV",
+        task_previews: "Task previews"
+      },
+      "initial"
+    );
     await assertImportedPreviewWarningKeys(page, [], "initial");
     await assertImportedPreviewMetricValues(
       page,
@@ -1146,6 +1185,18 @@ async function runSmoke() {
         products: 0,
         query_rows: 0,
         task_previews: 0
+      },
+      "resilient fallback"
+    );
+    await assertImportedPreviewSectionHealthSources(
+      resilientPage,
+      {
+        graph_clusters: "Imported graph",
+        opportunities: "Opportunity previews",
+        pages: "WordPress import",
+        products: "WooCommerce import",
+        query_rows: "GSC CSV",
+        task_previews: "Task previews"
       },
       "resilient fallback"
     );
@@ -1362,6 +1413,18 @@ async function runSmoke() {
       },
       "catalog-only failure"
     );
+    await assertImportedPreviewSectionHealthSources(
+      catalogFailurePage,
+      {
+        graph_clusters: "Imported graph",
+        opportunities: "Opportunity previews",
+        pages: "WordPress import",
+        products: "WooCommerce import",
+        query_rows: "GSC CSV",
+        task_previews: "Task previews"
+      },
+      "catalog-only failure"
+    );
     await assertImportedPreviewWarningKeys(catalogFailurePage, ["catalog_unavailable"], "catalog-only failure");
     await assertImportedPreviewMetricValues(
       catalogFailurePage,
@@ -1448,6 +1511,18 @@ async function runSmoke() {
         products: 3,
         query_rows: 0,
         task_previews: 3
+      },
+      "query-row-only failure"
+    );
+    await assertImportedPreviewSectionHealthSources(
+      queryRowFailurePage,
+      {
+        graph_clusters: "Imported graph",
+        opportunities: "Opportunity previews",
+        pages: "WordPress import",
+        products: "WooCommerce import",
+        query_rows: "GSC CSV",
+        task_previews: "Task previews"
       },
       "query-row-only failure"
     );

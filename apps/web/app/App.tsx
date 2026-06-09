@@ -812,36 +812,42 @@ function ImportedPreviewPanel({
       count: importedPreviews.clusters.length,
       key: "graph_clusters",
       label: locale === "zh" ? "图谱集群" : "Graph clusters",
+      source: "Imported graph",
       state: importedPreviews.warnings.includes("graph_unavailable") ? "unavailable" : "available"
     },
     {
       count: importedPreviews.queries.length,
       key: "query_rows",
       label: locale === "zh" ? "查询行" : "Query rows",
+      source: "GSC CSV",
       state: importedPreviews.warnings.includes("query_rows_unavailable") ? "unavailable" : "available"
     },
     {
       count: importedPreviews.products.length,
       key: "products",
       label: locale === "zh" ? "商品" : "Products",
+      source: "WooCommerce import",
       state: importedPreviews.warnings.includes("catalog_unavailable") ? "unavailable" : "available"
     },
     {
       count: importedPreviews.pages.length,
       key: "pages",
       label: locale === "zh" ? "页面" : "Pages",
+      source: "WordPress import",
       state: importedPreviews.warnings.includes("catalog_unavailable") ? "unavailable" : "available"
     },
     {
       count: importedPreviews.opportunities.length,
       key: "opportunities",
       label: locale === "zh" ? "机会" : "Opportunities",
+      source: "Opportunity previews",
       state: importedPreviews.warnings.includes("opportunities_unavailable") ? "unavailable" : "available"
     },
     {
       count: importedPreviews.tasks.length,
       key: "task_previews",
       label: locale === "zh" ? "任务预览" : "Task previews",
+      source: "Task previews",
       state: importedPreviews.warnings.includes("tasks_unavailable") ? "unavailable" : "available"
     }
   ];
@@ -910,12 +916,13 @@ function ImportedPreviewPanel({
             className="section-health-row"
             data-section-health-count={section.count}
             data-section-health-key={section.key}
+            data-section-health-source={section.source}
             data-section-health-state={section.state}
             key={section.key}
           >
             <span>{section.label}</span>
             <strong>
-              {section.state} / {section.count}
+              {section.state} / {section.count} / {section.source}
             </strong>
           </div>
         ))}
