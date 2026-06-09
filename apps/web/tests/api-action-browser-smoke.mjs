@@ -1008,6 +1008,8 @@ async function runSmoke() {
     await expectVisible(page.getByText("Query rows"), "imported query row count metric");
     await expectVisible(page.getByText("Catalog products"), "imported catalog product count metric");
     await expectVisible(page.getByText("Catalog pages"), "imported catalog page count metric");
+    await expectVisible(page.getByText("Product SEO opportunities"), "imported product SEO opportunity summary metric");
+    await expectVisible(page.getByText("Product SEO task previews"), "imported product SEO task summary metric");
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
     await expectVisible(page.getByText("Query row / Imported GSC"), "imported query row friendly source label");
     await expectVisible(page.getByText("evidence 1 row / Imported GSC"), "imported query row evidence summary label");
@@ -1098,6 +1100,8 @@ async function runSmoke() {
         matched_pages: 3,
         matched_products: 3,
         opportunity_previews: 3,
+        product_seo_opportunities: 0,
+        product_seo_task_previews: 0,
         query_rows: 4,
         task_previews: 3
       },
@@ -1289,6 +1293,8 @@ async function runSmoke() {
         matched_pages: 0,
         matched_products: 0,
         opportunity_previews: 0,
+        product_seo_opportunities: 0,
+        product_seo_task_previews: 0,
         query_rows: 0,
         task_previews: 0
       },
@@ -1420,6 +1426,8 @@ async function runSmoke() {
         matched_pages: 0,
         matched_products: 0,
         opportunity_previews: 0,
+        product_seo_opportunities: 0,
+        product_seo_task_previews: 0,
         query_rows: 0,
         task_previews: 0
       },
@@ -1527,6 +1535,8 @@ async function runSmoke() {
         matched_pages: 3,
         matched_products: 3,
         opportunity_previews: 3,
+        product_seo_opportunities: 0,
+        product_seo_task_previews: 0,
         query_rows: 4,
         task_previews: 3
       },
@@ -1625,6 +1635,22 @@ async function runSmoke() {
       "query-row-only failure"
     );
     await assertImportedPreviewWarningKeys(queryRowFailurePage, ["query_rows_unavailable"], "query-row-only failure");
+    await assertImportedPreviewMetricValues(
+      queryRowFailurePage,
+      {
+        catalog_pages: 3,
+        catalog_products: 3,
+        graph_clusters: 3,
+        matched_pages: 3,
+        matched_products: 3,
+        opportunity_previews: 3,
+        product_seo_opportunities: 0,
+        product_seo_task_previews: 0,
+        query_rows: 0,
+        task_previews: 3
+      },
+      "query-row-only failure"
+    );
     await assertImportedPreviewItemKinds(
       queryRowFailurePage,
       {
@@ -1680,6 +1706,8 @@ async function runSmoke() {
         matched_pages: 0,
         matched_products: 0,
         opportunity_previews: 3,
+        product_seo_opportunities: 0,
+        product_seo_task_previews: 0,
         query_rows: 4,
         task_previews: 3
       },
@@ -1731,6 +1759,22 @@ async function runSmoke() {
     await assertImportedPreviewPanelIsReadOnly(opportunityFailurePage, "opportunity-only failure");
     await assertImportedPreviewState(opportunityFailurePage, "ready", 1, "opportunity-only failure");
     await assertImportedPreviewWarningKeys(opportunityFailurePage, ["opportunities_unavailable"], "opportunity-only failure");
+    await assertImportedPreviewMetricValues(
+      opportunityFailurePage,
+      {
+        catalog_pages: 3,
+        catalog_products: 3,
+        graph_clusters: 3,
+        matched_pages: 3,
+        matched_products: 3,
+        opportunity_previews: 0,
+        product_seo_opportunities: 0,
+        product_seo_task_previews: 0,
+        query_rows: 4,
+        task_previews: 3
+      },
+      "opportunity-only failure"
+    );
     await assertImportedPreviewItemKinds(
       opportunityFailurePage,
       {
@@ -1780,6 +1824,22 @@ async function runSmoke() {
     await assertImportedPreviewPanelIsReadOnly(taskFailurePage, "task-only failure");
     await assertImportedPreviewState(taskFailurePage, "ready", 1, "task-only failure");
     await assertImportedPreviewWarningKeys(taskFailurePage, ["tasks_unavailable"], "task-only failure");
+    await assertImportedPreviewMetricValues(
+      taskFailurePage,
+      {
+        catalog_pages: 3,
+        catalog_products: 3,
+        graph_clusters: 3,
+        matched_pages: 3,
+        matched_products: 3,
+        opportunity_previews: 3,
+        product_seo_opportunities: 0,
+        product_seo_task_previews: 0,
+        query_rows: 4,
+        task_previews: 0
+      },
+      "task-only failure"
+    );
     await assertImportedPreviewItemKinds(
       taskFailurePage,
       {
@@ -1854,6 +1914,8 @@ async function runSmoke() {
         matched_pages: 0,
         matched_products: 0,
         opportunity_previews: 0,
+        product_seo_opportunities: 0,
+        product_seo_task_previews: 0,
         query_rows: 0,
         task_previews: 0
       },

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only Action layer is complete through imported task source-rule summary diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only UX is complete through imported product SEO summary metrics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -129,6 +129,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-TASK-083 | 95 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported product SEO task preview action plan. | Imported `product_seo` opportunities convert into recommend-only task previews with product-specific action steps and acceptance criteria, preserving safe `new` status and no task mutation, draft creation, publishing, credentials, sync execution, or WooCommerce writes. |
 | TASK-S2-OPP-084 | 96 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported opportunity task-type summary diagnostics. | Imported opportunities summary exposes deterministic `by_task_type` counts alongside `by_rule`, including empty-state `{}`, so operators can distinguish CTR refresh, collection page, and product SEO preview volume without adding task mutation, draft creation, publishing, credentials, sync execution, or commerce writes. |
 | TASK-S2-TASK-085 | 97 | done | Backend/API Engineer / Product Manager / QA Lead | Add imported task source-rule summary diagnostics. | Imported task preview summary exposes deterministic `by_rule` counts from each source opportunity alongside `by_category`, including empty-state `{}`, so operators can distinguish source rule volume without adding review mutation, draft creation, publishing, credentials, sync execution, or commerce writes. |
+| TASK-S2-UX-086 | 98 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show imported product SEO summary metrics. | Imported preview UI stores read-only imported opportunity/task summary diagnostics and renders product SEO opportunity/task preview counts with stable metric keys, without adding review mutation, draft creation, publishing, credentials, sync execution, href navigation, or commerce writes. |
 
 ## Blockers
 
@@ -320,6 +321,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported opportunity task-type summary diagnostics are verified by backend red-green coverage, docs updates, frontend contract, browser smoke, lint, build, diff check, and secret scan.
 - Imported task source-rule summary diagnostics are next because the read-only Action layer should summarize preview volume by source rule as well as category.
 - Imported task source-rule summary diagnostics are verified by backend red-green coverage, docs updates, frontend contract, browser smoke, lint, build, diff check, and secret scan.
+- Imported product SEO summary metrics are next because operators need read-only UI counts for product SEO opportunities and task previews before any draft, publishing, credential, sync, or commerce-write workflow exists.
+- Imported product SEO summary metrics are verified by browser smoke red-green coverage for populated, empty, fallback, and single-failure imported preview states, with stable metric keys and zero unsafe controls.
 
 ## Completion Rule
 

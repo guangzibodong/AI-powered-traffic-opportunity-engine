@@ -89,6 +89,10 @@ type ImportedPreviewState = {
   opportunities: Opportunity[];
   products: ImportedCatalogPreview[];
   queries: ImportedQueryRowPreview[];
+  summaryDiagnostics: {
+    productSeoOpportunities: number;
+    productSeoTasks: number;
+  };
   tasks: BoardViewModel["tasks"];
   warnings: string[];
 };
@@ -206,6 +210,10 @@ export function App() {
     opportunities: [],
     products: [],
     queries: [],
+    summaryDiagnostics: {
+      productSeoOpportunities: 0,
+      productSeoTasks: 0
+    },
     tasks: [],
     warnings: []
   });
@@ -297,6 +305,16 @@ export function App() {
                 : [];
             const tasks =
               importedTasksResult.status === "fulfilled" ? mapApiImportedTasksToTasks(importedTasksResult.value) : [];
+            const summaryDiagnostics = {
+              productSeoOpportunities:
+                importedOpportunitiesResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "product_seo")
+                  : 0,
+              productSeoTasks:
+                importedTasksResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedTasksResult.value.summary, "by_category", "product_seo")
+                  : 0
+            };
             setImportedPreviews({
               availability:
                 clusters.length > 0 ||
@@ -313,6 +331,7 @@ export function App() {
               opportunities,
               products,
               queries,
+              summaryDiagnostics,
               tasks,
               warnings
             });
@@ -328,6 +347,10 @@ export function App() {
               opportunities: [],
               products: [],
               queries: [],
+              summaryDiagnostics: {
+                productSeoOpportunities: 0,
+                productSeoTasks: 0
+              },
               tasks: [],
               warnings: [
                 "graph_unavailable",
@@ -350,6 +373,10 @@ export function App() {
           opportunities: [],
           products: [],
           queries: [],
+          summaryDiagnostics: {
+            productSeoOpportunities: 0,
+            productSeoTasks: 0
+          },
           tasks: [],
           warnings: []
         });
@@ -474,6 +501,17 @@ export function App() {
       </main>
     </div>
   );
+}
+
+function readImportedSummaryCount(
+  summary: Record<string, unknown> | undefined,
+  groupKey: string,
+  metricKey: string
+) {
+  const group = summary?.[groupKey];
+  if (!group || typeof group !== "object" || Array.isArray(group)) return 0;
+  const value = (group as Record<string, unknown>)[metricKey];
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
 type SharedProps = {
@@ -915,6 +953,14 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="task_previews">
           <span>{locale === "zh" ? "任务预览" : "Task previews"}</span>
           <strong>{importedPreviews.tasks.length}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="product_seo_opportunities">
+          <span>{locale === "zh" ? "Product SEO 机会" : "Product SEO opportunities"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.productSeoOpportunities}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="product_seo_task_previews">
+          <span>{locale === "zh" ? "Product SEO 任务预览" : "Product SEO task previews"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.productSeoTasks}</strong>
         </div>
       </div>
       <div
