@@ -261,6 +261,7 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
     assert(rowCount === 1, `${label} asset row ${expectedAsset.id} must render exactly once`);
     const reviewState = await row.getAttribute("data-asset-review-state");
     const contentBlockCount = await row.getAttribute("data-asset-content-block-count");
+    const contentBlockTypes = await row.getAttribute("data-asset-content-block-types");
     assert(
       reviewState === expectedAsset.reviewState,
       `${label} asset row ${expectedAsset.id} review state mismatch: expected ${expectedAsset.reviewState}, got ${
@@ -273,8 +274,22 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
         expectedAsset.contentBlockCount
       }, got ${contentBlockCount ?? "missing"}`
     );
+    if (expectedAsset.contentBlockTypes) {
+      assert(
+        contentBlockTypes === expectedAsset.contentBlockTypes.join(","),
+        `${label} asset row ${expectedAsset.id} content block type mismatch: expected ${expectedAsset.contentBlockTypes.join(
+          ","
+        )}, got ${contentBlockTypes ?? "missing"}`
+      );
+    }
     const rowText = (await row.textContent()) ?? "";
     assert(rowText.includes(expectedAsset.title), `${label} asset row ${expectedAsset.id} must show title`);
+    for (const contentBlockType of expectedAsset.contentBlockTypes ?? []) {
+      assert(
+        rowText.includes(contentBlockType),
+        `${label} asset row ${expectedAsset.id} must show content block type ${contentBlockType}`
+      );
+    }
   }
 }
 
@@ -1665,12 +1680,14 @@ async function runSmoke() {
     await assertAssetWorkspacePanelIsReadOnly(populatedAssetPage, 3, "populated asset workspace", [
       {
         contentBlockCount: 3,
+        contentBlockTypes: ["answer_summary", "metadata_only", "faq"],
         id: "asset_task_002",
         reviewState: "draft_candidate",
         title: "Create camping portable espresso collection page"
       },
       {
         contentBlockCount: 2,
+        contentBlockTypes: ["answer_summary", "faq"],
         id: "asset_task_003",
         reviewState: "draft_candidate",
         title: "Draft camping espresso buying guide"

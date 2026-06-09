@@ -137,6 +137,7 @@ export type AssetDraftPreview = {
   assetType: string;
   blockedCapabilities: string[];
   contentBlockCount: number;
+  contentBlockTypes: string[];
   externalWriteAllowed: false;
   id: string;
   reviewState: string;

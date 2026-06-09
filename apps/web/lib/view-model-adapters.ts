@@ -184,12 +184,22 @@ function mapApiAssetDraftToPreview(
     assetType: asset.asset_type,
     blockedCapabilities: asset.blocked_capabilities ?? workspaceBlockedCapabilities,
     contentBlockCount: asset.content_blocks?.length ?? 0,
+    contentBlockTypes: mapAssetContentBlockTypes(asset.content_blocks),
     externalWriteAllowed: false,
     id: asset.id,
     reviewState: asset.review_state,
     sourceTaskId: asset.source_task_id,
     title: asset.title
   };
+}
+
+function mapAssetContentBlockTypes(contentBlocks: unknown[] | undefined): string[] {
+  if (!Array.isArray(contentBlocks)) return [];
+  return contentBlocks.flatMap((block) => {
+    if (!block || typeof block !== "object" || !("type" in block)) return [];
+    const blockType = (block as { type?: unknown }).type;
+    return typeof blockType === "string" && blockType.trim() ? [blockType] : [];
+  });
 }
 
 export function mapApiImportedGraphToClusterPreviews(

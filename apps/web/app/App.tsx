@@ -1042,6 +1042,7 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
             <div
               className="mini-card"
               data-asset-content-block-count={asset.contentBlockCount}
+              data-asset-content-block-types={asset.contentBlockTypes.join(",")}
               data-asset-id={asset.id}
               data-asset-review-state={asset.reviewState}
               key={asset.id}
@@ -1049,6 +1050,7 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
               <strong>{asset.title}</strong>
               <span>
                 {asset.assetType} / {asset.reviewState} / {asset.contentBlockCount} blocks
+                {asset.contentBlockTypes.length > 0 ? ` / ${asset.contentBlockTypes.join(", ")}` : ""}
               </span>
             </div>
           ))}
