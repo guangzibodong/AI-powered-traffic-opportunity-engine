@@ -937,7 +937,11 @@ function ImportedPreviewPanel({
               data-preview-kind="query_row"
               key={queryRow.id}
             >
-              <span className="pill search">
+              <span
+                className="pill search"
+                data-source-kind="query_row_source"
+                data-source-value={queryRow.source}
+              >
                 {locale === "zh" ? `查询行 / ${queryRow.source}` : `Query row / ${queryRow.source}`}
               </span>
               <h3>{queryRow.query}</h3>
@@ -973,7 +977,11 @@ function ImportedPreviewPanel({
               data-preview-kind="product"
               key={product.id}
             >
-              <span className="pill commerce">
+              <span
+                className="pill commerce"
+                data-source-kind="product_source"
+                data-source-value={product.source}
+              >
                 {locale === "zh" ? `商品 / ${product.source}` : `Product / ${product.source}`}
               </span>
               <h3>{product.title}</h3>
@@ -1007,7 +1015,9 @@ function ImportedPreviewPanel({
               data-preview-kind="page"
               key={page.id}
             >
-              <span className="pill safe">{locale === "zh" ? `页面 / ${page.source}` : `Page / ${page.source}`}</span>
+              <span className="pill safe" data-source-kind="page_source" data-source-value={page.source}>
+                {locale === "zh" ? `页面 / ${page.source}` : `Page / ${page.source}`}
+              </span>
               <h3>{page.title}</h3>
               <p className="muted">{page.detail}</p>
               {page.displayHref ? (

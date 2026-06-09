@@ -345,6 +345,38 @@ async function assertImportedPreviewReferenceValues(page, expectedValues, label)
   }
 }
 
+async function assertImportedPreviewSourceValues(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  for (const [sourceKind, expectedSources] of Object.entries(expectedValues)) {
+    const sources = importedPanel.locator(`[data-source-kind='${sourceKind}']`);
+    const actualCount = await sources.count();
+    assert(
+      actualCount === expectedSources.length,
+      `${label} imported preview source ${sourceKind} count mismatch: expected ${expectedSources.length}, got ${actualCount}`
+    );
+
+    const actualSources = await sources.evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        text: (node.textContent ?? "").trim(),
+        value: node.getAttribute("data-source-value") ?? ""
+      }))
+    );
+    const actualValues = actualSources.map((source) => source.value).sort();
+    const sortedExpectedSources = [...expectedSources].sort();
+    assert(
+      JSON.stringify(actualValues) === JSON.stringify(sortedExpectedSources),
+      `${label} imported preview source ${sourceKind} values mismatch: expected ${sortedExpectedSources.join(", ")}, got ${actualValues.join(", ")}`
+    );
+
+    for (const source of actualSources) {
+      assert(
+        source.value.length > 0 && source.text.includes(source.value),
+        `${label} imported preview source ${sourceKind} must expose safe source text matching its data-source-value`
+      );
+    }
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -516,6 +548,15 @@ async function runSmoke() {
           "example.com/product/trail-brew-portable-espresso-maker"
         ],
         query_page: ["example.com/camping-espresso", "example.com/camping-pour-over"]
+      },
+      "initial"
+    );
+    await assertImportedPreviewSourceValues(
+      page,
+      {
+        page_source: ["WordPress", "WordPress"],
+        product_source: ["WooCommerce", "WooCommerce"],
+        query_row_source: ["Imported GSC", "Imported GSC"]
       },
       "initial"
     );
