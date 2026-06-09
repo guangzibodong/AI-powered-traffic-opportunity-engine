@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 responsive bilingual editor QA is verified; local editor save-failure browser coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 local editor save-failure browser coverage is verified; local editor retry-after-failure coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -199,7 +199,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-031 | 165 | done | Frontend Product Engineer / QA Lead | Add editor UI contract tests. | UI contract tests define local-only editor copy, allowed control labels, forbidden publish/sync/connect/autopilot copy, and no credential/href/navigation/editor controls before implementation code is added. |
 | TASK-S3-FE-032 | 166 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Implement minimal safe local asset editor UI. | Existing local asset candidates can open a compact local editor, save title/meta/section fields through the safe `updateAsset` helper, show local-only safety copy, and still expose no WordPress draft creation, publishing, sync, credential, href navigation, or commerce-write controls. |
 | TASK-S3-QA-033 | 167 | done | UI Systems Engineer / QA Lead | Add responsive bilingual editor QA coverage. | Browser or screenshot coverage verifies the local asset editor at desktop and mobile widths, English and Chinese labels, long title/slug wrapping, no overflow, and continued absence of WordPress draft, publish, sync, credential, href navigation, or commerce-write controls. |
-| TASK-S3-QA-034 | 168 | todo | Frontend Product Engineer / QA Lead | Add local editor save-failure browser coverage. | Browser smoke verifies a failed local asset PATCH shows safe local failure feedback, keeps the editor open, re-enables local save controls, and still makes no WordPress draft, publish, sync, credential, href navigation, or commerce-write requests. |
+| TASK-S3-QA-034 | 168 | done | Frontend Product Engineer / QA Lead | Add local editor save-failure browser coverage. | Browser smoke verifies a failed local asset PATCH shows safe local failure feedback, keeps the editor open, re-enables local save controls, and still makes no WordPress draft, publish, sync, credential, href navigation, or commerce-write requests. |
+| TASK-S3-QA-035 | 169 | todo | Frontend Product Engineer / QA Lead | Add local editor retry-after-failure browser coverage. | Browser smoke verifies a failed local asset PATCH can be retried successfully through the same local editor, clears the failure feedback with safe success feedback, and still makes only allowed local asset PATCH requests. |
 
 ## Blockers
 
@@ -529,6 +530,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Responsive bilingual editor QA coverage is next because the local editor is now visible and needs viewport/copy/overflow checks before expanding fields or QA states.
 - Responsive bilingual editor QA coverage is verified by mobile browser smoke that opens the Chinese local editor, saves through one safe local PATCH, checks Chinese safety and save copy, and confirms controls stay inside the editor panel.
 - Local editor save-failure browser coverage is next because failed local PATCH responses should be visibly safe and retryable before the editor grows more fields.
+- Local editor save-failure browser coverage is verified by browser smoke that forces a local asset PATCH 500, keeps the editor open, shows `Local save failed`, re-enables `Save local draft`, and records no unsafe write requests.
+- Local editor retry-after-failure browser coverage is next because users need proof that a transient local-only save failure can recover without opening WordPress, sync, credential, external navigation, or commerce-write paths.
 
 ## Completion Rule
 

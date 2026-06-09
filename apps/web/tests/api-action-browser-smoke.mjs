@@ -443,6 +443,17 @@ async function assertLocalAssetEditorCanSave(
   return editor;
 }
 
+async function assertLocalAssetEditorSaveFailure(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} local asset editor`);
+  await editor.locator("input").first().fill("Failed local save test");
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} local save button`);
+  await expectVisible(page.getByText("Local save failed"), `${label} local save failure copy`);
+  const saveButtonDisabled = await editor.getByRole("button", { name: "Save local draft" }).isDisabled();
+  assert(!saveButtonDisabled, `${label} local save button must be re-enabled after failure`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -2180,6 +2191,89 @@ async function runSmoke() {
       `Mobile local asset editor must issue exactly one safe asset PATCH, got ${JSON.stringify(mobileAssetRequests)}`
     );
     await mobileAssetPage.close();
+
+    const failedSaveAssetPage = await context.newPage();
+    const failedSaveAssetRequests = [];
+    failedSaveAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        failedSaveAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await failedSaveAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_failed_save",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_failed_save",
+                title: "Local asset patch failure candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await failedSaveAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_failed_save`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        await route.fulfill({
+          contentType: "application/json",
+          status: 500,
+          body: JSON.stringify({ detail: "local save fixture failure" })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await failedSaveAssetPage.goto(webUrl);
+    await clickUnique(failedSaveAssetPage.getByRole("button", { name: "EN" }), "failed save asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(failedSaveAssetPage, 1, "failed save asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_failed_save",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Local asset patch failure candidate"
+      }
+    ]);
+    await assertLocalAssetEditorSaveFailure(failedSaveAssetPage, "failed save asset workspace");
+    const failedSavePatchRequests = failedSaveAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_failed_save`)
+    );
+    assert(
+      failedSavePatchRequests.length === 1,
+      `Failed local save should issue exactly one local PATCH, got ${JSON.stringify(failedSaveAssetRequests)}`
+    );
+    const unsafeFailedSaveRequests = failedSaveAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_failed_save`))
+    );
+    assert(
+      unsafeFailedSaveRequests.length === 0,
+      `Failed local save issued unsafe requests: ${JSON.stringify(unsafeFailedSaveRequests)}`
+    );
+    await failedSaveAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
