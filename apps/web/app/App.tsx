@@ -96,6 +96,8 @@ type ImportedPreviewState = {
     ctrRefreshTasks: number;
     productSeoOpportunities: number;
     productSeoTasks: number;
+    rankingPushOpportunities: number;
+    rankingPushTasks: number;
   };
   tasks: BoardViewModel["tasks"];
   warnings: string[];
@@ -220,7 +222,9 @@ export function App() {
       ctrRefreshOpportunities: 0,
       ctrRefreshTasks: 0,
       productSeoOpportunities: 0,
-      productSeoTasks: 0
+      productSeoTasks: 0,
+      rankingPushOpportunities: 0,
+      rankingPushTasks: 0
     },
     tasks: [],
     warnings: []
@@ -330,6 +334,14 @@ export function App() {
                 importedTasksResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedTasksResult.value.summary, "by_category", "ctr_refresh")
                   : 0,
+              rankingPushOpportunities:
+                importedOpportunitiesResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "ranking_push")
+                  : 0,
+              rankingPushTasks:
+                importedTasksResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedTasksResult.value.summary, "by_category", "ranking_push")
+                  : 0,
               productSeoOpportunities:
                 importedOpportunitiesResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "product_seo")
@@ -377,7 +389,9 @@ export function App() {
                 ctrRefreshOpportunities: 0,
                 ctrRefreshTasks: 0,
                 productSeoOpportunities: 0,
-                productSeoTasks: 0
+                productSeoTasks: 0,
+                rankingPushOpportunities: 0,
+                rankingPushTasks: 0
               },
               tasks: [],
               warnings: [
@@ -407,7 +421,9 @@ export function App() {
             ctrRefreshOpportunities: 0,
             ctrRefreshTasks: 0,
             productSeoOpportunities: 0,
-            productSeoTasks: 0
+            productSeoTasks: 0,
+            rankingPushOpportunities: 0,
+            rankingPushTasks: 0
           },
           tasks: [],
           warnings: []
@@ -1001,6 +1017,14 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="collection_page_task_previews">
           <span>{locale === "zh" ? "集合页任务预览" : "Collection page task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.collectionPageTasks}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="ranking_push_opportunities">
+          <span>{locale === "zh" ? "排名推进机会" : "Ranking push opportunities"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.rankingPushOpportunities}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="ranking_push_task_previews">
+          <span>{locale === "zh" ? "排名推进任务预览" : "Ranking push task previews"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.rankingPushTasks}</strong>
         </div>
         <div className="kv-row" data-metric-key="product_seo_opportunities">
           <span>{locale === "zh" ? "Product SEO 机会" : "Product SEO opportunities"}</span>
