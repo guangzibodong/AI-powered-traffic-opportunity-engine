@@ -330,6 +330,32 @@ export type ApiImportedTaskResponse = {
   task: ApiImportedTask;
 };
 
+export type ApiAssetDraft = {
+  asset_type: string;
+  blocked_capabilities?: string[];
+  content_blocks?: unknown[];
+  external_write_allowed?: boolean;
+  id: string;
+  review_state: string;
+  source_task_id: string;
+  title: string;
+};
+
+export type ApiAssetWorkspaceResponse = {
+  assets: ApiAssetDraft[];
+  blocked_capabilities?: string[];
+  external_write_allowed?: boolean;
+  mode: "asset_draft_workspace";
+  store_id: string;
+  summary?: Record<string, number>;
+};
+
+export type ApiAssetResponse = {
+  asset: ApiAssetDraft;
+  mode: "asset_draft_workspace";
+  store_id: string;
+};
+
 declare global {
   interface ImportMetaEnv {
     readonly VITE_API_BASE_URL?: string;
@@ -431,6 +457,22 @@ export async function getImportedTasks(storeId: string, apiBaseUrl = getApiBaseU
 export async function getImportedTask(storeId: string, taskId: string, apiBaseUrl = getApiBaseUrl()) {
   const encodedTaskId = encodeURIComponent(taskId);
   return fetchJson<ApiImportedTaskResponse>(`${storeApiPath(apiBaseUrl, storeId)}/imported-tasks/${encodedTaskId}`);
+}
+
+export async function getAssets(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiAssetWorkspaceResponse>(`${storeApiPath(apiBaseUrl, storeId)}/assets`);
+}
+
+export async function getAsset(storeId: string, assetId: string, apiBaseUrl = getApiBaseUrl()) {
+  const encodedAssetId = encodeURIComponent(assetId);
+  return fetchJson<ApiAssetResponse>(`${storeApiPath(apiBaseUrl, storeId)}/assets/${encodedAssetId}`);
+}
+
+export async function createAssetFromTask(storeId: string, taskId: string, apiBaseUrl = getApiBaseUrl()) {
+  const encodedTaskId = encodeURIComponent(taskId);
+  return fetchJson<ApiAssetResponse>(`${storeApiPath(apiBaseUrl, storeId)}/assets/from-task/${encodedTaskId}`, {
+    method: "POST"
+  });
 }
 
 export async function updateTaskStatus(

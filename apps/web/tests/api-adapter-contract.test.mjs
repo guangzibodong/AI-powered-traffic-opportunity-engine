@@ -55,6 +55,11 @@ assert(adapter.includes("catalogHrefDisplayMaxLength"), "adapter must cap import
 assert(adapter.includes("mapApiImportedOpportunitiesToOpportunities"), "adapter must expose imported opportunity DTO conversion");
 assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose imported task preview DTO conversion");
 assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
+assert(types.includes("AssetDraftPreview"), "types must expose a safe asset draft preview view model");
+assert(adapter.includes("mapApiAssetWorkspaceToPreviews"), "adapter must expose asset workspace DTO conversion");
+assert(adapter.includes("mapApiAssetResponseToPreview"), "adapter must expose asset detail DTO conversion");
+assert(adapter.includes("externalWriteAllowed: false"), "asset adapter must clamp external write state to false");
+assert(adapter.includes("blocked_capabilities"), "asset adapter must preserve blocked capability context");
 assert(types.includes('"product_seo"'), "frontend task categories and rule ids must preserve imported product_seo previews");
 assert(adapter.includes('"product_seo"'), "imported opportunity adapter must preserve product_seo rule ids");
 assert(adapter.includes('category === "product_seo"'), "imported task adapter must preserve product_seo categories");
@@ -111,6 +116,9 @@ assert(apiClient.includes("ApiImportedOpportunitiesResponse"), "API client must 
 assert(apiClient.includes("ApiImportedOpportunityResponse"), "API client must type imported opportunity detail responses");
 assert(apiClient.includes("ApiImportedTasksResponse"), "API client must type imported task preview responses");
 assert(apiClient.includes("ApiImportedTaskResponse"), "API client must type imported task preview detail responses");
+assert(apiClient.includes("ApiAssetDraft"), "API client must type asset draft records");
+assert(apiClient.includes("ApiAssetWorkspaceResponse"), "API client must type asset workspace list responses");
+assert(apiClient.includes("ApiAssetResponse"), "API client must type asset detail and creation responses");
 assert(apiClient.includes("getIntegrations"), "API client must expose integration status reads");
 assert(apiClient.includes("getSyncRuns"), "API client must expose sync run reads");
 assert(apiClient.includes("getAuditLogs"), "API client must expose audit log reads");
@@ -127,6 +135,11 @@ assert(apiClient.includes("getImportedOpportunities"), "API client must expose i
 assert(apiClient.includes("getImportedOpportunity"), "API client must expose imported opportunity detail reads");
 assert(apiClient.includes("getImportedTasks"), "API client must expose imported task preview reads");
 assert(apiClient.includes("getImportedTask"), "API client must expose imported task preview detail reads");
+assert(apiClient.includes("getAssets"), "API client must expose asset workspace reads");
+assert(apiClient.includes("getAsset"), "API client must expose asset detail reads");
+assert(apiClient.includes("createAssetFromTask"), "API client must expose local asset creation from approved tasks");
+assert(!apiClient.includes("publishWordpressDraft"), "API client must not expose WordPress draft publishing");
+assert(!apiClient.includes("updateAsset"), "API client must not expose asset mutation before QA gates");
 assert(apiClient.includes("/imported-tasks"), "Imported task client must target the read-only imported task endpoint");
 for (const importedReadFunction of ["getImportedGraph", "getImportedQueries", "getImportedQuery", "getImportedProducts", "getImportedProduct", "getImportedPages", "getImportedPage", "getImportedQueryClusters", "getImportedQueryCluster", "getImportedOpportunities", "getImportedOpportunity", "getImportedTasks", "getImportedTask"]) {
   const functionBody = readExportedFunction(apiClient, importedReadFunction);

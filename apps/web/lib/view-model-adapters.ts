@@ -1,5 +1,6 @@
 import type {
   BoardViewModel,
+  AssetDraftPreview,
   AuditLogPreview,
   EvidenceRow,
   ImportedCatalogPreview,
@@ -15,6 +16,8 @@ import type {
   VisibleTaskStatus
 } from "./types";
 import type {
+  ApiAssetResponse,
+  ApiAssetWorkspaceResponse,
   ApiAuditLogsResponse,
   ApiEvidence,
   ApiImportedGraphResponse,
@@ -163,6 +166,30 @@ export function mapApiAuditLogsToPreviews(response: ApiAuditLogsResponse): Audit
     safetyScope: entry.safety_scope ?? "local_tracking_only",
     target: `${entry.target_type}:${entry.target_id}`
   }));
+}
+
+export function mapApiAssetWorkspaceToPreviews(response: ApiAssetWorkspaceResponse): AssetDraftPreview[] {
+  return response.assets.map((asset) => mapApiAssetDraftToPreview(asset, response.blocked_capabilities));
+}
+
+export function mapApiAssetResponseToPreview(response: ApiAssetResponse): AssetDraftPreview {
+  return mapApiAssetDraftToPreview(response.asset);
+}
+
+function mapApiAssetDraftToPreview(
+  asset: ApiAssetResponse["asset"],
+  workspaceBlockedCapabilities: string[] = []
+): AssetDraftPreview {
+  return {
+    assetType: asset.asset_type,
+    blockedCapabilities: asset.blocked_capabilities ?? workspaceBlockedCapabilities,
+    contentBlockCount: asset.content_blocks?.length ?? 0,
+    externalWriteAllowed: false,
+    id: asset.id,
+    reviewState: asset.review_state,
+    sourceTaskId: asset.source_task_id,
+    title: asset.title
+  };
 }
 
 export function mapApiImportedGraphToClusterPreviews(

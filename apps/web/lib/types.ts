@@ -133,6 +133,17 @@ export type AuditLogPreview = {
   externalWriteAllowed: false;
 };
 
+export type AssetDraftPreview = {
+  assetType: string;
+  blockedCapabilities: string[];
+  contentBlockCount: number;
+  externalWriteAllowed: false;
+  id: string;
+  reviewState: string;
+  sourceTaskId: string;
+  title: string;
+};
+
 export type ImportedQueryClusterPreview = {
   id: string;
   primaryQuery: string;
