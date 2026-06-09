@@ -810,7 +810,9 @@ function ImportedPreviewPanel({
           ))}
           {visibleProducts.map((product) => (
             <article className="rail-item" key={product.id}>
-              <span className="pill commerce">{locale === "zh" ? "商品" : "Product"}</span>
+              <span className="pill commerce">
+                {locale === "zh" ? `商品 / ${product.source}` : `Product / ${product.source}`}
+              </span>
               <h3>{product.title}</h3>
               <p className="muted">{product.detail}</p>
               {product.href ? <p className="muted">{product.href}</p> : null}
@@ -818,7 +820,7 @@ function ImportedPreviewPanel({
           ))}
           {visiblePages.map((page) => (
             <article className="rail-item" key={page.id}>
-              <span className="pill safe">{locale === "zh" ? "页面" : "Page"}</span>
+              <span className="pill safe">{locale === "zh" ? `页面 / ${page.source}` : `Page / ${page.source}`}</span>
               <h3>{page.title}</h3>
               <p className="muted">{page.detail}</p>
               {page.href ? <p className="muted">{page.href}</p> : null}

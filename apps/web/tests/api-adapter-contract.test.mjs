@@ -141,6 +141,8 @@ assert(app.includes("mapApiImportedProductsToCatalogPreviews("), "App must map i
 assert(app.includes("mapApiImportedPagesToCatalogPreviews("), "App must map imported pages through the safe adapter");
 assert(app.includes("product.detail"), "Imported product preview UI must render safe product catalog detail");
 assert(app.includes("page.detail"), "Imported page preview UI must render safe page catalog detail");
+assert(app.includes("product.source"), "Imported product preview UI must render the safe product source label");
+assert(app.includes("page.source"), "Imported page preview UI must render the safe page source label");
 assert(!app.includes("product.sku"), "Imported product preview UI must not render raw product SKU DTO fields directly");
 assert(!app.includes("product.categories"), "Imported product preview UI must not render raw product category DTO fields directly");
 assert(!app.includes("page.url"), "Imported page preview UI must not render raw page URL DTO fields directly");
