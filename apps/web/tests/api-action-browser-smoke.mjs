@@ -312,6 +312,7 @@ async function runSmoke() {
     await resilientPage.goto(webUrl);
     await clickUnique(resilientPage.getByRole("button", { name: "EN" }), "resilient language switcher");
     await expectVisible(resilientPage.getByText("Imported previews unavailable"), "resilient imported preview fallback");
+    await expectVisible(resilientPage.getByText("5 imported sections unavailable"), "resilient imported unavailable count");
     await expectVisible(resilientPage.getByText("Graph reads unavailable"), "resilient graph unavailable message");
     await expectVisible(resilientPage.getByText("Query rows unavailable"), "resilient query rows unavailable message");
     await expectVisible(resilientPage.getByText("Catalog reads unavailable"), "resilient catalog unavailable message");
@@ -462,6 +463,7 @@ async function runSmoke() {
     await derivedFailurePage.goto(webUrl);
     await clickUnique(derivedFailurePage.getByRole("button", { name: "EN" }), "derived failure language switcher");
     await expectVisible(derivedFailurePage.getByText("read-only imported previews"), "derived failure imported preview badge");
+    await expectVisible(derivedFailurePage.getByText("4 imported sections unavailable"), "derived failure unavailable count");
     await expectVisible(derivedFailurePage.getByText("Graph reads unavailable"), "derived failure graph unavailable message");
     await expectVisible(derivedFailurePage.getByText("Query rows unavailable"), "derived failure query rows unavailable message");
     await expectVisible(

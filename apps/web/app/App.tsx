@@ -790,6 +790,7 @@ function ImportedPreviewPanel({
   const pageOverflowCount = Math.max(importedPreviews.pages.length - visiblePages.length, 0);
   const opportunityOverflowCount = Math.max(importedPreviews.opportunities.length - visibleOpportunities.length, 0);
   const taskOverflowCount = Math.max(importedPreviews.tasks.length - visibleTasks.length, 0);
+  const unavailableSectionCount = importedPreviews.warnings.length;
   const hasImportedPreviews =
     importedPreviews.availability === "ready" &&
     (visibleClusters.length > 0 ||
@@ -839,6 +840,13 @@ function ImportedPreviewPanel({
           <strong>{importedPreviews.tasks.length}</strong>
         </div>
       </div>
+      {unavailableSectionCount > 0 ? (
+        <p className="muted imported-preview-overflow">
+          {locale === "zh"
+            ? `${unavailableSectionCount} 个 imported 分区暂不可用`
+            : `${unavailableSectionCount} imported sections unavailable`}
+        </p>
+      ) : null}
       {importedPreviews.warnings.includes("catalog_unavailable") && (
         <div className="imported-preview-empty">
           <strong>{locale === "zh" ? "Catalog reads unavailable" : "Catalog reads unavailable"}</strong>
