@@ -350,6 +350,13 @@ The demo status override is reflected by both `GET /api/stores/:storeId/tasks/:t
 - `PATCH /api/stores/:storeId/assets/:assetId`
 - `POST /api/stores/:storeId/assets/:assetId/publish-wordpress-draft`
 
+Sprint 3 asset endpoints currently expose a safe local workspace boundary:
+
+- `GET /assets` returns `mode: "asset_draft_workspace"`, an empty `assets` list, summary counts, `external_write_allowed: false`, and blocked capabilities for WordPress draft creation, WordPress publishing, and WooCommerce writes.
+- `GET /assets/:assetId` returns `404` until local asset persistence exists.
+- `PATCH /assets/:assetId` returns `403` and remains future-gated until local persistence and QA gates are approved.
+- `POST /assets/:assetId/publish-wordpress-draft` returns `403`; it does not create a WordPress draft, publish content, call WordPress, or write commerce data.
+
 ## Performance
 
 - `GET /api/stores/:storeId/performance`
