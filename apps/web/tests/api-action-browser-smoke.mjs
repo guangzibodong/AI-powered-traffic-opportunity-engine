@@ -245,6 +245,7 @@ async function runSmoke() {
     await expectVisible(page.getByText("Query row / Imported GSC"), "imported query row friendly source label");
     await expectVisible(page.getByText("1,200 impressions / 24 clicks"), "imported query row formatted count labels");
     await expectVisible(page.getByText("CTR 2.00%"), "imported query row formatted CTR label");
+    await expectVisible(page.getByText("avg position 4.8"), "imported query row formatted position label");
     await expectVisible(page.getByText("window 28d"), "imported query row window label");
     await expectVisible(page.getByText("page example.com/camping-espresso"), "imported query row page reference label");
     await expectVisible(page.getByText("Trail Brew Portable Espresso Maker"), "imported product row");

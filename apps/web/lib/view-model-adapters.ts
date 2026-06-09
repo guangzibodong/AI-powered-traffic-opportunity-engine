@@ -261,10 +261,11 @@ function mapApiImportedQueryRowToPreview(row: ApiImportedQueriesResponse["querie
     displayCtr: formatImportedQueryRowCtr(row.ctr),
     displayImpressions: formatImportedQueryRowCount(row.impressions),
     displayPage,
+    displayPosition: formatImportedQueryRowPosition(row.position),
     evidence: [
       {
         entity: row.query,
-        metric: `${formatImportedQueryRowCount(row.impressions)} impressions / ${formatImportedQueryRowCount(row.clicks)} clicks / CTR ${formatImportedQueryRowCtr(row.ctr)}`,
+        metric: `${formatImportedQueryRowCount(row.impressions)} impressions / ${formatImportedQueryRowCount(row.clicks)} clicks / CTR ${formatImportedQueryRowCtr(row.ctr)} / avg position ${formatImportedQueryRowPosition(row.position)}`,
         reason: `Imported query row for ${displayPage}`,
         source,
         type: "search",
@@ -291,6 +292,10 @@ function formatImportedQueryRowCtr(ctr: number): string {
 
 function formatImportedQueryRowCount(count: number): string {
   return new Intl.NumberFormat("en-US").format(count);
+}
+
+function formatImportedQueryRowPosition(position: number): string {
+  return position.toFixed(1);
 }
 
 function formatImportedQueryRowSource(source?: string | null): string {

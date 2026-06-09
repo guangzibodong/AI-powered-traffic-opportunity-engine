@@ -147,6 +147,7 @@ export type ImportedQueryRowPreview = {
   displayCtr: string;
   displayImpressions: string;
   displayPage: string;
+  displayPosition: string;
   evidence: EvidenceRow[];
   id: string;
   impressions: number;
