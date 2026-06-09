@@ -675,6 +675,22 @@ async function assertImportedTotalRailCounts(page, expectedValues, label) {
   }
 }
 
+async function assertImportedHiddenRailCounts(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const previewList = importedPanel.locator(".imported-preview-list");
+  const previewListCount = await previewList.count();
+  assert(previewListCount === 1, `${label} imported preview list must render exactly once`);
+
+  for (const [attributeName, expectedValue] of Object.entries(expectedValues)) {
+    const countText = await previewList.getAttribute(attributeName);
+    const count = Number(countText);
+    assert(
+      Number.isInteger(count) && count === expectedValue,
+      `${label} imported preview list ${attributeName} mismatch: expected ${expectedValue}, got ${countText ?? "missing"}`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -891,6 +907,18 @@ async function runSmoke() {
         "data-total-products": 3,
         "data-total-query-rows": 4,
         "data-total-task-previews": 3
+      },
+      "initial"
+    );
+    await assertImportedHiddenRailCounts(
+      page,
+      {
+        "data-hidden-clusters": 1,
+        "data-hidden-opportunities": 1,
+        "data-hidden-pages": 1,
+        "data-hidden-products": 1,
+        "data-hidden-query-rows": 2,
+        "data-hidden-task-previews": 1
       },
       "initial"
     );
