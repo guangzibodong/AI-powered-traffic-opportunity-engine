@@ -239,6 +239,22 @@ async function assertImportedPreviewItemKinds(page, expectedCounts, label) {
   }
 }
 
+async function assertImportedPreviewMetricValues(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  for (const [metricKey, expectedValue] of Object.entries(expectedValues)) {
+    const metric = importedPanel.locator(`[data-metric-key='${metricKey}']`);
+    const metricCount = await metric.count();
+    assert(metricCount === 1, `${label} imported preview metric ${metricKey} must render exactly once`);
+
+    const metricValueText = ((await metric.locator("strong").textContent()) ?? "").trim();
+    const metricValue = Number(metricValueText);
+    assert(
+      Number.isFinite(metricValue) && metricValue === expectedValue,
+      `${label} imported preview metric ${metricKey} value mismatch: expected ${expectedValue}, got ${metricValueText}`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -362,6 +378,20 @@ async function runSmoke() {
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
     await assertImportedPreviewWarningKeys(page, [], "initial");
+    await assertImportedPreviewMetricValues(
+      page,
+      {
+        catalog_pages: 3,
+        catalog_products: 3,
+        graph_clusters: 3,
+        matched_pages: 3,
+        matched_products: 3,
+        opportunity_previews: 3,
+        query_rows: 4,
+        task_previews: 3
+      },
+      "initial"
+    );
     await assertImportedPreviewItemKinds(
       page,
       {
@@ -405,6 +435,20 @@ async function runSmoke() {
     );
     await expectVisible(resilientPage.getByText("Task previews unavailable"), "resilient task unavailable message");
     await assertImportedPreviewPanelIsReadOnly(resilientPage, "resilient fallback");
+    await assertImportedPreviewMetricValues(
+      resilientPage,
+      {
+        catalog_pages: 0,
+        catalog_products: 0,
+        graph_clusters: 0,
+        matched_pages: 0,
+        matched_products: 0,
+        opportunity_previews: 0,
+        query_rows: 0,
+        task_previews: 0
+      },
+      "resilient fallback"
+    );
     await assertImportedPreviewWarningKeys(
       resilientPage,
       ["catalog_unavailable", "graph_unavailable", "opportunities_unavailable", "query_rows_unavailable", "tasks_unavailable"],
@@ -431,6 +475,20 @@ async function runSmoke() {
     await expectVisible(catalogFailurePage.getByText("recommend_only"), "catalog failure recommend-only task preview");
     await assertImportedPreviewPanelIsReadOnly(catalogFailurePage, "catalog-only failure");
     await assertImportedPreviewWarningKeys(catalogFailurePage, ["catalog_unavailable"], "catalog-only failure");
+    await assertImportedPreviewMetricValues(
+      catalogFailurePage,
+      {
+        catalog_pages: 0,
+        catalog_products: 0,
+        graph_clusters: 3,
+        matched_pages: 3,
+        matched_products: 3,
+        opportunity_previews: 3,
+        query_rows: 4,
+        task_previews: 3
+      },
+      "catalog-only failure"
+    );
     await assertImportedPreviewItemKinds(
       catalogFailurePage,
       {
@@ -497,6 +555,20 @@ async function runSmoke() {
     await expectVisible(graphFailurePage.getByText("recommend_only"), "graph failure task preview");
     await assertImportedPreviewPanelIsReadOnly(graphFailurePage, "graph-only failure");
     await assertImportedPreviewWarningKeys(graphFailurePage, ["graph_unavailable"], "graph-only failure");
+    await assertImportedPreviewMetricValues(
+      graphFailurePage,
+      {
+        catalog_pages: 3,
+        catalog_products: 3,
+        graph_clusters: 0,
+        matched_pages: 0,
+        matched_products: 0,
+        opportunity_previews: 3,
+        query_rows: 4,
+        task_previews: 3
+      },
+      "graph-only failure"
+    );
     await assertImportedPreviewItemKinds(
       graphFailurePage,
       {
@@ -616,6 +688,20 @@ async function runSmoke() {
     await assertImportedPreviewWarningKeys(
       derivedFailurePage,
       ["graph_unavailable", "opportunities_unavailable", "query_rows_unavailable", "tasks_unavailable"],
+      "derived-read failure"
+    );
+    await assertImportedPreviewMetricValues(
+      derivedFailurePage,
+      {
+        catalog_pages: 3,
+        catalog_products: 3,
+        graph_clusters: 0,
+        matched_pages: 0,
+        matched_products: 0,
+        opportunity_previews: 0,
+        query_rows: 0,
+        task_previews: 0
+      },
       "derived-read failure"
     );
     await assertImportedPreviewItemKinds(

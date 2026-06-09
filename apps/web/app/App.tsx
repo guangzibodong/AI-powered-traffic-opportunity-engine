@@ -811,35 +811,35 @@ function ImportedPreviewPanel({
         <span className="status safe">read-only imported previews</span>
       </div>
       <div className="kv-list">
-        <div className="kv-row">
+        <div className="kv-row" data-metric-key="graph_clusters">
           <span>{locale === "zh" ? "图谱关联簇" : "Graph-linked clusters"}</span>
           <strong>{importedPreviews.graphSummary?.query_clusters ?? importedPreviews.clusters.length}</strong>
         </div>
-        <div className="kv-row">
+        <div className="kv-row" data-metric-key="query_rows">
           <span>{locale === "zh" ? "查询行" : "Query rows"}</span>
           <strong>{importedPreviews.queries.length}</strong>
         </div>
-        <div className="kv-row">
+        <div className="kv-row" data-metric-key="matched_products">
           <span>{locale === "zh" ? "匹配商品" : "Matched products"}</span>
           <strong>{importedPreviews.graphSummary?.product_matches ?? 0}</strong>
         </div>
-        <div className="kv-row">
+        <div className="kv-row" data-metric-key="matched_pages">
           <span>{locale === "zh" ? "匹配页面" : "Matched pages"}</span>
           <strong>{importedPreviews.graphSummary?.page_matches ?? 0}</strong>
         </div>
-        <div className="kv-row">
+        <div className="kv-row" data-metric-key="catalog_products">
           <span>{locale === "zh" ? "Catalog 商品" : "Catalog products"}</span>
           <strong>{importedPreviews.products.length}</strong>
         </div>
-        <div className="kv-row">
+        <div className="kv-row" data-metric-key="catalog_pages">
           <span>{locale === "zh" ? "Catalog 页面" : "Catalog pages"}</span>
           <strong>{importedPreviews.pages.length}</strong>
         </div>
-        <div className="kv-row">
+        <div className="kv-row" data-metric-key="opportunity_previews">
           <span>{locale === "zh" ? "机会预览" : "Opportunity previews"}</span>
           <strong>{importedPreviews.opportunities.length}</strong>
         </div>
-        <div className="kv-row">
+        <div className="kv-row" data-metric-key="task_previews">
           <span>{locale === "zh" ? "任务预览" : "Task previews"}</span>
           <strong>{importedPreviews.tasks.length}</strong>
         </div>
