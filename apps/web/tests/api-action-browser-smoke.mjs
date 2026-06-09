@@ -23,6 +23,7 @@ portable espresso maker camping,https://example.com/camping-espresso,24,1200,2.0
 camping portable espresso machine,https://example.com/camping-espresso,18,800,2.25%,5.2
 camping pour over kit,https://example.com/camping-pour-over,20,1100,1.8%,6.1
 trail cold brew bottle,https://example.com/trail-cold-brew,16,1050,1.5%,7.4
+best camp coffee grinder,https://example.com/search/best-camp-coffee-grinder,17,850,2.0%,9.2
 `;
 
 const importedProducts = [
@@ -37,7 +38,7 @@ const importedProducts = [
     stock_status: "instock"
   },
   {
-    attributes: [{ name: "Use case", options: ["Camping", "Manual brew"] }],
+    attributes: [{ name: "Use case", options: ["Camp", "Camping", "Coffee", "Grinder", "Manual brew"] }],
     categories: [{ name: "Camping Coffee" }],
     id: 102,
     name: "Camp Kettle Pour Over Kit",
@@ -47,7 +48,7 @@ const importedProducts = [
     stock_status: "instock"
   },
   {
-    attributes: [{ name: "Use case", options: ["Camping", "Cold brew"] }],
+    attributes: [{ name: "Use case", options: ["Camp", "Camping", "Cold brew", "Coffee", "Grinder"] }],
     categories: [{ name: "Camping Coffee" }],
     id: 103,
     name: "Trail Cold Brew Bottle",
@@ -1039,10 +1040,10 @@ async function runSmoke() {
     await expectVisible(page.getByText("Camping Espresso Collection"), "imported page row");
     await expectVisible(page.getByText("1 more catalog products"), "catalog product overflow indicator");
     await expectVisible(page.getByText("1 more catalog pages"), "catalog page overflow indicator");
-    await expectVisible(page.getByText("1 more query clusters"), "query cluster overflow indicator");
-    await expectVisible(page.getByText("2 more query rows"), "query row overflow indicator");
-    await expectVisible(page.getByText("1 more opportunity previews"), "opportunity preview overflow indicator");
-    await expectVisible(page.getByText("1 more task previews"), "task preview overflow indicator");
+    await expectVisible(page.getByText("2 more query clusters"), "query cluster overflow indicator");
+    await expectVisible(page.getByText("3 more query rows"), "query row overflow indicator");
+    await expectVisible(page.getByText("2 more opportunity previews"), "opportunity preview overflow indicator");
+    await expectVisible(page.getByText("2 more task previews"), "task preview overflow indicator");
     await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
 
     for (const target of ["/imported-graph", "/queries", "/products", "/pages", "/imported-opportunities", "/imported-tasks"]) {
@@ -1086,12 +1087,12 @@ async function runSmoke() {
     await assertImportedPreviewSectionHealthCounts(
       page,
       {
-        graph_clusters: 3,
-        opportunities: 3,
+        graph_clusters: 4,
+        opportunities: 4,
         pages: 3,
         products: 3,
-        query_rows: 4,
-        task_previews: 3
+        query_rows: 5,
+        task_previews: 4
       },
       "initial"
     );
@@ -1113,25 +1114,25 @@ async function runSmoke() {
       {
         catalog_pages: 3,
         catalog_products: 3,
-        graph_clusters: 3,
+        graph_clusters: 4,
         matched_pages: 3,
-        matched_products: 3,
-        buying_guide_opportunities: 0,
-        buying_guide_task_previews: 0,
+        matched_products: 5,
+        buying_guide_opportunities: 1,
+        buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 3,
         ctr_refresh_task_previews: 3,
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
-        recommend_only_task_previews: 3,
-        new_task_previews: 3,
-        new_opportunity_previews: 3,
-        opportunity_previews: 3,
+        recommend_only_task_previews: 4,
+        new_task_previews: 4,
+        new_opportunity_previews: 4,
+        opportunity_previews: 4,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
-        query_rows: 4,
-        task_previews: 3
+        query_rows: 5,
+        task_previews: 4
       },
       "initial"
     );
@@ -1140,10 +1141,10 @@ async function runSmoke() {
       {
         catalog_pages: 1,
         catalog_products: 1,
-        opportunity_previews: 1,
-        query_clusters: 1,
-        query_rows: 2,
-        task_previews: 1
+        opportunity_previews: 2,
+        query_clusters: 2,
+        query_rows: 3,
+        task_previews: 2
       },
       "initial"
     );
@@ -1207,24 +1208,24 @@ async function runSmoke() {
     await assertImportedTotalRailCounts(
       page,
       {
-        "data-total-clusters": 3,
-        "data-total-opportunities": 3,
+        "data-total-clusters": 4,
+        "data-total-opportunities": 4,
         "data-total-pages": 3,
         "data-total-products": 3,
-        "data-total-query-rows": 4,
-        "data-total-task-previews": 3
+        "data-total-query-rows": 5,
+        "data-total-task-previews": 4
       },
       "initial"
     );
     await assertImportedHiddenRailCounts(
       page,
       {
-        "data-hidden-clusters": 1,
-        "data-hidden-opportunities": 1,
+        "data-hidden-clusters": 2,
+        "data-hidden-opportunities": 2,
         "data-hidden-pages": 1,
         "data-hidden-products": 1,
-        "data-hidden-query-rows": 2,
-        "data-hidden-task-previews": 1
+        "data-hidden-query-rows": 3,
+        "data-hidden-task-previews": 2
       },
       "initial"
     );
@@ -1554,12 +1555,12 @@ async function runSmoke() {
     await assertImportedPreviewSectionHealthCounts(
       catalogFailurePage,
       {
-        graph_clusters: 3,
-        opportunities: 3,
+        graph_clusters: 4,
+        opportunities: 4,
         pages: 0,
         products: 0,
-        query_rows: 4,
-        task_previews: 3
+        query_rows: 5,
+        task_previews: 4
       },
       "catalog-only failure"
     );
@@ -1581,25 +1582,25 @@ async function runSmoke() {
       {
         catalog_pages: 0,
         catalog_products: 0,
-        graph_clusters: 3,
+        graph_clusters: 4,
         matched_pages: 3,
-        matched_products: 3,
-        buying_guide_opportunities: 0,
-        buying_guide_task_previews: 0,
+        matched_products: 5,
+        buying_guide_opportunities: 1,
+        buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 3,
         ctr_refresh_task_previews: 3,
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
-        recommend_only_task_previews: 3,
-        new_task_previews: 3,
-        new_opportunity_previews: 3,
-        opportunity_previews: 3,
+        recommend_only_task_previews: 4,
+        new_task_previews: 4,
+        new_opportunity_previews: 4,
+        opportunity_previews: 4,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
-        query_rows: 4,
-        task_previews: 3
+        query_rows: 5,
+        task_previews: 4
       },
       "catalog-only failure"
     );
@@ -1608,10 +1609,10 @@ async function runSmoke() {
       {
         catalog_pages: 0,
         catalog_products: 0,
-        opportunity_previews: 1,
-        query_clusters: 1,
-        query_rows: 2,
-        task_previews: 1
+        opportunity_previews: 2,
+        query_clusters: 2,
+        query_rows: 3,
+        task_previews: 2
       },
       "catalog-only failure"
     );
@@ -1674,12 +1675,12 @@ async function runSmoke() {
     await assertImportedPreviewSectionHealthCounts(
       queryRowFailurePage,
       {
-        graph_clusters: 3,
-        opportunities: 3,
+        graph_clusters: 4,
+        opportunities: 4,
         pages: 3,
         products: 3,
         query_rows: 0,
-        task_previews: 3
+        task_previews: 4
       },
       "query-row-only failure"
     );
@@ -1701,25 +1702,25 @@ async function runSmoke() {
       {
         catalog_pages: 3,
         catalog_products: 3,
-        graph_clusters: 3,
+        graph_clusters: 4,
         matched_pages: 3,
-        matched_products: 3,
-        buying_guide_opportunities: 0,
-        buying_guide_task_previews: 0,
+        matched_products: 5,
+        buying_guide_opportunities: 1,
+        buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 3,
         ctr_refresh_task_previews: 3,
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
-        recommend_only_task_previews: 3,
-        new_task_previews: 3,
-        new_opportunity_previews: 3,
-        opportunity_previews: 3,
+        recommend_only_task_previews: 4,
+        new_task_previews: 4,
+        new_opportunity_previews: 4,
+        opportunity_previews: 4,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
         query_rows: 0,
-        task_previews: 3
+        task_previews: 4
       },
       "query-row-only failure"
     );
@@ -1740,10 +1741,10 @@ async function runSmoke() {
       {
         catalog_pages: 1,
         catalog_products: 1,
-        opportunity_previews: 1,
-        query_clusters: 1,
+        opportunity_previews: 2,
+        query_clusters: 2,
         query_rows: 0,
-        task_previews: 1
+        task_previews: 2
       },
       "query-row-only failure"
     );
@@ -1777,22 +1778,22 @@ async function runSmoke() {
         graph_clusters: 0,
         matched_pages: 0,
         matched_products: 0,
-        buying_guide_opportunities: 0,
-        buying_guide_task_previews: 0,
+        buying_guide_opportunities: 1,
+        buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 3,
         ctr_refresh_task_previews: 3,
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
-        recommend_only_task_previews: 3,
-        new_task_previews: 3,
-        new_opportunity_previews: 3,
-        opportunity_previews: 3,
+        recommend_only_task_previews: 4,
+        new_task_previews: 4,
+        new_opportunity_previews: 4,
+        opportunity_previews: 4,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
-        query_rows: 4,
-        task_previews: 3
+        query_rows: 5,
+        task_previews: 4
       },
       "graph-only failure"
     );
@@ -1801,10 +1802,10 @@ async function runSmoke() {
       {
         catalog_pages: 1,
         catalog_products: 1,
-        opportunity_previews: 1,
+        opportunity_previews: 2,
         query_clusters: 0,
-        query_rows: 2,
-        task_previews: 1
+        query_rows: 3,
+        task_previews: 2
       },
       "graph-only failure"
     );
@@ -1847,25 +1848,25 @@ async function runSmoke() {
       {
         catalog_pages: 3,
         catalog_products: 3,
-        graph_clusters: 3,
+        graph_clusters: 4,
         matched_pages: 3,
-        matched_products: 3,
+        matched_products: 5,
         buying_guide_opportunities: 0,
-        buying_guide_task_previews: 0,
+        buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
         ctr_refresh_opportunities: 0,
         ctr_refresh_task_previews: 3,
         ranking_push_opportunities: 0,
         ranking_push_task_previews: 0,
-        recommend_only_task_previews: 3,
-        new_task_previews: 3,
+        recommend_only_task_previews: 4,
+        new_task_previews: 4,
         new_opportunity_previews: 0,
         opportunity_previews: 0,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
-        query_rows: 4,
-        task_previews: 3
+        query_rows: 5,
+        task_previews: 4
       },
       "opportunity-only failure"
     );
@@ -1887,9 +1888,9 @@ async function runSmoke() {
         catalog_pages: 1,
         catalog_products: 1,
         opportunity_previews: 0,
-        query_clusters: 1,
-        query_rows: 2,
-        task_previews: 1
+        query_clusters: 2,
+        query_rows: 3,
+        task_previews: 2
       },
       "opportunity-only failure"
     );
@@ -1923,10 +1924,10 @@ async function runSmoke() {
       {
         catalog_pages: 3,
         catalog_products: 3,
-        graph_clusters: 3,
+        graph_clusters: 4,
         matched_pages: 3,
-        matched_products: 3,
-        buying_guide_opportunities: 0,
+        matched_products: 5,
+        buying_guide_opportunities: 1,
         buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
         collection_page_task_previews: 0,
@@ -1936,11 +1937,11 @@ async function runSmoke() {
         ranking_push_task_previews: 0,
         recommend_only_task_previews: 0,
         new_task_previews: 0,
-        new_opportunity_previews: 3,
-        opportunity_previews: 3,
+        new_opportunity_previews: 4,
+        opportunity_previews: 4,
         product_seo_opportunities: 0,
         product_seo_task_previews: 0,
-        query_rows: 4,
+        query_rows: 5,
         task_previews: 0
       },
       "task-only failure"
@@ -1962,9 +1963,9 @@ async function runSmoke() {
       {
         catalog_pages: 1,
         catalog_products: 1,
-        opportunity_previews: 1,
-        query_clusters: 1,
-        query_rows: 2,
+        opportunity_previews: 2,
+        query_clusters: 2,
+        query_rows: 3,
         task_previews: 0
       },
       "task-only failure"
