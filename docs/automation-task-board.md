@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 frontend asset API client mapping is verified and read-only asset workspace UI is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 read-only asset workspace UI is verified and populated asset workspace browser coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -169,7 +169,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-ASSET-001 | 135 | done | Backend/API Engineer / QA Lead / Documentation Lead | Add local asset workspace safety foundation. | Asset endpoints expose an empty local draft workspace with explicit blocked capabilities, unknown asset details return 404, asset updates return 403, and WordPress draft creation remains future-gated without creating drafts, publishing content, calling WordPress, or writing commerce data. |
 | TASK-S3-ASSET-002 | 136 | done | Backend/API Engineer / QA Lead | Add in-memory asset draft persistence foundation. | API can create and read a local structured asset draft candidate from an approved demo task, storing only safe local fields and keeping WordPress draft creation, publishing, external calls, and commerce writes blocked. |
 | TASK-S3-ASSET-003 | 137 | done | Frontend Product Engineer / QA Lead | Add frontend asset workspace API client foundation. | Frontend API client and adapter contract tests expose typed safe asset workspace list, create-from-task, and detail reads while keeping asset update, WordPress draft creation, publishing, credentials, sync execution, and commerce writes unavailable in the UI. |
-| TASK-S3-ASSET-004 | 138 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show read-only asset workspace summary in API mode. | API-backed UI reads the safe asset workspace, shows local draft count and blocked write context in a read-only panel, and exposes no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
+| TASK-S3-ASSET-004 | 138 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show read-only asset workspace summary in API mode. | API-backed UI reads the safe asset workspace, shows local draft count and blocked write context in a read-only panel, and exposes no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
+| TASK-S3-QA-005 | 139 | todo | Frontend Product Engineer / QA Lead | Add populated asset workspace browser coverage. | Browser smoke verifies a populated safe asset workspace response renders local asset candidate rows, stable counts, blocked capability context, and no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
 
 ## Blockers
 
@@ -441,6 +442,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Frontend asset workspace API client foundation is next because the UI should consume the safe local asset workspace contract before exposing any draft editor or WordPress draft action.
 - Frontend asset workspace API client foundation is verified by contract and fixture tests for typed list/create/detail helpers, safe adapter mapping, URL encoding, and absence of asset update or WordPress draft publishing helpers.
 - Read-only asset workspace summary is next because users should see whether local draft candidates exist before any editor or WordPress draft workflow is exposed.
+- Read-only asset workspace summary is verified by browser smoke coverage requiring an API-mode GET to `/assets`, a noninteractive asset workspace panel, local candidate count, blocked capability context, and external-write clamping.
+- Populated asset workspace browser coverage is next because the panel should prove it can render local asset candidate rows before any editor or WordPress draft workflow is exposed.
 
 ## Completion Rule
 

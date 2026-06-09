@@ -6,6 +6,7 @@ import { TaskQueue } from "../components/tasks/TaskQueue";
 import { localizeTaskTitle } from "../components/tasks/task-copy";
 import {
   getAuditLogs,
+  getAssets,
   getImportedGraph,
   getImportedPages,
   getImportedProducts,
@@ -36,6 +37,7 @@ import {
 import { createTaskDetailViewModel } from "../lib/task-detail";
 import {
   mapApiAuditLogsToEvidenceRows,
+  mapApiAssetWorkspaceToPreviews,
   mapApiImportedGraphToClusterPreviews,
   mapApiImportedPagesToCatalogPreviews,
   mapApiImportedQueriesToPreviews,
@@ -47,6 +49,7 @@ import {
   mapApiSyncRunsToSyncRunPreviews
 } from "../lib/view-model-adapters";
 import type {
+  AssetDraftPreview,
   BoardViewModel,
   EvidenceRow,
   ImportedCatalogPreview,
@@ -74,6 +77,12 @@ type BoardDataState = {
 type SafetySignalState = {
   auditEvidence: EvidenceRow[];
   syncRunPreviews: SyncRunPreview[];
+};
+
+type AssetWorkspaceState = {
+  assets: AssetDraftPreview[];
+  availability: "empty" | "ready" | "unavailable";
+  blockedCapabilities: string[];
 };
 
 type ImportedPreviewState = {
@@ -215,6 +224,11 @@ export function App() {
     auditEvidence: [],
     syncRunPreviews: []
   });
+  const [assetWorkspace, setAssetWorkspace] = useState<AssetWorkspaceState>({
+    assets: [],
+    availability: "empty",
+    blockedCapabilities: []
+  });
   const [importedPreviews, setImportedPreviews] = useState<ImportedPreviewState>({
     availability: "empty",
     clusters: [],
@@ -269,16 +283,30 @@ export function App() {
       getOpportunities(demoStoreId),
       getIntegrations(demoStoreId),
       getSyncRuns(demoStoreId),
-      getAuditLogs(demoStoreId)
+      getAuditLogs(demoStoreId),
+      getAssets(demoStoreId)
     ])
       .then(
-        ([tasksResponse, opportunitiesResponse, integrationsResponse, syncRunsResponse, auditLogsResponse]) => {
+        ([tasksResponse, opportunitiesResponse, integrationsResponse, syncRunsResponse, auditLogsResponse, assetsResponse]) => {
         if (!active) return;
         const integrations = mapApiIntegrationsToIntegrationHealth(integrationsResponse);
         const syncRunPreviews = mapApiSyncRunsToSyncRunPreviews(syncRunsResponse);
         const auditEvidence = mapApiAuditLogsToEvidenceRows(auditLogsResponse);
+        const assets = mapApiAssetWorkspaceToPreviews(assetsResponse);
+        const apiBoard = mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrations);
         setSafetySignals({ auditEvidence, syncRunPreviews });
-        setBaseBoard(mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrations));
+        setAssetWorkspace({
+          assets,
+          availability: assets.length > 0 ? "ready" : "empty",
+          blockedCapabilities: assetsResponse.blocked_capabilities ?? []
+        });
+        setBaseBoard({
+          ...apiBoard,
+          metrics: {
+            ...apiBoard.metrics,
+            trackedAssets: assets.length
+          }
+        });
         setBoardDataState({ loading: false, source: "api" });
 
         Promise.allSettled([
@@ -485,6 +513,7 @@ export function App() {
           warnings: []
         });
         setSafetySignals({ auditEvidence: [], syncRunPreviews: [] });
+        setAssetWorkspace({ assets: [], availability: "empty", blockedCapabilities: [] });
         setBoardDataState({
           error: error instanceof Error ? error.message : "Unknown API error",
           loading: false,
@@ -568,6 +597,7 @@ export function App() {
         <TopBar locale={locale} setLocale={setLocale} />
         {screen === "board" && (
           <TrafficOperationsPage
+            assetWorkspace={assetWorkspace}
             board={board}
             dataState={boardDataState}
             importedPreviews={importedPreviews}
@@ -703,6 +733,7 @@ function LanguageSwitcher({ locale, setLocale }: { locale: Locale; setLocale: (l
 }
 
 function TrafficOperationsPage({
+  assetWorkspace,
   board,
   dataState,
   importedPreviews,
@@ -710,6 +741,7 @@ function TrafficOperationsPage({
   onOpenTask,
   t
 }: SharedProps & {
+  assetWorkspace: AssetWorkspaceState;
   board: BoardViewModel;
   dataState: BoardDataState;
   importedPreviews: ImportedPreviewState;
@@ -806,6 +838,7 @@ function TrafficOperationsPage({
         </section>
         <aside className="side-rail">
           <DataHealthPanel integrations={board.integrations} locale={locale} t={t} />
+          <AssetWorkspacePanel assetWorkspace={assetWorkspace} />
           <ImportedPreviewPanel importedPreviews={importedPreviews} locale={locale} />
           <OpportunityRail opportunities={board.opportunities} locale={locale} t={t} />
         </aside>
@@ -915,6 +948,58 @@ function DataHealthPanel({ integrations, locale, t }: SharedProps & { integratio
           <strong>2026-06-08 13:42</strong>
         </div>
       </div>
+    </section>
+  );
+}
+
+function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspaceState }) {
+  const visibleAssets = assetWorkspace.assets.slice(0, 2);
+  const blockedCapability = assetWorkspace.blockedCapabilities.includes("wordpress_draft_creation")
+    ? "wordpress_draft_creation"
+    : assetWorkspace.blockedCapabilities[0] ?? "external_writes_disabled";
+  return (
+    <section
+      className="panel asset-workspace-panel"
+      data-asset-draft-count={assetWorkspace.assets.length}
+      data-asset-workspace-availability={assetWorkspace.availability}
+      data-blocked-capability-count={assetWorkspace.blockedCapabilities.length}
+      data-external-write-allowed="false"
+    >
+      <div className="panel-heading">
+        <div>
+          <h2>Asset workspace</h2>
+          <p className="muted">Read-only asset workspace</p>
+        </div>
+        <span className="status safe">local</span>
+      </div>
+      <div className="kv-list">
+        <div className="kv-row">
+          <span>Local candidates</span>
+          <strong>{assetWorkspace.assets.length}</strong>
+        </div>
+        <div className="kv-row">
+          <span>External writes</span>
+          <strong>false</strong>
+        </div>
+        <div className="kv-row">
+          <span>Blocked capability</span>
+          <strong>{blockedCapability}</strong>
+        </div>
+      </div>
+      {visibleAssets.length > 0 ? (
+        <div className="mini-list">
+          {visibleAssets.map((asset) => (
+            <div className="mini-card" key={asset.id}>
+              <strong>{asset.title}</strong>
+              <span>
+                {asset.assetType} / {asset.reviewState} / {asset.contentBlockCount} blocks
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="muted">No local asset candidates yet.</p>
+      )}
     </section>
   );
 }

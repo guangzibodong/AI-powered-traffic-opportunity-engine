@@ -208,6 +208,54 @@ async function assertImportedPreviewPanelIsReadOnly(page, label) {
   }
 }
 
+async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel`);
+
+  const availability = await assetPanel.getAttribute("data-asset-workspace-availability");
+  const draftCountText = await assetPanel.getAttribute("data-asset-draft-count");
+  const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
+  const draftCount = Number(draftCountText);
+  const expectedAvailability = expectedDraftCount > 0 ? "ready" : "empty";
+  assert(
+    Number.isInteger(draftCount) && draftCount === expectedDraftCount,
+    `${label} asset workspace draft count mismatch: expected ${expectedDraftCount}, got ${
+      draftCountText ?? "missing"
+    }`
+  );
+  assert(
+    availability === expectedAvailability,
+    `${label} asset workspace availability mismatch: expected ${expectedAvailability}, got ${
+      availability ?? "missing"
+    }`
+  );
+  assert(
+    externalWriteAllowed === "false",
+    `${label} asset workspace must clamp external writes to false, got ${externalWriteAllowed ?? "missing"}`
+  );
+  await expectVisible(page.getByText("Read-only asset workspace"), `${label} asset workspace read-only label`);
+  await expectVisible(page.getByText("wordpress_draft_creation"), `${label} blocked WordPress draft capability`);
+
+  const interactiveSelector = [
+    "button",
+    "a",
+    "form",
+    "input",
+    "select",
+    "textarea",
+    "[href]",
+    "[role='button']",
+    "[role='link']"
+  ].join(", ");
+  const interactiveCount = await assetPanel.locator(interactiveSelector).count();
+  assert(interactiveCount === 0, `${label} asset workspace panel must not render interactive controls`);
+
+  const assetPanelText = ((await assetPanel.textContent()) ?? "").toLowerCase();
+  for (const forbidden of ["publish", "connect", "credential", "oauth", "woocommerce write"]) {
+    assert(!assetPanelText.includes(forbidden), `${label} asset workspace exposes unsafe copy: ${forbidden}`);
+  }
+}
+
 async function assertImportedPreviewState(page, expectedAvailability, expectedWarningCount, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const availability = await importedPanel.getAttribute("data-preview-availability");
@@ -1310,6 +1358,7 @@ async function runSmoke() {
     const context = await browser.newContext();
     const page = await context.newPage();
     const importedPreviewRequests = [];
+    const assetWorkspaceRequests = [];
 
     page.on("request", (request) => {
       const url = request.url();
@@ -1322,6 +1371,9 @@ async function runSmoke() {
         url.includes("/imported-tasks")
       ) {
         importedPreviewRequests.push({ method: request.method(), url });
+      }
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        assetWorkspaceRequests.push({ method: request.method(), url });
       }
     });
 
@@ -1377,6 +1429,7 @@ async function runSmoke() {
     await expectVisible(page.getByText("2 more opportunity previews"), "opportunity preview overflow indicator");
     await expectVisible(page.getByText("2 more task previews"), "task preview overflow indicator");
     await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
+    await assertAssetWorkspacePanelIsReadOnly(page, 0, "initial");
 
     for (const target of ["/imported-graph", "/queries", "/products", "/pages", "/imported-opportunities", "/imported-tasks"]) {
       assert(
@@ -1389,6 +1442,17 @@ async function runSmoke() {
     assert(
       unsafeImportedRequests.length === 0,
       `Imported preview endpoints must be read-only GETs: ${JSON.stringify(unsafeImportedRequests)}`
+    );
+    assert(
+      assetWorkspaceRequests.some(
+        (request) => request.method === "GET" && request.url.endsWith(`/api/stores/${storeId}/assets`)
+      ),
+      "Asset workspace endpoint was not read with GET"
+    );
+    const unsafeAssetRequests = assetWorkspaceRequests.filter((request) => request.method !== "GET");
+    assert(
+      unsafeAssetRequests.length === 0,
+      `Asset workspace endpoint must stay read-only in UI loading: ${JSON.stringify(unsafeAssetRequests)}`
     );
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
