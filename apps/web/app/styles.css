@@ -765,6 +765,10 @@ tr:last-child td {
   color: var(--risk);
 }
 
+.section-health-row[data-section-health-state="empty"] strong {
+  color: var(--muted);
+}
+
 .decision {
   align-items: flex-start;
   background: var(--panel-soft);

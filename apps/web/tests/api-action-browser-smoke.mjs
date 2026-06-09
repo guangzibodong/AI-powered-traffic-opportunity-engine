@@ -1350,12 +1350,12 @@ async function runSmoke() {
     await assertImportedPreviewSectionHealth(
       emptyImportedPage,
       {
-        graph_clusters: "available",
-        opportunities: "available",
-        pages: "available",
-        products: "available",
-        query_rows: "available",
-        task_previews: "available"
+        graph_clusters: "empty",
+        opportunities: "empty",
+        pages: "empty",
+        products: "empty",
+        query_rows: "empty",
+        task_previews: "empty"
       },
       "empty imported"
     );

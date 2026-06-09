@@ -808,48 +808,55 @@ function ImportedPreviewPanel({
   const availableRailSectionCount = Math.max(importedSectionCount - unavailableRailSectionCount, 0);
   const sectionHealthSummaryState = unavailableRailSectionCount > 0 ? "degraded" : "ready";
   const sectionCountsReconciled = availableRailSectionCount + unavailableRailSectionCount === importedSectionCount;
+  const getSectionHealthState = (isUnavailable: boolean, count: number) => {
+    if (isUnavailable) return "unavailable";
+    return count === 0 ? "empty" : "available";
+  };
   const sectionHealthRows = [
     {
       count: importedPreviews.clusters.length,
       key: "graph_clusters",
       label: locale === "zh" ? "图谱集群" : "Graph clusters",
       source: "Imported graph",
-      state: importedPreviews.warnings.includes("graph_unavailable") ? "unavailable" : "available"
+      state: getSectionHealthState(importedPreviews.warnings.includes("graph_unavailable"), importedPreviews.clusters.length)
     },
     {
       count: importedPreviews.queries.length,
       key: "query_rows",
       label: locale === "zh" ? "查询行" : "Query rows",
       source: "GSC CSV",
-      state: importedPreviews.warnings.includes("query_rows_unavailable") ? "unavailable" : "available"
+      state: getSectionHealthState(importedPreviews.warnings.includes("query_rows_unavailable"), importedPreviews.queries.length)
     },
     {
       count: importedPreviews.products.length,
       key: "products",
       label: locale === "zh" ? "商品" : "Products",
       source: "WooCommerce import",
-      state: importedPreviews.warnings.includes("catalog_unavailable") ? "unavailable" : "available"
+      state: getSectionHealthState(importedPreviews.warnings.includes("catalog_unavailable"), importedPreviews.products.length)
     },
     {
       count: importedPreviews.pages.length,
       key: "pages",
       label: locale === "zh" ? "页面" : "Pages",
       source: "WordPress import",
-      state: importedPreviews.warnings.includes("catalog_unavailable") ? "unavailable" : "available"
+      state: getSectionHealthState(importedPreviews.warnings.includes("catalog_unavailable"), importedPreviews.pages.length)
     },
     {
       count: importedPreviews.opportunities.length,
       key: "opportunities",
       label: locale === "zh" ? "机会" : "Opportunities",
       source: "Opportunity previews",
-      state: importedPreviews.warnings.includes("opportunities_unavailable") ? "unavailable" : "available"
+      state: getSectionHealthState(
+        importedPreviews.warnings.includes("opportunities_unavailable"),
+        importedPreviews.opportunities.length
+      )
     },
     {
       count: importedPreviews.tasks.length,
       key: "task_previews",
       label: locale === "zh" ? "任务预览" : "Task previews",
       source: "Task previews",
-      state: importedPreviews.warnings.includes("tasks_unavailable") ? "unavailable" : "available"
+      state: getSectionHealthState(importedPreviews.warnings.includes("tasks_unavailable"), importedPreviews.tasks.length)
     }
   ];
   const hasImportedPreviews =
