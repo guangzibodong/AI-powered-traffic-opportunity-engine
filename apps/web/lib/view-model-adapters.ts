@@ -190,9 +190,11 @@ export function mapApiImportedPageResponseToCatalogPreview(
 function mapApiImportedProductToCatalogPreview(
   product: ApiImportedProductsResponse["products"][number]
 ): ImportedCatalogPreview {
+  const href = product.permalink ?? undefined;
   return {
     detail: `SKU ${product.sku ?? "n/a"} / ${product.categories?.[0] ?? "uncategorized"}`,
-    href: product.permalink ?? undefined,
+    displayHref: formatImportedCatalogHrefForDisplay(href),
+    href,
     id: product.id,
     kind: "product",
     source: "WooCommerce",
@@ -205,12 +207,25 @@ function mapApiImportedPageToCatalogPreview(
 ): ImportedCatalogPreview {
   return {
     detail: `${page.page_type ?? "page"} / ${page.status ?? "unknown"}${page.indexable === false ? " / noindex" : ""}`,
+    displayHref: formatImportedCatalogHrefForDisplay(page.url),
     href: page.url,
     id: page.id,
     kind: "page",
     source: "WordPress",
     title: page.title
   };
+}
+
+function formatImportedCatalogHrefForDisplay(href?: string | null): string | undefined {
+  if (!href) return undefined;
+
+  try {
+    const url = new URL(href);
+    const displayPath = `${url.hostname}${url.pathname}`.replace(/\/$/, "");
+    return displayPath || url.hostname;
+  } catch {
+    return href.replace(/^https?:\/\//, "").replace(/\/$/, "") || undefined;
+  }
 }
 
 export function mapApiImportedQueryClustersToPreviews(

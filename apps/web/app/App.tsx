@@ -815,7 +815,7 @@ function ImportedPreviewPanel({
               </span>
               <h3>{product.title}</h3>
               <p className="muted">{product.detail}</p>
-              {product.href ? <p className="muted">{product.href}</p> : null}
+              {product.displayHref ? <p className="muted catalog-reference">{product.displayHref}</p> : null}
             </article>
           ))}
           {visiblePages.map((page) => (
@@ -823,7 +823,7 @@ function ImportedPreviewPanel({
               <span className="pill safe">{locale === "zh" ? `页面 / ${page.source}` : `Page / ${page.source}`}</span>
               <h3>{page.title}</h3>
               <p className="muted">{page.detail}</p>
-              {page.href ? <p className="muted">{page.href}</p> : null}
+              {page.displayHref ? <p className="muted catalog-reference">{page.displayHref}</p> : null}
             </article>
           ))}
           {visibleOpportunities.map((opportunity) => (

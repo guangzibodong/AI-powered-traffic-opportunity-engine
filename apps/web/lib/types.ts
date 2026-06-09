@@ -142,6 +142,7 @@ export type ImportedQueryClusterPreview = {
 
 export type ImportedCatalogPreview = {
   detail: string;
+  displayHref?: string;
   href?: string;
   id: string;
   kind: "product" | "page";

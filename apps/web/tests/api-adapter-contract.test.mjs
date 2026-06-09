@@ -24,6 +24,7 @@ function readExportedFunction(content, name) {
 const adapter = read("lib/view-model-adapters.ts");
 const apiClient = read("lib/api-client.ts");
 const app = read("app/App.tsx");
+const types = read("lib/types.ts");
 
 for (const forbidden of ["one_click_apply", "guarded_autopilot", "published", "applied"]) {
   assert(!adapter.includes(forbidden), `adapter leaks forbidden concept: ${forbidden}`);
@@ -46,6 +47,8 @@ assert(adapter.includes("mapApiImportedProductsToCatalogPreviews"), "adapter mus
 assert(adapter.includes("mapApiImportedPagesToCatalogPreviews"), "adapter must expose imported page catalog preview conversion");
 assert(adapter.includes("mapApiImportedProductResponseToCatalogPreview"), "adapter must expose imported product detail catalog preview conversion");
 assert(adapter.includes("mapApiImportedPageResponseToCatalogPreview"), "adapter must expose imported page detail catalog preview conversion");
+assert(types.includes("displayHref"), "Imported catalog preview view model must expose a sanitized display URL field");
+assert(adapter.includes("formatImportedCatalogHrefForDisplay"), "adapter must centralize imported catalog URL display formatting");
 assert(adapter.includes("mapApiImportedOpportunitiesToOpportunities"), "adapter must expose imported opportunity DTO conversion");
 assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose imported task preview DTO conversion");
 assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
@@ -143,6 +146,10 @@ assert(app.includes("product.detail"), "Imported product preview UI must render 
 assert(app.includes("page.detail"), "Imported page preview UI must render safe page catalog detail");
 assert(app.includes("product.source"), "Imported product preview UI must render the safe product source label");
 assert(app.includes("page.source"), "Imported page preview UI must render the safe page source label");
+assert(app.includes("product.displayHref"), "Imported product preview UI must render the sanitized display URL");
+assert(app.includes("page.displayHref"), "Imported page preview UI must render the sanitized display URL");
+assert(!app.includes("product.href ? <p"), "Imported product preview UI must not render raw href text directly");
+assert(!app.includes("page.href ? <p"), "Imported page preview UI must not render raw href text directly");
 assert(!app.includes("product.sku"), "Imported product preview UI must not render raw product SKU DTO fields directly");
 assert(!app.includes("product.categories"), "Imported product preview UI must not render raw product category DTO fields directly");
 assert(!app.includes("page.url"), "Imported page preview UI must not render raw page URL DTO fields directly");

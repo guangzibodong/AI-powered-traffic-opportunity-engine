@@ -662,6 +662,10 @@ tr:last-child td {
   margin-bottom: 6px;
 }
 
+.catalog-reference {
+  overflow-wrap: anywhere;
+}
+
 .kv-list {
   display: grid;
   gap: 9px;
