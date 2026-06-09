@@ -227,7 +227,7 @@ export function App() {
   const [assetWorkspace, setAssetWorkspace] = useState<AssetWorkspaceState>({
     assets: [],
     availability: "empty",
-    blockedCapabilities: []
+    blockedCapabilities: ["wordpress_draft_creation"]
   });
   const [importedPreviews, setImportedPreviews] = useState<ImportedPreviewState>({
     availability: "empty",
@@ -283,31 +283,50 @@ export function App() {
       getOpportunities(demoStoreId),
       getIntegrations(demoStoreId),
       getSyncRuns(demoStoreId),
-      getAuditLogs(demoStoreId),
-      getAssets(demoStoreId)
+      getAuditLogs(demoStoreId)
     ])
       .then(
-        ([tasksResponse, opportunitiesResponse, integrationsResponse, syncRunsResponse, auditLogsResponse, assetsResponse]) => {
+        ([tasksResponse, opportunitiesResponse, integrationsResponse, syncRunsResponse, auditLogsResponse]) => {
         if (!active) return;
         const integrations = mapApiIntegrationsToIntegrationHealth(integrationsResponse);
         const syncRunPreviews = mapApiSyncRunsToSyncRunPreviews(syncRunsResponse);
         const auditEvidence = mapApiAuditLogsToEvidenceRows(auditLogsResponse);
-        const assets = mapApiAssetWorkspaceToPreviews(assetsResponse);
         const apiBoard = mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrations);
         setSafetySignals({ auditEvidence, syncRunPreviews });
-        setAssetWorkspace({
-          assets,
-          availability: assets.length > 0 ? "ready" : "empty",
-          blockedCapabilities: assetsResponse.blocked_capabilities ?? []
-        });
         setBaseBoard({
           ...apiBoard,
           metrics: {
             ...apiBoard.metrics,
-            trackedAssets: assets.length
+            trackedAssets: 0
           }
         });
         setBoardDataState({ loading: false, source: "api" });
+
+        getAssets(demoStoreId)
+          .then((assetsResponse) => {
+            if (!active) return;
+            const assets = mapApiAssetWorkspaceToPreviews(assetsResponse);
+            setAssetWorkspace({
+              assets,
+              availability: assets.length > 0 ? "ready" : "empty",
+              blockedCapabilities: assetsResponse.blocked_capabilities ?? ["wordpress_draft_creation"]
+            });
+            setBaseBoard((current) => ({
+              ...current,
+              metrics: {
+                ...current.metrics,
+                trackedAssets: assets.length
+              }
+            }));
+          })
+          .catch(() => {
+            if (!active) return;
+            setAssetWorkspace({
+              assets: [],
+              availability: "unavailable",
+              blockedCapabilities: ["asset_workspace_unavailable"]
+            });
+          });
 
         Promise.allSettled([
           getImportedGraph(demoStoreId),
@@ -513,7 +532,7 @@ export function App() {
           warnings: []
         });
         setSafetySignals({ auditEvidence: [], syncRunPreviews: [] });
-        setAssetWorkspace({ assets: [], availability: "empty", blockedCapabilities: [] });
+        setAssetWorkspace({ assets: [], availability: "empty", blockedCapabilities: ["wordpress_draft_creation"] });
         setBoardDataState({
           error: error instanceof Error ? error.message : "Unknown API error",
           loading: false,
@@ -1004,7 +1023,11 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
           ))}
         </div>
       ) : (
-        <p className="muted">No local asset candidates yet.</p>
+        <p className="muted">
+          {assetWorkspace.availability === "unavailable"
+            ? "Asset workspace unavailable"
+            : "No local asset candidates yet."}
+        </p>
       )}
     </section>
   );

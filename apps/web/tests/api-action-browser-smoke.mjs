@@ -278,6 +278,22 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
   }
 }
 
+async function assertAssetWorkspacePanelUnavailable(page, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel`);
+  const availability = await assetPanel.getAttribute("data-asset-workspace-availability");
+  const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
+  assert(
+    availability === "unavailable",
+    `${label} asset workspace availability mismatch: expected unavailable, got ${availability ?? "missing"}`
+  );
+  assert(
+    externalWriteAllowed === "false",
+    `${label} unavailable asset workspace must clamp external writes to false, got ${externalWriteAllowed ?? "missing"}`
+  );
+  await expectVisible(page.getByText("Asset workspace unavailable"), `${label} unavailable asset copy`);
+}
+
 async function assertImportedPreviewState(page, expectedAvailability, expectedWarningCount, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const availability = await importedPanel.getAttribute("data-preview-availability");
@@ -1518,6 +1534,22 @@ async function runSmoke() {
       }
     ]);
     await populatedAssetPage.close();
+
+    const assetFailurePage = await context.newPage();
+    await assetFailurePage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.abort("failed");
+        return;
+      }
+
+      await route.continue();
+    });
+    await assetFailurePage.goto(webUrl);
+    await clickUnique(assetFailurePage.getByRole("button", { name: "EN" }), "asset failure language switcher");
+    await expectVisible(assetFailurePage.getByText("Demo API connected"), "asset failure API board remains connected");
+    await expectVisible(assetFailurePage.getByText("read-only imported previews"), "asset failure imported preview remains available");
+    await assertAssetWorkspacePanelUnavailable(assetFailurePage, "asset-only failure");
+    await assetFailurePage.close();
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
     await assertImportedPreviewState(page, "ready", 0, "initial");
