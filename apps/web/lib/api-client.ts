@@ -336,6 +336,7 @@ export type ApiAssetDraft = {
   content_blocks?: unknown[];
   external_write_allowed?: boolean;
   id: string;
+  qa_checks?: unknown[];
   review_state: string;
   source_task_id: string;
   title: string;

@@ -187,6 +187,8 @@ function mapApiAssetDraftToPreview(
     contentBlockTypes: mapAssetContentBlockTypes(asset.content_blocks),
     externalWriteAllowed: false,
     id: asset.id,
+    qaCheckCount: countAssetQaChecks(asset.qa_checks),
+    qaPendingCount: countPendingAssetQaChecks(asset.qa_checks),
     reviewState: asset.review_state,
     sourceTaskId: asset.source_task_id,
     title: asset.title
@@ -200,6 +202,20 @@ function mapAssetContentBlockTypes(contentBlocks: unknown[] | undefined): string
     const blockType = (block as { type?: unknown }).type;
     return typeof blockType === "string" && blockType.trim() ? [blockType] : [];
   });
+}
+
+function countAssetQaChecks(qaChecks: unknown[] | undefined): number {
+  return Array.isArray(qaChecks) ? qaChecks.filter(isAssetQaCheck).length : 0;
+}
+
+function countPendingAssetQaChecks(qaChecks: unknown[] | undefined): number {
+  if (!Array.isArray(qaChecks)) return 0;
+  return qaChecks.filter((check) => isAssetQaCheck(check) && check.status === "pending").length;
+}
+
+function isAssetQaCheck(check: unknown): check is { status: string } {
+  if (!check || typeof check !== "object" || !("status" in check)) return false;
+  return typeof (check as { status?: unknown }).status === "string";
 }
 
 export function mapApiImportedGraphToClusterPreviews(

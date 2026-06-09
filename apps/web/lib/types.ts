@@ -140,6 +140,8 @@ export type AssetDraftPreview = {
   contentBlockTypes: string[];
   externalWriteAllowed: false;
   id: string;
+  qaCheckCount: number;
+  qaPendingCount: number;
   reviewState: string;
   sourceTaskId: string;
   title: string;

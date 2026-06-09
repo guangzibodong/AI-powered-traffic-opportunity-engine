@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset content block diagnostics are verified and asset QA check diagnostics are queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 asset QA check diagnostics are verified and asset QA aggregate summary is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -178,7 +178,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-UX-010 | 144 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset type summary diagnostics. | The asset workspace exposes compact read-only asset type counts for local draft candidates without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-QA-011 | 145 | done | Frontend Product Engineer / QA Lead | Add asset workspace row aggregate reconciliation. | Browser smoke verifies visible asset rows plus overflow count reconcile to the safe asset workspace draft count without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-UX-012 | 146 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset content block diagnostics. | Local asset candidate rows expose compact read-only content block type diagnostics from safe asset view models without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
-| TASK-S3-UX-013 | 147 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset QA check diagnostics. | Local asset candidate rows expose compact read-only QA check count/status diagnostics from safe asset view models without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
+| TASK-S3-UX-013 | 147 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset QA check diagnostics. | Local asset candidate rows expose compact read-only QA check count/status diagnostics from safe asset view models without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
+| TASK-S3-UX-014 | 148 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset QA aggregate summary. | The asset workspace exposes read-only aggregate QA check and pending counts across local candidates without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -468,6 +469,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset content block diagnostics are next because the read-only candidate rows should show what structured draft sections exist before any editor or WordPress draft flow is introduced.
 - Asset content block diagnostics are verified by browser smoke coverage that maps safe content block type labels into asset candidate row diagnostics.
 - Asset QA check diagnostics are next because the draft review surface should expose pending QA scope before any editor, WordPress draft, or publishing flow exists.
+- Asset QA check diagnostics are verified by browser smoke coverage that maps safe QA count and pending status diagnostics into asset candidate rows.
+- Asset QA aggregate summary is next because operators should see overall draft review readiness before any editor or WordPress draft creation path exists.
 
 ## Completion Rule
 

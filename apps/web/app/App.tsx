@@ -1044,6 +1044,8 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
               data-asset-content-block-count={asset.contentBlockCount}
               data-asset-content-block-types={asset.contentBlockTypes.join(",")}
               data-asset-id={asset.id}
+              data-asset-qa-check-count={asset.qaCheckCount}
+              data-asset-qa-pending-count={asset.qaPendingCount}
               data-asset-review-state={asset.reviewState}
               key={asset.id}
             >
@@ -1051,6 +1053,7 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
               <span>
                 {asset.assetType} / {asset.reviewState} / {asset.contentBlockCount} blocks
                 {asset.contentBlockTypes.length > 0 ? ` / ${asset.contentBlockTypes.join(", ")}` : ""}
+                {asset.qaCheckCount > 0 ? ` / qa ${asset.qaPendingCount}/${asset.qaCheckCount} pending` : ""}
               </span>
             </div>
           ))}

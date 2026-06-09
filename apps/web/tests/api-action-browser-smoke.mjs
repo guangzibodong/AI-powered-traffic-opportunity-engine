@@ -262,6 +262,8 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
     const reviewState = await row.getAttribute("data-asset-review-state");
     const contentBlockCount = await row.getAttribute("data-asset-content-block-count");
     const contentBlockTypes = await row.getAttribute("data-asset-content-block-types");
+    const qaCheckCount = await row.getAttribute("data-asset-qa-check-count");
+    const qaPendingCount = await row.getAttribute("data-asset-qa-pending-count");
     assert(
       reviewState === expectedAsset.reviewState,
       `${label} asset row ${expectedAsset.id} review state mismatch: expected ${expectedAsset.reviewState}, got ${
@@ -282,8 +284,28 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
         )}, got ${contentBlockTypes ?? "missing"}`
       );
     }
+    if (expectedAsset.qaCheckCount !== undefined) {
+      assert(
+        qaCheckCount === String(expectedAsset.qaCheckCount),
+        `${label} asset row ${expectedAsset.id} QA check count mismatch: expected ${expectedAsset.qaCheckCount}, got ${
+          qaCheckCount ?? "missing"
+        }`
+      );
+      assert(
+        qaPendingCount === String(expectedAsset.qaPendingCount),
+        `${label} asset row ${expectedAsset.id} QA pending count mismatch: expected ${
+          expectedAsset.qaPendingCount
+        }, got ${qaPendingCount ?? "missing"}`
+      );
+    }
     const rowText = (await row.textContent()) ?? "";
     assert(rowText.includes(expectedAsset.title), `${label} asset row ${expectedAsset.id} must show title`);
+    if (expectedAsset.qaCheckCount !== undefined) {
+      assert(
+        rowText.includes(`qa ${expectedAsset.qaPendingCount}/${expectedAsset.qaCheckCount} pending`),
+        `${label} asset row ${expectedAsset.id} must show QA pending summary`
+      );
+    }
     for (const contentBlockType of expectedAsset.contentBlockTypes ?? []) {
       assert(
         rowText.includes(contentBlockType),
@@ -1638,6 +1660,11 @@ async function runSmoke() {
                 content_blocks: [{ type: "answer_summary" }, { type: "metadata_only" }, { type: "faq" }],
                 external_write_allowed: false,
                 id: "asset_task_002",
+                qa_checks: [
+                  { key: "seo", status: "pending" },
+                  { key: "geo", status: "pending" },
+                  { key: "factual_grounding", status: "passed" }
+                ],
                 review_state: "draft_candidate",
                 source_task_id: "task_002",
                 title: "Create camping portable espresso collection page"
@@ -1648,6 +1675,7 @@ async function runSmoke() {
                 content_blocks: [{ type: "answer_summary" }, { type: "faq" }],
                 external_write_allowed: false,
                 id: "asset_task_003",
+                qa_checks: [{ key: "schema", status: "pending" }],
                 review_state: "draft_candidate",
                 source_task_id: "task_003",
                 title: "Draft camping espresso buying guide"
@@ -1658,6 +1686,7 @@ async function runSmoke() {
                 content_blocks: [{ type: "metadata_only" }],
                 external_write_allowed: false,
                 id: "asset_task_004",
+                qa_checks: [{ key: "metadata", status: "pending" }],
                 review_state: "draft_candidate",
                 source_task_id: "task_004",
                 title: "Refresh portable espresso product SEO"
@@ -1682,6 +1711,8 @@ async function runSmoke() {
         contentBlockCount: 3,
         contentBlockTypes: ["answer_summary", "metadata_only", "faq"],
         id: "asset_task_002",
+        qaCheckCount: 3,
+        qaPendingCount: 2,
         reviewState: "draft_candidate",
         title: "Create camping portable espresso collection page"
       },
@@ -1689,6 +1720,8 @@ async function runSmoke() {
         contentBlockCount: 2,
         contentBlockTypes: ["answer_summary", "faq"],
         id: "asset_task_003",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
         reviewState: "draft_candidate",
         title: "Draft camping espresso buying guide"
       }
