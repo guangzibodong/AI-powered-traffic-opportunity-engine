@@ -204,6 +204,21 @@ async function assertImportedPreviewPanelIsReadOnly(page, label) {
   }
 }
 
+async function assertImportedPreviewWarningKeys(page, expectedKeys, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const actualKeys = await importedPanel.locator("[data-warning-key]").evaluateAll((nodes) =>
+    nodes
+      .map((node) => node.getAttribute("data-warning-key"))
+      .filter((key) => typeof key === "string" && key.length > 0)
+      .sort()
+  );
+  const sortedExpectedKeys = [...expectedKeys].sort();
+  assert(
+    JSON.stringify(actualKeys) === JSON.stringify(sortedExpectedKeys),
+    `${label} imported preview warning keys mismatch: expected ${sortedExpectedKeys.join(", ")}, got ${actualKeys.join(", ")}`
+  );
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -326,6 +341,7 @@ async function runSmoke() {
     );
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
+    await assertImportedPreviewWarningKeys(page, [], "initial");
 
     const resilientPage = await context.newPage();
     await resilientPage.route("**/api/stores/**", async (route) => {
@@ -357,6 +373,11 @@ async function runSmoke() {
     );
     await expectVisible(resilientPage.getByText("Task previews unavailable"), "resilient task unavailable message");
     await assertImportedPreviewPanelIsReadOnly(resilientPage, "resilient fallback");
+    await assertImportedPreviewWarningKeys(
+      resilientPage,
+      ["catalog_unavailable", "graph_unavailable", "opportunities_unavailable", "query_rows_unavailable", "tasks_unavailable"],
+      "resilient fallback"
+    );
     await resilientPage.close();
 
     const catalogFailurePage = await context.newPage();
@@ -377,6 +398,7 @@ async function runSmoke() {
     await expectVisible(catalogFailurePage.getByText("portable espresso maker camping"), "catalog failure imported query cluster");
     await expectVisible(catalogFailurePage.getByText("recommend_only"), "catalog failure recommend-only task preview");
     await assertImportedPreviewPanelIsReadOnly(catalogFailurePage, "catalog-only failure");
+    await assertImportedPreviewWarningKeys(catalogFailurePage, ["catalog_unavailable"], "catalog-only failure");
     await catalogFailurePage.close();
 
     const queryRowFailurePage = await context.newPage();
@@ -397,6 +419,7 @@ async function runSmoke() {
     await expectVisible(queryRowFailurePage.getByText("portable espresso maker camping"), "query row failure imported query cluster");
     await expectVisible(queryRowFailurePage.getByText("Trail Brew Portable Espresso Maker"), "query row failure imported product row");
     await assertImportedPreviewPanelIsReadOnly(queryRowFailurePage, "query-row-only failure");
+    await assertImportedPreviewWarningKeys(queryRowFailurePage, ["query_rows_unavailable"], "query-row-only failure");
     await queryRowFailurePage.close();
 
     const graphFailurePage = await context.newPage();
@@ -417,6 +440,7 @@ async function runSmoke() {
     await expectVisible(graphFailurePage.getByText("Trail Brew Portable Espresso Maker"), "graph failure product preview");
     await expectVisible(graphFailurePage.getByText("recommend_only"), "graph failure task preview");
     await assertImportedPreviewPanelIsReadOnly(graphFailurePage, "graph-only failure");
+    await assertImportedPreviewWarningKeys(graphFailurePage, ["graph_unavailable"], "graph-only failure");
     await graphFailurePage.close();
 
     const opportunityFailurePage = await context.newPage();
@@ -437,6 +461,7 @@ async function runSmoke() {
     await expectVisible(opportunityFailurePage.getByText("Trail Brew Portable Espresso Maker"), "opportunity failure product preview");
     await expectVisible(opportunityFailurePage.getByText("recommend_only"), "opportunity failure task preview");
     await assertImportedPreviewPanelIsReadOnly(opportunityFailurePage, "opportunity-only failure");
+    await assertImportedPreviewWarningKeys(opportunityFailurePage, ["opportunities_unavailable"], "opportunity-only failure");
     await opportunityFailurePage.close();
 
     const taskFailurePage = await context.newPage();
@@ -460,6 +485,7 @@ async function runSmoke() {
       "task failure opportunity preview"
     );
     await assertImportedPreviewPanelIsReadOnly(taskFailurePage, "task-only failure");
+    await assertImportedPreviewWarningKeys(taskFailurePage, ["tasks_unavailable"], "task-only failure");
     await taskFailurePage.close();
 
     const derivedFailurePage = await context.newPage();
@@ -495,6 +521,11 @@ async function runSmoke() {
       "Derived preview failures must not hide successful catalog reads behind the global unavailable state"
     );
     await assertImportedPreviewPanelIsReadOnly(derivedFailurePage, "derived-read failure");
+    await assertImportedPreviewWarningKeys(
+      derivedFailurePage,
+      ["graph_unavailable", "opportunities_unavailable", "query_rows_unavailable", "tasks_unavailable"],
+      "derived-read failure"
+    );
     await derivedFailurePage.close();
 
     const firstTaskRow = page.locator("tr").filter({ hasText: taskTitle });

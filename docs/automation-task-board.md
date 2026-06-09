@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only QA coverage is complete through imported preview no-control DOM safety locks; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only QA coverage is complete through imported preview warning-key DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -98,6 +98,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-052 | 64 | done | QA Lead / Frontend Product Engineer | Show section diagnostics when all imported preview reads fail. | Browser smoke verifies global imported preview failure still shows section-level read-only unavailable copy for graph, query rows, catalog, opportunities, and tasks, while exposing no retry, sync, credential, draft, publish, task creation, external navigation, or commerce write controls. |
 | TASK-S2-QA-053 | 65 | done | QA Lead / UI Systems Engineer | Show imported preview unavailable-section count labels. | Imported preview panel renders a compact read-only count of unavailable sections during partial or full imported read failures, with browser coverage and no retry, sync, credential, draft, publish, task creation, external navigation, or commerce write controls. |
 | TASK-S2-QA-054 | 66 | done | QA Lead / UI Systems Engineer | Lock imported preview panel no-control DOM safety. | Browser smoke verifies every imported preview state declares a read-only safety scope, renders no buttons, links, forms, inputs, role-based controls, href navigation, or case-insensitive unsafe action copy, and keeps page/catalog metadata display-safe without exposing publish/draft/edit/apply wording. |
+| TASK-S2-QA-055 | 67 | done | QA Lead / UI Systems Engineer | Expose imported preview warning-key DOM diagnostics. | Browser smoke verifies each read-only imported preview warning renders a stable `data-warning-key` for graph, query rows, catalog, opportunities, and tasks across full and partial failure states, without adding controls, navigation, credentials, sync execution, drafts, publishing, or commerce writes. |
 
 ## Blockers
 
@@ -227,6 +228,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported preview unavailable-section count labels are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported preview no-control DOM safety is next because the read-only panel should be locked by real browser DOM checks, not only visible button absence checks.
 - Imported preview no-control DOM safety is verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported preview warning-key DOM diagnostics are next because warning copy can be localized, but browser QA needs stable read-only section keys for each degraded imported preview area.
+- Imported preview warning-key DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

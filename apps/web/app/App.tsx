@@ -852,7 +852,7 @@ function ImportedPreviewPanel({
         </p>
       ) : null}
       {importedPreviews.warnings.includes("catalog_unavailable") && (
-        <div className="imported-preview-empty">
+        <div className="imported-preview-empty" data-warning-key="catalog_unavailable">
           <strong>{locale === "zh" ? "Catalog reads unavailable" : "Catalog reads unavailable"}</strong>
           <p className="muted">
             {locale === "zh"
@@ -862,7 +862,7 @@ function ImportedPreviewPanel({
         </div>
       )}
       {importedPreviews.warnings.includes("query_rows_unavailable") && (
-        <div className="imported-preview-empty">
+        <div className="imported-preview-empty" data-warning-key="query_rows_unavailable">
           <strong>{locale === "zh" ? "查询行暂不可用" : "Query rows unavailable"}</strong>
           <p className="muted">
             {locale === "zh"
@@ -872,7 +872,7 @@ function ImportedPreviewPanel({
         </div>
       )}
       {importedPreviews.warnings.includes("graph_unavailable") && (
-        <div className="imported-preview-empty">
+        <div className="imported-preview-empty" data-warning-key="graph_unavailable">
           <strong>{locale === "zh" ? "图谱读取暂不可用" : "Graph reads unavailable"}</strong>
           <p className="muted">
             {locale === "zh"
@@ -882,7 +882,7 @@ function ImportedPreviewPanel({
         </div>
       )}
       {importedPreviews.warnings.includes("opportunities_unavailable") && (
-        <div className="imported-preview-empty">
+        <div className="imported-preview-empty" data-warning-key="opportunities_unavailable">
           <strong>{locale === "zh" ? "机会预览暂不可用" : "Opportunity previews unavailable"}</strong>
           <p className="muted">
             {locale === "zh"
@@ -892,7 +892,7 @@ function ImportedPreviewPanel({
         </div>
       )}
       {importedPreviews.warnings.includes("tasks_unavailable") && (
-        <div className="imported-preview-empty">
+        <div className="imported-preview-empty" data-warning-key="tasks_unavailable">
           <strong>{locale === "zh" ? "任务预览暂不可用" : "Task previews unavailable"}</strong>
           <p className="muted">
             {locale === "zh"
