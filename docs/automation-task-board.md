@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 WordPress draft readiness reconciliation is verified and unavailable WordPress draft readiness coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 unavailable WordPress draft readiness coverage is verified and asset external write clamp reconciliation is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -187,7 +187,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-019 | 153 | done | Frontend Product Engineer / QA Lead | Add unavailable QA readiness coverage. | Browser smoke verifies an unavailable asset workspace keeps QA readiness non-executable and does not render QA summary/readiness rows without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-UX-020 | 154 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show WordPress draft readiness diagnostics. | The asset workspace exposes read-only WordPress draft readiness counts from the safe asset workspace summary while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
 | TASK-S3-QA-021 | 155 | done | Frontend Product Engineer / QA Lead | Add WordPress draft readiness reconciliation. | Browser smoke verifies WordPress draft readiness totals reconcile with safe asset workspace draft counts while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
-| TASK-S3-QA-022 | 156 | todo | Frontend Product Engineer / QA Lead | Add unavailable WordPress draft readiness coverage. | Browser smoke verifies an unavailable asset workspace does not render WordPress draft readiness rows and keeps draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
+| TASK-S3-QA-022 | 156 | done | Frontend Product Engineer / QA Lead | Add unavailable WordPress draft readiness coverage. | Browser smoke verifies an unavailable asset workspace does not render WordPress draft readiness rows and keeps draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
+| TASK-S3-QA-023 | 157 | todo | Frontend Product Engineer / QA Lead | Add asset external write clamp reconciliation. | Browser smoke verifies the asset workspace external write clamp is false in DOM and visible summary across populated and unavailable states while keeping draft creation, publishing, credentials, sync execution, href navigation, asset update, and commerce-write controls unavailable. |
 
 ## Blockers
 
@@ -495,6 +496,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - WordPress draft readiness reconciliation is next because QA should prove the readiness total agrees with the local asset draft count before any executable WordPress draft path exists.
 - WordPress draft readiness reconciliation is verified by browser smoke coverage that reconciles readiness total with the asset workspace draft count and keeps ready count bounded by total.
 - Unavailable WordPress draft readiness coverage is next because endpoint failure should not render a draft readiness row that could be mistaken for an executable draft path.
+- Unavailable WordPress draft readiness coverage is verified by browser smoke coverage that keeps endpoint-failure states free of WordPress draft readiness rows.
+- Asset external write clamp reconciliation is next because the safety panel should prove external writes remain false in both DOM diagnostics and visible summary copy.
 
 ## Completion Rule
 

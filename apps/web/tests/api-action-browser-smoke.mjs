@@ -493,6 +493,13 @@ async function assertWordPressDraftReadinessReconciles(page, label) {
   );
 }
 
+async function assertWordPressDraftReadinessUnavailable(page, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for unavailable WordPress draft readiness`);
+  const readinessRows = await assetPanel.locator("[data-wordpress-draft-readiness]").count();
+  assert(readinessRows === 0, `${label} must not render WordPress draft readiness rows when asset workspace is unavailable`);
+}
+
 async function assertAssetWorkspaceQaReadiness(page, expectedReadinessState, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA readiness diagnostics`);
@@ -1992,6 +1999,7 @@ async function runSmoke() {
     await assertTrackedAssetMetricReconciles(assetFailurePage, 0, "asset-only failure");
     await assertAssetWorkspaceBlockedCapabilities(assetFailurePage, ["asset_workspace_unavailable"], "asset-only failure");
     await assertAssetWorkspaceUnavailableQaReadiness(assetFailurePage, "asset-only failure");
+    await assertWordPressDraftReadinessUnavailable(assetFailurePage, "asset-only failure");
     await assetFailurePage.close();
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
