@@ -90,6 +90,8 @@ type ImportedPreviewState = {
   products: ImportedCatalogPreview[];
   queries: ImportedQueryRowPreview[];
   summaryDiagnostics: {
+    buyingGuideGapOpportunities: number;
+    buyingGuideGapTasks: number;
     buyingGuideOpportunities: number;
     buyingGuideTasks: number;
     collectionPageOpportunities: number;
@@ -222,6 +224,8 @@ export function App() {
     products: [],
     queries: [],
     summaryDiagnostics: {
+      buyingGuideGapOpportunities: 0,
+      buyingGuideGapTasks: 0,
       buyingGuideOpportunities: 0,
       buyingGuideTasks: 0,
       collectionPageOpportunities: 0,
@@ -328,6 +332,14 @@ export function App() {
             const tasks =
               importedTasksResult.status === "fulfilled" ? mapApiImportedTasksToTasks(importedTasksResult.value) : [];
             const summaryDiagnostics = {
+              buyingGuideGapOpportunities:
+                importedOpportunitiesResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_rule", "buying_guide_gap")
+                  : 0,
+              buyingGuideGapTasks:
+                importedTasksResult.status === "fulfilled"
+                  ? readImportedSummaryCount(importedTasksResult.value.summary, "by_rule", "buying_guide_gap")
+                  : 0,
               buyingGuideOpportunities:
                 importedOpportunitiesResult.status === "fulfilled"
                   ? readImportedSummaryCount(importedOpportunitiesResult.value.summary, "by_task_type", "buying_guide")
@@ -414,6 +426,8 @@ export function App() {
               products: [],
               queries: [],
               summaryDiagnostics: {
+                buyingGuideGapOpportunities: 0,
+                buyingGuideGapTasks: 0,
                 buyingGuideOpportunities: 0,
                 buyingGuideTasks: 0,
                 collectionPageOpportunities: 0,
@@ -451,6 +465,8 @@ export function App() {
           products: [],
           queries: [],
           summaryDiagnostics: {
+            buyingGuideGapOpportunities: 0,
+            buyingGuideGapTasks: 0,
             buyingGuideOpportunities: 0,
             buyingGuideTasks: 0,
             collectionPageOpportunities: 0,
@@ -1065,6 +1081,14 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="buying_guide_task_previews">
           <span>{locale === "zh" ? "购买指南任务预览" : "Buying guide task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.buyingGuideTasks}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="buying_guide_gap_opportunities">
+          <span>{locale === "zh" ? "购买指南缺口机会" : "Buying guide gap opportunities"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.buyingGuideGapOpportunities}</strong>
+        </div>
+        <div className="kv-row" data-metric-key="buying_guide_gap_task_previews">
+          <span>{locale === "zh" ? "购买指南缺口任务预览" : "Buying guide gap task previews"}</span>
+          <strong>{importedPreviews.summaryDiagnostics.buyingGuideGapTasks}</strong>
         </div>
         <div className="kv-row" data-metric-key="ranking_push_opportunities">
           <span>{locale === "zh" ? "排名推进机会" : "Ranking push opportunities"}</span>

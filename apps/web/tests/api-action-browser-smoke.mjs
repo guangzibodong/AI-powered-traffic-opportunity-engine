@@ -1021,6 +1021,8 @@ async function runSmoke() {
     await expectVisible(page.getByText("Collection page task previews"), "imported collection page task summary metric");
     await expectVisible(page.getByText("Buying guide opportunities"), "imported buying guide opportunity summary metric");
     await expectVisible(page.getByText("Buying guide task previews"), "imported buying guide task summary metric");
+    await expectVisible(page.getByText("Buying guide gap opportunities"), "imported buying guide gap opportunity rule summary metric");
+    await expectVisible(page.getByText("Buying guide gap task previews"), "imported buying guide gap task rule summary metric");
     await expectVisible(page.getByText("Ranking push opportunities"), "imported ranking push opportunity summary metric");
     await expectVisible(page.getByText("Ranking push task previews"), "imported ranking push task summary metric");
     await expectVisible(page.getByText("Recommend-only task previews"), "imported recommend-only task summary metric");
@@ -1117,6 +1119,8 @@ async function runSmoke() {
         graph_clusters: 4,
         matched_pages: 3,
         matched_products: 5,
+        buying_guide_gap_opportunities: 1,
+        buying_guide_gap_task_previews: 1,
         buying_guide_opportunities: 1,
         buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
@@ -1321,6 +1325,8 @@ async function runSmoke() {
         graph_clusters: 0,
         matched_pages: 0,
         matched_products: 0,
+        buying_guide_gap_opportunities: 0,
+        buying_guide_gap_task_previews: 0,
         buying_guide_opportunities: 0,
         buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
@@ -1465,6 +1471,8 @@ async function runSmoke() {
         graph_clusters: 0,
         matched_pages: 0,
         matched_products: 0,
+        buying_guide_gap_opportunities: 0,
+        buying_guide_gap_task_previews: 0,
         buying_guide_opportunities: 0,
         buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
@@ -1585,6 +1593,8 @@ async function runSmoke() {
         graph_clusters: 4,
         matched_pages: 3,
         matched_products: 5,
+        buying_guide_gap_opportunities: 1,
+        buying_guide_gap_task_previews: 1,
         buying_guide_opportunities: 1,
         buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
@@ -1705,6 +1715,8 @@ async function runSmoke() {
         graph_clusters: 4,
         matched_pages: 3,
         matched_products: 5,
+        buying_guide_gap_opportunities: 1,
+        buying_guide_gap_task_previews: 1,
         buying_guide_opportunities: 1,
         buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
@@ -1778,6 +1790,8 @@ async function runSmoke() {
         graph_clusters: 0,
         matched_pages: 0,
         matched_products: 0,
+        buying_guide_gap_opportunities: 1,
+        buying_guide_gap_task_previews: 1,
         buying_guide_opportunities: 1,
         buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
@@ -1851,6 +1865,8 @@ async function runSmoke() {
         graph_clusters: 4,
         matched_pages: 3,
         matched_products: 5,
+        buying_guide_gap_opportunities: 0,
+        buying_guide_gap_task_previews: 1,
         buying_guide_opportunities: 0,
         buying_guide_task_previews: 1,
         collection_page_opportunities: 0,
@@ -1927,6 +1943,8 @@ async function runSmoke() {
         graph_clusters: 4,
         matched_pages: 3,
         matched_products: 5,
+        buying_guide_gap_opportunities: 1,
+        buying_guide_gap_task_previews: 0,
         buying_guide_opportunities: 1,
         buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
@@ -2019,6 +2037,8 @@ async function runSmoke() {
         graph_clusters: 0,
         matched_pages: 0,
         matched_products: 0,
+        buying_guide_gap_opportunities: 0,
+        buying_guide_gap_task_previews: 0,
         buying_guide_opportunities: 0,
         buying_guide_task_previews: 0,
         collection_page_opportunities: 0,
