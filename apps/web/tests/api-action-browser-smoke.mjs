@@ -224,6 +224,7 @@ async function runSmoke() {
       const url = request.url();
       if (
         url.includes("/imported-graph") ||
+        url.includes("/queries") ||
         url.includes("/products") ||
         url.includes("/pages") ||
         url.includes("/imported-opportunities") ||
@@ -237,6 +238,7 @@ async function runSmoke() {
     await clickUnique(page.getByRole("button", { name: "EN" }), "language switcher");
     await expectVisible(page.getByText("read-only imported previews"), "read-only imported preview badge");
     await expectVisible(page.getByText("Graph-linked clusters"), "graph-linked cluster metric");
+    await expectVisible(page.getByText("Query rows"), "imported query row count metric");
     await expectVisible(page.getByText("Catalog products"), "imported catalog product count metric");
     await expectVisible(page.getByText("Catalog pages"), "imported catalog page count metric");
     await expectVisible(page.getByText("portable espresso maker camping"), "imported query cluster");
@@ -245,11 +247,12 @@ async function runSmoke() {
     await expectVisible(page.getByText("1 more catalog products"), "catalog product overflow indicator");
     await expectVisible(page.getByText("1 more catalog pages"), "catalog page overflow indicator");
     await expectVisible(page.getByText("1 more query clusters"), "query cluster overflow indicator");
+    await expectVisible(page.getByText("2 more query rows"), "query row overflow indicator");
     await expectVisible(page.getByText("1 more opportunity previews"), "opportunity preview overflow indicator");
     await expectVisible(page.getByText("1 more task previews"), "task preview overflow indicator");
     await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
 
-    for (const target of ["/imported-graph", "/products", "/pages", "/imported-opportunities", "/imported-tasks"]) {
+    for (const target of ["/imported-graph", "/queries", "/products", "/pages", "/imported-opportunities", "/imported-tasks"]) {
       assert(
         importedPreviewRequests.some((request) => request.method === "GET" && request.url.includes(target)),
         `Imported preview endpoint was not read with GET: ${target}`
@@ -287,6 +290,7 @@ async function runSmoke() {
       const url = route.request().url();
       if (
         url.includes("/imported-graph") ||
+        url.includes("/queries") ||
         url.includes("/products") ||
         url.includes("/pages") ||
         url.includes("/imported-opportunities") ||

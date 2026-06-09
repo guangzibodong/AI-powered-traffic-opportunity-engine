@@ -148,6 +148,7 @@ assert(app.includes("getIntegrations("), "App must read API-backed integration s
 assert(app.includes("getSyncRuns("), "App must read API-backed sync run tracking in API mode");
 assert(app.includes("getAuditLogs("), "App must read API-backed audit logs in API mode");
 assert(app.includes("getImportedGraph("), "App must read API-backed imported graph in API mode");
+assert(app.includes("getImportedQueries("), "App must read API-backed imported query rows in API mode");
 assert(app.includes("getImportedProducts("), "App must read API-backed imported products in API mode");
 assert(app.includes("getImportedPages("), "App must read API-backed imported pages in API mode");
 assert(app.includes("getImportedOpportunities("), "App must read API-backed imported opportunities in API mode");
@@ -157,10 +158,13 @@ assert(app.includes("mapApiSyncRunsToSyncRunPreviews("), "App must map API sync 
 assert(app.includes("mapApiAuditLogsToEvidenceRows("), "App must map audit logs into safe audit evidence rows");
 assert(adapter.includes("mapApiImportedGraphToClusterPreviews"), "Adapter must expose imported graph DTO conversion");
 assert(app.includes("mapApiImportedGraphToClusterPreviews("), "App must map imported graph through the safe adapter");
+assert(app.includes("mapApiImportedQueriesToPreviews("), "App must map imported query rows through the safe adapter");
 assert(app.includes("mapApiImportedProductsToCatalogPreviews("), "App must map imported products through the safe adapter");
 assert(app.includes("mapApiImportedPagesToCatalogPreviews("), "App must map imported pages through the safe adapter");
 assert(app.includes("Catalog products"), "Imported preview UI must distinguish imported catalog product count from graph matches");
 assert(app.includes("Catalog pages"), "Imported preview UI must distinguish imported catalog page count from graph matches");
+assert(app.includes("Query rows"), "Imported preview UI must show imported query row count");
+assert(app.includes("importedPreviews.queries.length"), "Imported query row count metric must use safe imported query row previews");
 assert(app.includes("importedPreviews.products.length"), "Imported product count metric must use safe imported product previews");
 assert(app.includes("importedPreviews.pages.length"), "Imported page count metric must use safe imported page previews");
 assert(app.includes("productOverflowCount"), "Imported product preview UI must disclose hidden product rows when the preview is truncated");
@@ -170,7 +174,9 @@ assert(app.includes("more catalog pages"), "Imported page overflow copy must sta
 assert(app.includes("clusterOverflowCount"), "Imported cluster preview UI must disclose hidden query cluster rows when truncated");
 assert(app.includes("opportunityOverflowCount"), "Imported opportunity preview UI must disclose hidden opportunity rows when truncated");
 assert(app.includes("taskOverflowCount"), "Imported task preview UI must disclose hidden task rows when truncated");
+assert(app.includes("queryRowOverflowCount"), "Imported query row preview UI must disclose hidden query rows when truncated");
 assert(app.includes("more query clusters"), "Imported cluster overflow copy must stay read-only and non-actionable");
+assert(app.includes("more query rows"), "Imported query row overflow copy must stay read-only and non-actionable");
 assert(app.includes("more opportunity previews"), "Imported opportunity overflow copy must stay read-only and non-actionable");
 assert(app.includes("more task previews"), "Imported task overflow copy must stay read-only and non-actionable");
 assert(app.includes("product.detail"), "Imported product preview UI must render safe product catalog detail");
@@ -179,6 +185,8 @@ assert(app.includes("product.source"), "Imported product preview UI must render 
 assert(app.includes("page.source"), "Imported page preview UI must render the safe page source label");
 assert(app.includes("product.displayHref"), "Imported product preview UI must render the sanitized display URL");
 assert(app.includes("page.displayHref"), "Imported page preview UI must render the sanitized display URL");
+assert(app.includes("queryRow.displayPage"), "Imported query row preview UI must render the display-safe page label");
+assert(app.includes("queryRow.source"), "Imported query row preview UI must render the safe query row source label");
 assert(!app.includes("product.href ? <p"), "Imported product preview UI must not render raw href text directly");
 assert(!app.includes("page.href ? <p"), "Imported page preview UI must not render raw href text directly");
 assert(!app.includes("product.sku"), "Imported product preview UI must not render raw product SKU DTO fields directly");

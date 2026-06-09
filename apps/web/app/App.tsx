@@ -9,6 +9,7 @@ import {
   getImportedGraph,
   getImportedPages,
   getImportedProducts,
+  getImportedQueries,
   getImportedOpportunities,
   getImportedTasks,
   getIntegrations,
@@ -37,6 +38,7 @@ import {
   mapApiAuditLogsToEvidenceRows,
   mapApiImportedGraphToClusterPreviews,
   mapApiImportedPagesToCatalogPreviews,
+  mapApiImportedQueriesToPreviews,
   mapApiImportedOpportunitiesToOpportunities,
   mapApiImportedProductsToCatalogPreviews,
   mapApiImportedTasksToTasks,
@@ -49,6 +51,7 @@ import type {
   EvidenceRow,
   ImportedCatalogPreview,
   ImportedQueryClusterPreview,
+  ImportedQueryRowPreview,
   IntegrationHealth,
   Locale,
   Opportunity,
@@ -85,6 +88,7 @@ type ImportedPreviewState = {
   pages: ImportedCatalogPreview[];
   opportunities: Opportunity[];
   products: ImportedCatalogPreview[];
+  queries: ImportedQueryRowPreview[];
   tasks: BoardViewModel["tasks"];
   warnings: string[];
 };
@@ -201,6 +205,7 @@ export function App() {
     pages: [],
     opportunities: [],
     products: [],
+    queries: [],
     tasks: [],
     warnings: []
   });
@@ -244,15 +249,17 @@ export function App() {
 
         Promise.allSettled([
           getImportedGraph(demoStoreId),
+          getImportedQueries(demoStoreId),
           getImportedProducts(demoStoreId),
           getImportedPages(demoStoreId),
           getImportedOpportunities(demoStoreId),
           getImportedTasks(demoStoreId)
         ])
-          .then(([graphResult, importedProductsResult, importedPagesResult, importedOpportunitiesResult, importedTasksResult]) => {
+          .then(([graphResult, importedQueriesResult, importedProductsResult, importedPagesResult, importedOpportunitiesResult, importedTasksResult]) => {
             if (!active) return;
             if (
               graphResult.status === "rejected" &&
+              importedQueriesResult.status === "rejected" &&
               importedOpportunitiesResult.status === "rejected" &&
               importedTasksResult.status === "rejected"
             ) {
@@ -261,6 +268,10 @@ export function App() {
 
             const graphResponse = graphResult.status === "fulfilled" ? graphResult.value : null;
             const clusters = graphResponse ? mapApiImportedGraphToClusterPreviews(graphResponse) : [];
+            const queries =
+              importedQueriesResult.status === "fulfilled"
+                ? mapApiImportedQueriesToPreviews(importedQueriesResult.value)
+                : [];
             const products =
               importedProductsResult.status === "fulfilled"
                 ? mapApiImportedProductsToCatalogPreviews(importedProductsResult.value)
@@ -281,7 +292,12 @@ export function App() {
               importedTasksResult.status === "fulfilled" ? mapApiImportedTasksToTasks(importedTasksResult.value) : [];
             setImportedPreviews({
               availability:
-                clusters.length > 0 || products.length > 0 || pages.length > 0 || opportunities.length > 0 || tasks.length > 0
+                clusters.length > 0 ||
+                queries.length > 0 ||
+                products.length > 0 ||
+                pages.length > 0 ||
+                opportunities.length > 0 ||
+                tasks.length > 0
                   ? "ready"
                   : "empty",
               clusters,
@@ -289,6 +305,7 @@ export function App() {
               pages,
               opportunities,
               products,
+              queries,
               tasks,
               warnings
             });
@@ -303,6 +320,7 @@ export function App() {
               pages: [],
               opportunities: [],
               products: [],
+              queries: [],
               tasks: [],
               warnings: []
             });
@@ -318,6 +336,7 @@ export function App() {
           pages: [],
           opportunities: [],
           products: [],
+          queries: [],
           tasks: [],
           warnings: []
         });
@@ -747,11 +766,13 @@ function ImportedPreviewPanel({
   locale: Locale;
 }) {
   const visibleClusters = importedPreviews.clusters.slice(0, 2);
+  const visibleQueryRows = importedPreviews.queries.slice(0, 2);
   const visibleProducts = importedPreviews.products.slice(0, 2);
   const visiblePages = importedPreviews.pages.slice(0, 2);
   const visibleOpportunities = importedPreviews.opportunities.slice(0, 2);
   const visibleTasks = importedPreviews.tasks.slice(0, 2);
   const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
+  const queryRowOverflowCount = Math.max(importedPreviews.queries.length - visibleQueryRows.length, 0);
   const productOverflowCount = Math.max(importedPreviews.products.length - visibleProducts.length, 0);
   const pageOverflowCount = Math.max(importedPreviews.pages.length - visiblePages.length, 0);
   const opportunityOverflowCount = Math.max(importedPreviews.opportunities.length - visibleOpportunities.length, 0);
@@ -759,6 +780,7 @@ function ImportedPreviewPanel({
   const hasImportedPreviews =
     importedPreviews.availability === "ready" &&
     (visibleClusters.length > 0 ||
+      visibleQueryRows.length > 0 ||
       visibleProducts.length > 0 ||
       visiblePages.length > 0 ||
       visibleOpportunities.length > 0 ||
@@ -774,6 +796,10 @@ function ImportedPreviewPanel({
         <div className="kv-row">
           <span>{locale === "zh" ? "图谱关联簇" : "Graph-linked clusters"}</span>
           <strong>{importedPreviews.graphSummary?.query_clusters ?? importedPreviews.clusters.length}</strong>
+        </div>
+        <div className="kv-row">
+          <span>{locale === "zh" ? "查询行" : "Query rows"}</span>
+          <strong>{importedPreviews.queries.length}</strong>
         </div>
         <div className="kv-row">
           <span>{locale === "zh" ? "匹配商品" : "Matched products"}</span>
@@ -826,6 +852,26 @@ function ImportedPreviewPanel({
               {locale === "zh"
                 ? `还有 ${clusterOverflowCount} 个查询簇未在预览中展示`
                 : `${clusterOverflowCount} more query clusters not shown in this preview`}
+            </p>
+          ) : null}
+          {visibleQueryRows.map((queryRow) => (
+            <article className="rail-item" key={queryRow.id}>
+              <span className="pill search">
+                {locale === "zh" ? `查询行 / ${queryRow.source}` : `Query row / ${queryRow.source}`}
+              </span>
+              <h3>{queryRow.query}</h3>
+              <p className="muted">
+                {queryRow.impressions} impressions / {queryRow.clicks} clicks / CTR {queryRow.ctr} / position{" "}
+                {queryRow.position}
+              </p>
+              <p className="muted catalog-reference">{queryRow.displayPage}</p>
+            </article>
+          ))}
+          {queryRowOverflowCount > 0 ? (
+            <p className="muted imported-preview-overflow">
+              {locale === "zh"
+                ? `还有 ${queryRowOverflowCount} 条查询行未在预览中展示`
+                : `${queryRowOverflowCount} more query rows not shown in this preview`}
             </p>
           ) : null}
           {visibleProducts.map((product) => (
