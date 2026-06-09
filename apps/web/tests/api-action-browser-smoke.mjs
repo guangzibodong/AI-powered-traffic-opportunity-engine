@@ -208,7 +208,7 @@ async function assertImportedPreviewPanelIsReadOnly(page, label) {
   }
 }
 
-async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, label) {
+async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, label, expectedAssets = []) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel`);
 
@@ -253,6 +253,28 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
   const assetPanelText = ((await assetPanel.textContent()) ?? "").toLowerCase();
   for (const forbidden of ["publish", "connect", "credential", "oauth", "woocommerce write"]) {
     assert(!assetPanelText.includes(forbidden), `${label} asset workspace exposes unsafe copy: ${forbidden}`);
+  }
+
+  for (const expectedAsset of expectedAssets) {
+    const row = assetPanel.locator(`[data-asset-id='${expectedAsset.id}']`);
+    const rowCount = await row.count();
+    assert(rowCount === 1, `${label} asset row ${expectedAsset.id} must render exactly once`);
+    const reviewState = await row.getAttribute("data-asset-review-state");
+    const contentBlockCount = await row.getAttribute("data-asset-content-block-count");
+    assert(
+      reviewState === expectedAsset.reviewState,
+      `${label} asset row ${expectedAsset.id} review state mismatch: expected ${expectedAsset.reviewState}, got ${
+        reviewState ?? "missing"
+      }`
+    );
+    assert(
+      contentBlockCount === String(expectedAsset.contentBlockCount),
+      `${label} asset row ${expectedAsset.id} content block count mismatch: expected ${
+        expectedAsset.contentBlockCount
+      }, got ${contentBlockCount ?? "missing"}`
+    );
+    const rowText = (await row.textContent()) ?? "";
+    assert(rowText.includes(expectedAsset.title), `${label} asset row ${expectedAsset.id} must show title`);
   }
 }
 
@@ -1454,6 +1476,48 @@ async function runSmoke() {
       unsafeAssetRequests.length === 0,
       `Asset workspace endpoint must stay read-only in UI loading: ${JSON.stringify(unsafeAssetRequests)}`
     );
+
+    const populatedAssetPage = await context.newPage();
+    await populatedAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }, { type: "metadata_only" }, { type: "faq" }],
+                external_write_allowed: false,
+                id: "asset_task_002",
+                review_state: "draft_candidate",
+                source_task_id: "task_002",
+                title: "Create camping portable espresso collection page"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await populatedAssetPage.goto(webUrl);
+    await clickUnique(populatedAssetPage.getByRole("button", { name: "EN" }), "populated asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(populatedAssetPage, 1, "populated asset workspace", [
+      {
+        contentBlockCount: 3,
+        id: "asset_task_002",
+        reviewState: "draft_candidate",
+        title: "Create camping portable espresso collection page"
+      }
+    ]);
+    await populatedAssetPage.close();
 
     await assertImportedPreviewPanelIsReadOnly(page, "initial");
     await assertImportedPreviewState(page, "ready", 0, "initial");

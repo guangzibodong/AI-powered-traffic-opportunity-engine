@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 read-only asset workspace UI is verified and populated asset workspace browser coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 populated asset workspace browser coverage is verified and asset workspace resilience is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -170,7 +170,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-ASSET-002 | 136 | done | Backend/API Engineer / QA Lead | Add in-memory asset draft persistence foundation. | API can create and read a local structured asset draft candidate from an approved demo task, storing only safe local fields and keeping WordPress draft creation, publishing, external calls, and commerce writes blocked. |
 | TASK-S3-ASSET-003 | 137 | done | Frontend Product Engineer / QA Lead | Add frontend asset workspace API client foundation. | Frontend API client and adapter contract tests expose typed safe asset workspace list, create-from-task, and detail reads while keeping asset update, WordPress draft creation, publishing, credentials, sync execution, and commerce writes unavailable in the UI. |
 | TASK-S3-ASSET-004 | 138 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show read-only asset workspace summary in API mode. | API-backed UI reads the safe asset workspace, shows local draft count and blocked write context in a read-only panel, and exposes no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
-| TASK-S3-QA-005 | 139 | todo | Frontend Product Engineer / QA Lead | Add populated asset workspace browser coverage. | Browser smoke verifies a populated safe asset workspace response renders local asset candidate rows, stable counts, blocked capability context, and no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
+| TASK-S3-QA-005 | 139 | done | Frontend Product Engineer / QA Lead | Add populated asset workspace browser coverage. | Browser smoke verifies a populated safe asset workspace response renders local asset candidate rows, stable counts, blocked capability context, and no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls. |
+| TASK-S3-UX-006 | 140 | todo | Frontend Product Engineer / QA Lead | Make asset workspace loading resilient. | If the safe asset workspace read fails, the API-backed board and imported preview UI remain usable, the asset panel shows a read-only unavailable state, and no asset update, WordPress draft creation, publishing, credential, sync execution, or commerce-write controls are exposed. |
 
 ## Blockers
 
@@ -444,6 +445,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Read-only asset workspace summary is next because users should see whether local draft candidates exist before any editor or WordPress draft workflow is exposed.
 - Read-only asset workspace summary is verified by browser smoke coverage requiring an API-mode GET to `/assets`, a noninteractive asset workspace panel, local candidate count, blocked capability context, and external-write clamping.
 - Populated asset workspace browser coverage is next because the panel should prove it can render local asset candidate rows before any editor or WordPress draft workflow is exposed.
+- Populated asset workspace browser coverage is verified by browser smoke route fixtures requiring stable asset row diagnostics for id, review state, and content block count while keeping the panel noninteractive.
+- Asset workspace loading resilience is next because a local asset read failure should not force the whole API-backed board into fallback mode.
 
 ## Completion Rule
 

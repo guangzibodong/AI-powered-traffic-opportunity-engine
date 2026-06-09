@@ -989,7 +989,13 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
       {visibleAssets.length > 0 ? (
         <div className="mini-list">
           {visibleAssets.map((asset) => (
-            <div className="mini-card" key={asset.id}>
+            <div
+              className="mini-card"
+              data-asset-content-block-count={asset.contentBlockCount}
+              data-asset-id={asset.id}
+              data-asset-review-state={asset.reviewState}
+              key={asset.id}
+            >
               <strong>{asset.title}</strong>
               <span>
                 {asset.assetType} / {asset.reviewState} / {asset.contentBlockCount} blocks
