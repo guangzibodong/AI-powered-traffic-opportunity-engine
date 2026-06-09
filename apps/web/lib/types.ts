@@ -6,9 +6,9 @@ export type TaskStatus = VisibleTaskStatus;
 
 export type AutomationLevel = "recommend_only" | "draft_assist_future";
 
-export type TaskCategory = "collection_page" | "ctr_refresh" | "ranking_push";
+export type TaskCategory = "collection_page" | "ctr_refresh" | "product_seo" | "ranking_push";
 
-export type SprintOneRuleId = "collection_page_gap" | "ranking_push" | "high_impression_low_ctr";
+export type SprintOneRuleId = "collection_page_gap" | "high_impression_low_ctr" | "product_seo" | "ranking_push";
 
 export type EvidenceType = "search" | "commerce" | "page_graph" | "rule" | "audit";
 

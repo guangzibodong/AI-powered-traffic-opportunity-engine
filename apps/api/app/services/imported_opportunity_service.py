@@ -41,6 +41,8 @@ def _opportunities_for_cluster(store_id: str, cluster: dict[str, Any]) -> list[d
         opportunities.append(_build_ctr_refresh_opportunity(store_id, cluster))
     if _is_collection_gap_candidate(cluster):
         opportunities.append(_build_collection_gap_opportunity(store_id, cluster))
+    if _is_product_seo_candidate(cluster):
+        opportunities.append(_build_product_seo_opportunity(store_id, cluster))
     return opportunities
 
 
@@ -55,6 +57,20 @@ def _is_low_ctr_refresh_candidate(cluster: dict[str, Any]) -> bool:
 
 def _is_collection_gap_candidate(cluster: dict[str, Any]) -> bool:
     return cluster["best_existing_page"] is None and len(cluster["matched_products"]) >= 3
+
+
+def _is_product_seo_candidate(cluster: dict[str, Any]) -> bool:
+    matched_products = [
+        product
+        for product in cluster["matched_products"]
+        if product["in_stock"] and product["status"] == "publish"
+    ]
+    return (
+        cluster["best_existing_page"] is None
+        and 1 <= len(matched_products) <= 2
+        and cluster["impressions"] >= 800
+        and cluster["position"] <= 20
+    )
 
 
 def _build_ctr_refresh_opportunity(store_id: str, cluster: dict[str, Any]) -> dict[str, Any]:
@@ -159,6 +175,69 @@ def _build_collection_gap_opportunity(store_id: str, cluster: dict[str, Any]) ->
         "status": "new",
         "summary": "Imported demand maps to multiple products, but no imported WordPress page exists.",
         "title": f"Create collection page for {cluster['primary_query'].title()}",
+        "trafscore": _score(score_components),
+    }
+
+
+def _build_product_seo_opportunity(store_id: str, cluster: dict[str, Any]) -> dict[str, Any]:
+    matched_products = [
+        product
+        for product in cluster["matched_products"]
+        if product["in_stock"] and product["status"] == "publish"
+    ][:2]
+    score_components = {
+        "traffic_potential": min(100, cluster["impressions"] / 18),
+        "intent_score": 82,
+        "product_fit_score": max(product["match_score"] for product in matched_products),
+        "revenue_fit_score": 70,
+        "inventory_score": 90,
+        "gap_score": 84,
+        "timing_score": 76,
+        "execution_ease": 82,
+        "confidence_score": 78,
+    }
+    primary_product = matched_products[0]
+    dedupe_key = f"{store_id}:imported:product_seo:{cluster['cluster_key']}:{primary_product['product_id']}"
+    return {
+        "confidence": 0.78,
+        "dedupe_key": dedupe_key,
+        "evidence": [
+            {
+                "type": "query_cluster",
+                "text": f"{cluster['primary_query']} cluster has {cluster['impressions']} impressions",
+                "metrics": {
+                    "cluster_key": cluster["cluster_key"],
+                    "impressions": cluster["impressions"],
+                    "position": cluster["position"],
+                    "query_count": cluster["query_count"],
+                },
+            },
+            {
+                "type": "product_fit",
+                "text": f"{primary_product['name']} is an imported in-stock product match",
+                "entityRefs": [{"type": "product", "id": product["product_id"]} for product in matched_products],
+                "metrics": {
+                    "match_score": primary_product["match_score"],
+                    "matched_products": len(matched_products),
+                },
+            },
+            {
+                "type": "page_gap",
+                "text": "No imported WordPress page matches this product-led query cluster.",
+            },
+        ],
+        "id": _opportunity_id(dedupe_key),
+        "opportunity_type": "product_seo",
+        "recommended_task_type": "product_seo",
+        "related_page": None,
+        "related_products": matched_products,
+        "rule_id": "product_seo",
+        "rule_version": RULE_VERSION,
+        "score_components": score_components,
+        "source_cluster": _source_cluster(cluster),
+        "status": "new",
+        "summary": "Imported demand maps to a specific product, but no imported WordPress page matches it.",
+        "title": f"Optimize product SEO for {primary_product['name']}",
         "trafscore": _score(score_components),
     }
 

@@ -61,6 +61,22 @@ GAP_PRODUCTS = [
     },
 ]
 
+PRODUCT_SEO_GSC_CSV = """Query,Page,Clicks,Impressions,CTR,Position
+portable titanium camp mug,https://example.com/search/portable-titanium-camp-mug,22,1100,2.0%,8.5
+"""
+
+PRODUCT_SEO_PRODUCTS = [
+    {
+        "id": 401,
+        "name": "Portable Titanium Camp Mug",
+        "slug": "portable-titanium-camp-mug",
+        "status": "publish",
+        "stock_status": "instock",
+        "categories": [{"name": "Camping Mugs"}],
+        "attributes": [{"name": "Material", "options": ["Titanium", "Camping"]}],
+    }
+]
+
 CTR_PAGES = [
     {
         "id": 301,
@@ -138,6 +154,29 @@ class ImportedOpportunityServiceTests(unittest.TestCase):
         self.assertEqual(len(opportunities[0]["related_products"]), 3)
         self.assertIsNone(opportunities[0]["related_page"])
         self.assertTrue(any(item["type"] == "page_gap" for item in opportunities[0]["evidence"]))
+
+    def test_imported_opportunities_generate_product_seo_for_single_matched_product_without_page(self):
+        from app.services.gsc_ingestion_service import import_gsc_csv
+        from app.services.imported_opportunity_service import generate_imported_opportunities
+        from app.services.product_sync_service import import_woocommerce_products
+
+        import_gsc_csv("store-demo-outdoor-coffee", PRODUCT_SEO_GSC_CSV, window="28d")
+        import_woocommerce_products("store-demo-outdoor-coffee", PRODUCT_SEO_PRODUCTS)
+
+        payload = generate_imported_opportunities("store-demo-outdoor-coffee")
+        opportunities = payload["opportunities"]
+
+        self.assertEqual(len(opportunities), 1)
+        self.assertEqual(opportunities[0]["rule_id"], "product_seo")
+        self.assertEqual(opportunities[0]["opportunity_type"], "product_seo")
+        self.assertEqual(opportunities[0]["recommended_task_type"], "product_seo")
+        self.assertEqual(opportunities[0]["status"], "new")
+        self.assertIsNone(opportunities[0]["related_page"])
+        self.assertEqual(opportunities[0]["related_products"][0]["name"], "Portable Titanium Camp Mug")
+        self.assertTrue(opportunities[0]["dedupe_key"].startswith("store-demo-outdoor-coffee:imported:product_seo:"))
+        self.assertTrue(any(item["type"] == "product_fit" for item in opportunities[0]["evidence"]))
+        self.assertTrue(any(item["type"] == "page_gap" for item in opportunities[0]["evidence"]))
+        self.assertEqual(payload["summary"]["by_rule"]["product_seo"], 1)
 
     def test_imported_opportunities_return_empty_state_without_graph_inputs(self):
         from app.services.imported_opportunity_service import generate_imported_opportunities

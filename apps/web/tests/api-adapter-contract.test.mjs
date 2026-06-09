@@ -55,6 +55,9 @@ assert(adapter.includes("catalogHrefDisplayMaxLength"), "adapter must cap import
 assert(adapter.includes("mapApiImportedOpportunitiesToOpportunities"), "adapter must expose imported opportunity DTO conversion");
 assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose imported task preview DTO conversion");
 assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
+assert(types.includes('"product_seo"'), "frontend task categories and rule ids must preserve imported product_seo previews");
+assert(adapter.includes('"product_seo"'), "imported opportunity adapter must preserve product_seo rule ids");
+assert(adapter.includes('category === "product_seo"'), "imported task adapter must preserve product_seo categories");
 assert(adapter.includes("source: \"Imported GSC\""), "imported query cluster adapter must label imported GSC evidence");
 assert(types.includes("ImportedQueryRowPreview"), "types must expose a safe imported query row preview view model");
 assert(types.includes("displayCtr"), "Imported query row preview must expose a display-safe CTR field");

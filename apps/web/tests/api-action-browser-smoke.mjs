@@ -628,7 +628,7 @@ async function assertImportedOpportunityPreviewDiagnosticValues(page, expectedCo
     `${label} imported opportunity diagnostic card count mismatch: expected ${expectedCount}, got ${actualCount}`
   );
 
-  const allowedTypes = new Set(["collection_page_gap", "high_impression_low_ctr", "ranking_push"]);
+  const allowedTypes = new Set(["collection_page_gap", "high_impression_low_ctr", "product_seo", "ranking_push"]);
   for (let index = 0; index < actualCount; index += 1) {
     const card = diagnosticCards.nth(index);
     const opportunityType = await card.getAttribute("data-opportunity-type");

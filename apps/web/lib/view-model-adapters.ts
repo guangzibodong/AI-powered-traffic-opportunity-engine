@@ -43,6 +43,7 @@ import type {
 const sprintOneRules = new Set<SprintOneRuleId>([
   "collection_page_gap",
   "high_impression_low_ctr",
+  "product_seo",
   "ranking_push"
 ]);
 
@@ -429,7 +430,12 @@ function inferRuleId(opportunityId: string, evidence: ApiEvidence[]): SprintOneR
 }
 
 function mapTaskCategory(category: string): TaskCategory {
-  if (category === "ctr_refresh" || category === "ranking_push" || category === "collection_page") {
+  if (
+    category === "ctr_refresh" ||
+    category === "product_seo" ||
+    category === "ranking_push" ||
+    category === "collection_page"
+  ) {
     return category;
   }
   return "collection_page";

@@ -111,6 +111,7 @@ Sprint 2 imported opportunity previews apply a small rule set to the imported gr
 
 - `high_impression_low_ctr`: best existing imported page exists, impressions are at least 1,000, CTR is 3% or lower, and average position is 20 or better.
 - `collection_page_gap`: no best existing imported page exists and at least three imported products match the cluster.
+- `product_seo`: no best existing imported page exists, one or two in-stock published imported products match the cluster, impressions are at least 800, and average position is 20 or better.
 
 Preview opportunities include rule metadata, dedupe keys, TrafScore components, evidence, related products/pages, and status `new`. They do not create tasks, drafts, assets, sync jobs, or external writes.
 
@@ -167,6 +168,7 @@ Sprint 1 exposes only three user-visible rule types.
 |---|---|---|
 | `collection_page_gap` | Query cluster has no best existing page and at least 3 matched products. | A collection page task. |
 | `high_impression_low_ctr` | Existing page exists, impressions are at least 1,000, CTR is 3% or lower, and average position is 20 or better. | A CTR refresh task. |
+| `product_seo` | Imported cluster has no best existing page and 1-2 in-stock published matched products. | A product SEO task preview in Sprint 2 imported mode. |
 | `ranking_push` | Existing page exists, average position is 4-20, impressions are at least 800, and CTR is above 3%. | A ranking push task. |
 
 Each opportunity receives:
