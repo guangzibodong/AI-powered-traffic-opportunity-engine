@@ -936,6 +936,8 @@ function ImportedPreviewPanel({
   const buyingGuideGapOpportunityTotal = importedPreviews.opportunities.length;
   const buyingGuideGapTaskCount = importedPreviews.summaryDiagnostics.buyingGuideGapTasks;
   const buyingGuideGapTaskTotal = importedPreviews.tasks.length;
+  const recommendOnlyTaskCount = importedPreviews.summaryDiagnostics.recommendOnlyTasks;
+  const recommendOnlyTaskTotal = importedPreviews.tasks.length;
   const buyingGuideGapOpportunitySharePercent = getImportedMetricSharePercent(
     buyingGuideGapOpportunityCount,
     buyingGuideGapOpportunityTotal
@@ -944,8 +946,10 @@ function ImportedPreviewPanel({
     buyingGuideGapTaskCount,
     buyingGuideGapTaskTotal
   );
+  const recommendOnlyTaskSharePercent = getImportedMetricSharePercent(recommendOnlyTaskCount, recommendOnlyTaskTotal);
   const buyingGuideGapOpportunityShare = `${buyingGuideGapOpportunitySharePercent}%`;
   const buyingGuideGapTaskShare = `${buyingGuideGapTaskSharePercent}%`;
+  const recommendOnlyTaskShare = `${recommendOnlyTaskSharePercent}%`;
   const clusterOverflowCount = Math.max(importedPreviews.clusters.length - visibleClusters.length, 0);
   const queryRowOverflowCount = Math.max(importedPreviews.queries.length - visibleQueryRows.length, 0);
   const productOverflowCount = Math.max(importedPreviews.products.length - visibleProducts.length, 0);
@@ -1141,6 +1145,16 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="recommend_only_task_previews">
           <span>{locale === "zh" ? "仅建议任务预览" : "Recommend-only task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.recommendOnlyTasks}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-metric-key="recommend_only_task_share"
+          data-share-count={recommendOnlyTaskCount}
+          data-share-percent={recommendOnlyTaskSharePercent}
+          data-share-total={recommendOnlyTaskTotal}
+        >
+          <span>{locale === "zh" ? "仅建议任务占比" : "Recommend-only task share"}</span>
+          <strong>{recommendOnlyTaskShare}</strong>
         </div>
         <div className="kv-row" data-metric-key="new_task_previews">
           <span>{locale === "zh" ? "新任务预览" : "New task previews"}</span>

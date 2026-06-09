@@ -1068,6 +1068,7 @@ async function runSmoke() {
     await expectVisible(page.getByText("Ranking push opportunities"), "imported ranking push opportunity summary metric");
     await expectVisible(page.getByText("Ranking push task previews"), "imported ranking push task summary metric");
     await expectVisible(page.getByText("Recommend-only task previews"), "imported recommend-only task summary metric");
+    await expectVisible(page.getByText("Recommend-only task share"), "imported recommend-only task share metric");
     await expectVisible(page.getByText("New task previews"), "imported new task summary metric");
     await expectVisible(page.getByText("New opportunity previews"), "imported new opportunity summary metric");
     await expectVisible(page.getByText("Product SEO opportunities"), "imported product SEO opportunity summary metric");
@@ -1186,7 +1187,8 @@ async function runSmoke() {
       page,
       {
         buying_guide_gap_opportunity_share: "25%",
-        buying_guide_gap_task_share: "25%"
+        buying_guide_gap_task_share: "25%",
+        recommend_only_task_share: "100%"
       },
       "initial"
     );
@@ -1194,7 +1196,8 @@ async function runSmoke() {
       page,
       {
         buying_guide_gap_opportunity_share: { count: 1, percent: 25, total: 4 },
-        buying_guide_gap_task_share: { count: 1, percent: 25, total: 4 }
+        buying_guide_gap_task_share: { count: 1, percent: 25, total: 4 },
+        recommend_only_task_share: { count: 4, percent: 100, total: 4 }
       },
       "initial"
     );
@@ -1408,7 +1411,8 @@ async function runSmoke() {
       resilientPage,
       {
         buying_guide_gap_opportunity_share: "0%",
-        buying_guide_gap_task_share: "0%"
+        buying_guide_gap_task_share: "0%",
+        recommend_only_task_share: "0%"
       },
       "resilient fallback"
     );
@@ -1416,7 +1420,8 @@ async function runSmoke() {
       resilientPage,
       {
         buying_guide_gap_opportunity_share: { count: 0, percent: 0, total: 0 },
-        buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 }
+        buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 },
+        recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
       "resilient fallback"
     );
@@ -1570,7 +1575,8 @@ async function runSmoke() {
       emptyImportedPage,
       {
         buying_guide_gap_opportunity_share: "0%",
-        buying_guide_gap_task_share: "0%"
+        buying_guide_gap_task_share: "0%",
+        recommend_only_task_share: "0%"
       },
       "empty imported"
     );
@@ -1578,7 +1584,8 @@ async function runSmoke() {
       emptyImportedPage,
       {
         buying_guide_gap_opportunity_share: { count: 0, percent: 0, total: 0 },
-        buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 }
+        buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 },
+        recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
       "empty imported"
     );
@@ -1980,7 +1987,8 @@ async function runSmoke() {
       opportunityFailurePage,
       {
         buying_guide_gap_opportunity_share: "0%",
-        buying_guide_gap_task_share: "25%"
+        buying_guide_gap_task_share: "25%",
+        recommend_only_task_share: "100%"
       },
       "opportunity-only failure"
     );
@@ -1988,7 +1996,8 @@ async function runSmoke() {
       opportunityFailurePage,
       {
         buying_guide_gap_opportunity_share: { count: 0, percent: 0, total: 0 },
-        buying_guide_gap_task_share: { count: 1, percent: 25, total: 4 }
+        buying_guide_gap_task_share: { count: 1, percent: 25, total: 4 },
+        recommend_only_task_share: { count: 4, percent: 100, total: 4 }
       },
       "opportunity-only failure"
     );
@@ -2074,7 +2083,8 @@ async function runSmoke() {
       taskFailurePage,
       {
         buying_guide_gap_opportunity_share: "25%",
-        buying_guide_gap_task_share: "0%"
+        buying_guide_gap_task_share: "0%",
+        recommend_only_task_share: "0%"
       },
       "task-only failure"
     );
@@ -2082,7 +2092,8 @@ async function runSmoke() {
       taskFailurePage,
       {
         buying_guide_gap_opportunity_share: { count: 1, percent: 25, total: 4 },
-        buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 }
+        buying_guide_gap_task_share: { count: 0, percent: 0, total: 0 },
+        recommend_only_task_share: { count: 0, percent: 0, total: 0 }
       },
       "task-only failure"
     );
