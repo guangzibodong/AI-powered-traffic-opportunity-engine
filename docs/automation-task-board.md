@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset QA readiness state is verified and QA readiness clear-state coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 QA readiness clear-state coverage is verified and QA readiness no-check coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -182,7 +182,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-UX-014 | 148 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset QA aggregate summary. | The asset workspace exposes read-only aggregate QA check and pending counts across local candidates without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-QA-015 | 149 | done | Frontend Product Engineer / QA Lead | Add asset QA aggregate reconciliation. | Browser smoke verifies the asset QA aggregate summary reconciles with candidate row QA diagnostics and safe fixture totals without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 | TASK-S3-UX-016 | 150 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Show asset QA readiness state. | The asset workspace exposes a compact read-only QA readiness state from aggregate pending checks without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
-| TASK-S3-QA-017 | 151 | todo | Frontend Product Engineer / QA Lead | Add QA readiness clear-state coverage. | Browser smoke verifies the asset workspace can render a read-only `qa_clear` state when all local candidate QA checks are non-pending without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
+| TASK-S3-QA-017 | 151 | done | Frontend Product Engineer / QA Lead | Add QA readiness clear-state coverage. | Browser smoke verifies the asset workspace can render a read-only `qa_clear` state when all local candidate QA checks are non-pending without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
+| TASK-S3-QA-018 | 152 | todo | Frontend Product Engineer / QA Lead | Add QA readiness no-check coverage. | Browser smoke verifies the asset workspace keeps a safe read-only `not_applicable` QA readiness state when local candidates have no QA checks without adding asset update, WordPress draft creation, publishing, credential, sync execution, href navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -480,6 +481,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset QA readiness state is next because operators should see whether the local asset workspace is still pending QA before any editor or WordPress draft creation path exists.
 - Asset QA readiness state is verified by browser smoke coverage that exposes a read-only `pending_qa` state when aggregate pending checks remain.
 - QA readiness clear-state coverage is next because the state machine should prove it can also render a non-pending local draft review state before any executable draft action is introduced.
+- QA readiness clear-state coverage is verified by browser smoke coverage that renders `qa_clear` when all local candidate QA checks are non-pending.
+- QA readiness no-check coverage is next because the state machine should prove that missing QA checks do not imply readiness for draft creation or publishing.
 
 ## Completion Rule
 

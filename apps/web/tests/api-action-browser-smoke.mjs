@@ -1806,6 +1806,57 @@ async function runSmoke() {
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     await populatedAssetPage.close();
 
+    const qaClearAssetPage = await context.newPage();
+    await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_qa_clear",
+                qa_checks: [
+                  { key: "seo", status: "passed" },
+                  { key: "geo", status: "passed" }
+                ],
+                review_state: "draft_candidate",
+                source_task_id: "task_qa_clear",
+                title: "QA clear collection page"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await qaClearAssetPage.goto(webUrl);
+    await clickUnique(qaClearAssetPage.getByRole("button", { name: "EN" }), "QA clear asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(qaClearAssetPage, 1, "QA clear asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_qa_clear",
+        qaCheckCount: 2,
+        qaPendingCount: 0,
+        reviewState: "draft_candidate",
+        title: "QA clear collection page"
+      }
+    ]);
+    await assertAssetWorkspaceQaSummary(qaClearAssetPage, 2, 0, "QA clear asset workspace");
+    await assertAssetWorkspaceQaReadiness(qaClearAssetPage, "qa_clear", "QA clear asset workspace");
+    await qaClearAssetPage.close();
+
     const assetFailurePage = await context.newPage();
     await assetFailurePage.route(`**/api/stores/${storeId}/assets`, async (route) => {
       if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
