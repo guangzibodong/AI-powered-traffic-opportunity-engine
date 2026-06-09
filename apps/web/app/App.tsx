@@ -1385,7 +1385,7 @@ function ImportedPreviewPanel({
         </div>
       </div>
       <div
-        className="section-health-summary"
+        className="section-health-summary action-mix-summary"
         data-action-mix-state={actionMixState}
         data-action-mix-top-key={actionMixTopKey}
         data-action-mix-top-share={actionMixTopShare}

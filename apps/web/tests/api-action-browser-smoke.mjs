@@ -459,6 +459,19 @@ async function assertImportedActionMixSummary(page, expectedValues, label) {
   );
 }
 
+async function assertImportedActionMixSummaryColor(page, expectedColor, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const summaryValue = await importedPanel.locator("[data-action-mix-state]").getAttribute("data-action-mix-state");
+  const actualColor = await importedPanel.locator("[data-action-mix-state] strong").evaluate((element) => {
+    return getComputedStyle(element).color;
+  });
+
+  assert(
+    actualColor === expectedColor,
+    `${label} imported action mix summary color mismatch for ${summaryValue ?? "missing"}: expected ${expectedColor}, got ${actualColor}`
+  );
+}
+
 async function assertImportedPreviewEmptyState(page, expectedKey, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const emptyState = importedPanel.locator("[data-empty-state-key]");
@@ -1322,6 +1335,7 @@ async function runSmoke() {
       { state: "concentrated", total: 8, topKey: "ctr_refresh", topShare: 75 },
       "initial"
     );
+    await assertImportedActionMixSummaryColor(page, "rgb(97, 32, 238)", "initial");
     await assertImportedPreviewOverflowValues(
       page,
       {
@@ -1420,6 +1434,67 @@ async function runSmoke() {
       ["clusters", "opportunities", "pages", "products", "query-rows", "task-previews"],
       "initial"
     );
+
+    const balancedMixPage = await context.newPage();
+    await balancedMixPage.route("**/api/stores/**", async (route) => {
+      const url = route.request().url();
+      if (url.endsWith("/imported-opportunities")) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            mode: "imported_opportunities",
+            opportunities: [],
+            store_id: storeId,
+            summary: {
+              by_rule: { buying_guide_gap: 1 },
+              by_status: { new: 5 },
+              by_task_type: {
+                buying_guide: 0,
+                collection_page: 1,
+                ctr_refresh: 1,
+                product_seo: 1,
+                ranking_push: 1
+              }
+            }
+          })
+        });
+        return;
+      }
+      if (url.endsWith("/imported-tasks")) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            mode: "imported_tasks",
+            store_id: storeId,
+            summary: {
+              by_automation_level: { recommend_only: 5 },
+              by_category: {
+                buying_guide: 1,
+                collection_page: 1,
+                ctr_refresh: 1,
+                product_seo: 1,
+                ranking_push: 1
+              },
+              by_rule: { buying_guide_gap: 1 },
+              by_status: { new: 5 }
+            },
+            tasks: []
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await balancedMixPage.goto(webUrl);
+    await clickUnique(balancedMixPage.getByRole("button", { name: "EN" }), "balanced mix language switcher");
+    await assertImportedActionMixSummary(
+      balancedMixPage,
+      { state: "balanced", total: 10, topKey: "ctr_refresh", topShare: 20 },
+      "balanced mix"
+    );
+    await assertImportedActionMixSummaryColor(balancedMixPage, "rgb(27, 27, 29)", "balanced mix");
+    await balancedMixPage.close();
 
     const resilientPage = await context.newPage();
     await resilientPage.route("**/api/stores/**", async (route) => {
@@ -1571,6 +1646,7 @@ async function runSmoke() {
       { state: "empty", total: 0, topKey: "none", topShare: 0 },
       "resilient fallback"
     );
+    await assertImportedActionMixSummaryColor(resilientPage, "rgb(107, 107, 114)", "resilient fallback");
     await assertImportedPreviewOverflowValues(
       resilientPage,
       {
@@ -1760,6 +1836,7 @@ async function runSmoke() {
       { state: "empty", total: 0, topKey: "none", topShare: 0 },
       "empty imported"
     );
+    await assertImportedActionMixSummaryColor(emptyImportedPage, "rgb(107, 107, 114)", "empty imported");
     await assertImportedPreviewOverflowValues(
       emptyImportedPage,
       {

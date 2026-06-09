@@ -210,6 +210,18 @@ assert(
   styles.includes('.section-health-summary[data-section-health-summary="degraded"] strong'),
   "styles.css must style degraded imported section health summaries"
 );
+assert(
+  styles.includes('.action-mix-summary[data-action-mix-state="empty"] strong'),
+  "styles.css must style empty imported action mix summaries"
+);
+assert(
+  styles.includes('.action-mix-summary[data-action-mix-state="concentrated"] strong'),
+  "styles.css must style concentrated imported action mix summaries"
+);
+assert(
+  styles.includes('.action-mix-summary[data-action-mix-state="balanced"] strong'),
+  "styles.css must style balanced imported action mix summaries"
+);
 assert(!taskQueue.includes("<th>{labels.objects}</th>"), "TaskQueue must not duplicate object counts in a separate narrow desktop column");
 assert(!taskQueue.includes("data-label={labels.objects}"), "TaskQueue object counts should stay inside task metadata pills");
 assert(styles.includes("@media (max-width: 1320px)"), "styles.css must stack the side rail before evidence columns become unreadable");
