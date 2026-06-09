@@ -659,6 +659,22 @@ async function assertImportedVisibleRailCounts(page, expectedValues, label) {
   }
 }
 
+async function assertImportedTotalRailCounts(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const previewList = importedPanel.locator(".imported-preview-list");
+  const previewListCount = await previewList.count();
+  assert(previewListCount === 1, `${label} imported preview list must render exactly once`);
+
+  for (const [attributeName, expectedValue] of Object.entries(expectedValues)) {
+    const countText = await previewList.getAttribute(attributeName);
+    const count = Number(countText);
+    assert(
+      Number.isInteger(count) && count === expectedValue,
+      `${label} imported preview list ${attributeName} mismatch: expected ${expectedValue}, got ${countText ?? "missing"}`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -863,6 +879,18 @@ async function runSmoke() {
         "data-visible-products": 2,
         "data-visible-query-rows": 2,
         "data-visible-task-previews": 2
+      },
+      "initial"
+    );
+    await assertImportedTotalRailCounts(
+      page,
+      {
+        "data-total-clusters": 3,
+        "data-total-opportunities": 3,
+        "data-total-pages": 3,
+        "data-total-products": 3,
+        "data-total-query-rows": 4,
+        "data-total-task-previews": 3
       },
       "initial"
     );

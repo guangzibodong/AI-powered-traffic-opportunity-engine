@@ -906,6 +906,12 @@ function ImportedPreviewPanel({
       {hasImportedPreviews ? (
         <div
           className="imported-preview-list"
+          data-total-clusters={importedPreviews.clusters.length}
+          data-total-opportunities={importedPreviews.opportunities.length}
+          data-total-pages={importedPreviews.pages.length}
+          data-total-products={importedPreviews.products.length}
+          data-total-query-rows={importedPreviews.queries.length}
+          data-total-task-previews={importedPreviews.tasks.length}
           data-visible-clusters={visibleClusters.length}
           data-visible-opportunities={visibleOpportunities.length}
           data-visible-pages={visiblePages.length}

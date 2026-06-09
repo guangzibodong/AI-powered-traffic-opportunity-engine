@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 local/import-only QA coverage is complete through imported visible rail count DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 local/import-only QA coverage is complete through imported total rail count DOM diagnostics; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -112,6 +112,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-QA-066 | 78 | done | QA Lead / UI Systems Engineer | Expose imported query row metric DOM diagnostics. | Browser smoke verifies imported query row cards expose stable `data-query-row-diagnostics`, `data-query`, `data-window`, `data-impressions`, `data-clicks`, `data-ctr`, `data-position`, and `data-evidence-count` markers, while remaining non-interactive with no href navigation, import execution, real GSC OAuth, sync execution, drafts, publishing, task creation, or commerce writes. |
 | TASK-S2-QA-067 | 79 | done | QA Lead / UI Systems Engineer | Expose imported catalog card DOM diagnostics. | Browser smoke verifies imported product and page catalog cards expose stable `data-catalog-kind`, `data-catalog-title`, `data-catalog-source`, and `data-has-display-url` markers, while remaining non-interactive with no href navigation, edit controls, credentials, sync execution, drafts, publishing, product updates, or commerce writes. |
 | TASK-S2-QA-068 | 80 | done | QA Lead / UI Systems Engineer | Expose imported visible rail count DOM diagnostics. | Browser smoke verifies the imported preview list exposes stable `data-visible-clusters`, `data-visible-query-rows`, `data-visible-products`, `data-visible-pages`, `data-visible-opportunities`, and `data-visible-task-previews` markers for the compact rendered rail, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
+| TASK-S2-QA-069 | 81 | done | QA Lead / UI Systems Engineer | Expose imported total rail count DOM diagnostics. | Browser smoke verifies the imported preview list exposes stable `data-total-clusters`, `data-total-query-rows`, `data-total-products`, `data-total-pages`, `data-total-opportunities`, and `data-total-task-previews` markers for the full imported read result behind the compact rail, while remaining non-interactive with no href navigation, credentials, sync execution, drafts, publishing, task creation, or commerce writes. |
 
 ## Blockers
 
@@ -269,6 +270,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported catalog card DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 - Imported visible rail count DOM diagnostics are next because the compact rendered rail should expose stable visible-card counts for QA without relying on localized overflow copy alone.
 - Imported visible rail count DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
+- Imported total rail count DOM diagnostics are next because QA should compare compact visible counts against stable full imported result counts without relying on localized overflow copy alone.
+- Imported total rail count DOM diagnostics are verified by browser smoke red-green coverage, frontend contract, backend tests, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 
