@@ -643,6 +643,22 @@ async function assertImportedCatalogCardDiagnosticValues(page, expectedValues, l
   }
 }
 
+async function assertImportedVisibleRailCounts(page, expectedValues, label) {
+  const importedPanel = page.locator(".imported-preview-panel");
+  const previewList = importedPanel.locator(".imported-preview-list");
+  const previewListCount = await previewList.count();
+  assert(previewListCount === 1, `${label} imported preview list must render exactly once`);
+
+  for (const [attributeName, expectedValue] of Object.entries(expectedValues)) {
+    const countText = await previewList.getAttribute(attributeName);
+    const count = Number(countText);
+    assert(
+      Number.isInteger(count) && count === expectedValue,
+      `${label} imported preview list ${attributeName} mismatch: expected ${expectedValue}, got ${countText ?? "missing"}`
+    );
+  }
+}
+
 async function postJson(url, body, label) {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -835,6 +851,18 @@ async function runSmoke() {
       {
         page: ["Camping Espresso Collection", "Camping Pour Over Guide"],
         product: ["Camp Kettle Pour Over Kit", "Trail Brew Portable Espresso Maker"]
+      },
+      "initial"
+    );
+    await assertImportedVisibleRailCounts(
+      page,
+      {
+        "data-visible-clusters": 2,
+        "data-visible-opportunities": 2,
+        "data-visible-pages": 2,
+        "data-visible-products": 2,
+        "data-visible-query-rows": 2,
+        "data-visible-task-previews": 2
       },
       "initial"
     );

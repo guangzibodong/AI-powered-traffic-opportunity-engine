@@ -904,7 +904,15 @@ function ImportedPreviewPanel({
         </div>
       )}
       {hasImportedPreviews ? (
-        <div className="imported-preview-list">
+        <div
+          className="imported-preview-list"
+          data-visible-clusters={visibleClusters.length}
+          data-visible-opportunities={visibleOpportunities.length}
+          data-visible-pages={visiblePages.length}
+          data-visible-products={visibleProducts.length}
+          data-visible-query-rows={visibleQueryRows.length}
+          data-visible-task-previews={visibleTasks.length}
+        >
           {visibleClusters.map((cluster) => (
             <article
               className="rail-item"
