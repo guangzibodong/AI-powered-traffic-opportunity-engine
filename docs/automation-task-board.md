@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 2 imported catalog preview UI completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 2 imported catalog partial-failure resilience completed; remaining live credential work is blocked. Scope stays safe: imported/demo search data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -67,6 +67,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S2-GRAPH-021 | 33 | done | Frontend Product Engineer / QA Lead | Add imported signal graph read client foundation. | Frontend API client exposes a typed read-only `GET /imported-graph` helper and maps imported graph query clusters through the safe cluster preview adapter, without embeddings, real GSC OAuth, sync execution, task creation, draft, publish, credential, or external write controls. |
 | TASK-S2-CATALOG-022 | 34 | done | Frontend Product Engineer / QA Lead | Add imported catalog read client foundation. | Frontend API client exposes typed read-only list/detail helpers for imported WooCommerce products and WordPress pages, encodes store/product/page path segments, and adds no credential, sync execution, draft, publish, product edit, price edit, inventory edit, commerce write, or external write controls. |
 | TASK-S2-CATALOG-023 | 35 | done | Frontend Product Engineer / QA Lead | Add API-backed imported catalog preview UI. | Imported preview UI renders read-only imported WooCommerce products and WordPress pages through the new GET helpers, shows compact catalog counts and rows, and adds no edit, write, credential, draft, publish, or sync controls. |
+| TASK-S2-CATALOG-024 | 36 | done | Frontend Product Engineer / QA Lead | Make imported catalog preview loading partially resilient. | If imported WooCommerce product or WordPress page reads fail, the imported preview panel still renders graph clusters, opportunities, and recommend-only task previews from successful read-only endpoints, shows no write/retry/credential controls, and keeps the main API board usable. |
 
 ## Blockers
 
@@ -134,6 +135,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Imported catalog read client is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
 - Imported catalog preview UI is next because the new product and page read helpers exist, but the imported preview panel still needs a direct catalog surface for read-only product/page inspection.
 - Imported catalog preview UI is verified by frontend contract red-green coverage, backend tests, lint, build, browser smoke, diff check, and secret scan.
+- Imported catalog partial-failure resilience is next because catalog reads are supplementary and should not hide graph, opportunity, or task previews when only product/page endpoints are temporarily unavailable.
+- Imported catalog partial-failure resilience is verified by browser red-green coverage, backend tests, frontend contract, lint, build, diff check, and secret scan.
 
 ## Completion Rule
 

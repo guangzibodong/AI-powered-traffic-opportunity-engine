@@ -252,6 +252,28 @@ async function runSmoke() {
     );
     await resilientPage.close();
 
+    const catalogFailurePage = await context.newPage();
+    await catalogFailurePage.route("**/api/stores/**", async (route) => {
+      const url = route.request().url();
+      if (url.endsWith("/products") || url.endsWith("/pages")) {
+        await route.abort("failed");
+        return;
+      }
+
+      await route.continue();
+    });
+    await catalogFailurePage.goto(webUrl);
+    await clickUnique(catalogFailurePage.getByRole("button", { name: "EN" }), "catalog failure language switcher");
+    await expectVisible(catalogFailurePage.getByText("read-only imported previews"), "catalog failure imported preview badge");
+    await expectVisible(catalogFailurePage.getByText("Graph-linked clusters"), "catalog failure graph metric");
+    await expectVisible(catalogFailurePage.getByText("portable espresso maker camping"), "catalog failure imported query cluster");
+    await expectVisible(catalogFailurePage.getByText("recommend_only"), "catalog failure recommend-only task preview");
+    assert(
+      (await catalogFailurePage.locator(".imported-preview-panel button").count()) === 0,
+      "Catalog-only preview failure must not render action buttons"
+    );
+    await catalogFailurePage.close();
+
     const firstTaskRow = page.locator("tr").filter({ hasText: taskTitle });
     assert((await firstTaskRow.count()) === 1, "Expected first demo task row to be visible");
     await clickUnique(firstTaskRow.getByRole("button", { name: "Draft later" }), "first task action");

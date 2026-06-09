@@ -241,27 +241,40 @@ export function App() {
         setBaseBoard(mapApiPlanningToBoard(tasksResponse, opportunitiesResponse, integrations));
         setBoardDataState({ loading: false, source: "api" });
 
-        Promise.all([
+        Promise.allSettled([
           getImportedGraph(demoStoreId),
           getImportedProducts(demoStoreId),
           getImportedPages(demoStoreId),
           getImportedOpportunities(demoStoreId),
           getImportedTasks(demoStoreId)
         ])
-          .then(([graphResponse, importedProductsResponse, importedPagesResponse, importedOpportunitiesResponse, importedTasksResponse]) => {
+          .then(([graphResult, importedProductsResult, importedPagesResult, importedOpportunitiesResult, importedTasksResult]) => {
             if (!active) return;
-            const clusters = mapApiImportedGraphToClusterPreviews(graphResponse);
-            const products = importedProductsResponse.products;
-            const pages = importedPagesResponse.pages;
-            const opportunities = mapApiImportedOpportunitiesToOpportunities(importedOpportunitiesResponse);
-            const tasks = mapApiImportedTasksToTasks(importedTasksResponse);
+            if (
+              graphResult.status === "rejected" &&
+              importedOpportunitiesResult.status === "rejected" &&
+              importedTasksResult.status === "rejected"
+            ) {
+              throw graphResult.reason;
+            }
+
+            const graphResponse = graphResult.status === "fulfilled" ? graphResult.value : null;
+            const clusters = graphResponse ? mapApiImportedGraphToClusterPreviews(graphResponse) : [];
+            const products = importedProductsResult.status === "fulfilled" ? importedProductsResult.value.products : [];
+            const pages = importedPagesResult.status === "fulfilled" ? importedPagesResult.value.pages : [];
+            const opportunities =
+              importedOpportunitiesResult.status === "fulfilled"
+                ? mapApiImportedOpportunitiesToOpportunities(importedOpportunitiesResult.value)
+                : [];
+            const tasks =
+              importedTasksResult.status === "fulfilled" ? mapApiImportedTasksToTasks(importedTasksResult.value) : [];
             setImportedPreviews({
               availability:
                 clusters.length > 0 || products.length > 0 || pages.length > 0 || opportunities.length > 0 || tasks.length > 0
                   ? "ready"
                   : "empty",
               clusters,
-              graphSummary: graphResponse.summary ?? null,
+              graphSummary: graphResponse?.summary ?? null,
               pages,
               opportunities,
               products,
