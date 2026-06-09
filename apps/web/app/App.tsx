@@ -260,6 +260,8 @@ export function App() {
             if (
               graphResult.status === "rejected" &&
               importedQueriesResult.status === "rejected" &&
+              importedProductsResult.status === "rejected" &&
+              importedPagesResult.status === "rejected" &&
               importedOpportunitiesResult.status === "rejected" &&
               importedTasksResult.status === "rejected"
             ) {

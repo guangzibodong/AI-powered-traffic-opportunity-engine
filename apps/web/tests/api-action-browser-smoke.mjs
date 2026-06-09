@@ -436,6 +436,43 @@ async function runSmoke() {
     );
     await taskFailurePage.close();
 
+    const derivedFailurePage = await context.newPage();
+    await derivedFailurePage.route("**/api/stores/**", async (route) => {
+      const url = route.request().url();
+      if (
+        url.endsWith("/imported-graph") ||
+        url.endsWith("/queries") ||
+        url.endsWith("/imported-opportunities") ||
+        url.endsWith("/imported-tasks")
+      ) {
+        await route.abort("failed");
+        return;
+      }
+
+      await route.continue();
+    });
+    await derivedFailurePage.goto(webUrl);
+    await clickUnique(derivedFailurePage.getByRole("button", { name: "EN" }), "derived failure language switcher");
+    await expectVisible(derivedFailurePage.getByText("read-only imported previews"), "derived failure imported preview badge");
+    await expectVisible(derivedFailurePage.getByText("Graph reads unavailable"), "derived failure graph unavailable message");
+    await expectVisible(derivedFailurePage.getByText("Query rows unavailable"), "derived failure query rows unavailable message");
+    await expectVisible(
+      derivedFailurePage.getByText("Opportunity previews unavailable"),
+      "derived failure opportunity unavailable message"
+    );
+    await expectVisible(derivedFailurePage.getByText("Task previews unavailable"), "derived failure task unavailable message");
+    await expectVisible(derivedFailurePage.getByText("Trail Brew Portable Espresso Maker"), "derived failure product preview");
+    await expectVisible(derivedFailurePage.getByText("Camping Espresso Collection"), "derived failure page preview");
+    assert(
+      (await derivedFailurePage.getByText("Imported previews unavailable").count()) === 0,
+      "Derived preview failures must not hide successful catalog reads behind the global unavailable state"
+    );
+    assert(
+      (await derivedFailurePage.locator(".imported-preview-panel button").count()) === 0,
+      "Derived preview failure must not render action buttons"
+    );
+    await derivedFailurePage.close();
+
     const firstTaskRow = page.locator("tr").filter({ hasText: taskTitle });
     assert((await firstTaskRow.count()) === 1, "Expected first demo task row to be visible");
     await clickUnique(firstTaskRow.getByRole("button", { name: "Draft later" }), "first task action");
