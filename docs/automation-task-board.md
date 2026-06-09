@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 structured asset editor UI contract planning is verified; editor UI contract tests are queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 minimal local asset editor UI and browser save gate are verified; responsive bilingual editor QA is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -196,7 +196,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-FE-028 | 162 | done | Frontend Product Engineer / QA Lead | Add frontend asset update client contract. | Frontend API-client and adapter tests define a safe local `updateAsset` helper with encoded paths, allowlisted body fields, nested content-block allowlisting, external-write clamping, forbidden key exclusion, and no editor UI, WordPress draft, sync, credential, href navigation, or commerce-write controls. |
 | TASK-S3-QA-029 | 163 | done | Frontend Product Engineer / QA Lead | Add browser coverage for asset editor UI gate. | Browser smoke proves the visible asset workspace still has no editor controls, no credential-like inputs, no href/link navigation, no WordPress draft/publish/sync controls, and no asset PATCH requests during board loading even though the safe client helper exists. |
 | TASK-S3-PM-030 | 164 | done | Product Manager / UI Systems Engineer / QA Lead | Plan structured asset editor UI contract. | Documentation defines the first visible local editor workflow, layout, bilingual copy, save states, unavailable states, and browser gates while keeping WordPress draft creation, publishing, sync, credentials, href navigation, and commerce writes blocked. |
-| TASK-S3-QA-031 | 165 | todo | Frontend Product Engineer / QA Lead | Add editor UI contract tests. | Failing UI contract tests define local-only editor copy, allowed control labels, forbidden publish/sync/connect/autopilot copy, and no credential/href/navigation/editor controls before implementation code is added. |
+| TASK-S3-QA-031 | 165 | done | Frontend Product Engineer / QA Lead | Add editor UI contract tests. | UI contract tests define local-only editor copy, allowed control labels, forbidden publish/sync/connect/autopilot copy, and no credential/href/navigation/editor controls before implementation code is added. |
+| TASK-S3-FE-032 | 166 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Implement minimal safe local asset editor UI. | Existing local asset candidates can open a compact local editor, save title/meta/section fields through the safe `updateAsset` helper, show local-only safety copy, and still expose no WordPress draft creation, publishing, sync, credential, href navigation, or commerce-write controls. |
+| TASK-S3-QA-033 | 167 | todo | UI Systems Engineer / QA Lead | Add responsive bilingual editor QA coverage. | Browser or screenshot coverage verifies the local asset editor at desktop and mobile widths, English and Chinese labels, long title/slug wrapping, no overflow, and continued absence of WordPress draft, publish, sync, credential, href navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -521,6 +523,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Structured asset editor UI contract planning is next because visible edit controls should be designed and gated before any UI starts calling the safe local `updateAsset` helper.
 - Structured asset editor UI contract planning is verified in `docs/sprint-3-structured-asset-editor-ui-contract.md`, defining the local-only three-zone editor, bilingual save states, forbidden controls, request targets, and browser gates.
 - Editor UI contract tests are next because the first visible editor should be locked by failing UI tests before implementation begins.
+- Editor UI contract tests are verified by static UI contract coverage requiring `LocalAssetEditor`, selected asset state, safe `updateAsset` usage, local-only safety copy, local save copy, and no WordPress draft/live publish copy.
+- Minimal safe local asset editor UI is verified by browser smoke coverage that opens a populated local asset candidate, submits one safe local asset PATCH, confirms local save feedback, and rejects unsafe request targets and controls.
+- Responsive bilingual editor QA coverage is next because the local editor is now visible and needs viewport/copy/overflow checks before expanding fields or QA states.
 
 ## Completion Rule
 

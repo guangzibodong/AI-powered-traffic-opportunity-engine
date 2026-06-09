@@ -191,6 +191,24 @@ Add failing tests before implementation:
 5. Wire `Save local draft` to `updateAsset`.
 6. Re-run browser safety checks before any commit.
 
+## Implementation Status
+
+The first local editor slice is implemented with a conservative scope:
+
+- Local asset candidates expose `Review local draft`.
+- The editor saves title, slug, meta title, meta description, one structured section, and editor note through the safe `updateAsset` helper.
+- The editor keeps `Local draft only`, `External writes disabled`, `WordPress draft creation blocked`, and `WooCommerce writes blocked` visible.
+- Browser smoke proves the save path issues exactly one safe local asset PATCH and no unsafe asset requests.
+
+Still gated:
+
+- WordPress draft creation.
+- Three-column full asset review route.
+- Claim ledger editing.
+- Rich schema editor.
+- Rich text editor.
+- Mobile screenshot QA.
+
 ## Out Of Scope
 
 - WordPress draft creation.

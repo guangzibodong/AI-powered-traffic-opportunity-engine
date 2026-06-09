@@ -169,6 +169,18 @@ assert(app.includes("selectedTaskId"), "App must track the selected task id for 
 assert(app.includes("setSelectedTaskId(task.id)"), "Task queue clicks must select the clicked task before opening detail");
 assert(!app.includes('if (task.id === "task_001")'), "Task queue must not gate detail opening to the first mock task");
 assert(app.includes("createTaskDetailViewModel"), "App must build task detail from the currently selected board task");
+assert(app.includes("LocalAssetEditor"), "App must expose the structured local asset editor component");
+assert(app.includes("selectedAssetId"), "App must track the selected local asset candidate");
+assert(app.includes("updateAsset("), "Asset editor must use the safe local updateAsset helper");
+assert(app.includes("mapApiAssetResponseToPreview"), "Asset editor must map saved assets through the safe adapter");
+assert(app.includes("Review local draft"), "Asset workspace must use explicit local review entry copy");
+assert(app.includes("Save local draft"), "Asset editor must use explicit local save copy");
+assert(app.includes("Local draft only"), "Asset editor must show local-only safety copy");
+assert(app.includes("External writes disabled"), "Asset editor must show external write disabled safety copy");
+assert(app.includes("WordPress draft creation blocked"), "Asset editor must keep WordPress draft blocking visible");
+assert(app.includes("WooCommerce writes blocked"), "Asset editor must keep WooCommerce write blocking visible");
+assert(!app.includes("Create WordPress draft"), "Asset editor must not expose WordPress draft creation copy");
+assert(!app.includes("Push live"), "Asset editor must not expose live publishing copy");
 
 for (const required of [
   "createTaskDetailViewModel",

@@ -236,19 +236,15 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
   await expectVisible(page.getByText("Read-only asset workspace"), `${label} asset workspace read-only label`);
   await expectVisible(page.getByText("wordpress_draft_creation"), `${label} blocked WordPress draft capability`);
 
-  const interactiveSelector = [
-    "button",
-    "a",
-    "form",
-    "input",
-    "select",
-    "textarea",
-    "[href]",
-    "[role='button']",
-    "[role='link']"
-  ].join(", ");
-  const interactiveCount = await assetPanel.locator(interactiveSelector).count();
-  assert(interactiveCount === 0, `${label} asset workspace panel must not render interactive controls`);
+  const unsafeInteractiveSelector = ["a", "form", "input", "select", "textarea", "[href]", "[role='link']"].join(", ");
+  const unsafeInteractiveCount = await assetPanel.locator(unsafeInteractiveSelector).count();
+  assert(unsafeInteractiveCount === 0, `${label} asset workspace panel must not render unsafe controls or navigation`);
+  const buttonNames = await assetPanel.locator("button").evaluateAll((buttons) =>
+    buttons.map((button) => (button.textContent ?? "").trim())
+  );
+  for (const buttonName of buttonNames) {
+    assert(buttonName === "Review local draft", `${label} asset workspace exposes unsafe button: ${buttonName}`);
+  }
   await assertAssetEditorUiGate(assetPanel, label);
 
   const assetPanelText = ((await assetPanel.textContent()) ?? "").toLowerCase();
@@ -335,7 +331,6 @@ async function assertAssetWorkspacePanelUnavailable(page, label) {
 
 async function assertAssetEditorUiGate(assetPanel, label) {
   const editorControlSelector = [
-    "button",
     "a",
     "form",
     "input",
@@ -382,6 +377,39 @@ async function assertAssetEditorUiGate(assetPanel, label) {
   for (const pattern of forbiddenActionCopy) {
     assert(!pattern.test(panelText), `${label} asset editor gate exposes unsafe action copy: ${pattern}`);
   }
+}
+
+async function assertLocalAssetEditorCanSave(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} local asset editor`);
+  await expectVisible(page.getByText("Local draft only"), `${label} local-only editor copy`);
+  await expectVisible(page.getByText("External writes disabled"), `${label} external-write disabled editor copy`);
+  await expectVisible(page.getByText("WordPress draft creation blocked"), `${label} WordPress block editor copy`);
+  await expectVisible(page.getByText("WooCommerce writes blocked"), `${label} WooCommerce block editor copy`);
+
+  const editorText = ((await editor.textContent()) ?? "").toLowerCase();
+  for (const pattern of [/\bpublish\b/, /\bsync\b/, /\bconnect\b/, /\boauth\b/, /\bautopilot\b/]) {
+    assert(!pattern.test(editorText), `${label} editor exposes unsafe copy: ${pattern}`);
+  }
+  const forbiddenControls = [
+    "a",
+    "[href]",
+    "[role='link']",
+    "input[type='password']",
+    "input[name*='token' i]",
+    "input[name*='secret' i]",
+    "input[name*='api' i]",
+    "input[name*='oauth' i]",
+    "input[name*='credential' i]"
+  ].join(", ");
+  const forbiddenControlCount = await editor.locator(forbiddenControls).count();
+  assert(forbiddenControlCount === 0, `${label} editor exposes unsafe navigation or credential controls`);
+
+  await editor.locator("input").first().fill("Updated local camping espresso draft");
+  await editor.locator("textarea").first().fill("Compare portable espresso kits for camp coffee.");
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} local save button`);
+  await expectVisible(page.getByText("Local draft saved"), `${label} local save success copy`);
 }
 
 async function assertTrackedAssetMetricReconciles(page, expectedDraftCount, label) {
@@ -1854,6 +1882,13 @@ async function runSmoke() {
     );
 
     const populatedAssetPage = await context.newPage();
+    const populatedAssetRequests = [];
+    populatedAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        populatedAssetRequests.push({ method: request.method(), url });
+      }
+    });
     await populatedAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
       if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
         await route.fulfill({
@@ -1910,6 +1945,37 @@ async function runSmoke() {
 
       await route.continue();
     });
+    await populatedAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_002`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        const payload = route.request().postDataJSON();
+        assert(payload.title === "Updated local camping espresso draft", "Local asset PATCH must send edited title");
+        assert(payload.meta_description === "Compare portable espresso kits for camp coffee.", "Local asset PATCH must send edited meta description");
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_002",
+              qa_checks: [
+                { key: "seo", status: "pending" },
+                { key: "geo", status: "pending" }
+              ],
+              review_state: "draft_candidate",
+              source_task_id: "task_002",
+              title: "Updated local camping espresso draft"
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
     await populatedAssetPage.goto(webUrl);
     await clickUnique(populatedAssetPage.getByRole("button", { name: "EN" }), "populated asset language switcher");
     await assertAssetWorkspacePanelIsReadOnly(populatedAssetPage, 3, "populated asset workspace", [
@@ -1951,6 +2017,23 @@ async function runSmoke() {
     await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
+    await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace");
+    const localAssetPatchRequests = populatedAssetRequests.filter(
+      (request) => request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_002`)
+    );
+    assert(
+      localAssetPatchRequests.length === 1,
+      `Local asset editor must issue exactly one safe asset PATCH, got ${JSON.stringify(populatedAssetRequests)}`
+    );
+    const unsafePopulatedAssetRequests = populatedAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_002`))
+    );
+    assert(
+      unsafePopulatedAssetRequests.length === 0,
+      `Local asset editor issued unsafe asset requests: ${JSON.stringify(unsafePopulatedAssetRequests)}`
+    );
     await populatedAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();

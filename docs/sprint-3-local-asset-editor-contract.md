@@ -246,10 +246,10 @@ Browser smoke now proves the asset workspace UI gate remains closed:
 
 ## Next Task
 
-The next safe implementation task is editor UI contract testing:
+The next safe implementation task is responsive bilingual editor QA:
 
 ```txt
-TASK-S3-QA-031 Add editor UI contract tests.
+TASK-S3-QA-033 Add responsive bilingual editor QA coverage.
 ```
 
-That task should add failing UI contract tests for the first visible local editor before any editor implementation is added.
+That task should verify the visible local editor across desktop/mobile widths and English/Chinese copy before expanding the editor surface.

@@ -18,6 +18,7 @@ import {
   getSyncRuns,
   getTasks,
   isApiBoardEnabled,
+  updateAsset,
   updateTaskStatus
 } from "../lib/api-client";
 import {
@@ -37,6 +38,7 @@ import {
 import { createTaskDetailViewModel } from "../lib/task-detail";
 import {
   mapApiAuditLogsToEvidenceRows,
+  mapApiAssetResponseToPreview,
   mapApiAssetWorkspaceToPreviews,
   mapApiImportedGraphToClusterPreviews,
   mapApiImportedPagesToCatalogPreviews,
@@ -86,6 +88,11 @@ type AssetWorkspaceState = {
   wordpressDraftReadyCount: number;
   wordpressDraftTotalCount: number;
 };
+
+type AssetSaveFeedback = {
+  assetId: string;
+  kind: "failed" | "pending" | "saved";
+} | null;
 
 type ImportedPreviewState = {
   availability: "empty" | "ready" | "unavailable";
@@ -265,6 +272,8 @@ export function App() {
   const [taskStatuses, setTaskStatuses] = useState(loadTaskStatusMap);
   const [pendingTaskStatus, setPendingTaskStatus] = useState<PendingTaskStatus | null>(null);
   const [taskActionFeedback, setTaskActionFeedback] = useState<TaskActionFeedback>(null);
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [assetSaveFeedback, setAssetSaveFeedback] = useState<AssetSaveFeedback>(null);
   const t = useMessages(locale);
   const board = useMemo(() => applyTaskStatusesToBoard(baseBoard, taskStatuses), [baseBoard, taskStatuses]);
   const selectedTask = useMemo(() => {
@@ -623,6 +632,32 @@ export function App() {
     keepLocalTaskStatus(taskId, status);
   }
 
+  async function saveLocalAssetDraft(
+    assetId: string,
+    payload: {
+      content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
+      editor_note?: string;
+      meta_description?: string;
+      meta_title?: string;
+      slug?: string;
+      title?: string;
+    }
+  ) {
+    setAssetSaveFeedback({ assetId, kind: "pending" });
+
+    try {
+      const response = await updateAsset(demoStoreId, assetId, payload);
+      const savedAsset = mapApiAssetResponseToPreview(response);
+      setAssetWorkspace((current) => ({
+        ...current,
+        assets: current.assets.map((asset) => (asset.id === savedAsset.id ? savedAsset : asset))
+      }));
+      setAssetSaveFeedback({ assetId: savedAsset.id, kind: "saved" });
+    } catch {
+      setAssetSaveFeedback({ assetId, kind: "failed" });
+    }
+  }
+
   return (
     <div className="app-shell">
       <NavigationRail locale={locale} screen={screen} setScreen={setScreen} t={t} />
@@ -631,14 +666,19 @@ export function App() {
         {screen === "board" && (
           <TrafficOperationsPage
             assetWorkspace={assetWorkspace}
+            assetSaveFeedback={assetSaveFeedback}
             board={board}
             dataState={boardDataState}
             importedPreviews={importedPreviews}
             locale={locale}
+            onCloseAssetEditor={() => setSelectedAssetId(null)}
+            onOpenAssetEditor={setSelectedAssetId}
             onOpenTask={(task) => {
               setSelectedTaskId(task.id);
               setScreen("task");
             }}
+            onSaveAsset={saveLocalAssetDraft}
+            selectedAssetId={selectedAssetId}
             t={t}
           />
         )}
@@ -767,19 +807,41 @@ function LanguageSwitcher({ locale, setLocale }: { locale: Locale; setLocale: (l
 
 function TrafficOperationsPage({
   assetWorkspace,
+  assetSaveFeedback,
   board,
   dataState,
   importedPreviews,
   locale,
+  onCloseAssetEditor,
+  onOpenAssetEditor,
   onOpenTask,
+  onSaveAsset,
+  selectedAssetId,
   t
 }: SharedProps & {
   assetWorkspace: AssetWorkspaceState;
+  assetSaveFeedback: AssetSaveFeedback;
   board: BoardViewModel;
   dataState: BoardDataState;
   importedPreviews: ImportedPreviewState;
+  onCloseAssetEditor: () => void;
+  onOpenAssetEditor: (assetId: string) => void;
   onOpenTask: (task: BoardViewModel["tasks"][number]) => void;
+  onSaveAsset: (
+    assetId: string,
+    payload: {
+      content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
+      editor_note?: string;
+      meta_description?: string;
+      meta_title?: string;
+      slug?: string;
+      title?: string;
+    }
+  ) => Promise<void>;
+  selectedAssetId: string | null;
 }) {
+  const selectedAsset = assetWorkspace.assets.find((asset) => asset.id === selectedAssetId) ?? null;
+
   return (
     <section>
       <div className="title-row">
@@ -884,7 +946,15 @@ function TrafficOperationsPage({
         </section>
         <aside className="side-rail">
           <DataHealthPanel integrations={board.integrations} locale={locale} t={t} />
-          <AssetWorkspacePanel assetWorkspace={assetWorkspace} />
+          <AssetWorkspacePanel assetWorkspace={assetWorkspace} onOpenAssetEditor={onOpenAssetEditor} />
+          {selectedAsset && (
+            <LocalAssetEditor
+              asset={selectedAsset}
+              feedback={assetSaveFeedback?.assetId === selectedAsset.id ? assetSaveFeedback : null}
+              onClose={onCloseAssetEditor}
+              onSave={onSaveAsset}
+            />
+          )}
           <ImportedPreviewPanel importedPreviews={importedPreviews} locale={locale} />
           <OpportunityRail opportunities={board.opportunities} locale={locale} t={t} />
         </aside>
@@ -998,7 +1068,13 @@ function DataHealthPanel({ integrations, locale, t }: SharedProps & { integratio
   );
 }
 
-function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspaceState }) {
+function AssetWorkspacePanel({
+  assetWorkspace,
+  onOpenAssetEditor
+}: {
+  assetWorkspace: AssetWorkspaceState;
+  onOpenAssetEditor?: (assetId: string) => void;
+}) {
   const visibleAssets = assetWorkspace.assets.slice(0, 2);
   const assetOverflowCount = Math.max(assetWorkspace.assets.length - visibleAssets.length, 0);
   const assetTypeEntries = Object.entries(
@@ -1112,6 +1188,11 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
                 {asset.contentBlockTypes.length > 0 ? ` / ${asset.contentBlockTypes.join(", ")}` : ""}
                 {asset.qaCheckCount > 0 ? ` / qa ${asset.qaPendingCount}/${asset.qaCheckCount} pending` : ""}
               </span>
+              {onOpenAssetEditor && (
+                <button className="button" onClick={() => onOpenAssetEditor(asset.id)} type="button">
+                  Review local draft
+                </button>
+              )}
             </div>
           ))}
           {assetOverflowCount > 0 && (
@@ -1127,6 +1208,118 @@ function AssetWorkspacePanel({ assetWorkspace }: { assetWorkspace: AssetWorkspac
             : "No local asset candidates yet."}
         </p>
       )}
+    </section>
+  );
+}
+
+function LocalAssetEditor({
+  asset,
+  feedback,
+  onClose,
+  onSave
+}: {
+  asset: AssetDraftPreview;
+  feedback: AssetSaveFeedback;
+  onClose: () => void;
+  onSave: (
+    assetId: string,
+    payload: {
+      content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
+      editor_note?: string;
+      meta_description?: string;
+      meta_title?: string;
+      slug?: string;
+      title?: string;
+    }
+  ) => Promise<void>;
+}) {
+  const [title, setTitle] = useState(asset.title);
+  const [slug, setSlug] = useState(asset.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+  const [metaTitle, setMetaTitle] = useState(asset.title);
+  const [metaDescription, setMetaDescription] = useState("");
+  const [sectionBody, setSectionBody] = useState("");
+  const [editorNote, setEditorNote] = useState("");
+  const isSaving = feedback?.kind === "pending";
+
+  useEffect(() => {
+    setTitle(asset.title);
+    setSlug(asset.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+    setMetaTitle(asset.title);
+    setMetaDescription("");
+    setSectionBody("");
+    setEditorNote("");
+  }, [asset.id, asset.title]);
+
+  return (
+    <section className="panel asset-editor-panel" data-asset-editor="local-only" data-asset-id={asset.id}>
+      <div className="panel-heading">
+        <div>
+          <h2>Local asset editor</h2>
+          <p className="muted">Local draft only</p>
+        </div>
+        <span className="status safe">local save</span>
+      </div>
+      <div className="asset-editor-safety" aria-label="Asset editor safety">
+        <span>External writes disabled</span>
+        <span>WordPress draft creation blocked</span>
+        <span>WooCommerce writes blocked</span>
+      </div>
+      <form
+        className="asset-editor-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void onSave(asset.id, {
+            content_blocks: sectionBody
+              ? [{ body: sectionBody, heading: "Local draft section", type: "section" }]
+              : undefined,
+            editor_note: editorNote || undefined,
+            meta_description: metaDescription || undefined,
+            meta_title: metaTitle || undefined,
+            slug,
+            title
+          });
+        }}
+      >
+        <label>
+          <span>Title</span>
+          <input value={title} onChange={(event) => setTitle(event.target.value)} />
+        </label>
+        <label>
+          <span>Slug</span>
+          <input value={slug} onChange={(event) => setSlug(event.target.value)} />
+        </label>
+        <label>
+          <span>Meta title</span>
+          <input value={metaTitle} onChange={(event) => setMetaTitle(event.target.value)} />
+        </label>
+        <label>
+          <span>Meta description</span>
+          <textarea value={metaDescription} onChange={(event) => setMetaDescription(event.target.value)} />
+        </label>
+        <label>
+          <span>Structured section</span>
+          <textarea value={sectionBody} onChange={(event) => setSectionBody(event.target.value)} />
+        </label>
+        <label>
+          <span>Editor note</span>
+          <textarea value={editorNote} onChange={(event) => setEditorNote(event.target.value)} />
+        </label>
+        <div className="asset-editor-actions">
+          <button className="button primary" disabled={isSaving} type="submit">
+            {isSaving ? "Saving local draft" : "Save local draft"}
+          </button>
+          <button className="button" onClick={onClose} type="button">
+            Close
+          </button>
+        </div>
+        <p aria-live="polite" className="muted">
+          {feedback?.kind === "saved"
+            ? "Local draft saved"
+            : feedback?.kind === "failed"
+              ? "Local save failed"
+              : "Only local draft fields are saved."}
+        </p>
+      </form>
     </section>
   );
 }
