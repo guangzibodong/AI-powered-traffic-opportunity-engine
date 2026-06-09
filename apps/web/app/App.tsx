@@ -908,8 +908,16 @@ function ImportedPreviewPanel({
           {visibleClusters.map((cluster) => (
             <article
               className="rail-item"
+              data-clicks={cluster.clicks}
+              data-ctr={cluster.ctr}
+              data-impressions={cluster.impressions}
+              data-position={cluster.position}
+              data-primary-query={cluster.primaryQuery}
               data-preview-id={cluster.id}
               data-preview-kind="cluster"
+              data-query-cluster-diagnostics="imported_gsc"
+              data-query-count={cluster.queryCount}
+              data-top-page-count={cluster.topPages.length}
               key={cluster.id}
             >
               <span className="pill search">{locale === "zh" ? "查询簇" : "Cluster"}</span>
