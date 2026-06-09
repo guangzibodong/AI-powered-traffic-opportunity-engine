@@ -932,6 +932,10 @@ function ImportedPreviewPanel({
   const visiblePages = importedPreviews.pages.slice(0, 2);
   const visibleOpportunities = importedPreviews.opportunities.slice(0, 2);
   const visibleTasks = importedPreviews.tasks.slice(0, 2);
+  const ctrRefreshOpportunityCount = importedPreviews.summaryDiagnostics.ctrRefreshOpportunities;
+  const ctrRefreshOpportunityTotal = importedPreviews.opportunities.length;
+  const ctrRefreshTaskCount = importedPreviews.summaryDiagnostics.ctrRefreshTasks;
+  const ctrRefreshTaskTotal = importedPreviews.tasks.length;
   const buyingGuideGapOpportunityCount = importedPreviews.summaryDiagnostics.buyingGuideGapOpportunities;
   const buyingGuideGapOpportunityTotal = importedPreviews.opportunities.length;
   const buyingGuideGapTaskCount = importedPreviews.summaryDiagnostics.buyingGuideGapTasks;
@@ -942,6 +946,11 @@ function ImportedPreviewPanel({
   const newTaskTotal = importedPreviews.tasks.length;
   const newOpportunityCount = importedPreviews.summaryDiagnostics.newOpportunities;
   const newOpportunityTotal = importedPreviews.opportunities.length;
+  const ctrRefreshOpportunitySharePercent = getImportedMetricSharePercent(
+    ctrRefreshOpportunityCount,
+    ctrRefreshOpportunityTotal
+  );
+  const ctrRefreshTaskSharePercent = getImportedMetricSharePercent(ctrRefreshTaskCount, ctrRefreshTaskTotal);
   const buyingGuideGapOpportunitySharePercent = getImportedMetricSharePercent(
     buyingGuideGapOpportunityCount,
     buyingGuideGapOpportunityTotal
@@ -953,6 +962,8 @@ function ImportedPreviewPanel({
   const recommendOnlyTaskSharePercent = getImportedMetricSharePercent(recommendOnlyTaskCount, recommendOnlyTaskTotal);
   const newTaskSharePercent = getImportedMetricSharePercent(newTaskCount, newTaskTotal);
   const newOpportunitySharePercent = getImportedMetricSharePercent(newOpportunityCount, newOpportunityTotal);
+  const ctrRefreshOpportunityShare = `${ctrRefreshOpportunitySharePercent}%`;
+  const ctrRefreshTaskShare = `${ctrRefreshTaskSharePercent}%`;
   const buyingGuideGapOpportunityShare = `${buyingGuideGapOpportunitySharePercent}%`;
   const buyingGuideGapTaskShare = `${buyingGuideGapTaskSharePercent}%`;
   const recommendOnlyTaskShare = `${recommendOnlyTaskSharePercent}%`;
@@ -1097,6 +1108,26 @@ function ImportedPreviewPanel({
         <div className="kv-row" data-metric-key="ctr_refresh_task_previews">
           <span>{locale === "zh" ? "CTR 刷新任务预览" : "CTR refresh task previews"}</span>
           <strong>{importedPreviews.summaryDiagnostics.ctrRefreshTasks}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-metric-key="ctr_refresh_opportunity_share"
+          data-share-count={ctrRefreshOpportunityCount}
+          data-share-percent={ctrRefreshOpportunitySharePercent}
+          data-share-total={ctrRefreshOpportunityTotal}
+        >
+          <span>{locale === "zh" ? "CTR 刷新机会占比" : "CTR refresh opportunity share"}</span>
+          <strong>{ctrRefreshOpportunityShare}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-metric-key="ctr_refresh_task_share"
+          data-share-count={ctrRefreshTaskCount}
+          data-share-percent={ctrRefreshTaskSharePercent}
+          data-share-total={ctrRefreshTaskTotal}
+        >
+          <span>{locale === "zh" ? "CTR 刷新任务占比" : "CTR refresh task share"}</span>
+          <strong>{ctrRefreshTaskShare}</strong>
         </div>
         <div className="kv-row" data-metric-key="collection_page_opportunities">
           <span>{locale === "zh" ? "集合页机会" : "Collection page opportunities"}</span>
