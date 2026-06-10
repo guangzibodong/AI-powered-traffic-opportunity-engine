@@ -1186,6 +1186,17 @@ async function assertLocalAssetEditorFieldDiagnostics(
   editor,
   { expectedDirtyStates = null, expectedEmpty, expectedFilled, fieldCopy = "Fields", filledCopy = "filled", label }
 ) {
+  const expectedFieldKeys = [
+    "title",
+    "slug",
+    "meta_title",
+    "meta_description",
+    "structured_section",
+    "faq_question",
+    "faq_answer",
+    "editor_note"
+  ];
+  const expectedFieldCount = String(expectedFieldKeys.length);
   const fieldCount = await editor.getAttribute("data-asset-editor-field-count");
   const filledFieldCount = await editor.getAttribute("data-asset-editor-filled-field-count");
   const emptyFieldCount = await editor.getAttribute("data-asset-editor-empty-field-count");
@@ -1193,7 +1204,10 @@ async function assertLocalAssetEditorFieldDiagnostics(
   const countsReconciled = await editor.getAttribute("data-asset-editor-field-counts-reconciled");
   const fieldReadinessState = await editor.getAttribute("data-asset-editor-field-readiness-state");
   const expectedReadinessState = expectedEmpty === 0 ? "all_fields_filled" : "incomplete_fields";
-  assert(fieldCount === "6", `${label} editor field count mismatch: expected 6, got ${fieldCount ?? "missing"}`);
+  assert(
+    fieldCount === expectedFieldCount,
+    `${label} editor field count mismatch: expected ${expectedFieldCount}, got ${fieldCount ?? "missing"}`
+  );
   assert(
     filledFieldCount === String(expectedFilled),
     `${label} editor filled field count mismatch: expected ${expectedFilled}, got ${filledFieldCount ?? "missing"}`
@@ -1268,17 +1282,9 @@ async function assertLocalAssetEditorFieldDiagnostics(
     }`
   );
   await expectVisible(
-    fieldSummary.getByText(`${expectedFilled}/6 ${filledCopy}`),
+    fieldSummary.getByText(`${expectedFilled}/${expectedFieldCount} ${filledCopy}`),
     `${label} visible editor field fill summary`
   );
-  const expectedFieldKeys = [
-    "title",
-    "slug",
-    "meta_title",
-    "meta_description",
-    "structured_section",
-    "editor_note"
-  ];
   const fieldRows = await editor.locator("[data-asset-editor-field='true']").evaluateAll((elements) =>
     elements.map((element) => ({
       dirtyState: element.getAttribute("data-asset-editor-field-dirty-state"),
@@ -1351,7 +1357,7 @@ async function assertLocalAssetEditorCanSave(
     qaChecksCopy = "QA checks",
     qaPendingSuffix = "pending",
     qaReadinessCopy = "QA readiness",
-    savedEmptyFieldCount = 3,
+    savedEmptyFieldCount = 5,
     savedFilledFieldCount = 3,
     saveName = "Save local draft",
     saveSuccessCopy = "Local draft saved",
@@ -1368,13 +1374,15 @@ async function assertLocalAssetEditorCanSave(
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "clean",
+      faq_answer: "clean",
+      faq_question: "clean",
       meta_description: "clean",
       meta_title: "clean",
       slug: "clean",
       structured_section: "clean",
       title: "clean"
     },
-    expectedEmpty: 3,
+    expectedEmpty: 5,
     expectedFilled: 3,
     fieldCopy,
     filledCopy,
@@ -1502,10 +1510,19 @@ async function assertLocalAssetEditorCanSave(
 
   await editor.locator("input").first().fill(titleValue);
   await editor.locator("textarea").first().fill("Compare portable espresso kits for camp coffee.");
-  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 2, ["title", "meta_description"]);
+  await editor.locator("[data-asset-editor-faq-question='true'] input").fill("Can I use a manual espresso maker at camp?");
+  await editor.locator("[data-asset-editor-faq-answer='true'] textarea").fill("Yes. Use a compact brewer and preheat the cup.");
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 4, [
+    "title",
+    "meta_description",
+    "faq_question",
+    "faq_answer"
+  ]);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "clean",
+      faq_answer: "dirty",
+      faq_question: "dirty",
       meta_description: "dirty",
       meta_title: "clean",
       slug: "clean",
@@ -1513,7 +1530,7 @@ async function assertLocalAssetEditorCanSave(
       title: "dirty"
     },
     expectedEmpty: 2,
-    expectedFilled: 4,
+    expectedFilled: 6,
     fieldCopy,
     filledCopy,
     label: `${label} edited`
@@ -1525,6 +1542,8 @@ async function assertLocalAssetEditorCanSave(
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "clean",
+      faq_answer: "clean",
+      faq_question: "clean",
       meta_description: "clean",
       meta_title: "clean",
       slug: "clean",
@@ -1547,15 +1566,21 @@ async function assertLocalAssetEditorFieldReadinessCanBecomeComplete(
 ) {
   await editor.locator("textarea").nth(0).fill("Compare portable espresso kits for camp coffee.");
   await editor.locator("textarea").nth(1).fill("Local section covers buyer objections and comparisons.");
-  await editor.locator("textarea").nth(2).fill("Keep claims grounded in imported evidence.");
-  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} complete`, 3, [
+  await editor.locator("[data-asset-editor-faq-question='true'] input").fill("Can I use this at a campsite?");
+  await editor.locator("[data-asset-editor-faq-answer='true'] textarea").fill("Yes. Keep the brewer compact and water hot.");
+  await editor.locator("textarea").nth(3).fill("Keep claims grounded in imported evidence.");
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} complete`, 5, [
     "meta_description",
     "structured_section",
+    "faq_question",
+    "faq_answer",
     "editor_note"
   ]);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "dirty",
+      faq_answer: "dirty",
+      faq_question: "dirty",
       meta_description: "dirty",
       meta_title: "clean",
       slug: "clean",
@@ -1563,7 +1588,7 @@ async function assertLocalAssetEditorFieldReadinessCanBecomeComplete(
       title: "clean"
     },
     expectedEmpty: 0,
-    expectedFilled: 6,
+    expectedFilled: 8,
     fieldCopy,
     filledCopy,
     label: `${label} complete`
@@ -1626,18 +1651,24 @@ async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitl
   await editor.locator("input").nth(2).fill("Reset-only unsaved meta title");
   await editor.locator("textarea").nth(0).fill("Reset-only unsaved meta description.");
   await editor.locator("textarea").nth(1).fill("Reset-only unsaved local section.");
-  await editor.locator("textarea").nth(2).fill("Reset-only unsaved editor note.");
-  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 6, [
+  await editor.locator("[data-asset-editor-faq-question='true'] input").fill("Reset-only unsaved FAQ question?");
+  await editor.locator("[data-asset-editor-faq-answer='true'] textarea").fill("Reset-only unsaved FAQ answer.");
+  await editor.locator("textarea").nth(3).fill("Reset-only unsaved editor note.");
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 8, [
     "title",
     "slug",
     "meta_title",
     "meta_description",
     "structured_section",
+    "faq_question",
+    "faq_answer",
     "editor_note"
   ]);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "dirty",
+      faq_answer: "dirty",
+      faq_question: "dirty",
       meta_description: "dirty",
       meta_title: "dirty",
       slug: "dirty",
@@ -1645,7 +1676,7 @@ async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitl
       title: "dirty"
     },
     expectedEmpty: 0,
-    expectedFilled: 6,
+    expectedFilled: 8,
     label: `${label} edited`
   });
 
@@ -1658,7 +1689,9 @@ async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitl
   const resetMetaTitle = await editor.locator("input").nth(2).inputValue();
   const resetMetaDescription = await editor.locator("textarea").nth(0).inputValue();
   const resetSection = await editor.locator("textarea").nth(1).inputValue();
-  const resetEditorNote = await editor.locator("textarea").nth(2).inputValue();
+  const resetFaqQuestion = await editor.locator("[data-asset-editor-faq-question='true'] input").inputValue();
+  const resetFaqAnswer = await editor.locator("[data-asset-editor-faq-answer='true'] textarea").inputValue();
+  const resetEditorNote = await editor.locator("textarea").nth(3).inputValue();
   assert(resetTitle === expectedTitle, `${label} reset title mismatch: expected ${expectedTitle}, got ${resetTitle}`);
   assert(
     resetSlug === expectedTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
@@ -1670,19 +1703,23 @@ async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitl
   );
   assert(resetMetaDescription === "", `${label} reset meta description must be empty, got ${resetMetaDescription}`);
   assert(resetSection === "", `${label} reset structured section must be empty, got ${resetSection}`);
+  assert(resetFaqQuestion === "", `${label} reset FAQ question must be empty, got ${resetFaqQuestion}`);
+  assert(resetFaqAnswer === "", `${label} reset FAQ answer must be empty, got ${resetFaqAnswer}`);
   assert(resetEditorNote === "", `${label} reset editor note must be empty, got ${resetEditorNote}`);
   await assertLocalAssetEditorSaveState(editor, "idle", `${label} reset`);
   await assertLocalAssetEditorDirtyState(editor, "clean", `${label} reset`, 0, []);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "clean",
+      faq_answer: "clean",
+      faq_question: "clean",
       meta_description: "clean",
       meta_title: "clean",
       slug: "clean",
       structured_section: "clean",
       title: "clean"
     },
-    expectedEmpty: 3,
+    expectedEmpty: 5,
     expectedFilled: 3,
     label: `${label} reset`
   });
@@ -3644,6 +3681,15 @@ async function runSmoke() {
         const payload = route.request().postDataJSON();
         assert(payload.title === "Updated local camping espresso draft", "Local asset PATCH must send edited title");
         assert(payload.meta_description === "Compare portable espresso kits for camp coffee.", "Local asset PATCH must send edited meta description");
+        assert(Array.isArray(payload.faq_items), "Local asset PATCH must send local FAQ draft items");
+        assert(
+          payload.faq_items[0]?.question === "Can I use a manual espresso maker at camp?",
+          "Local asset PATCH must send edited FAQ question"
+        );
+        assert(
+          payload.faq_items[0]?.answer === "Yes. Use a compact brewer and preheat the cup.",
+          "Local asset PATCH must send edited FAQ answer"
+        );
         await route.fulfill({
           contentType: "application/json",
           body: JSON.stringify({
@@ -4016,7 +4062,7 @@ async function runSmoke() {
       qaChecksCopy: "QA 检查",
       qaPendingSuffix: "待处理",
       qaReadinessCopy: "QA 就绪状态",
-      savedEmptyFieldCount: 4,
+      savedEmptyFieldCount: 6,
       savedFilledFieldCount: 2,
       saveName: "保存本地草稿",
       saveSuccessCopy: "本地草稿已保存",

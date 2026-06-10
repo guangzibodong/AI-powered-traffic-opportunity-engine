@@ -197,6 +197,7 @@ The first local editor slice is implemented with a conservative scope:
 
 - Local asset candidates expose `Review local draft`.
 - The editor saves title, slug, meta title, meta description, one structured section, and editor note through the safe `updateAsset` helper.
+- The editor saves one local FAQ question/answer draft pair through the safe `faq_items` allowlist without exposing schema publishing.
 - The editor exposes `Reset local changes` as a local-only form reset that restores unsaved field values without sending `PATCH /assets/:assetId`.
 - The editor keeps `Local draft only`, `External writes disabled`, `WordPress draft creation blocked`, and `WooCommerce writes blocked` visible.
 - Browser smoke proves the save path issues exactly one safe local asset PATCH and no unsafe asset requests.
@@ -205,6 +206,7 @@ The first local editor slice is implemented with a conservative scope:
 - Browser smoke verifies retry-after-failure by failing the first local asset PATCH, succeeding on the second local PATCH, clearing the failure copy with `Local draft saved`, and still recording no unsafe requests.
 - Browser smoke verifies `Close` hides the local editor after unsaved edits without issuing a local asset PATCH or any WordPress draft, publish, sync, credential, external navigation, or commerce-write request.
 - Browser smoke verifies `Reset local changes` restores local draft fields and dirty diagnostics without closing the editor, issuing a local asset PATCH, or touching WordPress draft, publish, sync, credential, external navigation, or commerce-write paths.
+- Browser smoke verifies local FAQ question/answer draft fields are included in field readiness and dirty diagnostics, then saved through `faq_items` in one safe local asset PATCH without FAQ schema publishing, WordPress draft, publish, sync, credential, external navigation, or commerce-write paths.
 - Browser smoke verifies reopening after close discards unsaved local edits, restores the safe asset preview title and empty local-only editor fields, and records no write requests.
 - Browser smoke verifies close-after-failed-save feedback reset with red-green coverage: stale `Local save failed` feedback is cleared when the local editor closes, and reopening starts from neutral local-only feedback.
 - Browser smoke verifies close-after-success feedback reset: stale `Local draft saved` feedback is cleared after close and reopen while the saved local asset preview title remains visible.

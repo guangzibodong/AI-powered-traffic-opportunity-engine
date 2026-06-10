@@ -168,6 +168,7 @@ Expected behavior:
 - Local asset editor dirty field key diagnostics may expose read-only changed-field key lists on the editor root and visible dirty summary; they must reconcile with per-field dirty states and remain diagnostics only.
 - Local asset editor dirty field key reconciliation diagnostics may expose read-only booleans proving dirty field key lists match dirty field counts; they must remain diagnostics only and cannot become workflow actions.
 - Local asset editor reset-local-changes controls may reset unsaved local form state only; they must not call `updateAsset`, create drafts, sync, collect credentials, navigate externally, or write commerce data.
+- Local asset editor FAQ draft fields may collect one local question/answer pair and send it only through safe `faq_items`; they must not publish FAQ schema, create drafts, sync, collect credentials, navigate externally, or write commerce data.
 - Frontend DTO adapters must clamp unsafe or unknown backend states to safe UI defaults and must not expose `one_click_apply`, `guarded_autopilot`, live publish, applied, or external-write controls.
 - API-backed Safety UI must remain read-only; it can render integration, sync, and audit state, but it must not trigger sync execution, credential flows, draft creation, publishing, or commerce writes.
 - Imported preview frontend DTOs must remain read-only and recommend-only; they must not expose approve/reject/snooze mutation, draft generation, sync execution, credential flows, publishing, or commerce writes.

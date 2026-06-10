@@ -427,6 +427,11 @@ assert(
   app.includes("Reset local changes"),
   "Local asset editor UI must expose English reset-local-changes copy"
 );
+assert(app.includes("data-asset-editor-faq-draft"), "Local asset editor UI must expose stable FAQ draft diagnostics");
+assert(app.includes("data-asset-editor-faq-question"), "Local asset editor UI must expose stable FAQ question diagnostics");
+assert(app.includes("data-asset-editor-faq-answer"), "Local asset editor UI must expose stable FAQ answer diagnostics");
+assert(app.includes("FAQ question"), "Local asset editor UI must expose English FAQ question copy");
+assert(app.includes("FAQ answer"), "Local asset editor UI must expose English FAQ answer copy");
 assert(
   app.includes("data-asset-editor-dirty-state"),
   "Local asset editor UI must expose stable dirty-state diagnostics"

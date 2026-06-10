@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset editor reset-local-changes control is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor FAQ draft fields are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -263,6 +263,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-095 | 229 | done | Frontend Product Engineer / QA Lead | Add local asset editor dirty field key diagnostics. | The local asset editor root and visible dirty summary expose read-only dirty field key lists that reconcile with per-field clean/dirty states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-QA-096 | 230 | done | Frontend Product Engineer / QA Lead | Add local asset editor dirty field key reconciliation diagnostics. | The local asset editor root and visible dirty summary expose read-only reconciliation markers proving dirty field key lists match dirty counts and per-field dirty states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-FE-097 | 231 | done | Frontend Product Engineer / QA Lead | Add local asset editor reset-local-changes control. | The local asset editor exposes the allowed `Reset local changes` control, resets unsaved local form fields and dirty diagnostics without closing the editor, and issues no local PATCH, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write requests. |
+| TASK-S3-FE-098 | 232 | done | Frontend Product Engineer / QA Lead | Add local asset editor FAQ draft fields. | The local asset editor exposes one local FAQ question/answer draft pair, includes it in field readiness and dirty diagnostics, saves it through safe `faq_items`, and adds no FAQ schema publishing, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -672,6 +673,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local asset editor dirty field key diagnostics are verified by red-green static and browser coverage that first failed on missing dirty field key attributes, then passed with root and visible-summary key lists for clean, edited, saved, and refilled local draft states, plus full backend/frontend/browser verification and no unsafe mutation controls.
 - Local asset editor dirty field key reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing dirty field key reconciliation attributes, then passed with root and visible-summary markers proving dirty key lists match dirty counts, plus full backend/frontend/browser verification and no unsafe mutation controls.
 - Local asset editor reset-local-changes control is verified by red-green static and browser coverage that first failed on missing reset control diagnostics, then passed with local-only form reset behavior, clean dirty diagnostics, no asset PATCH requests, plus full backend/frontend/browser verification and no unsafe mutation controls.
+- Local asset editor FAQ draft fields are verified by red-green static and browser coverage that first failed on missing FAQ field diagnostics, then passed with local FAQ question/answer fields included in field readiness, dirty diagnostics, safe `faq_items` PATCH payloads, plus full backend/frontend/browser verification and no unsafe mutation controls.
 
 ## Completion Rule
 

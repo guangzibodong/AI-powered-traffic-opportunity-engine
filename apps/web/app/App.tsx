@@ -691,6 +691,7 @@ export function App() {
     payload: {
       content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
       editor_note?: string;
+      faq_items?: Array<{ answer: string; question: string }>;
       meta_description?: string;
       meta_title?: string;
       slug?: string;
@@ -944,6 +945,7 @@ function TrafficOperationsPage({
     payload: {
       content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
       editor_note?: string;
+      faq_items?: Array<{ answer: string; question: string }>;
       meta_description?: string;
       meta_title?: string;
       slug?: string;
@@ -1896,6 +1898,7 @@ function LocalAssetEditor({
     payload: {
       content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
       editor_note?: string;
+      faq_items?: Array<{ answer: string; question: string }>;
       meta_description?: string;
       meta_title?: string;
       slug?: string;
@@ -1936,6 +1939,8 @@ function LocalAssetEditor({
   const [metaTitle, setMetaTitle] = useState(asset.title);
   const [metaDescription, setMetaDescription] = useState("");
   const [sectionBody, setSectionBody] = useState("");
+  const [faqQuestion, setFaqQuestion] = useState("");
+  const [faqAnswer, setFaqAnswer] = useState("");
   const [editorNote, setEditorNote] = useState("");
   const isSaving = feedback?.kind === "pending";
   const editorSaveState = isSaving ? "pending" : feedback?.kind === "saved" ? "saved" : feedback?.kind === "failed" ? "failed" : "idle";
@@ -1945,6 +1950,8 @@ function LocalAssetEditor({
     meta_title: metaTitle !== asset.title,
     meta_description: metaDescription !== "",
     structured_section: sectionBody !== "",
+    faq_question: faqQuestion !== "",
+    faq_answer: faqAnswer !== "",
     editor_note: editorNote !== ""
   };
   const editorDirtyFieldKeys = (Object.keys(editorFieldDirtyStates) as Array<keyof typeof editorFieldDirtyStates>).filter(
@@ -1957,7 +1964,7 @@ function LocalAssetEditor({
   const editorFieldDirtyState = (field: keyof typeof editorFieldDirtyStates) =>
     editorFieldDirtyStates[field] ? "dirty" : "clean";
   const editorFieldState = (value: string) => (value.trim().length > 0 ? "filled" : "empty");
-  const editorFieldValues = [title, slug, metaTitle, metaDescription, sectionBody, editorNote];
+  const editorFieldValues = [title, slug, metaTitle, metaDescription, sectionBody, faqQuestion, faqAnswer, editorNote];
   const editorFieldCount = editorFieldValues.length;
   const editorFilledFieldCount = editorFieldValues.filter((value) => value.trim().length > 0).length;
   const editorEmptyFieldCount = editorFieldCount - editorFilledFieldCount;
@@ -1978,6 +1985,8 @@ function LocalAssetEditor({
     setMetaTitle(asset.title);
     setMetaDescription("");
     setSectionBody("");
+    setFaqQuestion("");
+    setFaqAnswer("");
     setEditorNote("");
   }, [asset.id, asset.title, editorDefaultSlug]);
 
@@ -1987,6 +1996,8 @@ function LocalAssetEditor({
     setMetaTitle(asset.title);
     setMetaDescription("");
     setSectionBody("");
+    setFaqQuestion("");
+    setFaqAnswer("");
     setEditorNote("");
   }
 
@@ -2099,6 +2110,10 @@ function LocalAssetEditor({
               ? [{ body: sectionBody, heading: "Local draft section", type: "section" }]
               : undefined,
             editor_note: editorNote || undefined,
+            faq_items:
+              faqQuestion || faqAnswer
+                ? [{ answer: faqAnswer, question: faqQuestion }]
+                : undefined,
             meta_description: metaDescription || undefined,
             meta_title: metaTitle || undefined,
             slug,
@@ -2151,6 +2166,28 @@ function LocalAssetEditor({
           <span>{copy.structuredSection}</span>
           <textarea value={sectionBody} onChange={(event) => setSectionBody(event.target.value)} />
         </label>
+        <div className="asset-editor-faq-draft" data-asset-editor-faq-draft="true">
+          <label
+            data-asset-editor-faq-question="true"
+            data-asset-editor-field="true"
+            data-asset-editor-field-dirty-state={editorFieldDirtyState("faq_question")}
+            data-asset-editor-field-key="faq_question"
+            data-asset-editor-field-state={editorFieldState(faqQuestion)}
+          >
+            <span>{locale === "zh" ? "FAQ 问题" : "FAQ question"}</span>
+            <input value={faqQuestion} onChange={(event) => setFaqQuestion(event.target.value)} />
+          </label>
+          <label
+            data-asset-editor-faq-answer="true"
+            data-asset-editor-field="true"
+            data-asset-editor-field-dirty-state={editorFieldDirtyState("faq_answer")}
+            data-asset-editor-field-key="faq_answer"
+            data-asset-editor-field-state={editorFieldState(faqAnswer)}
+          >
+            <span>{locale === "zh" ? "FAQ 回答" : "FAQ answer"}</span>
+            <textarea value={faqAnswer} onChange={(event) => setFaqAnswer(event.target.value)} />
+          </label>
+        </div>
         <label
           data-asset-editor-field="true"
           data-asset-editor-field-dirty-state={editorFieldDirtyState("editor_note")}
