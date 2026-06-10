@@ -2178,6 +2178,14 @@ function LocalAssetEditor({
   const editorQaPendingCount = asset.qaChecks.filter((check) => check.status === "pending").length;
   const editorQaReadinessState =
     asset.qaChecks.length === 0 ? "not_applicable" : editorQaPendingCount > 0 ? "pending_qa" : "qa_clear";
+  const editorContentBlockTypeEntries = Object.entries(
+    asset.contentBlockTypes.reduce<Record<string, number>>((counts, blockType) => {
+      counts[blockType] = (counts[blockType] ?? 0) + 1;
+      return counts;
+    }, {})
+  ).sort(([left], [right]) => left.localeCompare(right));
+  const editorContentBlockTypeTotal = editorContentBlockTypeEntries.reduce((sum, [, count]) => sum + count, 0);
+  const editorContentBlockTypeCountsReconciled = editorContentBlockTypeTotal === asset.contentBlockCount;
   const editorClaimSourceEntries = Object.entries(
     asset.claimLedger.reduce<Record<string, number>>((counts, claim) => {
       counts[claim.source] = (counts[claim.source] ?? 0) + 1;
@@ -2232,6 +2240,9 @@ function LocalAssetEditor({
       data-asset-editor-claim-source-count={editorClaimSourceEntries.length}
       data-asset-editor-claim-source-counts-reconciled={editorClaimSourceCountsReconciled}
       data-asset-editor-claim-source-total-count={editorClaimSourceTotal}
+      data-asset-editor-content-block-type-count={editorContentBlockTypeEntries.length}
+      data-asset-editor-content-block-type-counts-reconciled={editorContentBlockTypeCountsReconciled}
+      data-asset-editor-content-block-type-total-count={editorContentBlockTypeTotal}
       data-asset-editor-dirty-field-count={editorDirtyFieldCount}
       data-asset-editor-dirty-field-keys={editorDirtyFieldKeyList}
       data-asset-editor-dirty-field-keys-reconciled={editorDirtyFieldKeysReconciled}
@@ -2299,6 +2310,21 @@ function LocalAssetEditor({
           <strong>{editorDirtyState}</strong>
         </div>
       </div>
+      {editorContentBlockTypeEntries.length > 0 && (
+        <div className="inline-diagnostics" data-asset-editor-content-block-type-list="true">
+          {editorContentBlockTypeEntries.map(([blockType, count]) => (
+            <span
+              className="pill muted-pill"
+              data-asset-editor-content-block-type-key={blockType}
+              data-asset-editor-content-block-type-row="true"
+              data-asset-editor-content-block-type-row-count={count}
+              key={`${asset.id}-editor-content-block-type-${blockType}`}
+            >
+              {blockType} {count}
+            </span>
+          ))}
+        </div>
+      )}
       {asset.claimLedger.length > 0 && (
         <div className="kv-list" data-asset-editor-claim-summary="true">
           <div className="kv-row">

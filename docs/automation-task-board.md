@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 visible asset row content block type diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor content block type diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -278,6 +278,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-110 | 244 | done | Frontend Product Engineer / QA Lead | Add visible asset row QA status distribution diagnostics. | Each visible asset workspace row exposes read-only QA status count rows and reconciliation markers proving row-level status counts match that row's safe QA details, without QA mutation, claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 | TASK-S3-QA-111 | 245 | done | Frontend Product Engineer / QA Lead | Add visible asset row QA count reconciliation diagnostics. | Each visible asset workspace row exposes read-only QA detail count, pending detail count, and reconciliation markers proving rendered safe QA details match that row's safe QA count and pending count, without QA mutation, claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 | TASK-S3-QA-112 | 246 | done | Frontend Product Engineer / QA Lead | Add visible asset row content block type diagnostics. | Each visible asset workspace row exposes read-only content block type count rows and reconciliation markers proving row-level block types match that row's safe content block count, without rich text editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls. |
+| TASK-S3-QA-113 | 247 | done | Frontend Product Engineer / QA Lead | Add local asset editor content block type diagnostics. | The local asset editor exposes read-only content block type count rows and reconciliation markers proving editor-visible block types match the selected asset's safe content block count, without rich text editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls. |
 
 ## Blockers
 
@@ -702,6 +703,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Visible asset row QA status distribution diagnostics are verified by red-green static and browser coverage that first failed on missing row-level QA status count markers, then passed with each visible asset row proving row-level status counts reconcile with that row's safe QA details, plus full backend/frontend/browser verification and no QA mutation, claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 - Visible asset row QA count reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing row-level QA detail count markers, then passed with each visible asset row proving rendered safe QA details and pending details match that row's safe QA counts, plus full backend/frontend/browser verification and no QA mutation, claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 - Visible asset row content block type diagnostics are verified by red-green static and browser coverage that first failed on missing row-level content block type count markers, then passed with each visible asset row proving block type distribution rows reconcile with that row's safe content block count, plus full backend/frontend/browser verification and no rich text editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls.
+- Local asset editor content block type diagnostics are verified by red-green static and browser coverage that first failed on missing editor-level content block type count markers, then passed with the selected local asset editor proving block type distribution rows reconcile with that asset's safe content block count, plus full backend/frontend/browser verification and no rich text editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls.
 
 ## Completion Rule
 

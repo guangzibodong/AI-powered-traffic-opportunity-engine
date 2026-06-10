@@ -1677,6 +1677,48 @@ async function assertLocalAssetEditorClaimSourceDistribution(editor, expectedDis
   }
 }
 
+async function assertLocalAssetEditorContentBlockTypeDistribution(editor, expectedContentBlockTypes, label) {
+  const expectedDistribution = expectedContentBlockTypes.reduce((counts, blockType) => {
+    counts[blockType] = (counts[blockType] ?? 0) + 1;
+    return counts;
+  }, {});
+  const expectedEntries = Object.entries(expectedDistribution).sort(([left], [right]) => left.localeCompare(right));
+  const expectedTotal = expectedEntries.reduce((sum, [, count]) => sum + count, 0);
+  const typeCount = Number(await editor.getAttribute("data-asset-editor-content-block-type-count"));
+  const totalCount = Number(await editor.getAttribute("data-asset-editor-content-block-type-total-count"));
+  const reconciled = await editor.getAttribute("data-asset-editor-content-block-type-counts-reconciled");
+  const rows = await editor.locator("[data-asset-editor-content-block-type-row='true']").evaluateAll((elements) =>
+    elements.map((element) => ({
+      count: Number(element.getAttribute("data-asset-editor-content-block-type-row-count")),
+      text: element.textContent ?? "",
+      type: element.getAttribute("data-asset-editor-content-block-type-key")
+    }))
+  );
+  assert(
+    typeCount === expectedEntries.length,
+    `${label} editor content block type count mismatch: expected ${expectedEntries.length}, got ${typeCount}`
+  );
+  assert(
+    totalCount === expectedTotal,
+    `${label} editor content block type total mismatch: expected ${expectedTotal}, got ${totalCount}`
+  );
+  assert(reconciled === "true", `${label} editor content block type reconciliation marker must be true`);
+  assert(
+    rows.length === expectedEntries.length,
+    `${label} editor content block type row count mismatch: expected ${expectedEntries.length}, got ${rows.length}`
+  );
+  assert(
+    rows.reduce((sum, row) => sum + row.count, 0) === expectedTotal,
+    `${label} editor content block type rows must reconcile with total ${expectedTotal}`
+  );
+  for (const [blockType, count] of expectedEntries) {
+    assert(
+      rows.some((row) => row.type === blockType && row.count === count && row.text.includes(`${blockType} ${count}`)),
+      `${label} editor missing content block type distribution row ${blockType}:${count}`
+    );
+  }
+}
+
 async function assertLocalAssetEditorCanSave(
   page,
   label,
@@ -1694,6 +1736,7 @@ async function assertLocalAssetEditorCanSave(
     saveName = "Save local draft",
     saveSuccessCopy = "Local draft saved",
     titleValue = "Updated local camping espresso draft",
+    expectedContentBlockTypes = null,
     expectedClaims = null,
     wordpressBlockedCopy = "WordPress draft creation blocked",
     woocommerceBlockedCopy = "WooCommerce writes blocked"
@@ -1731,6 +1774,9 @@ async function assertLocalAssetEditorCanSave(
   await expectVisible(page.getByText(woocommerceBlockedCopy), `${label} WooCommerce block editor copy`);
   if (expectedClaims) {
     await assertLocalAssetEditorClaimLedger(editor, expectedClaims, `${label} initial`);
+  }
+  if (expectedContentBlockTypes) {
+    await assertLocalAssetEditorContentBlockTypeDistribution(editor, expectedContentBlockTypes, `${label} initial`);
   }
   const expectedSafetyCapabilities = [
     { copy: externalWritesCopy, key: "external_writes" },
@@ -4364,6 +4410,7 @@ async function runSmoke() {
       "populated asset workspace"
     );
     const populatedEditor = await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace", {
+      expectedContentBlockTypes: ["answer_summary", "metadata_only", "faq"],
       expectedClaims: [
         {
           id: "claim_ctr_gap",

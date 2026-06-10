@@ -490,6 +490,18 @@ assert(
   "Local asset editor UI must expose stable editor claim source count reconciliation diagnostics"
 );
 assert(
+  app.includes("data-asset-editor-content-block-type-count"),
+  "Local asset editor UI must expose stable content block type count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-content-block-type-key"),
+  "Local asset editor UI must expose stable content block type key diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-content-block-type-counts-reconciled"),
+  "Local asset editor UI must expose stable content block type reconciliation diagnostics"
+);
+assert(
   app.includes("data-asset-editor-qa-check-count"),
   "Local asset editor UI must expose stable QA check count diagnostics"
 );
