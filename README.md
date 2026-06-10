@@ -157,7 +157,8 @@ Sprint 3 local/demo capabilities completed:
 8. Stable source, snapshot id, evidence count, query/page count, blocked capability, and empty/unavailable diagnostics.
 9. Local performance refresh preview diagnostics and audit mapping stay preview-only, local, and hidden from executable UI controls.
 10. Local asset QA and claim ledger diagnostics include read-only row, status, source, total, and source distribution reconciliation against safe local rows.
-11. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
+11. Visible local asset rows include read-only content block type distribution diagnostics that reconcile to safe content block counts without rich text editing, draft creation, publishing, sync, credentials, product edits, or commerce writes.
+12. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
 
 Current product/engineering ownership:
 

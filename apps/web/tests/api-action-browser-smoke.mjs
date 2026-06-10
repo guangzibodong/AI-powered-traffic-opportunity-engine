@@ -949,6 +949,63 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
           ","
         )}, got ${contentBlockTypes ?? "missing"}`
       );
+      const expectedContentBlockTypeDistribution = expectedAsset.contentBlockTypes.reduce((counts, blockType) => {
+        counts[blockType] = (counts[blockType] ?? 0) + 1;
+        return counts;
+      }, {});
+      const expectedContentBlockTypeEntries = Object.entries(expectedContentBlockTypeDistribution).sort(
+        ([left], [right]) => left.localeCompare(right)
+      );
+      const rowContentBlockTypeCount = Number(await row.getAttribute("data-asset-row-content-block-type-count"));
+      const rowContentBlockTypeTotal = Number(await row.getAttribute("data-asset-row-content-block-type-total-count"));
+      const rowContentBlockTypeReconciled = await row.getAttribute(
+        "data-asset-row-content-block-type-counts-reconciled"
+      );
+      const rowContentBlockTypeRows = await row
+        .locator("[data-asset-row-content-block-type-row='true']")
+        .evaluateAll((elements) =>
+          elements.map((element) => ({
+            count: Number(element.getAttribute("data-asset-row-content-block-type-row-count")),
+            text: element.textContent ?? "",
+            type: element.getAttribute("data-asset-row-content-block-type-key")
+          }))
+        );
+      assert(
+        rowContentBlockTypeCount === expectedContentBlockTypeEntries.length,
+        `${label} asset row ${expectedAsset.id} content block type count mismatch: expected ${
+          expectedContentBlockTypeEntries.length
+        }, got ${rowContentBlockTypeCount}`
+      );
+      assert(
+        rowContentBlockTypeTotal === expectedAsset.contentBlockCount,
+        `${label} asset row ${expectedAsset.id} content block type total mismatch: expected ${
+          expectedAsset.contentBlockCount
+        }, got ${rowContentBlockTypeTotal}`
+      );
+      assert(
+        rowContentBlockTypeReconciled === "true",
+        `${label} asset row ${expectedAsset.id} content block type reconciliation marker must be true, got ${
+          rowContentBlockTypeReconciled ?? "missing"
+        }`
+      );
+      assert(
+        rowContentBlockTypeRows.length === expectedContentBlockTypeEntries.length,
+        `${label} asset row ${expectedAsset.id} content block type row count mismatch: expected ${
+          expectedContentBlockTypeEntries.length
+        }, got ${rowContentBlockTypeRows.length}`
+      );
+      assert(
+        rowContentBlockTypeRows.reduce((sum, typeRow) => sum + typeRow.count, 0) === expectedAsset.contentBlockCount,
+        `${label} asset row ${expectedAsset.id} content block type rows must reconcile with block count`
+      );
+      for (const [blockType, count] of expectedContentBlockTypeEntries) {
+        assert(
+          rowContentBlockTypeRows.some(
+            (typeRow) => typeRow.type === blockType && typeRow.count === count && typeRow.text.includes(`${blockType} ${count}`)
+          ),
+          `${label} asset row ${expectedAsset.id} missing content block type distribution row ${blockType}:${count}`
+        );
+      }
     }
     if (expectedAsset.qaCheckCount !== undefined) {
       assert(

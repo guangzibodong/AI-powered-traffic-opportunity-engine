@@ -1637,6 +1637,14 @@ function AssetWorkspacePanel({
       {visibleAssets.length > 0 ? (
         <div className="mini-list" data-asset-row-aggregate="true" data-visible-asset-count={visibleAssets.length}>
           {visibleAssets.map((asset) => {
+            const assetContentBlockTypeEntries = Object.entries(
+              asset.contentBlockTypes.reduce<Record<string, number>>((counts, blockType) => {
+                counts[blockType] = (counts[blockType] ?? 0) + 1;
+                return counts;
+              }, {})
+            ).sort(([left], [right]) => left.localeCompare(right));
+            const assetContentBlockTypeTotal = assetContentBlockTypeEntries.reduce((sum, [, count]) => sum + count, 0);
+            const assetContentBlockTypeCountsReconciled = assetContentBlockTypeTotal === asset.contentBlockCount;
             const assetClaimSourceEntries = Object.entries(
               asset.claimLedger.reduce<Record<string, number>>((counts, claim) => {
                 counts[claim.source] = (counts[claim.source] ?? 0) + 1;
@@ -1661,6 +1669,9 @@ function AssetWorkspacePanel({
                 data-asset-content-block-count={asset.contentBlockCount}
                 data-asset-content-block-types={asset.contentBlockTypes.join(",")}
                 data-asset-id={asset.id}
+                data-asset-row-content-block-type-count={assetContentBlockTypeEntries.length}
+                data-asset-row-content-block-type-counts-reconciled={assetContentBlockTypeCountsReconciled}
+                data-asset-row-content-block-type-total-count={assetContentBlockTypeTotal}
                 data-asset-qa-check-count={asset.qaCheckCount}
                 data-asset-qa-pending-count={asset.qaPendingCount}
                 data-asset-review-state={asset.reviewState}
@@ -1711,6 +1722,21 @@ function AssetWorkspacePanel({
                       key={`${asset.id}-claim-source-${source}`}
                     >
                       {source} {count}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {assetContentBlockTypeEntries.length > 0 && (
+                <div className="inline-diagnostics" data-asset-row-content-block-type-list="true">
+                  {assetContentBlockTypeEntries.map(([blockType, count]) => (
+                    <span
+                      className="pill muted-pill"
+                      data-asset-row-content-block-type-key={blockType}
+                      data-asset-row-content-block-type-row="true"
+                      data-asset-row-content-block-type-row-count={count}
+                      key={`${asset.id}-content-block-type-${blockType}`}
+                    >
+                      {blockType} {count}
                     </span>
                   ))}
                 </div>

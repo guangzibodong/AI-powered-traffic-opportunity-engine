@@ -416,6 +416,18 @@ assert(
 );
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
+  app.includes("data-asset-row-content-block-type-count"),
+  "Asset workspace UI must expose stable row-level content block type count diagnostics"
+);
+assert(
+  app.includes("data-asset-row-content-block-type-key"),
+  "Asset workspace UI must expose stable row-level content block type key diagnostics"
+);
+assert(
+  app.includes("data-asset-row-content-block-type-counts-reconciled"),
+  "Asset workspace UI must expose stable row-level content block type reconciliation diagnostics"
+);
+assert(
   app.includes("data-asset-row-claim-detail-count"),
   "Asset workspace UI must expose stable row-level claim detail count diagnostics"
 );
