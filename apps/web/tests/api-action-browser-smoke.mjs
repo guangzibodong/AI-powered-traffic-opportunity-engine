@@ -540,6 +540,36 @@ async function assertLocalAssetEditorCloseAfterFailedSaveClearsFeedback(page, la
   );
 }
 
+async function assertLocalAssetEditorCloseAfterSuccessClearsFeedback(page, label, savedTitle) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} first local asset editor`);
+  await editor.locator("input").first().fill(savedTitle);
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} successful local save button`);
+  await expectVisible(page.getByText("Local draft saved"), `${label} local save success copy`);
+  await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close saved editor button`);
+
+  const closeDeadline = Date.now() + 5_000;
+  while (Date.now() < closeDeadline) {
+    if ((await page.locator(".asset-editor-panel").count()) === 0) break;
+    await delay(50);
+  }
+  assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} saved local asset editor must close`);
+
+  await expectVisible(page.getByText(savedTitle), `${label} saved asset preview title`);
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} reopen saved local editor`);
+  const reopenedEditor = page.locator(".asset-editor-panel");
+  await expectVisible(reopenedEditor, `${label} reopened saved local editor`);
+  const staleSuccessCopyCount = await page.getByText("Local draft saved").count();
+  assert(staleSuccessCopyCount === 0, `${label} stale local save success feedback must clear after close`);
+  await expectVisible(
+    page.getByText("Only local draft fields are saved."),
+    `${label} reopened saved editor neutral local-only feedback`
+  );
+  const reopenedTitle = await reopenedEditor.locator("input").first().inputValue();
+  assert(reopenedTitle === savedTitle, `${label} reopened saved title mismatch: expected ${savedTitle}, got ${reopenedTitle}`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -2678,6 +2708,109 @@ async function runSmoke() {
       `Close-after-failed-save issued unsafe requests: ${JSON.stringify(unsafeCloseFailedRequests)}`
     );
     await closeFailedAssetPage.close();
+
+    const closeSuccessAssetPage = await context.newPage();
+    const closeSuccessAssetRequests = [];
+    const closeSuccessSavedTitle = "Close success saved local title";
+    closeSuccessAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        closeSuccessAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await closeSuccessAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_close_success",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_close_success",
+                title: "Close success candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await closeSuccessAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_close_success`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        const payload = route.request().postDataJSON();
+        assert(payload.title === closeSuccessSavedTitle, "Close-success asset PATCH must send edited title");
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_close_success",
+              qa_checks: [{ key: "seo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_close_success",
+              title: closeSuccessSavedTitle
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await closeSuccessAssetPage.goto(webUrl);
+    await clickUnique(closeSuccessAssetPage.getByRole("button", { name: "EN" }), "close success asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(closeSuccessAssetPage, 1, "close success asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_close_success",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Close success candidate"
+      }
+    ]);
+    await assertLocalAssetEditorCloseAfterSuccessClearsFeedback(
+      closeSuccessAssetPage,
+      "close success asset workspace",
+      closeSuccessSavedTitle
+    );
+    const closeSuccessPatchRequests = closeSuccessAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_close_success`)
+    );
+    assert(
+      closeSuccessPatchRequests.length === 1,
+      `Close-after-success should issue exactly one local PATCH, got ${JSON.stringify(closeSuccessAssetRequests)}`
+    );
+    const unsafeCloseSuccessRequests = closeSuccessAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_close_success`))
+    );
+    assert(
+      unsafeCloseSuccessRequests.length === 0,
+      `Close-after-success issued unsafe requests: ${JSON.stringify(unsafeCloseSuccessRequests)}`
+    );
+    await closeSuccessAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {

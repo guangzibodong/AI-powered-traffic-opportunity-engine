@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local editor close-after-failed-save feedback reset coverage is verified; local editor close-after-success feedback reset coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 local editor close-after-success feedback reset coverage is verified; local editor reopen button state coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -204,7 +204,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-036 | 170 | done | Frontend Product Engineer / QA Lead | Add local editor close-without-write browser coverage. | Browser smoke verifies closing the local editor hides the form without issuing a local asset PATCH or any WordPress draft, publish, sync, credential, href navigation, or commerce-write request. |
 | TASK-S3-QA-037 | 171 | done | Frontend Product Engineer / QA Lead | Add local editor reopen-after-close reset coverage. | Browser smoke verifies unsaved local editor changes are discarded after Close and reopening the same candidate restores the safe asset preview fields without issuing draft, publish, sync, credential, navigation, commerce-write, or local PATCH requests. |
 | TASK-S3-QA-038 | 172 | done | Frontend Product Engineer / QA Lead | Add local editor close-after-failed-save feedback reset coverage. | Browser smoke verifies closing a failed local save and reopening the same candidate clears stale failure feedback while keeping only allowed local PATCH requests and no draft, publish, sync, credential, navigation, or commerce-write requests. |
-| TASK-S3-QA-039 | 173 | todo | Frontend Product Engineer / QA Lead | Add local editor close-after-success feedback reset coverage. | Browser smoke verifies closing after a successful local save and reopening the same candidate does not show stale success feedback, while preserving the saved local asset preview and avoiding draft, publish, sync, credential, navigation, or commerce-write requests. |
+| TASK-S3-QA-039 | 173 | done | Frontend Product Engineer / QA Lead | Add local editor close-after-success feedback reset coverage. | Browser smoke verifies closing after a successful local save and reopening the same candidate does not show stale success feedback, while preserving the saved local asset preview and avoiding draft, publish, sync, credential, navigation, or commerce-write requests. |
+| TASK-S3-QA-040 | 174 | todo | Frontend Product Engineer / QA Lead | Add local editor reopen button state coverage. | Browser smoke verifies reopening the local editor after close shows an enabled `Save local draft` button instead of stale pending/disabled state, with no draft, publish, sync, credential, navigation, or commerce-write requests. |
 
 ## Blockers
 
@@ -544,6 +545,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local editor close-after-failed-save feedback reset coverage is next because stale failure feedback should not follow a user after they abandon and reopen the local-only editor.
 - Local editor close-after-failed-save feedback reset coverage is verified by red-green browser smoke: the test first failed on stale `Local save failed`; the fix clears asset save feedback on local editor close and now reopens with neutral local-only feedback.
 - Local editor close-after-success feedback reset coverage is next because stale success feedback should not imply a fresh save after the user closes and reopens the local-only editor.
+- Local editor close-after-success feedback reset coverage is verified by browser smoke that saves one local PATCH, closes the editor, reopens the same candidate with the saved preview title, and confirms stale `Local draft saved` feedback is cleared.
+- Local editor reopen button state coverage is next because closing and reopening should also clear any stale pending/disabled button state.
 
 ## Completion Rule
 
