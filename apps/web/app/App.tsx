@@ -1904,6 +1904,7 @@ function LocalAssetEditor({
   ) => Promise<void>;
 }) {
   const copy = {
+    fieldReadiness: locale === "zh" ? "字段状态" : "Field readiness",
     close: locale === "zh" ? "关闭" : "Close",
     editorNote: locale === "zh" ? "编辑备注" : "Editor note",
     externalWritesDisabled: locale === "zh" ? "外部写入已关闭" : "External writes disabled",
@@ -2004,6 +2005,10 @@ function LocalAssetEditor({
           <strong>
             {editorFilledFieldCount}/{editorFieldCount} {copy.filled}
           </strong>
+        </div>
+        <div className="kv-row" data-asset-editor-field-readiness="true">
+          <span>{copy.fieldReadiness}</span>
+          <strong>{editorFieldReadinessState}</strong>
         </div>
       </div>
       {asset.qaChecks.length > 0 && (

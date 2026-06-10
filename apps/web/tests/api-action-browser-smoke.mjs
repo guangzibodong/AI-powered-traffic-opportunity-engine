@@ -1138,6 +1138,15 @@ async function assertLocalAssetEditorFieldDiagnostics(
   const fieldSummary = editor.locator("[data-asset-editor-field-summary='true']");
   await expectVisible(fieldSummary, `${label} editor field summary diagnostics`);
   await expectVisible(fieldSummary.getByText(fieldCopy), `${label} visible editor field summary label`);
+  const fieldReadinessSummary = fieldSummary.locator("[data-asset-editor-field-readiness='true']");
+  await expectVisible(fieldReadinessSummary, `${label} visible editor field readiness summary row`);
+  const visibleReadinessState = ((await fieldReadinessSummary.locator("strong").textContent()) ?? "").trim();
+  assert(
+    visibleReadinessState === expectedReadinessState,
+    `${label} visible editor field readiness mismatch: expected ${expectedReadinessState}, got ${
+      visibleReadinessState || "missing"
+    }`
+  );
   await expectVisible(
     fieldSummary.getByText(`${expectedFilled}/6 ${filledCopy}`),
     `${label} visible editor field fill summary`
