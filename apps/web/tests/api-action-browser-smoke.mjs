@@ -570,6 +570,32 @@ async function assertLocalAssetEditorCloseAfterSuccessClearsFeedback(page, label
   assert(reopenedTitle === savedTitle, `${label} reopened saved title mismatch: expected ${savedTitle}, got ${reopenedTitle}`);
 }
 
+async function assertLocalAssetEditorReopenHasEnabledSaveButton(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} first local asset editor`);
+  await editor.locator("input").first().fill("Pending close local title");
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} pending local save button`);
+  await expectVisible(editor.getByRole("button", { name: "Saving local draft" }), `${label} pending local save copy`);
+  await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close pending editor button`);
+
+  const closeDeadline = Date.now() + 5_000;
+  while (Date.now() < closeDeadline) {
+    if ((await page.locator(".asset-editor-panel").count()) === 0) break;
+    await delay(50);
+  }
+  assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} pending local asset editor must close`);
+
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} reopen pending local editor`);
+  const reopenedEditor = page.locator(".asset-editor-panel");
+  await expectVisible(reopenedEditor, `${label} reopened pending local editor`);
+  const saveButton = reopenedEditor.getByRole("button", { name: "Save local draft" });
+  await expectVisible(saveButton, `${label} reopened enabled save button`);
+  assert(!(await saveButton.isDisabled()), `${label} reopened save button must be enabled`);
+  const stalePendingCount = await reopenedEditor.getByRole("button", { name: "Saving local draft" }).count();
+  assert(stalePendingCount === 0, `${label} reopened editor must not show stale pending save state`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -2811,6 +2837,103 @@ async function runSmoke() {
       `Close-after-success issued unsafe requests: ${JSON.stringify(unsafeCloseSuccessRequests)}`
     );
     await closeSuccessAssetPage.close();
+
+    const reopenButtonAssetPage = await context.newPage();
+    const reopenButtonAssetRequests = [];
+    reopenButtonAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        reopenButtonAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await reopenButtonAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_reopen_button",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_reopen_button",
+                title: "Reopen button state candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await reopenButtonAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_reopen_button`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        await delay(1_000);
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_reopen_button",
+              qa_checks: [{ key: "seo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_reopen_button",
+              title: "Pending close local title"
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await reopenButtonAssetPage.goto(webUrl);
+    await clickUnique(reopenButtonAssetPage.getByRole("button", { name: "EN" }), "reopen button asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(reopenButtonAssetPage, 1, "reopen button asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_reopen_button",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Reopen button state candidate"
+      }
+    ]);
+    await assertLocalAssetEditorReopenHasEnabledSaveButton(reopenButtonAssetPage, "reopen button asset workspace");
+    const reopenButtonPatchRequests = reopenButtonAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_reopen_button`)
+    );
+    assert(
+      reopenButtonPatchRequests.length === 1,
+      `Reopen button state should issue exactly one local PATCH, got ${JSON.stringify(reopenButtonAssetRequests)}`
+    );
+    const unsafeReopenButtonRequests = reopenButtonAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_reopen_button`))
+    );
+    assert(
+      unsafeReopenButtonRequests.length === 0,
+      `Reopen button state issued unsafe requests: ${JSON.stringify(unsafeReopenButtonRequests)}`
+    );
+    await reopenButtonAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {

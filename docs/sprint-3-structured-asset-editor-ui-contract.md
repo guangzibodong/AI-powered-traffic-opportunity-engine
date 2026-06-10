@@ -206,6 +206,7 @@ The first local editor slice is implemented with a conservative scope:
 - Browser smoke verifies reopening after close discards unsaved local edits, restores the safe asset preview title and empty local-only editor fields, and records no write requests.
 - Browser smoke verifies close-after-failed-save feedback reset with red-green coverage: stale `Local save failed` feedback is cleared when the local editor closes, and reopening starts from neutral local-only feedback.
 - Browser smoke verifies close-after-success feedback reset: stale `Local draft saved` feedback is cleared after close and reopen while the saved local asset preview title remains visible.
+- Browser smoke verifies reopening during a delayed local save resets the button from pending/disabled back to an enabled `Save local draft` state without unsafe requests.
 
 Still gated:
 
@@ -215,7 +216,7 @@ Still gated:
 - Rich schema editor.
 - Rich text editor.
 - Mobile screenshot QA.
-- Reopen button state browser coverage.
+- Pending-response-after-close feedback coverage.
 
 ## Out Of Scope
 

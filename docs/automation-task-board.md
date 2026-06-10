@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local editor close-after-success feedback reset coverage is verified; local editor reopen button state coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 local editor reopen button state coverage is verified; local editor pending-response-after-close feedback coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -205,7 +205,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-037 | 171 | done | Frontend Product Engineer / QA Lead | Add local editor reopen-after-close reset coverage. | Browser smoke verifies unsaved local editor changes are discarded after Close and reopening the same candidate restores the safe asset preview fields without issuing draft, publish, sync, credential, navigation, commerce-write, or local PATCH requests. |
 | TASK-S3-QA-038 | 172 | done | Frontend Product Engineer / QA Lead | Add local editor close-after-failed-save feedback reset coverage. | Browser smoke verifies closing a failed local save and reopening the same candidate clears stale failure feedback while keeping only allowed local PATCH requests and no draft, publish, sync, credential, navigation, or commerce-write requests. |
 | TASK-S3-QA-039 | 173 | done | Frontend Product Engineer / QA Lead | Add local editor close-after-success feedback reset coverage. | Browser smoke verifies closing after a successful local save and reopening the same candidate does not show stale success feedback, while preserving the saved local asset preview and avoiding draft, publish, sync, credential, navigation, or commerce-write requests. |
-| TASK-S3-QA-040 | 174 | todo | Frontend Product Engineer / QA Lead | Add local editor reopen button state coverage. | Browser smoke verifies reopening the local editor after close shows an enabled `Save local draft` button instead of stale pending/disabled state, with no draft, publish, sync, credential, navigation, or commerce-write requests. |
+| TASK-S3-QA-040 | 174 | done | Frontend Product Engineer / QA Lead | Add local editor reopen button state coverage. | Browser smoke verifies reopening the local editor after close shows an enabled `Save local draft` button instead of stale pending/disabled state, with no draft, publish, sync, credential, navigation, or commerce-write requests. |
+| TASK-S3-QA-041 | 175 | todo | Frontend Product Engineer / QA Lead | Add local editor pending-response-after-close feedback coverage. | Browser smoke verifies a delayed local save response that resolves after Close does not reintroduce stale success or failure feedback into a reopened local editor, while keeping only allowed local PATCH requests. |
 
 ## Blockers
 
@@ -547,6 +548,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local editor close-after-success feedback reset coverage is next because stale success feedback should not imply a fresh save after the user closes and reopens the local-only editor.
 - Local editor close-after-success feedback reset coverage is verified by browser smoke that saves one local PATCH, closes the editor, reopens the same candidate with the saved preview title, and confirms stale `Local draft saved` feedback is cleared.
 - Local editor reopen button state coverage is next because closing and reopening should also clear any stale pending/disabled button state.
+- Local editor reopen button state coverage is verified by browser smoke that closes during a delayed local save, immediately reopens the same candidate, confirms `Save local draft` is enabled, and records no unsafe requests.
+- Local editor pending-response-after-close feedback coverage is next because a delayed local save response should not repaint stale feedback into a reopened local-only editor after the user has already closed it.
 
 ## Completion Rule
 
