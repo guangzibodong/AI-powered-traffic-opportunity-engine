@@ -387,6 +387,14 @@ assert(app.includes("data-asset-qa-detail"), "Asset workspace UI must expose sta
 assert(app.includes("data-asset-qa-key"), "Asset workspace UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-qa-status"), "Asset workspace UI must expose stable QA status diagnostics");
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
+assert(
+  app.includes("data-asset-row-claim-detail-count"),
+  "Asset workspace UI must expose stable row-level claim detail count diagnostics"
+);
+assert(
+  app.includes("data-asset-row-claim-counts-reconciled"),
+  "Asset workspace UI must expose stable row-level claim count reconciliation diagnostics"
+);
 assert(app.includes("data-asset-claim-detail"), "Asset workspace UI must expose stable claim detail diagnostics");
 assert(app.includes("data-asset-claim-id"), "Asset workspace UI must expose stable claim id diagnostics");
 assert(app.includes("data-asset-claim-source"), "Asset workspace UI must expose stable claim source diagnostics");

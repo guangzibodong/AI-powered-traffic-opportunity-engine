@@ -1646,6 +1646,8 @@ function AssetWorkspacePanel({
               data-asset-qa-check-count={asset.qaCheckCount}
               data-asset-qa-pending-count={asset.qaPendingCount}
               data-asset-review-state={asset.reviewState}
+              data-asset-row-claim-counts-reconciled={asset.claimLedger.length === asset.claimCount}
+              data-asset-row-claim-detail-count={asset.claimLedger.length}
               key={asset.id}
             >
               <strong>{asset.title}</strong>

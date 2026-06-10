@@ -926,6 +926,8 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
     const contentBlockCount = await row.getAttribute("data-asset-content-block-count");
     const contentBlockTypes = await row.getAttribute("data-asset-content-block-types");
     const claimCount = await row.getAttribute("data-asset-claim-count");
+    const rowClaimDetailCount = await row.getAttribute("data-asset-row-claim-detail-count");
+    const rowClaimCountsReconciled = await row.getAttribute("data-asset-row-claim-counts-reconciled");
     const qaCheckCount = await row.getAttribute("data-asset-qa-check-count");
     const qaPendingCount = await row.getAttribute("data-asset-qa-pending-count");
     assert(
@@ -967,6 +969,18 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
         claimCount === String(expectedAsset.claimCount),
         `${label} asset row ${expectedAsset.id} claim count mismatch: expected ${expectedAsset.claimCount}, got ${
           claimCount ?? "missing"
+        }`
+      );
+      assert(
+        rowClaimDetailCount === String(expectedAsset.claimCount),
+        `${label} asset row ${expectedAsset.id} claim detail diagnostic mismatch: expected ${
+          expectedAsset.claimCount
+        }, got ${rowClaimDetailCount ?? "missing"}`
+      );
+      assert(
+        rowClaimCountsReconciled === "true",
+        `${label} asset row ${expectedAsset.id} claim reconciliation marker must be true, got ${
+          rowClaimCountsReconciled ?? "missing"
         }`
       );
     }
