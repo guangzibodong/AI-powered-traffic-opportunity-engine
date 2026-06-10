@@ -200,6 +200,24 @@ export type PerformanceSnapshotPreview = {
   window: string;
 };
 
+export type PerformanceRefreshPreview = {
+  blockedCapabilities: string[];
+  clicks: number;
+  ctr: number;
+  displayClicks: string;
+  displayCtr: string;
+  displayImpressions: string;
+  displayPosition: string;
+  externalWriteAllowed: false;
+  impressions: number;
+  position: number;
+  safetyScope: "local_tracking_preview_only";
+  snapshotCount: number;
+  source: "Imported GSC";
+  status: "preview_only";
+  storeId: string;
+};
+
 export type ImportedCatalogPreview = {
   detail: string;
   displayHref?: string;

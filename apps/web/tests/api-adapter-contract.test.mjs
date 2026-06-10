@@ -72,7 +72,12 @@ assert(
   adapter.includes("mapApiAssetPerformanceSnapshotsToPreviews"),
   "adapter must expose asset performance snapshot DTO conversion"
 );
+assert(
+  adapter.includes("mapApiPerformanceRefreshPreviewToPreview"),
+  "adapter must expose performance refresh preview DTO conversion"
+);
 assert(adapter.includes("local_imported_gsc_only"), "performance snapshot adapter must clamp to local imported GSC scope");
+assert(adapter.includes("local_tracking_preview_only"), "performance refresh preview adapter must clamp to local preview scope");
 const assetDraftPreviewType = readExportedType(types, "AssetDraftPreview");
 assert(assetDraftPreviewType.includes("externalWriteAllowed: false"), "Asset draft preview must keep external write as literal false");
 for (const forbiddenAssetPreviewField of ["href", "publish", "sync", "credential", "commerce", "wordpressDraft"]) {
@@ -94,6 +99,25 @@ for (const forbiddenPerformancePreviewField of ["href", "publish", "sync", "cred
   assert(
     !performanceSnapshotPreviewType.toLowerCase().includes(forbiddenPerformancePreviewField.toLowerCase()),
     `Performance snapshot preview must not expose ${forbiddenPerformancePreviewField}`
+  );
+}
+const performanceRefreshPreviewType = readExportedType(types, "PerformanceRefreshPreview");
+assert(
+  performanceRefreshPreviewType.includes("externalWriteAllowed: false"),
+  "Performance refresh preview must keep external write as literal false"
+);
+assert(
+  performanceRefreshPreviewType.includes('status: "preview_only"'),
+  "Performance refresh preview must expose only preview_only status"
+);
+assert(
+  performanceRefreshPreviewType.includes('safetyScope: "local_tracking_preview_only"'),
+  "Performance refresh preview must use local preview safety scope"
+);
+for (const forbiddenRefreshPreviewField of ["href", "publish", "sync", "credential", "commerce", "wordpressDraft"]) {
+  assert(
+    !performanceRefreshPreviewType.toLowerCase().includes(forbiddenRefreshPreviewField.toLowerCase()),
+    `Performance refresh preview must not expose ${forbiddenRefreshPreviewField}`
   );
 }
 assert(types.includes('"product_seo"'), "frontend task categories and rule ids must preserve imported product_seo previews");
@@ -158,6 +182,7 @@ assert(apiClient.includes("ApiAssetWorkspaceResponse"), "API client must type as
 assert(apiClient.includes("ApiAssetResponse"), "API client must type asset detail and creation responses");
 assert(apiClient.includes("ApiPerformanceSnapshotsResponse"), "API client must type performance snapshot responses");
 assert(apiClient.includes("ApiAssetPerformanceSnapshotsResponse"), "API client must type asset performance snapshot responses");
+assert(apiClient.includes("ApiPerformanceRefreshPreviewResponse"), "API client must type performance refresh preview responses");
 assert(apiClient.includes("getIntegrations"), "API client must expose integration status reads");
 assert(apiClient.includes("getSyncRuns"), "API client must expose sync run reads");
 assert(apiClient.includes("getAuditLogs"), "API client must expose audit log reads");
@@ -181,6 +206,7 @@ assert(!apiClient.includes("publishWordpressDraft"), "API client must not expose
 assert(apiClient.includes("updateAsset"), "API client must expose safe local asset mutation after backend QA gates");
 assert(apiClient.includes("getPerformanceSnapshots"), "API client must expose performance snapshot reads");
 assert(apiClient.includes("getAssetPerformanceSnapshots"), "API client must expose asset performance snapshot reads");
+assert(apiClient.includes("previewPerformanceRefresh"), "API client must expose local performance refresh previews");
 const performanceSnapshotClient = readExportedFunction(apiClient, "getPerformanceSnapshots");
 assert(performanceSnapshotClient.includes("/performance"), "Performance snapshot client must target the read-only performance endpoint");
 for (const unsafeMethod of ['method: "POST"', 'method: "PATCH"', 'method: "PUT"', 'method: "DELETE"']) {
@@ -201,6 +227,26 @@ for (const unsafeMethod of ['method: "POST"', 'method: "PATCH"', 'method: "PUT"'
     `Asset performance snapshot client must stay read-only and not use ${unsafeMethod}`
   );
 }
+const performanceRefreshPreviewClient = readExportedFunction(apiClient, "previewPerformanceRefresh");
+assert(
+  performanceRefreshPreviewClient.includes("/performance/refresh"),
+  "Performance refresh preview client must target the local preview endpoint"
+);
+assert(
+  performanceRefreshPreviewClient.includes('method: "POST"'),
+  "Performance refresh preview client must use POST for the explicit preview route"
+);
+assert(
+  !performanceRefreshPreviewClient.includes("body:"),
+  "Performance refresh preview client must not send a request body or credentials"
+);
+assert(
+  !performanceRefreshPreviewClient.toLowerCase().includes("oauth") &&
+    !performanceRefreshPreviewClient.toLowerCase().includes("token") &&
+    !performanceRefreshPreviewClient.toLowerCase().includes("secret") &&
+    !performanceRefreshPreviewClient.toLowerCase().includes("password"),
+  "Performance refresh preview client must not collect credential-like values"
+);
 const assetUpdateClient = readExportedFunction(apiClient, "updateAsset");
 assert(assetUpdateClient.includes("encodeURIComponent(assetId)"), "Asset update client must encode asset path segments");
 assert(assetUpdateClient.includes("/assets/${encodedAssetId}"), "Asset update client must target the encoded local asset id");
@@ -270,6 +316,7 @@ assert(
   app.includes("mapApiAssetPerformanceSnapshotsToPreviews("),
   "App must map asset performance snapshots through the safe adapter"
 );
+assert(!app.includes("previewPerformanceRefresh("), "App must not call local performance refresh previews from the visible UI");
 assert(app.includes("PerformanceSnapshotPanel"), "Board must expose a read-only performance snapshot panel");
 assert(app.includes("AssetPerformancePanel"), "Board must expose a read-only asset performance panel");
 assert(app.includes("performance-snapshot-panel"), "Performance snapshot UI must have a stable read-only panel class");

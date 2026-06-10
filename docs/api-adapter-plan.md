@@ -150,6 +150,7 @@ Expected behavior:
 - Frontend DTO adapters must clamp unsafe or unknown backend states to safe UI defaults and must not expose `one_click_apply`, `guarded_autopilot`, live publish, applied, or external-write controls.
 - API-backed Safety UI must remain read-only; it can render integration, sync, and audit state, but it must not trigger sync execution, credential flows, draft creation, publishing, or commerce writes.
 - Imported preview frontend DTOs must remain read-only and recommend-only; they must not expose approve/reject/snooze mutation, draft generation, sync execution, credential flows, publishing, or commerce writes.
+- The performance refresh preview helper may call the backend's local `POST /performance/refresh` preview route for typed contract coverage only. It must send no body or credential-like values, map the response through a safe view model, and stay disconnected from the visible UI until a separate browser-gated UI contract exists.
 
 ## Remaining API-backed Task Action UX
 

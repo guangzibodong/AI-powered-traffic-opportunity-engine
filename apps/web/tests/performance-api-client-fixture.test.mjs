@@ -59,12 +59,39 @@ const unsafeAssetPayload = {
   store_id: storeId,
   summary: { clicks: 24, ctr: 0.02, impressions: 1200, matching_rows: 1, position: 4.8, snapshot_count: 1 }
 };
+const unsafeRefreshPayload = {
+  blocked_capabilities: [
+    "real_gsc_oauth",
+    "credential_collection",
+    "external_sync_execution",
+    "wordpress_draft_creation",
+    "wordpress_page_updates",
+    "wordpress_publish",
+    "woocommerce_writes"
+  ],
+  external_write_allowed: true,
+  mode: "performance_refresh_preview",
+  safety_scope: "unsafe_live_refresh",
+  snapshot_count: 1,
+  source: "live_gsc",
+  status: "queued",
+  store_id: storeId,
+  summary: { clicks: 32, ctr: 0.017391, impressions: 1840, position: 6.4, snapshot_count: 1 },
+  would_call_external_gsc: true,
+  would_create_wordpress_draft: true,
+  would_update_wordpress_page: true,
+  would_write_woocommerce: true
+};
 
 globalThis.fetch = async (url, init) => {
   fetchCalls.push({ init, url: String(url) });
   return {
     ok: true,
     async json() {
+      if (String(url).includes("/performance/refresh")) {
+        return unsafeRefreshPayload;
+      }
+
       if (String(url).includes("/assets/")) {
         return unsafeAssetPayload;
       }
@@ -159,6 +186,30 @@ for (const forbidden of ["POST", "PATCH", "PUT", "DELETE", "oauth", "sync", "dra
   assert(!serializedCalls.toLowerCase().includes(forbidden), `Performance API fixture leaked ${forbidden}`);
 }
 
+const refreshResponse = await apiClient.previewPerformanceRefresh(storeId, apiBaseUrl);
+assert(fetchCalls.length === 3, "Performance preview helper should issue a third fetch");
+const expectedRefreshUrl = `${apiBaseUrl}/api/stores/${encodeURIComponent(storeId)}/performance/refresh`;
+assert(fetchCalls[2].url === expectedRefreshUrl, "previewPerformanceRefresh must target the encoded refresh preview endpoint");
+assert(fetchCalls[2].init?.method === "POST", "previewPerformanceRefresh must use POST for the local preview endpoint");
+assert(fetchCalls[2].init?.body === undefined, "previewPerformanceRefresh must not send a body");
+assert(refreshResponse === unsafeRefreshPayload, "previewPerformanceRefresh should return the typed API payload");
+
+const refreshPreview = adapter.mapApiPerformanceRefreshPreviewToPreview(unsafeRefreshPayload);
+
+assert(refreshPreview.status === "preview_only", "Performance refresh preview adapter must clamp status to preview_only");
+assert(refreshPreview.safetyScope === "local_tracking_preview_only", "Performance refresh preview adapter must clamp safety scope");
+assert(refreshPreview.externalWriteAllowed === false, "Performance refresh preview adapter must clamp external writes");
+assert(refreshPreview.source === "Imported GSC", "Performance refresh preview adapter should hide raw source labels");
+assert(refreshPreview.snapshotCount === 1, "Performance refresh preview adapter should preserve snapshot count");
+assert(refreshPreview.displayClicks === "32", "Performance refresh preview adapter should format clicks");
+assert(refreshPreview.displayImpressions === "1,840", "Performance refresh preview adapter should format impressions");
+assert(refreshPreview.displayCtr === "1.74%", "Performance refresh preview adapter should format CTR");
+assert(refreshPreview.displayPosition === "6.4", "Performance refresh preview adapter should format average position");
+assert(
+  refreshPreview.blockedCapabilities.includes("real_gsc_oauth"),
+  "Performance refresh preview adapter must preserve blocked capability context"
+);
+
 const serializedPreview = JSON.stringify(previews);
 for (const forbidden of ["unsafe_live_source", "live_gsc", "row_ids", "external_write_allowed"]) {
   assert(!serializedPreview.includes(forbidden), `Performance preview leaked raw backend field ${forbidden}`);
@@ -166,6 +217,19 @@ for (const forbidden of ["unsafe_live_source", "live_gsc", "row_ids", "external_
 const serializedAssetPreview = JSON.stringify(assetPreviews);
 for (const forbidden of ["unsafe_live_source", "unsafe_live_match", "live_gsc", "row_ids", "external_write_allowed"]) {
   assert(!serializedAssetPreview.includes(forbidden), `Asset performance preview leaked raw backend field ${forbidden}`);
+}
+const serializedRefreshPreview = JSON.stringify(refreshPreview);
+for (const forbidden of [
+  "unsafe_live_refresh",
+  "live_gsc",
+  "external_write_allowed",
+  "would_call_external_gsc",
+  "would_create_wordpress_draft",
+  "would_update_wordpress_page",
+  "would_write_woocommerce",
+  "queued"
+]) {
+  assert(!serializedRefreshPreview.includes(forbidden), `Performance refresh preview leaked raw backend field ${forbidden}`);
 }
 
 console.log("Performance API client fixture contract passed");

@@ -8,6 +8,7 @@ import type {
   ImportedQueryRowPreview,
   IntegrationHealth,
   Opportunity,
+  PerformanceRefreshPreview,
   PerformanceSnapshotPreview,
   ScoreComponent,
   SprintOneRuleId,
@@ -39,6 +40,7 @@ import type {
   ApiIntegrationsResponse,
   ApiOpportunitiesResponse,
   ApiOpportunity,
+  ApiPerformanceRefreshPreviewResponse,
   ApiPerformanceSnapshotsResponse,
   ApiSyncRun,
   ApiSyncRunsResponse,
@@ -303,6 +305,33 @@ function mapApiPerformanceSnapshotResponseToPreviews(
       window
     };
   });
+}
+
+export function mapApiPerformanceRefreshPreviewToPreview(
+  response: ApiPerformanceRefreshPreviewResponse
+): PerformanceRefreshPreview {
+  const clicks = normalizeImportedQueryRowNumber(response.summary?.clicks);
+  const ctr = normalizeImportedQueryRowNumber(response.summary?.ctr);
+  const impressions = normalizeImportedQueryRowNumber(response.summary?.impressions);
+  const position = normalizeImportedQueryRowNumber(response.summary?.position);
+
+  return {
+    blockedCapabilities: response.blocked_capabilities ?? [],
+    clicks,
+    ctr,
+    displayClicks: formatImportedQueryRowCount(clicks),
+    displayCtr: formatImportedQueryRowCtr(ctr),
+    displayImpressions: formatImportedQueryRowCount(impressions),
+    displayPosition: formatImportedQueryRowPosition(position),
+    externalWriteAllowed: false,
+    impressions,
+    position,
+    safetyScope: "local_tracking_preview_only",
+    snapshotCount: normalizeImportedQueryRowNumber(response.snapshot_count ?? response.summary?.snapshot_count),
+    source: "Imported GSC",
+    status: "preview_only",
+    storeId: response.store_id
+  };
 }
 
 export function mapApiImportedProductResponseToCatalogPreview(

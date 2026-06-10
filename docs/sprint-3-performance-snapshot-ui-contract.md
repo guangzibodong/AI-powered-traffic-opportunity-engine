@@ -105,7 +105,10 @@ Implemented foundation:
 - Store and asset before/after comparison panels expose stable read-only `Imported GSC` source diagnostics for populated local imported baselines while empty and unavailable states keep populated metric rows hidden.
 - Store and asset before/after comparison panels expose stable read-only baseline snapshot id metric rows for populated local imported baselines while empty and unavailable states keep populated metric rows hidden.
 - Store and asset before/after comparison panels expose stable read-only evidence count metric rows for populated local imported baselines while empty and unavailable states keep populated metric rows hidden.
+- Backend `POST /performance/refresh` is now a local `preview_only` diagnostic route, not a queued job.
+- Frontend API client exposes `previewPerformanceRefresh` and the adapter exposes `mapApiPerformanceRefreshPreviewToPreview` for typed contract coverage only; the visible App does not call the helper and browser smoke still verifies no `/performance/refresh` UI requests.
 
 Still gated:
 
 - Live GSC OAuth or refresh.
+- Any visible refresh button, polling control, credential flow, sync execution, WordPress draft/page update, publishing, or WooCommerce write UI.

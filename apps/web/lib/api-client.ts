@@ -396,6 +396,22 @@ export type ApiAssetPerformanceSnapshotsResponse = {
   summary?: Record<string, number>;
 };
 
+export type ApiPerformanceRefreshPreviewResponse = {
+  blocked_capabilities?: string[];
+  external_write_allowed?: boolean;
+  mode: "performance_refresh_preview";
+  safety_scope?: string;
+  snapshot_count?: number;
+  source?: string;
+  status?: string;
+  store_id: string;
+  summary?: Record<string, number>;
+  would_call_external_gsc?: boolean;
+  would_create_wordpress_draft?: boolean;
+  would_update_wordpress_page?: boolean;
+  would_write_woocommerce?: boolean;
+};
+
 export type ApiAssetContentBlockUpdate = {
   body?: string;
   heading?: string;
@@ -536,6 +552,12 @@ export async function getAssetPerformanceSnapshots(storeId: string, assetId: str
   return fetchJson<ApiAssetPerformanceSnapshotsResponse>(
     `${storeApiPath(apiBaseUrl, storeId)}/assets/${encodedAssetId}/performance`
   );
+}
+
+export async function previewPerformanceRefresh(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiPerformanceRefreshPreviewResponse>(`${storeApiPath(apiBaseUrl, storeId)}/performance/refresh`, {
+    method: "POST"
+  });
 }
 
 export async function getAsset(storeId: string, assetId: string, apiBaseUrl = getApiBaseUrl()) {
