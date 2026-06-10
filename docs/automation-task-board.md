@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset editor per-field diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor field reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -251,6 +251,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-083 | 217 | done | Frontend Product Engineer / QA Lead | Add local asset editor save-state diagnostics. | The local asset editor exposes stable read-only save-state and save-feedback diagnostics for idle, pending, saved, and failed local save states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-QA-084 | 218 | done | Frontend Product Engineer / QA Lead | Add local asset editor field fill diagnostics. | The local asset editor exposes stable read-only field count, filled field count, empty field count, and visible field fill summary diagnostics across initial, edited, and saved local draft field states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-QA-085 | 219 | done | Frontend Product Engineer / QA Lead | Add local asset editor per-field diagnostics. | The local asset editor exposes stable read-only per-field key and fill-state diagnostics for title, slug, meta title, meta description, structured section, and editor note across initial, edited, and saved local draft field states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
+| TASK-S3-QA-086 | 220 | done | Frontend Product Engineer / QA Lead | Add local asset editor field reconciliation diagnostics. | The local asset editor exposes a read-only reconciliation marker proving per-field rows reconcile with field count, filled count, and empty count across initial, edited, and saved local draft field states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -648,6 +649,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local asset editor save-state diagnostics are verified by static and browser coverage with stable `idle`, `pending`, `saved`, and `failed` state markers on the editor shell and feedback copy, plus full backend/frontend/browser verification and no unsafe mutation controls.
 - Local asset editor field fill diagnostics are verified by red-green static and browser coverage that first failed on missing `data-asset-editor-field-count`, then passed with stable field count, filled count, empty count, and visible field summary diagnostics across initial, edited, and saved editor states, refreshed desktop/mobile screenshots, full backend/frontend/browser verification, and no unsafe mutation controls.
 - Local asset editor per-field diagnostics are verified by red-green static and browser coverage that first failed on missing `data-asset-editor-field-key`, then passed with stable per-field key and filled/empty state diagnostics for title, slug, meta title, meta description, structured section, and editor note across initial, edited, and saved editor states, plus full backend/frontend/browser verification and no unsafe mutation controls.
+- Local asset editor field reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing `data-asset-editor-field-counts-reconciled`, then passed with a read-only reconciliation marker and row-count checks proving per-field rows reconcile with field count, filled count, and empty count across initial, edited, and saved editor states, plus full backend/frontend/browser verification and no unsafe mutation controls.
 
 ## Completion Rule
 

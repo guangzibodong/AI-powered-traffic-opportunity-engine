@@ -443,6 +443,10 @@ assert(
   app.includes("data-asset-editor-field-state"),
   "Local asset editor UI must expose stable per-field fill state diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-field-counts-reconciled"),
+  "Local asset editor UI must expose stable field count reconciliation diagnostics"
+);
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(

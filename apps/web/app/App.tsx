@@ -1940,6 +1940,7 @@ function LocalAssetEditor({
   const editorFieldCount = editorFieldValues.length;
   const editorFilledFieldCount = editorFieldValues.filter((value) => value.trim().length > 0).length;
   const editorEmptyFieldCount = editorFieldCount - editorFilledFieldCount;
+  const editorFieldCountsReconciled = editorFilledFieldCount + editorEmptyFieldCount === editorFieldCount;
   const editorQaPendingCount = asset.qaChecks.filter((check) => check.status === "pending").length;
   const editorQaReadinessState =
     asset.qaChecks.length === 0 ? "not_applicable" : editorQaPendingCount > 0 ? "pending_qa" : "qa_clear";
@@ -1964,6 +1965,7 @@ function LocalAssetEditor({
       data-asset-editor="local-only"
       data-asset-editor-empty-field-count={editorEmptyFieldCount}
       data-asset-editor-field-count={editorFieldCount}
+      data-asset-editor-field-counts-reconciled={editorFieldCountsReconciled}
       data-asset-editor-filled-field-count={editorFilledFieldCount}
       data-asset-editor-qa-check-count={asset.qaChecks.length}
       data-asset-editor-qa-pending-count={editorQaPendingCount}

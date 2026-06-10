@@ -1113,6 +1113,7 @@ async function assertLocalAssetEditorFieldDiagnostics(
   const fieldCount = await editor.getAttribute("data-asset-editor-field-count");
   const filledFieldCount = await editor.getAttribute("data-asset-editor-filled-field-count");
   const emptyFieldCount = await editor.getAttribute("data-asset-editor-empty-field-count");
+  const countsReconciled = await editor.getAttribute("data-asset-editor-field-counts-reconciled");
   assert(fieldCount === "6", `${label} editor field count mismatch: expected 6, got ${fieldCount ?? "missing"}`);
   assert(
     filledFieldCount === String(expectedFilled),
@@ -1121,6 +1122,10 @@ async function assertLocalAssetEditorFieldDiagnostics(
   assert(
     emptyFieldCount === String(expectedEmpty),
     `${label} editor empty field count mismatch: expected ${expectedEmpty}, got ${emptyFieldCount ?? "missing"}`
+  );
+  assert(
+    countsReconciled === "true",
+    `${label} editor field count reconciliation mismatch: expected true, got ${countsReconciled ?? "missing"}`
   );
   const fieldSummary = editor.locator("[data-asset-editor-field-summary='true']");
   await expectVisible(fieldSummary, `${label} editor field summary diagnostics`);
@@ -1157,6 +1162,16 @@ async function assertLocalAssetEditorFieldDiagnostics(
   }
   const filledFieldRows = fieldRows.filter((row) => row.state === "filled").length;
   const emptyFieldRows = fieldRows.filter((row) => row.state === "empty").length;
+  assert(
+    fieldRows.length === Number(fieldCount),
+    `${label} editor field row count must reconcile with field count: expected ${fieldCount}, got ${fieldRows.length}`
+  );
+  assert(
+    filledFieldRows + emptyFieldRows === Number(fieldCount),
+    `${label} editor field state totals must reconcile with field count: expected ${fieldCount}, got ${
+      filledFieldRows + emptyFieldRows
+    }`
+  );
   assert(
     filledFieldRows === expectedFilled,
     `${label} editor filled field row mismatch: expected ${expectedFilled}, got ${filledFieldRows}`
