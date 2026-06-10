@@ -372,6 +372,9 @@ assert(
 assert(app.includes("data-asset-qa-detail"), "Asset workspace UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-qa-key"), "Asset workspace UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-qa-status"), "Asset workspace UI must expose stable QA status diagnostics");
+assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
+assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
+assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(

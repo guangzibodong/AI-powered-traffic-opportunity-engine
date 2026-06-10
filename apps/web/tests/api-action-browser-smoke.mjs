@@ -1112,6 +1112,29 @@ async function assertLocalAssetEditorCanSave(
   await expectVisible(page.getByText(externalWritesCopy), `${label} external-write disabled editor copy`);
   await expectVisible(page.getByText(wordpressBlockedCopy), `${label} WordPress block editor copy`);
   await expectVisible(page.getByText(woocommerceBlockedCopy), `${label} WooCommerce block editor copy`);
+  const qaDetailRows = await editor.locator("[data-asset-editor-qa-detail]").evaluateAll((elements) =>
+    elements.map((element) => ({
+      key: element.getAttribute("data-asset-editor-qa-key"),
+      status: element.getAttribute("data-asset-editor-qa-status"),
+      text: element.textContent ?? ""
+    }))
+  );
+  assert(qaDetailRows.length > 0, `${label} editor must render read-only QA detail diagnostics`);
+  for (const qaDetail of qaDetailRows) {
+    assert(qaDetail.key, `${label} editor QA detail must expose a key diagnostic`);
+    assert(qaDetail.status, `${label} editor QA detail must expose a status diagnostic`);
+    assert(
+      qaDetail.text.includes(`${qaDetail.key}:${qaDetail.status}`),
+      `${label} editor QA detail must show safe key/status copy`
+    );
+  }
+  const serializedQaDetails = JSON.stringify(qaDetailRows);
+  for (const forbidden of ["metadata", "credential", "token", "secret", "password", "api_key", "published"]) {
+    assert(
+      !serializedQaDetails.toLowerCase().includes(forbidden),
+      `${label} editor QA detail leaked unsafe copy: ${forbidden}`
+    );
+  }
 
   const editorText = ((await editor.textContent()) ?? "").toLowerCase();
   for (const pattern of [/\bpublish\b/, /\bsync\b/, /\bconnect\b/, /\boauth\b/, /\bautopilot\b/]) {

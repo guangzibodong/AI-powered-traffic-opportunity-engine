@@ -1953,6 +1953,21 @@ function LocalAssetEditor({
         <span>{copy.wordpressBlocked}</span>
         <span>{copy.woocommerceBlocked}</span>
       </div>
+      {asset.qaChecks.length > 0 && (
+        <div className="inline-diagnostics" data-asset-editor-qa-detail-list="true">
+          {asset.qaChecks.map((check) => (
+            <span
+              className="pill muted-pill"
+              data-asset-editor-qa-detail="true"
+              data-asset-editor-qa-key={check.key}
+              data-asset-editor-qa-status={check.status}
+              key={`${asset.id}-editor-${check.key}-${check.status}`}
+            >
+              {check.key}:{check.status}
+            </span>
+          ))}
+        </div>
+      )}
       <form
         className="asset-editor-form"
         onSubmit={(event) => {
