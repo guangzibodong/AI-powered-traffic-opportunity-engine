@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 performance snapshot id diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 performance evidence count diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -25,7 +25,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Product Manager | Main thread | Keep Sprint 2 local/import-only boundaries explicit and sequence QA-only follow-up tasks. |
 | Backend/API Engineer | Main thread | Preserve existing read-only imported APIs; no live credentials, OAuth, publishing, or commerce writes. |
 | Frontend Product Engineer | Main thread | Implement safe imported preview view-model/UI improvements with contract coverage. |
-| QA Lead | Ptolemy / Main thread | Verify imported preview partial-failure browser coverage and no-control safety checks. |
+| QA Lead | Hypatia / Main thread | Verify performance evidence count diagnostics and no-control safety checks. |
 | UI Systems Engineer | Main thread | Keep imported preview cards compact, bilingual-safe, text-only, and free of external navigation controls. |
 
 ## Task Queue
@@ -228,6 +228,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-060 | 194 | done | Frontend Product Engineer / QA Lead | Add asset performance comparison empty/unavailable diagnostics. | Browser smoke verifies the asset before/after comparison section remains visible with stable empty and unavailable DOM diagnostics when a selected local asset has no matching imported GSC snapshot or the read fails, while preserving `local_asset_query_page_tokens` and exposing no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-QA-061 | 195 | done | Frontend Product Engineer / QA Lead | Add performance source diagnostics. | Store and asset performance panels expose stable read-only `Imported GSC` source diagnostics for local snapshots and still expose no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-QA-062 | 196 | done | Frontend Product Engineer / QA Lead | Add performance snapshot id diagnostics. | Store and asset performance panels expose stable read-only local snapshot id diagnostics for populated snapshots and still expose no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
+| TASK-S3-QA-063 | 197 | done | Frontend Product Engineer / QA Lead | Add performance evidence count diagnostics. | Store and asset performance panels expose stable read-only evidence count diagnostics for populated local imported GSC snapshots and still expose no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -602,6 +603,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset performance comparison empty/unavailable diagnostics are verified by red-green browser smoke coverage that first failed when `.asset-performance-comparison-panel` disappeared for an asset with no local imported GSC match, then passed with stable empty/unavailable keys, `local_asset_query_page_tokens`, zero comparison metric rows, GET-only asset performance reads, and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 - Performance source diagnostics are verified by red-green static and browser coverage that first failed on the missing source metric rows, then passed with stable `Imported GSC` source rows in store and asset performance panels while preserving GET-only reads and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 - Performance snapshot id diagnostics are verified by red-green static and browser coverage that first failed on the missing snapshot id metric rows, then passed with stable store and selected-asset snapshot ids while preserving GET-only reads and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
+- Performance evidence count diagnostics are verified by red-green static and browser coverage that first failed on the missing evidence count metric rows, then passed with stable store and selected-asset evidence counts while preserving GET-only reads and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 
 ## Completion Rule
 

@@ -26,6 +26,7 @@ Allowed display fields:
 - Page count.
 - Before/after tracking state.
 - Imported baseline snapshot id.
+- Evidence row count.
 - Follow-up state when after metrics are not yet tracked.
 - Empty and unavailable comparison diagnostics.
 - Blocked capabilities.
@@ -95,6 +96,7 @@ Implemented foundation:
 - Browser smoke verifies asset before/after comparison empty and unavailable states stay visible with stable local-only keys, preserve `local_asset_query_page_tokens`, render zero populated comparison metric rows, and expose no refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Store and asset performance panels expose a stable read-only `Imported GSC` source diagnostic from the safe frontend adapter without exposing raw live source labels or adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Store and asset performance panels expose stable read-only local snapshot id diagnostics for populated imported GSC baselines without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
+- Store and asset performance panels expose stable read-only evidence count diagnostics for populated imported GSC baselines without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 
 Still gated:
 

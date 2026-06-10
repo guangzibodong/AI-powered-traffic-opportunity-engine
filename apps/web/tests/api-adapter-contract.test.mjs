@@ -277,6 +277,10 @@ assert(app.includes("performance-comparison-panel"), "Performance snapshot UI mu
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(
+  app.includes('data-performance-metric="evidence_count"'),
+  "Performance snapshot UI must expose stable evidence count diagnostics"
+);
+assert(
   app.includes("data-performance-comparison-state"),
   "Performance comparison UI must expose stable local-only state diagnostics"
 );
@@ -286,6 +290,10 @@ assert(
   "Asset performance UI must expose stable snapshot id diagnostics"
 );
 assert(app.includes('data-asset-performance-metric="source"'), "Asset performance UI must expose stable source diagnostics");
+assert(
+  app.includes('data-asset-performance-metric="evidence_count"'),
+  "Asset performance UI must expose stable evidence count diagnostics"
+);
 assert(
   app.includes("asset-performance-comparison-panel"),
   "Asset performance UI must expose a stable asset before/after comparison panel class"

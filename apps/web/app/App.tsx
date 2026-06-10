@@ -1314,6 +1314,10 @@ function PerformanceSnapshotPanel({
               <span>Source</span>
               <strong>{primarySnapshot.source}</strong>
             </div>
+            <div className="kv-row" data-performance-metric="evidence_count">
+              <span>{locale === "zh" ? "证据行" : "Evidence rows"}</span>
+              <strong>{primarySnapshot.evidence.length}</strong>
+            </div>
             <div className="kv-row" data-performance-metric="window">
               <span>{copy.window}</span>
               <strong>{primarySnapshot.window}</strong>
@@ -1708,6 +1712,10 @@ function AssetPerformancePanel({
             <div className="kv-row" data-asset-performance-metric="source">
               <span>Source</span>
               <strong>{primarySnapshot.source}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-metric="evidence_count">
+              <span>{locale === "zh" ? "证据行" : "Evidence rows"}</span>
+              <strong>{primarySnapshot.evidence.length}</strong>
             </div>
             <div className="kv-row" data-asset-performance-metric="window">
               <span>{copy.window}</span>
