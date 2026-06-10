@@ -1,5 +1,6 @@
 import type {
   BoardViewModel,
+  AssetClaimPreview,
   AssetDraftPreview,
   AssetQaCheckPreview,
   AuditLogPreview,
@@ -67,6 +68,7 @@ const assetQaCheckKeys = new Set<AssetQaCheckPreview["key"]>([
   "local_review"
 ]);
 const assetQaCheckStatuses = new Set<AssetQaCheckPreview["status"]>(["pending", "passed", "failed"]);
+const assetUnsafeClaimMarkers = ["api_key", "apikey", "credential", "oauth", "password", "secret", "token"];
 
 export function mapApiPlanningToBoard(
   tasksResponse: ApiTasksResponse,
@@ -207,9 +209,12 @@ function mapApiAssetDraftToPreview(
   workspaceBlockedCapabilities: string[] = []
 ): AssetDraftPreview {
   const qaChecks = mapAssetQaChecks(asset.qa_checks);
+  const claimLedger = mapAssetClaimLedger(asset.claim_ledger);
   return {
     assetType: asset.asset_type,
     blockedCapabilities: asset.blocked_capabilities ?? workspaceBlockedCapabilities,
+    claimCount: claimLedger.length,
+    claimLedger,
     contentBlockCount: asset.content_blocks?.length ?? 0,
     contentBlockTypes: mapAssetContentBlockTypes(asset.content_blocks),
     externalWriteAllowed: false,
@@ -221,6 +226,31 @@ function mapApiAssetDraftToPreview(
     sourceTaskId: asset.source_task_id,
     title: asset.title
   };
+}
+
+function mapAssetClaimLedger(claimLedger: unknown[] | undefined): AssetClaimPreview[] {
+  if (!Array.isArray(claimLedger)) return [];
+  return claimLedger.flatMap((claim, index) => {
+    if (!claim || typeof claim !== "object") return [];
+    const rawClaim = claim as { id?: unknown; source?: unknown; text?: unknown };
+    return [
+      {
+        id: formatAssetClaimValue(rawClaim.id, `claim_${index + 1}`),
+        source: formatAssetClaimValue(rawClaim.source, "local_evidence"),
+        text: formatAssetClaimValue(rawClaim.text, "Local claim requires review")
+      }
+    ];
+  });
+}
+
+function formatAssetClaimValue(value: unknown, fallback: string): string {
+  if (typeof value !== "string") return fallback;
+  const cleaned = value.trim();
+  if (!cleaned) return fallback;
+  const normalized = cleaned.toLowerCase();
+  if (assetUnsafeClaimMarkers.some((marker) => normalized.includes(marker))) return fallback;
+  if (/https?:\/\//i.test(cleaned)) return fallback;
+  return cleaned;
 }
 
 function mapAssetContentBlockTypes(contentBlocks: unknown[] | undefined): string[] {

@@ -64,6 +64,7 @@ assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose impo
 assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
 assert(types.includes("AssetDraftPreview"), "types must expose a safe asset draft preview view model");
 assert(types.includes("AssetQaCheckPreview"), "types must expose safe asset QA check previews");
+assert(types.includes("AssetClaimPreview"), "types must expose safe asset claim ledger previews");
 assert(adapter.includes("mapApiAssetWorkspaceToPreviews"), "adapter must expose asset workspace DTO conversion");
 assert(adapter.includes("mapApiAssetResponseToPreview"), "adapter must expose asset detail DTO conversion");
 assert(adapter.includes("externalWriteAllowed: false"), "asset adapter must clamp external write state to false");
@@ -71,6 +72,7 @@ assert(adapter.includes("blocked_capabilities"), "asset adapter must preserve bl
 assert(adapter.includes("mapAssetQaChecks"), "asset adapter must map QA checks through a safe helper");
 assert(adapter.includes("assetQaCheckKeys"), "asset adapter must allowlist asset QA check keys");
 assert(adapter.includes("assetQaCheckStatuses"), "asset adapter must allowlist asset QA check statuses");
+assert(adapter.includes("mapAssetClaimLedger"), "asset adapter must map claim ledger rows through a safe helper");
 assert(adapter.includes("mapApiPerformanceSnapshotsToPreviews"), "adapter must expose performance snapshot DTO conversion");
 assert(
   adapter.includes("mapApiAssetPerformanceSnapshotsToPreviews"),
@@ -85,10 +87,22 @@ assert(adapter.includes("local_tracking_preview_only"), "performance refresh pre
 const assetDraftPreviewType = readExportedType(types, "AssetDraftPreview");
 assert(assetDraftPreviewType.includes("externalWriteAllowed: false"), "Asset draft preview must keep external write as literal false");
 assert(assetDraftPreviewType.includes("qaChecks: AssetQaCheckPreview[]"), "Asset draft preview must expose safe QA check details");
+assert(assetDraftPreviewType.includes("claimLedger: AssetClaimPreview[]"), "Asset draft preview must expose safe claim ledger details");
+assert(assetDraftPreviewType.includes("claimCount: number"), "Asset draft preview must expose a claim count diagnostic");
 for (const forbiddenAssetPreviewField of ["href", "publish", "sync", "credential", "commerce", "wordpressDraft"]) {
   assert(
     !assetDraftPreviewType.toLowerCase().includes(forbiddenAssetPreviewField.toLowerCase()),
     `Asset draft preview must not expose ${forbiddenAssetPreviewField}`
+  );
+}
+const assetClaimPreviewType = readExportedType(types, "AssetClaimPreview");
+for (const requiredAssetClaimField of ["id: string", "source: string", "text: string"]) {
+  assert(assetClaimPreviewType.includes(requiredAssetClaimField), `Asset claim preview must expose ${requiredAssetClaimField}`);
+}
+for (const forbiddenAssetClaimField of ["metadata", "credential", "token", "secret", "password", "apiKey", "publish", "sync"]) {
+  assert(
+    !assetClaimPreviewType.toLowerCase().includes(forbiddenAssetClaimField.toLowerCase()),
+    `Asset claim preview must not expose ${forbiddenAssetClaimField}`
   );
 }
 const assetQaCheckPreviewType = readExportedType(types, "AssetQaCheckPreview");

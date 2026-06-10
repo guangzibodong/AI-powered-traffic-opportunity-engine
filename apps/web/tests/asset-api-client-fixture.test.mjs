@@ -186,6 +186,20 @@ const unsafeAssetWorkspacePayload = {
     {
       asset_type: "collection_page",
       blocked_capabilities: ["wordpress_draft_creation"],
+      claim_ledger: [
+        {
+          id: "claim-safe-1",
+          source: "gsc_import",
+          text: "Imported GSC row shows low CTR on camping espresso queries."
+        },
+        {
+          api_key: "unsafe-claim-key",
+          id: "oauth-token-claim",
+          metadata: { password: "unsafe-password" },
+          source: "secret_source",
+          text: "token-secret-password"
+        }
+      ],
       content_blocks: [{ type: "section" }],
       external_write_allowed: true,
       id: "asset-safe-qa",
@@ -214,6 +228,21 @@ const assetPreviews = adapter.mapApiAssetWorkspaceToPreviews(unsafeAssetWorkspac
 assert(assetPreviews.length === 1, "Asset adapter should map one local asset draft");
 assert(assetPreviews[0].qaCheckCount === 3, "Asset adapter should preserve local QA check counts");
 assert(assetPreviews[0].qaPendingCount === 2, "Asset adapter should count clamped unsafe QA status as pending");
+assert(assetPreviews[0].claimCount === 2, "Asset adapter should preserve local claim ledger counts");
+assert(Array.isArray(assetPreviews[0].claimLedger), "Asset adapter should expose safe local claim ledger details");
+assert(assetPreviews[0].claimLedger.length === 2, "Asset adapter should preserve claim ledger detail rows");
+assert(assetPreviews[0].claimLedger[0].id === "claim-safe-1", "Asset claim ledger should preserve safe ids");
+assert(assetPreviews[0].claimLedger[0].source === "gsc_import", "Asset claim ledger should preserve safe sources");
+assert(
+  assetPreviews[0].claimLedger[0].text === "Imported GSC row shows low CTR on camping espresso queries.",
+  "Asset claim ledger should preserve safe claim text"
+);
+assert(assetPreviews[0].claimLedger[1].id === "claim_2", "Asset claim ledger should clamp unsafe ids");
+assert(assetPreviews[0].claimLedger[1].source === "local_evidence", "Asset claim ledger should clamp unsafe sources");
+assert(
+  assetPreviews[0].claimLedger[1].text === "Local claim requires review",
+  "Asset claim ledger should clamp credential-like claim text"
+);
 assert(Array.isArray(assetPreviews[0].qaChecks), "Asset adapter should expose safe local QA check details");
 assert(assetPreviews[0].qaChecks.length === 3, "Asset adapter should preserve QA check detail rows");
 assert(assetPreviews[0].qaChecks[0].key === "seo", "Asset QA detail should preserve allowlisted SEO key");
@@ -238,6 +267,17 @@ for (const forbidden of [
   "external_write_allowed"
 ]) {
   assert(!serializedAssetPreviews.includes(forbidden), `Asset QA preview leaked unsafe QA payload field ${forbidden}`);
+}
+
+for (const forbidden of [
+  "unsafe-claim-key",
+  "unsafe-password",
+  "oauth-token-claim",
+  "secret_source",
+  "token-secret-password",
+  "api_key"
+]) {
+  assert(!serializedAssetPreviews.includes(forbidden), `Asset claim preview leaked unsafe claim payload field ${forbidden}`);
 }
 
 console.log("Asset API client fixture contract passed");

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset editor structured section heading field is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset claim ledger frontend mapping is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -268,6 +268,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-FE-100 | 234 | done | Frontend Product Engineer / QA Lead | Add local asset editor schema preview field. | The local asset editor exposes one plain local schema preview field, includes it in field readiness and dirty diagnostics, saves it through safe `schema_json`, and adds no script tags, schema publishing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 | TASK-S3-FE-101 | 235 | done | Frontend Product Engineer / QA Lead | Add local asset editor product grid notes field. | The local asset editor exposes one plain product grid notes field, includes it in field readiness and dirty diagnostics, saves it through safe `content_blocks` as `product_grid_notes`, and adds no product edit, price edit, inventory edit, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 | TASK-S3-FE-102 | 236 | done | Frontend Product Engineer / QA Lead | Add local asset editor structured section heading field. | The local asset editor exposes one plain structured section heading field, includes it in field readiness and dirty diagnostics, saves it through safe `content_blocks` section heading, and adds no rich text editor, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
+| TASK-S3-FE-103 | 237 | done | Frontend Product Engineer / QA Lead | Add safe frontend mapping for local asset claim ledger details. | Frontend asset draft DTO mapping exposes read-only claim ledger previews with safe id/source/text fields, clamps unknown or credential-like claim payloads to local review defaults, keeps raw claim metadata out of UI models, and adds no claim editing, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -682,6 +683,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local asset editor schema preview field is verified by red-green static and browser coverage that first failed on missing schema preview diagnostics and field count, then passed with one plain local schema preview field included in readiness and dirty diagnostics, safe `schema_json` PATCH payloads, refreshed desktop/mobile screenshots, full backend/frontend/browser verification, and no script tags, schema publishing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 - Local asset editor product grid notes field is verified by red-green static and browser coverage that first failed on missing product grid notes diagnostics and field count, then passed with one plain local notes field included in readiness and dirty diagnostics, safe `product_grid_notes` content block PATCH payloads, refreshed desktop/mobile screenshots, full backend/frontend/browser verification, and no product edit, price edit, inventory edit, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 - Local asset editor structured section heading field is verified by red-green static and browser coverage that first failed on missing section heading diagnostics and field count, then passed with one plain local heading field included in readiness and dirty diagnostics, safe section heading PATCH payloads, refreshed desktop/mobile screenshots, full backend/frontend/browser verification, and no rich text editor, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
+- Local asset claim ledger frontend mapping is verified by red-green static and fixture coverage that first failed on missing `AssetClaimPreview` and claim count mapping, then passed with safe read-only id/source/text previews, credential-like claim payload clamping, metadata redaction, full backend/frontend/browser verification, and no claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 
 ## Completion Rule
 

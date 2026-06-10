@@ -140,9 +140,17 @@ export type AssetQaCheckPreview = {
   status: "pending" | "passed" | "failed";
 };
 
+export type AssetClaimPreview = {
+  id: string;
+  source: string;
+  text: string;
+};
+
 export type AssetDraftPreview = {
   assetType: string;
   blockedCapabilities: string[];
+  claimCount: number;
+  claimLedger: AssetClaimPreview[];
   contentBlockCount: number;
   contentBlockTypes: string[];
   externalWriteAllowed: false;

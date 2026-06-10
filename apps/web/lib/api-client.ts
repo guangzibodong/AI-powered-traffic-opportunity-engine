@@ -333,6 +333,7 @@ export type ApiImportedTaskResponse = {
 export type ApiAssetDraft = {
   asset_type: string;
   blocked_capabilities?: string[];
+  claim_ledger?: unknown[];
   content_blocks?: unknown[];
   external_write_allowed?: boolean;
   id: string;
