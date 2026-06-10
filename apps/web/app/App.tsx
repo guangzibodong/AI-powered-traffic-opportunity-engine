@@ -1602,6 +1602,8 @@ function AssetPerformancePanel({
           blocked: "已禁用",
           comparisonSubtitle: "仅本地资产匹配基线",
           comparisonTitle: "资产前后对比",
+          comparisonEmpty: "暂无本地资产表现对比",
+          comparisonUnavailable: "资产表现对比不可用",
           clicks: "点击",
           coverage: "覆盖",
           delta: "变化",
@@ -1628,6 +1630,8 @@ function AssetPerformancePanel({
           blocked: "Blocked",
           comparisonSubtitle: "Local asset baseline only",
           comparisonTitle: "Asset before / after",
+          comparisonEmpty: "No local asset performance comparison yet",
+          comparisonUnavailable: "Asset performance comparison unavailable",
           clicks: "Clicks",
           coverage: "Coverage",
           delta: "Delta",
@@ -1648,6 +1652,11 @@ function AssetPerformancePanel({
   const coverageCopy = `${primarySnapshot?.queryCount ?? 0} ${copy.queries} / ${
     primarySnapshot?.pageCount ?? 0
   } ${copy.pages}`;
+  const assetPerformanceComparisonState = primarySnapshot ? "baseline_only" : availability;
+  const assetPerformanceComparisonEmptyStateKey =
+    availability === "unavailable"
+      ? "asset_performance_comparison_unavailable"
+      : "no_imported_asset_performance_comparison";
 
   return (
     <section
@@ -1716,24 +1725,24 @@ function AssetPerformancePanel({
           </div>
         )}
       </div>
-      {primarySnapshot && (
-        <div
-          className="performance-comparison-panel asset-performance-comparison-panel"
-          data-after-snapshot-id="not_tracked"
-          data-asset-id={assetId}
-          data-asset-performance-comparison-state="baseline_only"
-          data-before-snapshot-id={primarySnapshot.id}
-          data-external-write-allowed="false"
-          data-match-scope={primarySnapshot.matchScope ?? "local_asset_query_page_tokens"}
-          data-safety-scope="local_imported_gsc_only"
-        >
-          <div className="comparison-heading">
-            <div>
-              <h3>{copy.comparisonTitle}</h3>
-              <p className="muted">{copy.comparisonSubtitle}</p>
-            </div>
-            <span className="status safe">{copy.readOnly}</span>
+      <div
+        className="performance-comparison-panel asset-performance-comparison-panel"
+        data-after-snapshot-id="not_tracked"
+        data-asset-id={assetId}
+        data-asset-performance-comparison-state={assetPerformanceComparisonState}
+        data-before-snapshot-id={primarySnapshot?.id ?? "none"}
+        data-external-write-allowed="false"
+        data-match-scope={primarySnapshot?.matchScope ?? "local_asset_query_page_tokens"}
+        data-safety-scope="local_imported_gsc_only"
+      >
+        <div className="comparison-heading">
+          <div>
+            <h3>{copy.comparisonTitle}</h3>
+            <p className="muted">{copy.comparisonSubtitle}</p>
           </div>
+          <span className="status safe">{copy.readOnly}</span>
+        </div>
+        {primarySnapshot ? (
           <div className="kv-list">
             <div className="kv-row" data-asset-performance-comparison-metric="before">
               <span>{copy.before}</span>
@@ -1766,8 +1775,23 @@ function AssetPerformancePanel({
               <strong>{copy.deltaPending}</strong>
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="kv-list">
+            <div
+              className="kv-row"
+              data-asset-performance-comparison-empty-state="true"
+              data-asset-performance-comparison-empty-state-key={assetPerformanceComparisonEmptyStateKey}
+            >
+              <span>{copy.comparisonTitle}</span>
+              <strong>{availability === "unavailable" ? copy.comparisonUnavailable : copy.comparisonEmpty}</strong>
+            </div>
+            <div className="kv-row">
+              <span>{copy.matchScope}</span>
+              <strong>local_asset_query_page_tokens</strong>
+            </div>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset-specific before/after performance comparison UI is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 asset performance comparison empty/unavailable diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -225,6 +225,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-FE-057 | 191 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only before/after performance comparison UI. | Performance snapshots render a local-only before/after comparison section that shows imported baseline metrics, clearly marks follow-up metrics as not yet tracked, and exposes no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-QA-058 | 192 | done | Frontend Product Engineer / QA Lead | Add performance comparison empty/unavailable diagnostics. | Browser smoke verifies the before/after comparison section remains visible with stable empty and unavailable DOM diagnostics when local imported GSC snapshots are missing or unavailable, and still exposes no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-FE-059 | 193 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add asset-specific before/after performance comparison UI. | Asset performance panels render a local-only before/after comparison section for the selected local asset baseline, clearly mark follow-up metrics as not yet tracked, preserve `local_asset_query_page_tokens` diagnostics, and expose no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
+| TASK-S3-QA-060 | 194 | done | Frontend Product Engineer / QA Lead | Add asset performance comparison empty/unavailable diagnostics. | Browser smoke verifies the asset before/after comparison section remains visible with stable empty and unavailable DOM diagnostics when a selected local asset has no matching imported GSC snapshot or the read fails, while preserving `local_asset_query_page_tokens` and exposing no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -596,6 +597,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Read-only before/after performance comparison UI is verified by red-green static and browser coverage that first failed on the missing `.performance-comparison-panel`, then passed with imported baseline metrics, after metrics marked as not tracked, stable local-only DOM diagnostics, GET-only performance reads, and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 - Performance comparison empty/unavailable diagnostics are verified by red-green browser smoke coverage that first failed when the comparison section disappeared in empty performance states, then passed with stable empty/unavailable keys, zero comparison metric rows, GET-only reads, and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 - Asset-specific before/after performance comparison UI is verified by red-green static and browser coverage that first failed on the missing `.asset-performance-comparison-panel`, then passed with selected-asset imported baseline metrics, after metrics marked as not tracked, `local_asset_query_page_tokens` diagnostics, GET-only asset performance reads, and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
+- Asset performance comparison empty/unavailable diagnostics are verified by red-green browser smoke coverage that first failed when `.asset-performance-comparison-panel` disappeared for an asset with no local imported GSC match, then passed with stable empty/unavailable keys, `local_asset_query_page_tokens`, zero comparison metric rows, GET-only asset performance reads, and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 
 ## Completion Rule
 

@@ -625,6 +625,126 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
   }
 }
 
+async function assertAssetPerformanceEmptyStateIsReadOnly(page, label, assetId, expectedState, expectedEmptyStateKey) {
+  const performancePanel = page.locator(".asset-performance-panel");
+  await expectVisible(performancePanel, `${label} asset performance empty-state panel`);
+  const stateDeadline = Date.now() + 10_000;
+  let latestState = await performancePanel.getAttribute("data-asset-performance-state");
+  let latestCount = await performancePanel.getAttribute("data-asset-performance-count");
+  while (Date.now() < stateDeadline && (latestState !== expectedState || latestCount !== "0")) {
+    await delay(100);
+    latestState = await performancePanel.getAttribute("data-asset-performance-state");
+    latestCount = await performancePanel.getAttribute("data-asset-performance-count");
+  }
+
+  const renderedAssetId = await performancePanel.getAttribute("data-asset-id");
+  const safetyScope = await performancePanel.getAttribute("data-safety-scope");
+  const externalWriteAllowed = await performancePanel.getAttribute("data-external-write-allowed");
+  const snapshotState = await performancePanel.getAttribute("data-asset-performance-state");
+  const snapshotCount = await performancePanel.getAttribute("data-asset-performance-count");
+  assert(renderedAssetId === assetId, `${label} asset performance id mismatch: expected ${assetId}, got ${renderedAssetId}`);
+  assert(safetyScope === "local_imported_gsc_only", `${label} asset performance must declare local imported GSC scope`);
+  assert(externalWriteAllowed === "false", `${label} asset performance must clamp external writes to false`);
+  assert(snapshotState === expectedState, `${label} asset performance state mismatch: expected ${expectedState}, got ${snapshotState}`);
+  assert(snapshotCount === "0", `${label} asset performance count mismatch: expected 0, got ${snapshotCount}`);
+
+  const emptyRow = performancePanel.locator("[data-asset-performance-empty-state='true']");
+  await expectVisible(emptyRow, `${label} asset performance empty-state row`);
+  const metricCount = await performancePanel.locator("[data-asset-performance-metric]").count();
+  assert(metricCount === 0, `${label} asset performance empty state must not render populated metric rows`);
+
+  const comparisonPanel = performancePanel.locator(".asset-performance-comparison-panel");
+  await expectVisible(comparisonPanel, `${label} asset performance comparison empty-state panel`);
+  const comparisonAssetId = await comparisonPanel.getAttribute("data-asset-id");
+  const comparisonState = await comparisonPanel.getAttribute("data-asset-performance-comparison-state");
+  const comparisonSafetyScope = await comparisonPanel.getAttribute("data-safety-scope");
+  const comparisonExternalWriteAllowed = await comparisonPanel.getAttribute("data-external-write-allowed");
+  const comparisonMatchScope = await comparisonPanel.getAttribute("data-match-scope");
+  const beforeSnapshotId = await comparisonPanel.getAttribute("data-before-snapshot-id");
+  const afterSnapshotId = await comparisonPanel.getAttribute("data-after-snapshot-id");
+  assert(comparisonAssetId === assetId, `${label} asset comparison id mismatch: expected ${assetId}, got ${comparisonAssetId}`);
+  assert(
+    comparisonState === expectedState,
+    `${label} asset comparison state mismatch: expected ${expectedState}, got ${comparisonState ?? "missing"}`
+  );
+  assert(
+    comparisonSafetyScope === "local_imported_gsc_only",
+    `${label} asset comparison empty state must stay local imported GSC only`
+  );
+  assert(
+    comparisonExternalWriteAllowed === "false",
+    `${label} asset comparison empty state must keep external writes false`
+  );
+  assert(
+    comparisonMatchScope === "local_asset_query_page_tokens",
+    `${label} asset comparison empty match scope mismatch: got ${comparisonMatchScope ?? "missing"}`
+  );
+  assert(
+    beforeSnapshotId === "none",
+    `${label} asset comparison empty before snapshot mismatch: expected none, got ${beforeSnapshotId ?? "missing"}`
+  );
+  assert(
+    afterSnapshotId === "not_tracked",
+    `${label} asset comparison empty after snapshot mismatch: expected not_tracked, got ${afterSnapshotId ?? "missing"}`
+  );
+
+  const comparisonEmptyRow = comparisonPanel.locator("[data-asset-performance-comparison-empty-state='true']");
+  await expectVisible(comparisonEmptyRow, `${label} asset performance comparison empty-state row`);
+  const comparisonEmptyStateKey = await comparisonEmptyRow.getAttribute(
+    "data-asset-performance-comparison-empty-state-key"
+  );
+  assert(
+    comparisonEmptyStateKey === expectedEmptyStateKey,
+    `${label} asset comparison empty-state key mismatch: expected ${expectedEmptyStateKey}, got ${
+      comparisonEmptyStateKey ?? "missing"
+    }`
+  );
+  const comparisonMetricCount = await comparisonPanel.locator("[data-asset-performance-comparison-metric]").count();
+  assert(
+    comparisonMetricCount === 0,
+    `${label} asset comparison empty state must not render populated comparison metric rows`
+  );
+
+  const interactiveSelector = [
+    "button",
+    "a",
+    "form",
+    "input",
+    "select",
+    "textarea",
+    "[href]",
+    "[role='button']",
+    "[role='link']"
+  ].join(", ");
+  const interactiveCount = await performancePanel.locator(interactiveSelector).count();
+  assert(interactiveCount === 0, `${label} asset performance empty state must not render controls or navigation`);
+  const comparisonInteractiveCount = await comparisonPanel.locator(interactiveSelector).count();
+  assert(
+    comparisonInteractiveCount === 0,
+    `${label} asset comparison empty state must not render controls or navigation`
+  );
+
+  const panelText = ((await performancePanel.textContent()) ?? "").toLowerCase();
+  for (const expectedCopy of ["asset before / after", "local_asset_query_page_tokens"]) {
+    assert(panelText.includes(expectedCopy), `${label} asset comparison empty state must show ${expectedCopy}`);
+  }
+  for (const pattern of [
+    /\brefresh\b/,
+    /\bsync\b/,
+    /\bconnect\b/,
+    /\boauth\b/,
+    /\bcredential\b/,
+    /\bpublish\b/,
+    /\bdraft\b/,
+    /\bcommerce\b/,
+    /\btoken\b/,
+    /\bsecret\b/,
+    /\bpassword\b/
+  ]) {
+    assert(!pattern.test(panelText), `${label} asset performance empty state exposes unsafe copy: ${pattern}`);
+  }
+}
+
 function assertAssetPerformanceRequestsReadOnly(requests, expectedReadCount, label, assetId) {
   const performanceReads = requests.filter(
     (request) =>
@@ -2831,7 +2951,7 @@ async function runSmoke() {
       if (url.includes(`/api/stores/${storeId}/assets`)) {
         populatedAssetRequests.push({ method: request.method(), url });
       }
-      if (url.includes(`/api/stores/${storeId}/assets/asset_task_002/performance`)) {
+      if (url.includes(`/api/stores/${storeId}/assets/`) && url.includes("/performance")) {
         populatedAssetPerformanceRequests.push({ method: request.method(), url });
       }
     });
@@ -2962,6 +3082,31 @@ async function runSmoke() {
 
       await route.continue();
     });
+    await populatedAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_003/performance`, async (route) => {
+      if (
+        route.request().method() === "GET" &&
+        route.request().url().endsWith(`/api/stores/${storeId}/assets/asset_task_003/performance`)
+      ) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset_id: "asset_task_003",
+            asset_title: "Draft camping espresso buying guide",
+            blocked_capabilities: ["real_gsc_oauth", "wordpress_writes", "woocommerce_writes", "live_publish"],
+            external_write_allowed: false,
+            match_scope: "local_asset_query_page_tokens",
+            mode: "asset_performance_snapshots",
+            safety_scope: "local_imported_gsc_only",
+            snapshots: [],
+            store_id: storeId,
+            summary: { clicks: 0, ctr: 0, impressions: 0, matching_rows: 0, position: 0, snapshot_count: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
     await populatedAssetPage.goto(webUrl);
     await clickUnique(populatedAssetPage.getByRole("button", { name: "EN" }), "populated asset language switcher");
     await assertAssetWorkspacePanelIsReadOnly(populatedAssetPage, 3, "populated asset workspace", [
@@ -3015,6 +3160,18 @@ async function runSmoke() {
     await assertEditorControlsStayWithinPanel(populatedEditor, "populated asset workspace");
     await populatedAssetPage.screenshot({ fullPage: true, path: desktopAssetEditorScreenshotPath });
     assertScreenshotArtifact(desktopAssetEditorScreenshotPath, "desktop English local asset editor");
+    await clickUnique(populatedEditor.getByRole("button", { name: "Close" }), "populated asset close editor button");
+    await clickUnique(
+      populatedAssetPage.locator("[data-asset-id='asset_task_003']").getByRole("button", { name: "Review local draft" }),
+      "populated asset empty performance review entry"
+    );
+    await assertAssetPerformanceEmptyStateIsReadOnly(
+      populatedAssetPage,
+      "populated asset workspace empty performance",
+      "asset_task_003",
+      "empty",
+      "no_imported_asset_performance_comparison"
+    );
     const localAssetPatchRequests = populatedAssetRequests.filter(
       (request) => request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_002`)
     );
@@ -3037,7 +3194,104 @@ async function runSmoke() {
       "populated asset workspace",
       "asset_task_002"
     );
+    assertAssetPerformanceRequestsReadOnly(
+      populatedAssetPerformanceRequests,
+      1,
+      "populated asset empty performance",
+      "asset_task_003"
+    );
     await populatedAssetPage.close();
+
+    const unavailableAssetPerformancePage = await context.newPage();
+    const unavailableAssetPerformanceRequests = [];
+    unavailableAssetPerformancePage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets/asset_task_unavailable/performance`)) {
+        unavailableAssetPerformanceRequests.push({ method: request.method(), url });
+      }
+    });
+    await unavailableAssetPerformancePage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_unavailable",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_unavailable",
+                title: "Unavailable asset performance candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await unavailableAssetPerformancePage.route(
+      `**/api/stores/${storeId}/assets/asset_task_unavailable/performance`,
+      async (route) => {
+        if (
+          route.request().method() === "GET" &&
+          route.request().url().endsWith(`/api/stores/${storeId}/assets/asset_task_unavailable/performance`)
+        ) {
+          await route.fulfill({
+            contentType: "application/json",
+            status: 500,
+            body: JSON.stringify({ detail: "asset performance unavailable" })
+          });
+          return;
+        }
+
+        await route.continue();
+      }
+    );
+    await unavailableAssetPerformancePage.goto(webUrl);
+    await clickUnique(
+      unavailableAssetPerformancePage.getByRole("button", { name: "EN" }),
+      "unavailable asset performance language switcher"
+    );
+    await assertAssetWorkspacePanelIsReadOnly(unavailableAssetPerformancePage, 1, "unavailable asset performance workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_unavailable",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Unavailable asset performance candidate"
+      }
+    ]);
+    await clickUnique(
+      unavailableAssetPerformancePage.getByRole("button", { name: "Review local draft" }),
+      "unavailable asset performance review entry"
+    );
+    await assertAssetPerformanceEmptyStateIsReadOnly(
+      unavailableAssetPerformancePage,
+      "unavailable asset performance workspace",
+      "asset_task_unavailable",
+      "unavailable",
+      "asset_performance_comparison_unavailable"
+    );
+    assertAssetPerformanceRequestsReadOnly(
+      unavailableAssetPerformanceRequests,
+      1,
+      "unavailable asset performance workspace",
+      "asset_task_unavailable"
+    );
+    await unavailableAssetPerformancePage.close();
 
     const mobileAssetPage = await context.newPage();
     await mobileAssetPage.setViewportSize({ height: 844, width: 390 });
