@@ -1950,6 +1950,7 @@ function LocalAssetEditor({
     saveLocalDraft: locale === "zh" ? "保存本地草稿" : "Save local draft",
     resetLocalChanges: locale === "zh" ? "重置本地修改" : "Reset local changes",
     schemaPreview: locale === "zh" ? "Schema 预览" : "Schema preview",
+    sectionHeading: locale === "zh" ? "段落标题" : "Section heading",
     slug: locale === "zh" ? "Slug" : "Slug",
     structuredSection: locale === "zh" ? "结构化段落" : "Structured section",
     title: locale === "zh" ? "标题" : "Title",
@@ -1962,6 +1963,7 @@ function LocalAssetEditor({
   const [slug, setSlug] = useState(editorDefaultSlug);
   const [metaTitle, setMetaTitle] = useState(asset.title);
   const [metaDescription, setMetaDescription] = useState("");
+  const [sectionHeading, setSectionHeading] = useState("");
   const [sectionBody, setSectionBody] = useState("");
   const [productGridNotes, setProductGridNotes] = useState("");
   const [faqQuestion, setFaqQuestion] = useState("");
@@ -1976,6 +1978,7 @@ function LocalAssetEditor({
     slug: slug !== editorDefaultSlug,
     meta_title: metaTitle !== asset.title,
     meta_description: metaDescription !== "",
+    structured_section_heading: sectionHeading !== "",
     structured_section: sectionBody !== "",
     product_grid_notes: productGridNotes !== "",
     faq_question: faqQuestion !== "",
@@ -1999,6 +2002,7 @@ function LocalAssetEditor({
     slug,
     metaTitle,
     metaDescription,
+    sectionHeading,
     sectionBody,
     productGridNotes,
     faqQuestion,
@@ -2026,6 +2030,7 @@ function LocalAssetEditor({
     setSlug(editorDefaultSlug);
     setMetaTitle(asset.title);
     setMetaDescription("");
+    setSectionHeading("");
     setSectionBody("");
     setProductGridNotes("");
     setFaqQuestion("");
@@ -2040,6 +2045,7 @@ function LocalAssetEditor({
     setSlug(editorDefaultSlug);
     setMetaTitle(asset.title);
     setMetaDescription("");
+    setSectionHeading("");
     setSectionBody("");
     setProductGridNotes("");
     setFaqQuestion("");
@@ -2159,7 +2165,15 @@ function LocalAssetEditor({
             items?: string[];
             type: "product_grid_notes" | "section";
           }> = [
-            ...(sectionBody ? [{ body: sectionBody, heading: "Local draft section", type: "section" as const }] : []),
+            ...(sectionHeading || sectionBody
+              ? [
+                  {
+                    body: sectionBody || undefined,
+                    heading: sectionHeading || "Local draft section",
+                    type: "section" as const
+                  }
+                ]
+              : []),
             ...(productGridNotes
               ? [
                   {
@@ -2222,6 +2236,18 @@ function LocalAssetEditor({
           <span>{copy.metaDescription}</span>
           <textarea value={metaDescription} onChange={(event) => setMetaDescription(event.target.value)} />
         </label>
+        <div className="asset-editor-section-heading-draft" data-asset-editor-section-heading-draft="true">
+          <label
+            data-asset-editor-field="true"
+            data-asset-editor-field-dirty-state={editorFieldDirtyState("structured_section_heading")}
+            data-asset-editor-field-key="structured_section_heading"
+            data-asset-editor-field-state={editorFieldState(sectionHeading)}
+            data-asset-editor-section-heading="true"
+          >
+            <span>{copy.sectionHeading}</span>
+            <input value={sectionHeading} onChange={(event) => setSectionHeading(event.target.value)} />
+          </label>
+        </div>
         <label
           data-asset-editor-field="true"
           data-asset-editor-field-dirty-state={editorFieldDirtyState("structured_section")}

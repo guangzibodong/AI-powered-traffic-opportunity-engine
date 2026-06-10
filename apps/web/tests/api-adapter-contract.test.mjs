@@ -442,6 +442,15 @@ assert(
 );
 assert(app.includes("Product grid notes"), "Local asset editor UI must expose English product grid notes copy");
 assert(
+  app.includes("data-asset-editor-section-heading-draft"),
+  "Local asset editor UI must expose stable structured section heading draft diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-section-heading"),
+  "Local asset editor UI must expose stable structured section heading diagnostics"
+);
+assert(app.includes("Section heading"), "Local asset editor UI must expose English structured section heading copy");
+assert(
   app.includes("data-asset-editor-internal-link-draft"),
   "Local asset editor UI must expose stable internal link draft diagnostics"
 );
