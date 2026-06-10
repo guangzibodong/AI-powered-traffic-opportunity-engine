@@ -1929,25 +1929,27 @@ function LocalAssetEditor({
     woocommerceBlocked: locale === "zh" ? "WooCommerce 写入已阻止" : "WooCommerce writes blocked",
     wordpressBlocked: locale === "zh" ? "WordPress 草稿创建已阻止" : "WordPress draft creation blocked"
   };
+  const editorDefaultSlug = asset.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const [title, setTitle] = useState(asset.title);
-  const [slug, setSlug] = useState(asset.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+  const [slug, setSlug] = useState(editorDefaultSlug);
   const [metaTitle, setMetaTitle] = useState(asset.title);
   const [metaDescription, setMetaDescription] = useState("");
   const [sectionBody, setSectionBody] = useState("");
   const [editorNote, setEditorNote] = useState("");
   const isSaving = feedback?.kind === "pending";
   const editorSaveState = isSaving ? "pending" : feedback?.kind === "saved" ? "saved" : feedback?.kind === "failed" ? "failed" : "idle";
-  const editorDefaultSlug = asset.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const editorDirtyFieldStates = [
-    title !== asset.title,
-    slug !== editorDefaultSlug,
-    metaTitle !== asset.title,
-    metaDescription !== "",
-    sectionBody !== "",
-    editorNote !== ""
-  ];
-  const editorDirtyFieldCount = editorDirtyFieldStates.filter(Boolean).length;
+  const editorFieldDirtyStates = {
+    editor_note: editorNote !== "",
+    meta_description: metaDescription !== "",
+    meta_title: metaTitle !== asset.title,
+    slug: slug !== editorDefaultSlug,
+    structured_section: sectionBody !== "",
+    title: title !== asset.title
+  };
+  const editorDirtyFieldCount = Object.values(editorFieldDirtyStates).filter(Boolean).length;
   const editorDirtyState = editorDirtyFieldCount > 0 ? "dirty" : "clean";
+  const editorFieldDirtyState = (field: keyof typeof editorFieldDirtyStates) =>
+    editorFieldDirtyStates[field] ? "dirty" : "clean";
   const editorFieldState = (value: string) => (value.trim().length > 0 ? "filled" : "empty");
   const editorFieldValues = [title, slug, metaTitle, metaDescription, sectionBody, editorNote];
   const editorFieldCount = editorFieldValues.length;
@@ -1966,12 +1968,12 @@ function LocalAssetEditor({
 
   useEffect(() => {
     setTitle(asset.title);
-    setSlug(asset.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+    setSlug(editorDefaultSlug);
     setMetaTitle(asset.title);
     setMetaDescription("");
     setSectionBody("");
     setEditorNote("");
-  }, [asset.id, asset.title]);
+  }, [asset.id, asset.title, editorDefaultSlug]);
 
   return (
     <section
@@ -2087,6 +2089,7 @@ function LocalAssetEditor({
       >
         <label
           data-asset-editor-field="true"
+          data-asset-editor-field-dirty-state={editorFieldDirtyState("title")}
           data-asset-editor-field-key="title"
           data-asset-editor-field-state={editorFieldState(title)}
         >
@@ -2095,6 +2098,7 @@ function LocalAssetEditor({
         </label>
         <label
           data-asset-editor-field="true"
+          data-asset-editor-field-dirty-state={editorFieldDirtyState("slug")}
           data-asset-editor-field-key="slug"
           data-asset-editor-field-state={editorFieldState(slug)}
         >
@@ -2103,6 +2107,7 @@ function LocalAssetEditor({
         </label>
         <label
           data-asset-editor-field="true"
+          data-asset-editor-field-dirty-state={editorFieldDirtyState("meta_title")}
           data-asset-editor-field-key="meta_title"
           data-asset-editor-field-state={editorFieldState(metaTitle)}
         >
@@ -2111,6 +2116,7 @@ function LocalAssetEditor({
         </label>
         <label
           data-asset-editor-field="true"
+          data-asset-editor-field-dirty-state={editorFieldDirtyState("meta_description")}
           data-asset-editor-field-key="meta_description"
           data-asset-editor-field-state={editorFieldState(metaDescription)}
         >
@@ -2119,6 +2125,7 @@ function LocalAssetEditor({
         </label>
         <label
           data-asset-editor-field="true"
+          data-asset-editor-field-dirty-state={editorFieldDirtyState("structured_section")}
           data-asset-editor-field-key="structured_section"
           data-asset-editor-field-state={editorFieldState(sectionBody)}
         >
@@ -2127,6 +2134,7 @@ function LocalAssetEditor({
         </label>
         <label
           data-asset-editor-field="true"
+          data-asset-editor-field-dirty-state={editorFieldDirtyState("editor_note")}
           data-asset-editor-field-key="editor_note"
           data-asset-editor-field-state={editorFieldState(editorNote)}
         >

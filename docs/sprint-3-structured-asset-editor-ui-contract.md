@@ -232,6 +232,7 @@ The first local editor slice is implemented with a conservative scope:
 - Local asset editor renders a read-only dirty-state marker with `data-asset-editor-dirty-state`, distinguishing `clean` from `dirty` local field states across open, edit, save, and refill flows without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Local asset editor renders a visible read-only dirty-state summary row with `data-asset-editor-dirty-summary`, keeping clean and dirty local field states visible without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Local asset editor renders read-only dirty field count diagnostics with `data-asset-editor-dirty-field-count` and `data-asset-editor-dirty-summary-field-count`, keeping changed local field counts machine-readable without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
+- Local asset editor renders read-only per-field dirty diagnostics with `data-asset-editor-field-dirty-state`, keeping title, slug, meta title, meta description, structured section, and editor note clean/dirty markers reconciled with the root dirty field count without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 
 Still gated:
 

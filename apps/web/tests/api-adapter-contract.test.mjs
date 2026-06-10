@@ -460,6 +460,10 @@ assert(
   "Local asset editor UI must expose stable per-field fill state diagnostics"
 );
 assert(
+  app.includes("data-asset-editor-field-dirty-state"),
+  "Local asset editor UI must expose stable per-field dirty state diagnostics"
+);
+assert(
   app.includes("data-asset-editor-field-counts-reconciled"),
   "Local asset editor UI must expose stable field count reconciliation diagnostics"
 );

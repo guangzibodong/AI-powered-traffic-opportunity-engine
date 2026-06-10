@@ -1141,11 +1141,12 @@ async function assertLocalAssetEditorDirtyState(editor, expectedState, label, ex
 
 async function assertLocalAssetEditorFieldDiagnostics(
   editor,
-  { expectedEmpty, expectedFilled, fieldCopy = "Fields", filledCopy = "filled", label }
+  { expectedDirtyStates = null, expectedEmpty, expectedFilled, fieldCopy = "Fields", filledCopy = "filled", label }
 ) {
   const fieldCount = await editor.getAttribute("data-asset-editor-field-count");
   const filledFieldCount = await editor.getAttribute("data-asset-editor-filled-field-count");
   const emptyFieldCount = await editor.getAttribute("data-asset-editor-empty-field-count");
+  const dirtyFieldCount = await editor.getAttribute("data-asset-editor-dirty-field-count");
   const countsReconciled = await editor.getAttribute("data-asset-editor-field-counts-reconciled");
   const fieldReadinessState = await editor.getAttribute("data-asset-editor-field-readiness-state");
   const expectedReadinessState = expectedEmpty === 0 ? "all_fields_filled" : "incomplete_fields";
@@ -1237,6 +1238,7 @@ async function assertLocalAssetEditorFieldDiagnostics(
   ];
   const fieldRows = await editor.locator("[data-asset-editor-field='true']").evaluateAll((elements) =>
     elements.map((element) => ({
+      dirtyState: element.getAttribute("data-asset-editor-field-dirty-state"),
       key: element.getAttribute("data-asset-editor-field-key"),
       state: element.getAttribute("data-asset-editor-field-state")
     }))
@@ -1252,9 +1254,22 @@ async function assertLocalAssetEditorFieldDiagnostics(
       fieldRow.state === "filled" || fieldRow.state === "empty",
       `${label} editor field ${expectedKey} has invalid fill state: ${fieldRow.state ?? "missing"}`
     );
+    assert(
+      fieldRow.dirtyState === "clean" || fieldRow.dirtyState === "dirty",
+      `${label} editor field ${expectedKey} has invalid dirty state: ${fieldRow.dirtyState ?? "missing"}`
+    );
+    if (expectedDirtyStates) {
+      assert(
+        fieldRow.dirtyState === expectedDirtyStates[expectedKey],
+        `${label} editor field ${expectedKey} dirty state mismatch: expected ${
+          expectedDirtyStates[expectedKey]
+        }, got ${fieldRow.dirtyState ?? "missing"}`
+      );
+    }
   }
   const filledFieldRows = fieldRows.filter((row) => row.state === "filled").length;
   const emptyFieldRows = fieldRows.filter((row) => row.state === "empty").length;
+  const dirtyFieldRows = fieldRows.filter((row) => row.dirtyState === "dirty").length;
   assert(
     fieldRows.length === Number(fieldCount),
     `${label} editor field row count must reconcile with field count: expected ${fieldCount}, got ${fieldRows.length}`
@@ -1272,6 +1287,12 @@ async function assertLocalAssetEditorFieldDiagnostics(
   assert(
     emptyFieldRows === expectedEmpty,
     `${label} editor empty field row mismatch: expected ${expectedEmpty}, got ${emptyFieldRows}`
+  );
+  assert(
+    dirtyFieldRows === Number(dirtyFieldCount),
+    `${label} editor dirty field rows must reconcile with dirty field count: expected ${dirtyFieldCount}, got ${
+      dirtyFieldRows
+    }`
   );
 }
 
@@ -1302,6 +1323,14 @@ async function assertLocalAssetEditorCanSave(
   await assertLocalAssetEditorSaveState(editor, "idle", `${label} initial`);
   await assertLocalAssetEditorDirtyState(editor, "clean", `${label} initial`, 0);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedDirtyStates: {
+      editor_note: "clean",
+      meta_description: "clean",
+      meta_title: "clean",
+      slug: "clean",
+      structured_section: "clean",
+      title: "clean"
+    },
     expectedEmpty: 3,
     expectedFilled: 3,
     fieldCopy,
@@ -1432,6 +1461,14 @@ async function assertLocalAssetEditorCanSave(
   await editor.locator("textarea").first().fill("Compare portable espresso kits for camp coffee.");
   await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 2);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedDirtyStates: {
+      editor_note: "clean",
+      meta_description: "dirty",
+      meta_title: "clean",
+      slug: "clean",
+      structured_section: "clean",
+      title: "dirty"
+    },
     expectedEmpty: 2,
     expectedFilled: 4,
     fieldCopy,
@@ -1443,6 +1480,14 @@ async function assertLocalAssetEditorCanSave(
   await assertLocalAssetEditorSaveState(editor, "saved", `${label} saved`);
   await assertLocalAssetEditorDirtyState(editor, "clean", `${label} saved`, 0);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedDirtyStates: {
+      editor_note: "clean",
+      meta_description: "clean",
+      meta_title: "clean",
+      slug: "clean",
+      structured_section: "clean",
+      title: "clean"
+    },
     expectedEmpty: savedEmptyFieldCount,
     expectedFilled: savedFilledFieldCount,
     fieldCopy,
@@ -1462,6 +1507,14 @@ async function assertLocalAssetEditorFieldReadinessCanBecomeComplete(
   await editor.locator("textarea").nth(2).fill("Keep claims grounded in imported evidence.");
   await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} complete`, 3);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedDirtyStates: {
+      editor_note: "dirty",
+      meta_description: "dirty",
+      meta_title: "clean",
+      slug: "clean",
+      structured_section: "dirty",
+      title: "clean"
+    },
     expectedEmpty: 0,
     expectedFilled: 6,
     fieldCopy,
