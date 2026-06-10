@@ -1936,6 +1936,15 @@ function LocalAssetEditor({
   const [editorNote, setEditorNote] = useState("");
   const isSaving = feedback?.kind === "pending";
   const editorSaveState = isSaving ? "pending" : feedback?.kind === "saved" ? "saved" : feedback?.kind === "failed" ? "failed" : "idle";
+  const editorDefaultSlug = asset.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const editorFieldsDirty =
+    title !== asset.title ||
+    slug !== editorDefaultSlug ||
+    metaTitle !== asset.title ||
+    metaDescription !== "" ||
+    sectionBody !== "" ||
+    editorNote !== "";
+  const editorDirtyState = editorFieldsDirty ? "dirty" : "clean";
   const editorFieldState = (value: string) => (value.trim().length > 0 ? "filled" : "empty");
   const editorFieldValues = [title, slug, metaTitle, metaDescription, sectionBody, editorNote];
   const editorFieldCount = editorFieldValues.length;
@@ -1965,6 +1974,7 @@ function LocalAssetEditor({
     <section
       className="panel asset-editor-panel"
       data-asset-editor="local-only"
+      data-asset-editor-dirty-state={editorDirtyState}
       data-asset-editor-empty-field-count={editorEmptyFieldCount}
       data-asset-editor-field-count={editorFieldCount}
       data-asset-editor-field-counts-reconciled={editorFieldCountsReconciled}

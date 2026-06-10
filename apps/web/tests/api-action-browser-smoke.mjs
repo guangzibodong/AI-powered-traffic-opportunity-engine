@@ -1106,6 +1106,14 @@ async function assertLocalAssetEditorSaveState(editor, expectedState, label) {
   );
 }
 
+async function assertLocalAssetEditorDirtyState(editor, expectedState, label) {
+  const dirtyState = await editor.getAttribute("data-asset-editor-dirty-state");
+  assert(
+    dirtyState === expectedState,
+    `${label} editor dirty state mismatch: expected ${expectedState}, got ${dirtyState ?? "missing"}`
+  );
+}
+
 async function assertLocalAssetEditorFieldDiagnostics(
   editor,
   { expectedEmpty, expectedFilled, fieldCopy = "Fields", filledCopy = "filled", label }
@@ -1267,6 +1275,7 @@ async function assertLocalAssetEditorCanSave(
   const editor = page.locator(".asset-editor-panel");
   await expectVisible(editor, `${label} local asset editor`);
   await assertLocalAssetEditorSaveState(editor, "idle", `${label} initial`);
+  await assertLocalAssetEditorDirtyState(editor, "clean", `${label} initial`);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedEmpty: 3,
     expectedFilled: 3,
@@ -1396,6 +1405,7 @@ async function assertLocalAssetEditorCanSave(
 
   await editor.locator("input").first().fill(titleValue);
   await editor.locator("textarea").first().fill("Compare portable espresso kits for camp coffee.");
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedEmpty: 2,
     expectedFilled: 4,
@@ -1406,6 +1416,7 @@ async function assertLocalAssetEditorCanSave(
   await clickUnique(editor.getByRole("button", { name: saveName }), `${label} local save button`);
   await expectVisible(page.getByText(saveSuccessCopy), `${label} local save success copy`);
   await assertLocalAssetEditorSaveState(editor, "saved", `${label} saved`);
+  await assertLocalAssetEditorDirtyState(editor, "clean", `${label} saved`);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedEmpty: savedEmptyFieldCount,
     expectedFilled: savedFilledFieldCount,
@@ -1424,6 +1435,7 @@ async function assertLocalAssetEditorFieldReadinessCanBecomeComplete(
   await editor.locator("textarea").nth(0).fill("Compare portable espresso kits for camp coffee.");
   await editor.locator("textarea").nth(1).fill("Local section covers buyer objections and comparisons.");
   await editor.locator("textarea").nth(2).fill("Keep claims grounded in imported evidence.");
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} complete`);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedEmpty: 0,
     expectedFilled: 6,

@@ -420,6 +420,10 @@ assert(
   "Local asset editor UI must expose stable save feedback diagnostics"
 );
 assert(
+  app.includes("data-asset-editor-dirty-state"),
+  "Local asset editor UI must expose stable dirty-state diagnostics"
+);
+assert(
   app.includes("data-asset-editor-field-count"),
   "Local asset editor UI must expose stable field count diagnostics"
 );
