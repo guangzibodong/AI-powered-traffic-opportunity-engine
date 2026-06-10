@@ -346,6 +346,7 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
     before: "Imported baseline / 28d",
     clicks: "95 -> follow-up not tracked",
     delta: "Pending local evidence",
+    evidence_count: "1",
     impressions: "5,000 -> follow-up not tracked",
     source: "Imported GSC"
   };
@@ -638,6 +639,7 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
     before: "Imported asset baseline / 28d",
     clicks: `${expectedMetrics.clicks} -> follow-up not tracked`,
     delta: "Pending local evidence",
+    evidence_count: expectedMetrics.evidence_count,
     impressions: `${expectedMetrics.impressions} -> follow-up not tracked`,
     match_scope: "local_asset_query_page_tokens",
     source: "Imported GSC"

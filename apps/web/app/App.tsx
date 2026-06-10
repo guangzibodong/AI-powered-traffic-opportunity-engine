@@ -1398,6 +1398,10 @@ function PerformanceSnapshotPanel({
               <span>Baseline snapshot id</span>
               <strong>{primarySnapshot.id}</strong>
             </div>
+            <div className="kv-row" data-performance-comparison-metric="evidence_count">
+              <span>Evidence rows</span>
+              <strong>{primarySnapshot.evidence.length}</strong>
+            </div>
             <div className="kv-row" data-performance-comparison-metric="after">
               <span>{copy.after}</span>
               <strong>{copy.afterPending}</strong>
@@ -1810,6 +1814,10 @@ function AssetPerformancePanel({
             <div className="kv-row" data-asset-performance-comparison-metric="baseline_snapshot_id">
               <span>Baseline snapshot id</span>
               <strong>{primarySnapshot.id}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-comparison-metric="evidence_count">
+              <span>Evidence rows</span>
+              <strong>{primarySnapshot.evidence.length}</strong>
             </div>
             <div className="kv-row" data-asset-performance-comparison-metric="after">
               <span>{copy.after}</span>
