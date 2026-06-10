@@ -420,6 +420,14 @@ assert(
   "Local asset editor UI must expose stable save feedback diagnostics"
 );
 assert(
+  app.includes("data-asset-editor-reset-control"),
+  "Local asset editor UI must expose a stable local reset control diagnostic"
+);
+assert(
+  app.includes("Reset local changes"),
+  "Local asset editor UI must expose English reset-local-changes copy"
+);
+assert(
   app.includes("data-asset-editor-dirty-state"),
   "Local asset editor UI must expose stable dirty-state diagnostics"
 );

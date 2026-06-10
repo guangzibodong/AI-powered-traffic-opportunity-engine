@@ -1614,6 +1614,80 @@ async function assertLocalAssetEditorCloseWithoutWrite(page, label) {
   throw new Error(`${label} local asset editor did not close`);
 }
 
+async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitle) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} local asset editor`);
+  await assertLocalAssetEditorSaveState(editor, "idle", `${label} initial`);
+  await assertLocalAssetEditorDirtyState(editor, "clean", `${label} initial`, 0, []);
+
+  await editor.locator("input").nth(0).fill("Reset-only unsaved local title");
+  await editor.locator("input").nth(1).fill("reset-only-unsaved-slug");
+  await editor.locator("input").nth(2).fill("Reset-only unsaved meta title");
+  await editor.locator("textarea").nth(0).fill("Reset-only unsaved meta description.");
+  await editor.locator("textarea").nth(1).fill("Reset-only unsaved local section.");
+  await editor.locator("textarea").nth(2).fill("Reset-only unsaved editor note.");
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 6, [
+    "title",
+    "slug",
+    "meta_title",
+    "meta_description",
+    "structured_section",
+    "editor_note"
+  ]);
+  await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedDirtyStates: {
+      editor_note: "dirty",
+      meta_description: "dirty",
+      meta_title: "dirty",
+      slug: "dirty",
+      structured_section: "dirty",
+      title: "dirty"
+    },
+    expectedEmpty: 0,
+    expectedFilled: 6,
+    label: `${label} edited`
+  });
+
+  const resetButton = editor.locator("[data-asset-editor-reset-control='true']");
+  await expectVisible(resetButton, `${label} reset local changes control`);
+  await clickUnique(resetButton, `${label} reset local changes button`);
+
+  const resetTitle = await editor.locator("input").nth(0).inputValue();
+  const resetSlug = await editor.locator("input").nth(1).inputValue();
+  const resetMetaTitle = await editor.locator("input").nth(2).inputValue();
+  const resetMetaDescription = await editor.locator("textarea").nth(0).inputValue();
+  const resetSection = await editor.locator("textarea").nth(1).inputValue();
+  const resetEditorNote = await editor.locator("textarea").nth(2).inputValue();
+  assert(resetTitle === expectedTitle, `${label} reset title mismatch: expected ${expectedTitle}, got ${resetTitle}`);
+  assert(
+    resetSlug === expectedTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+    `${label} reset slug mismatch: got ${resetSlug}`
+  );
+  assert(
+    resetMetaTitle === expectedTitle,
+    `${label} reset meta title mismatch: expected ${expectedTitle}, got ${resetMetaTitle}`
+  );
+  assert(resetMetaDescription === "", `${label} reset meta description must be empty, got ${resetMetaDescription}`);
+  assert(resetSection === "", `${label} reset structured section must be empty, got ${resetSection}`);
+  assert(resetEditorNote === "", `${label} reset editor note must be empty, got ${resetEditorNote}`);
+  await assertLocalAssetEditorSaveState(editor, "idle", `${label} reset`);
+  await assertLocalAssetEditorDirtyState(editor, "clean", `${label} reset`, 0, []);
+  await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedDirtyStates: {
+      editor_note: "clean",
+      meta_description: "clean",
+      meta_title: "clean",
+      slug: "clean",
+      structured_section: "clean",
+      title: "clean"
+    },
+    expectedEmpty: 3,
+    expectedFilled: 3,
+    label: `${label} reset`
+  });
+}
+
 async function assertLocalAssetEditorReopenResetsAfterClose(page, label, expectedTitle) {
   await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
   const editor = page.locator(".asset-editor-panel");
@@ -4212,6 +4286,70 @@ async function runSmoke() {
       `Closing local editor issued unsafe asset write requests: ${JSON.stringify(closeOnlyWriteRequests)}`
     );
     await closeOnlyAssetPage.close();
+
+    const resetLocalAssetPage = await context.newPage();
+    const resetLocalAssetRequests = [];
+    const resetLocalAssetTitle = "Reset local draft candidate";
+    resetLocalAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        resetLocalAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await resetLocalAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_reset_local",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_reset_local",
+                title: resetLocalAssetTitle
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await resetLocalAssetPage.goto(webUrl);
+    await clickUnique(resetLocalAssetPage.getByRole("button", { name: "EN" }), "reset local asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(resetLocalAssetPage, 1, "reset local asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_reset_local",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: resetLocalAssetTitle
+      }
+    ]);
+    await assertLocalAssetEditorResetLocalChanges(
+      resetLocalAssetPage,
+      "reset local asset workspace",
+      resetLocalAssetTitle
+    );
+    const resetLocalWriteRequests = resetLocalAssetRequests.filter((request) => request.method !== "GET");
+    assert(
+      resetLocalWriteRequests.length === 0,
+      `Resetting local editor changes issued unsafe asset write requests: ${JSON.stringify(resetLocalWriteRequests)}`
+    );
+    await resetLocalAssetPage.close();
 
     const reopenResetAssetPage = await context.newPage();
     const reopenResetAssetRequests = [];

@@ -1922,6 +1922,7 @@ function LocalAssetEditor({
     qaPending: locale === "zh" ? "待处理" : "pending",
     qaReadiness: locale === "zh" ? "QA 就绪状态" : "QA readiness",
     saveLocalDraft: locale === "zh" ? "保存本地草稿" : "Save local draft",
+    resetLocalChanges: locale === "zh" ? "重置本地修改" : "Reset local changes",
     slug: locale === "zh" ? "Slug" : "Slug",
     structuredSection: locale === "zh" ? "结构化段落" : "Structured section",
     title: locale === "zh" ? "标题" : "Title",
@@ -1979,6 +1980,15 @@ function LocalAssetEditor({
     setSectionBody("");
     setEditorNote("");
   }, [asset.id, asset.title, editorDefaultSlug]);
+
+  function resetLocalChanges() {
+    setTitle(asset.title);
+    setSlug(editorDefaultSlug);
+    setMetaTitle(asset.title);
+    setMetaDescription("");
+    setSectionBody("");
+    setEditorNote("");
+  }
 
   return (
     <section
@@ -2153,6 +2163,15 @@ function LocalAssetEditor({
         <div className="asset-editor-actions">
           <button className="button primary" disabled={isSaving} type="submit">
             {isSaving ? copy.localSavePending : copy.saveLocalDraft}
+          </button>
+          <button
+            className="button"
+            data-asset-editor-reset-control="true"
+            disabled={isSaving}
+            onClick={resetLocalChanges}
+            type="button"
+          >
+            {copy.resetLocalChanges}
           </button>
           <button className="button" onClick={onClose} type="button">
             {copy.close}
