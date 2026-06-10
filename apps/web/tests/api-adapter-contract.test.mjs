@@ -67,12 +67,29 @@ assert(adapter.includes("mapApiAssetWorkspaceToPreviews"), "adapter must expose 
 assert(adapter.includes("mapApiAssetResponseToPreview"), "adapter must expose asset detail DTO conversion");
 assert(adapter.includes("externalWriteAllowed: false"), "asset adapter must clamp external write state to false");
 assert(adapter.includes("blocked_capabilities"), "asset adapter must preserve blocked capability context");
+assert(adapter.includes("mapApiPerformanceSnapshotsToPreviews"), "adapter must expose performance snapshot DTO conversion");
+assert(adapter.includes("local_imported_gsc_only"), "performance snapshot adapter must clamp to local imported GSC scope");
 const assetDraftPreviewType = readExportedType(types, "AssetDraftPreview");
 assert(assetDraftPreviewType.includes("externalWriteAllowed: false"), "Asset draft preview must keep external write as literal false");
 for (const forbiddenAssetPreviewField of ["href", "publish", "sync", "credential", "commerce", "wordpressDraft"]) {
   assert(
     !assetDraftPreviewType.toLowerCase().includes(forbiddenAssetPreviewField.toLowerCase()),
     `Asset draft preview must not expose ${forbiddenAssetPreviewField}`
+  );
+}
+const performanceSnapshotPreviewType = readExportedType(types, "PerformanceSnapshotPreview");
+assert(
+  performanceSnapshotPreviewType.includes("externalWriteAllowed: false"),
+  "Performance snapshot preview must keep external write as literal false"
+);
+assert(
+  performanceSnapshotPreviewType.includes('safetyScope: "local_imported_gsc_only"'),
+  "Performance snapshot preview must use local imported GSC safety scope"
+);
+for (const forbiddenPerformancePreviewField of ["href", "publish", "sync", "credential", "commerce", "wordpressDraft"]) {
+  assert(
+    !performanceSnapshotPreviewType.toLowerCase().includes(forbiddenPerformancePreviewField.toLowerCase()),
+    `Performance snapshot preview must not expose ${forbiddenPerformancePreviewField}`
   );
 }
 assert(types.includes('"product_seo"'), "frontend task categories and rule ids must preserve imported product_seo previews");
@@ -135,6 +152,7 @@ assert(apiClient.includes("ApiAssetDraft"), "API client must type asset draft re
 assert(apiClient.includes("ApiAssetUpdatePayload"), "API client must type safe local asset update payloads");
 assert(apiClient.includes("ApiAssetWorkspaceResponse"), "API client must type asset workspace list responses");
 assert(apiClient.includes("ApiAssetResponse"), "API client must type asset detail and creation responses");
+assert(apiClient.includes("ApiPerformanceSnapshotsResponse"), "API client must type performance snapshot responses");
 assert(apiClient.includes("getIntegrations"), "API client must expose integration status reads");
 assert(apiClient.includes("getSyncRuns"), "API client must expose sync run reads");
 assert(apiClient.includes("getAuditLogs"), "API client must expose audit log reads");
@@ -156,6 +174,12 @@ assert(apiClient.includes("getAsset"), "API client must expose asset detail read
 assert(apiClient.includes("createAssetFromTask"), "API client must expose local asset creation from approved tasks");
 assert(!apiClient.includes("publishWordpressDraft"), "API client must not expose WordPress draft publishing");
 assert(apiClient.includes("updateAsset"), "API client must expose safe local asset mutation after backend QA gates");
+assert(apiClient.includes("getPerformanceSnapshots"), "API client must expose performance snapshot reads");
+const performanceSnapshotClient = readExportedFunction(apiClient, "getPerformanceSnapshots");
+assert(performanceSnapshotClient.includes("/performance"), "Performance snapshot client must target the read-only performance endpoint");
+for (const unsafeMethod of ['method: "POST"', 'method: "PATCH"', 'method: "PUT"', 'method: "DELETE"']) {
+  assert(!performanceSnapshotClient.includes(unsafeMethod), `Performance snapshot client must stay read-only and not use ${unsafeMethod}`);
+}
 const assetUpdateClient = readExportedFunction(apiClient, "updateAsset");
 assert(assetUpdateClient.includes("encodeURIComponent(assetId)"), "Asset update client must encode asset path segments");
 assert(assetUpdateClient.includes("/assets/${encodedAssetId}"), "Asset update client must target the encoded local asset id");

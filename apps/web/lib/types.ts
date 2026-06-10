@@ -178,6 +178,26 @@ export type ImportedQueryRowPreview = {
   window: string;
 };
 
+export type PerformanceSnapshotPreview = {
+  blockedCapabilities: string[];
+  clicks: number;
+  ctr: number;
+  displayClicks: string;
+  displayCtr: string;
+  displayImpressions: string;
+  displayPosition: string;
+  evidence: EvidenceRow[];
+  externalWriteAllowed: false;
+  id: string;
+  impressions: number;
+  pageCount: number;
+  position: number;
+  queryCount: number;
+  safetyScope: "local_imported_gsc_only";
+  source: "Imported GSC";
+  window: string;
+};
+
 export type ImportedCatalogPreview = {
   detail: string;
   displayHref?: string;

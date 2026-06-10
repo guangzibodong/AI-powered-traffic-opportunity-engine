@@ -8,6 +8,7 @@ import type {
   ImportedQueryRowPreview,
   IntegrationHealth,
   Opportunity,
+  PerformanceSnapshotPreview,
   ScoreComponent,
   SprintOneRuleId,
   SyncRunPreview,
@@ -37,6 +38,7 @@ import type {
   ApiIntegrationsResponse,
   ApiOpportunitiesResponse,
   ApiOpportunity,
+  ApiPerformanceSnapshotsResponse,
   ApiSyncRun,
   ApiSyncRunsResponse,
   ApiTask,
@@ -238,6 +240,52 @@ export function mapApiImportedQueryResponseToPreview(response: ApiImportedQueryR
   return mapApiImportedQueryRowToPreview(response.query);
 }
 
+export function mapApiPerformanceSnapshotsToPreviews(
+  response: ApiPerformanceSnapshotsResponse
+): PerformanceSnapshotPreview[] {
+  return response.snapshots.map((snapshot) => {
+    const clicks = normalizeImportedQueryRowNumber(snapshot.clicks);
+    const ctr = normalizeImportedQueryRowNumber(snapshot.ctr);
+    const impressions = normalizeImportedQueryRowNumber(snapshot.impressions);
+    const position = normalizeImportedQueryRowNumber(snapshot.position);
+    const source = formatPerformanceSnapshotSource(snapshot.source);
+    const window = snapshot.window ?? "imported";
+    const displayClicks = formatImportedQueryRowCount(clicks);
+    const displayCtr = formatImportedQueryRowCtr(ctr);
+    const displayImpressions = formatImportedQueryRowCount(impressions);
+    const displayPosition = formatImportedQueryRowPosition(position);
+
+    return {
+      blockedCapabilities: response.blocked_capabilities ?? [],
+      clicks,
+      ctr,
+      displayClicks,
+      displayCtr,
+      displayImpressions,
+      displayPosition,
+      evidence: [
+        {
+          entity: window,
+          metric: `${displayImpressions} impressions / ${displayClicks} clicks / CTR ${displayCtr} / avg position ${displayPosition}`,
+          reason: `${snapshot.query_count ?? 0} imported queries across ${snapshot.page_count ?? 0} pages`,
+          source,
+          type: "search",
+          window
+        }
+      ],
+      externalWriteAllowed: false,
+      id: snapshot.id,
+      impressions,
+      pageCount: snapshot.page_count ?? 0,
+      position,
+      queryCount: snapshot.query_count ?? 0,
+      safetyScope: "local_imported_gsc_only",
+      source,
+      window
+    };
+  });
+}
+
 export function mapApiImportedProductResponseToCatalogPreview(
   response: ApiImportedProductResponse
 ): ImportedCatalogPreview {
@@ -386,6 +434,10 @@ function formatImportedQueryRowMetric(
 function formatImportedQueryRowSource(source?: string | null): string {
   if (!source || source === "csv_import") return "Imported GSC";
   return source;
+}
+
+function formatPerformanceSnapshotSource(source?: string | null): "Imported GSC" {
+  return "Imported GSC";
 }
 
 export function mapApiImportedQueryClustersToPreviews(

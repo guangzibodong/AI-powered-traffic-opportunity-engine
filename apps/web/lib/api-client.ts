@@ -357,6 +357,30 @@ export type ApiAssetResponse = {
   store_id: string;
 };
 
+export type ApiPerformanceSnapshot = {
+  clicks?: number;
+  ctr?: number;
+  external_write_allowed?: boolean;
+  id: string;
+  impressions?: number;
+  page_count?: number;
+  position?: number;
+  query_count?: number;
+  row_ids?: string[];
+  source?: string;
+  window?: string;
+};
+
+export type ApiPerformanceSnapshotsResponse = {
+  blocked_capabilities?: string[];
+  external_write_allowed?: boolean;
+  mode: "performance_snapshots";
+  safety_scope?: string;
+  snapshots: ApiPerformanceSnapshot[];
+  store_id: string;
+  summary?: Record<string, number>;
+};
+
 export type ApiAssetContentBlockUpdate = {
   body?: string;
   heading?: string;
@@ -486,6 +510,10 @@ export async function getImportedTask(storeId: string, taskId: string, apiBaseUr
 
 export async function getAssets(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiAssetWorkspaceResponse>(`${storeApiPath(apiBaseUrl, storeId)}/assets`);
+}
+
+export async function getPerformanceSnapshots(storeId: string, apiBaseUrl = getApiBaseUrl()) {
+  return fetchJson<ApiPerformanceSnapshotsResponse>(`${storeApiPath(apiBaseUrl, storeId)}/performance`);
 }
 
 export async function getAsset(storeId: string, assetId: string, apiBaseUrl = getApiBaseUrl()) {
