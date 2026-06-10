@@ -1149,6 +1149,9 @@ async function assertLocalAssetEditorFieldDiagnostics(
   const visibleReadinessTotalCount = await fieldReadinessSummary.getAttribute(
     "data-asset-editor-field-readiness-total-count"
   );
+  const visibleReadinessCountsReconciled = await fieldReadinessSummary.getAttribute(
+    "data-asset-editor-field-readiness-counts-reconciled"
+  );
   assert(
     visibleReadinessFilledCount === String(expectedFilled),
     `${label} visible field readiness filled count mismatch: expected ${expectedFilled}, got ${
@@ -1166,6 +1169,19 @@ async function assertLocalAssetEditorFieldDiagnostics(
     `${label} visible field readiness total count mismatch: expected ${fieldCount}, got ${
       visibleReadinessTotalCount ?? "missing"
     }`
+  );
+  assert(
+    visibleReadinessCountsReconciled === "true",
+    `${label} visible field readiness count reconciliation mismatch: expected true, got ${
+      visibleReadinessCountsReconciled ?? "missing"
+    }`
+  );
+  assert(
+    Number(visibleReadinessFilledCount) + Number(visibleReadinessEmptyCount) ===
+      Number(visibleReadinessTotalCount),
+    `${label} visible field readiness counts must reconcile: ${visibleReadinessFilledCount}/${
+      visibleReadinessEmptyCount
+    }/${visibleReadinessTotalCount}`
   );
   const visibleReadinessState = ((await fieldReadinessSummary.locator("strong").textContent()) ?? "").trim();
   assert(

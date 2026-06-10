@@ -2009,6 +2009,7 @@ function LocalAssetEditor({
         <div
           className="kv-row"
           data-asset-editor-field-readiness="true"
+          data-asset-editor-field-readiness-counts-reconciled={editorFieldCountsReconciled}
           data-asset-editor-field-readiness-empty-count={editorEmptyFieldCount}
           data-asset-editor-field-readiness-filled-count={editorFilledFieldCount}
           data-asset-editor-field-readiness-total-count={editorFieldCount}

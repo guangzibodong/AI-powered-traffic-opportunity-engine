@@ -467,6 +467,10 @@ assert(
   app.includes("data-asset-editor-field-readiness-total-count"),
   "Local asset editor field readiness summary must expose total count diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-field-readiness-counts-reconciled"),
+  "Local asset editor field readiness summary must expose count reconciliation diagnostics"
+);
 assert(app.includes('"all_fields_filled"'), "Local asset editor UI must expose a complete field readiness state");
 assert(app.includes('"incomplete_fields"'), "Local asset editor UI must expose an incomplete field readiness state");
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");

@@ -160,6 +160,7 @@ Expected behavior:
 - Local asset editor field readiness diagnostics may expose a read-only `incomplete_fields` or `all_fields_filled` state derived from local draft field completeness; they must remain diagnostics only and cannot become workflow actions.
 - Visible local asset editor field readiness summary rows may render those readiness states as compact read-only copy; they must remain diagnostics only and cannot become workflow actions.
 - Visible local asset editor field readiness summary rows may expose read-only filled, empty, and total count diagnostics that reconcile with editor field counts; they must remain diagnostics only and cannot become workflow actions.
+- Visible local asset editor field readiness summary rows may expose a read-only count reconciliation marker proving filled plus empty equals total; it must remain diagnostics only and cannot become a workflow action.
 - Frontend DTO adapters must clamp unsafe or unknown backend states to safe UI defaults and must not expose `one_click_apply`, `guarded_autopilot`, live publish, applied, or external-write controls.
 - API-backed Safety UI must remain read-only; it can render integration, sync, and audit state, but it must not trigger sync execution, credential flows, draft creation, publishing, or commerce writes.
 - Imported preview frontend DTOs must remain read-only and recommend-only; they must not expose approve/reject/snooze mutation, draft generation, sync execution, credential flows, publishing, or commerce writes.
