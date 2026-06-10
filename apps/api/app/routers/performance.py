@@ -1,6 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from app.services.performance_snapshot_service import list_store_performance_snapshots
+from app.services.performance_snapshot_service import list_asset_performance_snapshots, list_store_performance_snapshots
 
 
 router = APIRouter()
@@ -13,7 +13,10 @@ async def get_store_performance(store_id: str) -> dict:
 
 @router.get("/{store_id}/assets/{asset_id}/performance")
 async def get_asset_performance(store_id: str, asset_id: str) -> dict:
-    return {"store_id": store_id, "asset_id": asset_id, "snapshots": []}
+    payload = list_asset_performance_snapshots(store_id, asset_id)
+    if payload is None:
+        raise HTTPException(status_code=404, detail="Asset draft not found")
+    return payload
 
 
 @router.post("/{store_id}/performance/refresh")
