@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
@@ -17,6 +17,13 @@ const apiPort = Number(process.env.TRAFSCOPE_API_ACTION_API_PORT ?? 8120);
 const webPort = Number(process.env.TRAFSCOPE_API_ACTION_WEB_PORT ?? 5177);
 const apiUrl = `http://127.0.0.1:${apiPort}`;
 const webUrl = `http://127.0.0.1:${webPort}`;
+const mobileAssetEditorScreenshotPath = join(
+  repoRoot,
+  "docs",
+  "design-mockups",
+  "screenshots",
+  "local-asset-editor-mobile-zh.png"
+);
 
 const importedGscCsv = `Query,Page,Clicks,Impressions,CTR,Position
 portable espresso maker camping,https://example.com/camping-espresso,24,1200,2.0%,4.8
@@ -108,6 +115,12 @@ const managedProcesses = [];
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function assertScreenshotArtifact(path, label) {
+  assert(existsSync(path), `${label} screenshot artifact missing at ${path}`);
+  const { size } = statSync(path);
+  assert(size > 10_000, `${label} screenshot artifact is unexpectedly small: ${size} bytes`);
 }
 
 function spawnManaged(name, command, args, options) {
@@ -2535,6 +2548,8 @@ async function runSmoke() {
       woocommerceBlockedCopy: "WooCommerce 写入已阻止"
     });
     await assertEditorControlsStayWithinPanel(mobileEditor, "mobile Chinese asset workspace");
+    await mobileAssetPage.screenshot({ fullPage: true, path: mobileAssetEditorScreenshotPath });
+    assertScreenshotArtifact(mobileAssetEditorScreenshotPath, "mobile Chinese local asset editor");
     const mobileAssetPatchRequests = mobileAssetRequests.filter(
       (request) => request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_mobile`)
     );
