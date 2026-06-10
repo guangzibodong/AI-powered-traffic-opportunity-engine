@@ -1682,6 +1682,7 @@ function AssetPerformancePanel({
     <section
       className="panel asset-performance-panel"
       data-asset-id={assetId}
+      data-asset-performance-blocked-capability-count={blockedCapabilities.length}
       data-asset-performance-count={primarySnapshot ? 1 : 0}
       data-asset-performance-state={availability}
       data-external-write-allowed="false"

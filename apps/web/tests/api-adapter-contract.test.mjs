@@ -294,6 +294,10 @@ assert(
 );
 assert(app.includes("asset-performance-panel"), "Asset performance UI must have a stable read-only panel class");
 assert(
+  app.includes("data-asset-performance-blocked-capability-count"),
+  "Asset performance UI must expose stable blocked capability count diagnostics"
+);
+assert(
   app.includes('data-asset-performance-metric="snapshot_id"'),
   "Asset performance UI must expose stable snapshot id diagnostics"
 );

@@ -98,6 +98,7 @@ Implemented foundation:
 - Store and asset performance panels expose stable read-only local snapshot id diagnostics for populated imported GSC baselines without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Store and asset performance panels expose stable read-only evidence count diagnostics for populated imported GSC baselines without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Store and asset performance panels expose stable read-only split query count and page count diagnostics alongside compact coverage copy without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
+- Asset performance panels expose stable read-only blocked capability count diagnostics across populated, empty, and unavailable states without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 
 Still gated:
 

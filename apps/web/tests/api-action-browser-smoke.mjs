@@ -514,11 +514,18 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
   const externalWriteAllowed = await performancePanel.getAttribute("data-external-write-allowed");
   const snapshotState = await performancePanel.getAttribute("data-asset-performance-state");
   const snapshotCount = await performancePanel.getAttribute("data-asset-performance-count");
+  const blockedCapabilityCount = Number(
+    await performancePanel.getAttribute("data-asset-performance-blocked-capability-count")
+  );
   assert(renderedAssetId === assetId, `${label} asset performance id mismatch: expected ${assetId}, got ${renderedAssetId}`);
   assert(safetyScope === "local_imported_gsc_only", `${label} asset performance must declare local imported GSC scope`);
   assert(externalWriteAllowed === "false", `${label} asset performance must clamp external writes to false`);
   assert(snapshotState === "ready", `${label} asset performance state mismatch: expected ready, got ${snapshotState}`);
   assert(snapshotCount === "1", `${label} asset performance count mismatch: expected 1, got ${snapshotCount}`);
+  assert(
+    Number.isInteger(blockedCapabilityCount) && blockedCapabilityCount >= 1,
+    `${label} asset performance must expose blocked capability count diagnostics`
+  );
 
   const panelText = ((await performancePanel.textContent()) ?? "").toLowerCase();
   for (const expectedCopy of ["asset performance", "local imported gsc only", "read-only", "local_asset_query_page_tokens"]) {
@@ -647,11 +654,18 @@ async function assertAssetPerformanceEmptyStateIsReadOnly(page, label, assetId, 
   const externalWriteAllowed = await performancePanel.getAttribute("data-external-write-allowed");
   const snapshotState = await performancePanel.getAttribute("data-asset-performance-state");
   const snapshotCount = await performancePanel.getAttribute("data-asset-performance-count");
+  const blockedCapabilityCount = Number(
+    await performancePanel.getAttribute("data-asset-performance-blocked-capability-count")
+  );
   assert(renderedAssetId === assetId, `${label} asset performance id mismatch: expected ${assetId}, got ${renderedAssetId}`);
   assert(safetyScope === "local_imported_gsc_only", `${label} asset performance must declare local imported GSC scope`);
   assert(externalWriteAllowed === "false", `${label} asset performance must clamp external writes to false`);
   assert(snapshotState === expectedState, `${label} asset performance state mismatch: expected ${expectedState}, got ${snapshotState}`);
   assert(snapshotCount === "0", `${label} asset performance count mismatch: expected 0, got ${snapshotCount}`);
+  assert(
+    Number.isInteger(blockedCapabilityCount) && blockedCapabilityCount >= 1,
+    `${label} asset performance empty state must expose blocked capability count diagnostics`
+  );
 
   const emptyRow = performancePanel.locator("[data-asset-performance-empty-state='true']");
   await expectVisible(emptyRow, `${label} asset performance empty-state row`);
