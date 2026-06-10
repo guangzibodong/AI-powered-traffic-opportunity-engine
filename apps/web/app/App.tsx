@@ -1914,6 +1914,9 @@ function LocalAssetEditor({
     localSaveSuccess: locale === "zh" ? "本地草稿已保存" : "Local draft saved",
     metaDescription: locale === "zh" ? "Meta 描述" : "Meta description",
     metaTitle: locale === "zh" ? "Meta 标题" : "Meta title",
+    qaChecks: locale === "zh" ? "QA 检查" : "QA checks",
+    qaPending: locale === "zh" ? "待处理" : "pending",
+    qaReadiness: locale === "zh" ? "QA 就绪状态" : "QA readiness",
     saveLocalDraft: locale === "zh" ? "保存本地草稿" : "Save local draft",
     slug: locale === "zh" ? "Slug" : "Slug",
     structuredSection: locale === "zh" ? "结构化段落" : "Structured section",
@@ -1963,6 +1966,20 @@ function LocalAssetEditor({
         <span>{copy.wordpressBlocked}</span>
         <span>{copy.woocommerceBlocked}</span>
       </div>
+      {asset.qaChecks.length > 0 && (
+        <div className="kv-list" data-asset-editor-qa-summary="true">
+          <div className="kv-row" data-asset-editor-qa-readiness="true">
+            <span>{copy.qaReadiness}</span>
+            <strong>{editorQaReadinessState}</strong>
+          </div>
+          <div className="kv-row" data-asset-editor-qa-checks="true">
+            <span>{copy.qaChecks}</span>
+            <strong>
+              {editorQaPendingCount}/{asset.qaChecks.length} {copy.qaPending}
+            </strong>
+          </div>
+        </div>
+      )}
       {asset.qaChecks.length > 0 && (
         <div className="inline-diagnostics" data-asset-editor-qa-detail-list="true">
           {asset.qaChecks.map((check) => (

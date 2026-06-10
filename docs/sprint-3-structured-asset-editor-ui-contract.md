@@ -219,6 +219,7 @@ The first local editor slice is implemented with a conservative scope:
 - Asset workspace rows render safe QA detail labels with stable `data-asset-qa-detail`, `data-asset-qa-key`, and `data-asset-qa-status` diagnostics while browser smoke keeps unsafe QA metadata and draft/publish/sync controls absent.
 - Local asset editor renders the same safe QA detail labels with editor-specific `data-asset-editor-qa-detail`, `data-asset-editor-qa-key`, and `data-asset-editor-qa-status` diagnostics while keeping QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, and commerce-write controls absent.
 - Local asset editor exposes read-only QA aggregate diagnostics with `data-asset-editor-qa-check-count`, `data-asset-editor-qa-pending-count`, and `data-asset-editor-qa-readiness-state`, derived only from safe local QA previews.
+- Local asset editor renders a compact visible read-only QA aggregate summary with `data-asset-editor-qa-summary`, `data-asset-editor-qa-readiness`, and `data-asset-editor-qa-checks`, showing bilingual-safe readiness and pending/check copy without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 
 Still gated:
 

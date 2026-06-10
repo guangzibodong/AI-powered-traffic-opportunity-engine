@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset editor QA aggregate diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 visible local asset editor QA aggregate summary is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -22,11 +22,11 @@ These are internal execution-board statuses, not TrafScope product task review s
 
 | Role | Person/Agent | Current assignment |
 |---|---|---|
-| Product Manager | Main thread + Locke sidecar | Keep local editor QA aggregate diagnostics read-only and preserve live-integration blockers. |
+| Product Manager | Main thread + Mendel sidecar | Keep visible local editor QA aggregate summary read-only and preserve live-integration blockers. |
 | Backend/API Engineer | Main thread | Keep local asset draft QA payloads read-only and blocked from draft, publish, sync, OAuth, or commerce writes. |
-| Frontend Product Engineer | Main thread | Render local editor QA aggregate diagnostics while keeping QA actions and WordPress draft controls gated. |
-| QA Lead | Main thread + Laplace sidecar | Verify editor QA aggregate DOM diagnostics, no QA mutation controls, full matrix, task-board closure, and no-secret safety scans. |
-| UI Systems Engineer | Main thread | Keep compact bilingual QA diagnostics aligned with the current workbench UI and screenshot artifacts. |
+| Frontend Product Engineer | Main thread | Render visible local editor QA aggregate summary while keeping QA actions and WordPress draft controls gated. |
+| QA Lead | Main thread + Mendel sidecar | Verify editor QA aggregate visible summary, DOM diagnostics, no QA mutation controls, full matrix, task-board closure, and no-secret safety scans. |
+| UI Systems Engineer | Main thread + Noether sidecar | Keep compact bilingual QA summary aligned with the current workbench UI and screenshot artifacts. |
 
 ## Task Queue
 
@@ -246,6 +246,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-078 | 212 | done | Frontend Product Engineer / QA Lead | Add visible read-only local asset QA detail diagnostics. | Asset workspace rows render safe QA detail labels and stable DOM markers for allowlisted and clamped local QA checks, preserve aggregate counts, keep unsafe QA metadata out of visible copy, and add no QA mutation, WordPress draft, publish, sync, OAuth, or commerce-write controls. |
 | TASK-S3-QA-079 | 213 | done | Frontend Product Engineer / QA Lead | Add local asset editor read-only QA detail diagnostics. | The local asset editor renders safe QA detail labels and stable editor-specific DOM markers for allowlisted local QA checks, keeps QA diagnostics read-only, and adds no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-QA-080 | 214 | done | Frontend Product Engineer / QA Lead | Add local asset editor QA aggregate diagnostics. | The local asset editor exposes read-only QA check count, pending count, and readiness state DOM diagnostics for the selected local asset, preserves safe QA detail labels, and adds no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
+| TASK-S3-QA-081 | 215 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add visible local asset editor QA aggregate summary. | The local asset editor renders visible read-only QA readiness and pending/check summary copy from safe local QA previews, keeps DOM diagnostics stable, supports English and Chinese labels, and adds no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -638,6 +639,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Visible local asset QA detail diagnostics are verified by red-green browser smoke coverage that first failed on missing QA detail rows, then passed with safe QA labels, stable `data-asset-qa-*` markers, unsafe metadata redaction, full backend/frontend/browser verification, and refreshed desktop/mobile QA screenshots.
 - Local asset editor QA detail diagnostics are verified by red-green browser smoke coverage that first failed on missing editor QA details, then passed with safe editor QA labels, stable `data-asset-editor-qa-*` markers, full backend/frontend/browser verification, and refreshed desktop/mobile QA screenshots.
 - Local asset editor QA aggregate diagnostics are verified by red-green browser smoke coverage that first failed on missing editor QA aggregate attributes, then passed with stable check-count, pending-count, and readiness-state diagnostics derived from safe local QA previews, plus full backend/frontend/browser verification.
+- Visible local asset editor QA aggregate summary is verified by red-green static and browser coverage that first failed on missing `data-asset-editor-qa-summary`, then passed with compact read-only readiness and pending/check summary copy from safe local QA previews, bilingual labels, refreshed desktop/mobile QA screenshots, full backend/frontend/browser verification, and no unsafe draft, publish, sync, credential, navigation, or commerce-write controls.
 
 ## Completion Rule
 

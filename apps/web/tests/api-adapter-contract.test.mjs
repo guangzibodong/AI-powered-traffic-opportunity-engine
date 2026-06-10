@@ -387,6 +387,18 @@ assert(
   app.includes("data-asset-editor-qa-readiness-state"),
   "Local asset editor UI must expose stable QA readiness diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-qa-summary"),
+  "Local asset editor UI must expose a stable visible QA aggregate summary"
+);
+assert(
+  app.includes("data-asset-editor-qa-readiness"),
+  "Local asset editor UI must expose stable visible QA readiness summary diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-qa-checks"),
+  "Local asset editor UI must expose stable visible QA check summary diagnostics"
+);
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(

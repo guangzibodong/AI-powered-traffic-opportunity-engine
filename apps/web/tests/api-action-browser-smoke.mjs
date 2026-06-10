@@ -1098,6 +1098,9 @@ async function assertLocalAssetEditorCanSave(
     entryName = "Review local draft",
     externalWritesCopy = "External writes disabled",
     localOnlyCopy = "Local draft only",
+    qaChecksCopy = "QA checks",
+    qaPendingSuffix = "pending",
+    qaReadinessCopy = "QA readiness",
     saveName = "Save local draft",
     saveSuccessCopy = "Local draft saved",
     titleValue = "Updated local camping espresso draft",
@@ -1140,6 +1143,23 @@ async function assertLocalAssetEditorCanSave(
     `${label} editor QA readiness mismatch: expected ${
       pendingQaRows > 0 ? "pending_qa" : "qa_clear"
     }, got ${editorQaReadinessState}`
+  );
+  const qaSummary = editor.locator("[data-asset-editor-qa-summary='true']");
+  await expectVisible(qaSummary, `${label} editor QA aggregate summary`);
+  await expectVisible(
+    qaSummary.locator("[data-asset-editor-qa-readiness='true']"),
+    `${label} editor QA readiness summary row`
+  );
+  await expectVisible(
+    qaSummary.locator("[data-asset-editor-qa-checks='true']"),
+    `${label} editor QA checks summary row`
+  );
+  await expectVisible(qaSummary.getByText(qaReadinessCopy), `${label} visible editor QA readiness label`);
+  await expectVisible(qaSummary.getByText(editorQaReadinessState), `${label} visible editor QA readiness state`);
+  await expectVisible(qaSummary.getByText(qaChecksCopy), `${label} visible editor QA checks label`);
+  await expectVisible(
+    qaSummary.getByText(`${editorQaPendingCount}/${editorQaCheckCount} ${qaPendingSuffix}`),
+    `${label} visible editor QA pending summary`
   );
   for (const qaDetail of qaDetailRows) {
     assert(qaDetail.key, `${label} editor QA detail must expose a key diagnostic`);
@@ -3543,6 +3563,9 @@ async function runSmoke() {
       entryName: "审核本地草稿",
       externalWritesCopy: "外部写入已关闭",
       localOnlyCopy: "仅本地草稿",
+      qaChecksCopy: "QA 检查",
+      qaPendingSuffix: "待处理",
+      qaReadinessCopy: "QA 就绪状态",
       saveName: "保存本地草稿",
       saveSuccessCopy: "本地草稿已保存",
       titleValue: "移动端本地草稿保存验证标题",
