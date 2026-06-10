@@ -345,7 +345,8 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
     before: "Imported baseline / 28d",
     clicks: "95 -> follow-up not tracked",
     delta: "Pending local evidence",
-    impressions: "5,000 -> follow-up not tracked"
+    impressions: "5,000 -> follow-up not tracked",
+    source: "Imported GSC"
   };
   for (const [metric, expectedValue] of Object.entries(expectedComparisonMetrics)) {
     const metricValue = (
@@ -636,7 +637,8 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
     clicks: `${expectedMetrics.clicks} -> follow-up not tracked`,
     delta: "Pending local evidence",
     impressions: `${expectedMetrics.impressions} -> follow-up not tracked`,
-    match_scope: "local_asset_query_page_tokens"
+    match_scope: "local_asset_query_page_tokens",
+    source: "Imported GSC"
   };
   for (const [metric, expectedValue] of Object.entries(expectedComparisonMetrics)) {
     const metricValue = (

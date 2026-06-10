@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset performance comparison snapshot count diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 performance comparison source diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -25,7 +25,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Product Manager | Main thread | Keep Sprint 2 local/import-only boundaries explicit and sequence QA-only follow-up tasks. |
 | Backend/API Engineer | Main thread | Preserve existing read-only imported APIs; no live credentials, OAuth, publishing, or commerce writes. |
 | Frontend Product Engineer | Main thread | Implement safe imported preview view-model/UI improvements with contract coverage. |
-| QA Lead | Main thread | Verify asset performance comparison snapshot count diagnostics and no-control safety checks. |
+| QA Lead | Main thread | Verify performance comparison source diagnostics and no-control safety checks. |
 | UI Systems Engineer | Main thread | Keep imported preview cards compact, bilingual-safe, text-only, and free of external navigation controls. |
 
 ## Task Queue
@@ -234,6 +234,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-066 | 200 | done | Frontend Product Engineer / QA Lead | Add store performance blocked capability diagnostics. | Store performance panels expose a stable read-only store-specific blocked capability count diagnostic across populated, empty, and unavailable states while preserving local-only safety scope and no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-QA-067 | 201 | done | Frontend Product Engineer / QA Lead | Add performance comparison blocked capability diagnostics. | Store and asset before/after performance comparison panels expose stable read-only blocked capability count diagnostics across populated, empty, and unavailable states while preserving local-only safety scope and no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-QA-068 | 202 | done | Frontend Product Engineer / QA Lead | Add asset performance comparison snapshot count diagnostics. | Asset before/after performance comparison panels expose a stable read-only snapshot count diagnostic across populated, empty, and unavailable states while preserving local-only match scope and no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
+| TASK-S3-QA-069 | 203 | done | Frontend Product Engineer / QA Lead | Add performance comparison source diagnostics. | Store and asset before/after performance comparison panels expose stable read-only `Imported GSC` source diagnostics for populated local imported baselines while keeping empty/unavailable comparison states free of populated metric rows and preserving no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -614,6 +615,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Store performance blocked capability diagnostics are verified by red-green static and browser coverage that first failed on the missing store-specific blocked capability count attribute, then passed across populated, empty, and unavailable store performance states while preserving GET-only reads and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 - Performance comparison blocked capability diagnostics are verified by red-green static and browser coverage that first failed on missing store and asset comparison blocked capability count attributes, then passed across populated, empty, and unavailable comparison states while preserving GET-only reads and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 - Asset performance comparison snapshot count diagnostics are verified by red-green static and browser coverage that first failed on the missing asset comparison snapshot count attribute, then passed across populated, empty, and unavailable asset comparison states while preserving GET-only reads and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
+- Performance comparison source diagnostics are verified by red-green static and browser coverage that first failed on missing store and asset comparison source metric rows, then passed for populated local imported baselines while empty and unavailable comparison states keep populated metric rows hidden and preserve GET-only reads with no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 
 ## Completion Rule
 

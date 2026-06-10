@@ -102,6 +102,7 @@ Implemented foundation:
 - Store performance panels expose stable read-only store-specific blocked capability count diagnostics across populated, empty, and unavailable states without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Store and asset before/after comparison panels expose stable read-only blocked capability count diagnostics across populated, empty, and unavailable states without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Asset before/after comparison panels expose stable read-only snapshot count diagnostics across populated, empty, and unavailable states without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
+- Store and asset before/after comparison panels expose stable read-only `Imported GSC` source diagnostics for populated local imported baselines while empty and unavailable states keep populated metric rows hidden.
 
 Still gated:
 
