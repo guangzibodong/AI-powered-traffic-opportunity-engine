@@ -1645,6 +1645,14 @@ function AssetWorkspacePanel({
             ).sort(([left], [right]) => left.localeCompare(right));
             const assetClaimSourceTotal = assetClaimSourceEntries.reduce((sum, [, count]) => sum + count, 0);
             const assetClaimSourceCountsReconciled = assetClaimSourceTotal === asset.claimLedger.length;
+            const assetQaStatusEntries = Object.entries(
+              asset.qaChecks.reduce<Record<string, number>>((counts, check) => {
+                counts[check.status] = (counts[check.status] ?? 0) + 1;
+                return counts;
+              }, {})
+            ).sort(([left], [right]) => left.localeCompare(right));
+            const assetQaStatusTotal = assetQaStatusEntries.reduce((sum, [, count]) => sum + count, 0);
+            const assetQaStatusCountsReconciled = assetQaStatusTotal === asset.qaChecks.length;
             return (
               <div
                 className="mini-card"
@@ -1655,6 +1663,9 @@ function AssetWorkspacePanel({
                 data-asset-qa-check-count={asset.qaCheckCount}
                 data-asset-qa-pending-count={asset.qaPendingCount}
                 data-asset-review-state={asset.reviewState}
+                data-asset-row-qa-status-count={assetQaStatusEntries.length}
+                data-asset-row-qa-status-counts-reconciled={assetQaStatusCountsReconciled}
+                data-asset-row-qa-status-total-count={assetQaStatusTotal}
                 data-asset-row-claim-counts-reconciled={asset.claimLedger.length === asset.claimCount}
                 data-asset-row-claim-detail-count={asset.claimLedger.length}
                 data-asset-row-claim-source-count={assetClaimSourceEntries.length}
@@ -1710,6 +1721,21 @@ function AssetWorkspacePanel({
                       key={`${asset.id}-${check.key}-${check.status}`}
                     >
                       {check.key}:{check.status}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {assetQaStatusEntries.length > 0 && (
+                <div className="inline-diagnostics" data-asset-row-qa-status-list="true">
+                  {assetQaStatusEntries.map(([status, count]) => (
+                    <span
+                      className="pill muted-pill"
+                      data-asset-row-qa-status-key={status}
+                      data-asset-row-qa-status-row="true"
+                      data-asset-row-qa-status-row-count={count}
+                      key={`${asset.id}-qa-status-${status}`}
+                    >
+                      {status} {count}
                     </span>
                   ))}
                 </div>

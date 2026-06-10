@@ -1017,6 +1017,59 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
           `${label} asset row ${expectedAsset.id} missing QA detail ${expectedQaDetail.key}:${expectedQaDetail.status}`
         );
       }
+      const expectedQaStatusDistribution = expectedAsset.qaDetails.reduce((counts, detail) => {
+        counts[detail.status] = (counts[detail.status] ?? 0) + 1;
+        return counts;
+      }, {});
+      const expectedQaStatusEntries = Object.entries(expectedQaStatusDistribution).sort(([left], [right]) =>
+        left.localeCompare(right)
+      );
+      const rowQaStatusCount = Number(await row.getAttribute("data-asset-row-qa-status-count"));
+      const rowQaStatusTotal = Number(await row.getAttribute("data-asset-row-qa-status-total-count"));
+      const rowQaStatusReconciled = await row.getAttribute("data-asset-row-qa-status-counts-reconciled");
+      const rowQaStatusRows = await row.locator("[data-asset-row-qa-status-row='true']").evaluateAll((elements) =>
+        elements.map((element) => ({
+          count: Number(element.getAttribute("data-asset-row-qa-status-row-count")),
+          status: element.getAttribute("data-asset-row-qa-status-key"),
+          text: element.textContent ?? ""
+        }))
+      );
+      assert(
+        rowQaStatusCount === expectedQaStatusEntries.length,
+        `${label} asset row ${expectedAsset.id} QA status count mismatch: expected ${
+          expectedQaStatusEntries.length
+        }, got ${rowQaStatusCount}`
+      );
+      assert(
+        rowQaStatusTotal === expectedAsset.qaDetails.length,
+        `${label} asset row ${expectedAsset.id} QA status total mismatch: expected ${
+          expectedAsset.qaDetails.length
+        }, got ${rowQaStatusTotal}`
+      );
+      assert(
+        rowQaStatusReconciled === "true",
+        `${label} asset row ${expectedAsset.id} QA status reconciliation marker must be true, got ${
+          rowQaStatusReconciled ?? "missing"
+        }`
+      );
+      assert(
+        rowQaStatusRows.length === expectedQaStatusEntries.length,
+        `${label} asset row ${expectedAsset.id} QA status row count mismatch: expected ${
+          expectedQaStatusEntries.length
+        }, got ${rowQaStatusRows.length}`
+      );
+      assert(
+        rowQaStatusRows.reduce((sum, statusRow) => sum + statusRow.count, 0) === expectedAsset.qaDetails.length,
+        `${label} asset row ${expectedAsset.id} QA status rows must reconcile with detail count`
+      );
+      for (const [status, count] of expectedQaStatusEntries) {
+        assert(
+          rowQaStatusRows.some(
+            (statusRow) => statusRow.status === status && statusRow.count === count && statusRow.text.includes(`${status} ${count}`)
+          ),
+          `${label} asset row ${expectedAsset.id} missing QA status distribution row ${status}:${count}`
+        );
+      }
       const serializedQaDetails = JSON.stringify(qaDetailRows);
       for (const forbidden of ["metadata", "credential", "token", "secret", "password", "api_key", "published"]) {
         assert(
@@ -4178,6 +4231,11 @@ async function runSmoke() {
           { id: "claim_2", source: "local_evidence", text: "Local claim requires review" }
         ],
         id: "asset_task_002",
+        qaDetails: [
+          { key: "seo", status: "pending" },
+          { key: "geo", status: "pending" },
+          { key: "factual_grounding", status: "passed" }
+        ],
         qaCheckCount: 3,
         qaPendingCount: 2,
         reviewState: "draft_candidate",
@@ -4187,6 +4245,7 @@ async function runSmoke() {
         contentBlockCount: 2,
         contentBlockTypes: ["answer_summary", "faq"],
         id: "asset_task_003",
+        qaDetails: [{ key: "schema", status: "pending" }],
         qaCheckCount: 1,
         qaPendingCount: 1,
         reviewState: "draft_candidate",
