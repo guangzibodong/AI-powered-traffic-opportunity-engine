@@ -236,6 +236,9 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
   const safetyScope = await performancePanel.getAttribute("data-safety-scope");
   const externalWriteAllowed = await performancePanel.getAttribute("data-external-write-allowed");
   const blockedCapabilityCount = Number(await performancePanel.getAttribute("data-blocked-capability-count"));
+  const performanceBlockedCapabilityCount = Number(
+    await performancePanel.getAttribute("data-performance-blocked-capability-count")
+  );
   assert(
     safetyScope === "local_imported_gsc_only",
     `${label} performance snapshot panel must declare local imported GSC scope`
@@ -247,6 +250,10 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
   assert(
     Number.isInteger(blockedCapabilityCount) && blockedCapabilityCount >= 1,
     `${label} performance snapshot panel must expose blocked capability diagnostics`
+  );
+  assert(
+    performanceBlockedCapabilityCount === blockedCapabilityCount,
+    `${label} performance snapshot panel must expose matching store-specific blocked capability diagnostics`
   );
 
   const performancePanelText = ((await performancePanel.textContent()) ?? "").toLowerCase();
@@ -410,11 +417,23 @@ async function assertPerformanceSnapshotEmptyStateIsReadOnly(page, label, expect
 
   const safetyScope = await performancePanel.getAttribute("data-safety-scope");
   const externalWriteAllowed = await performancePanel.getAttribute("data-external-write-allowed");
+  const blockedCapabilityCount = Number(await performancePanel.getAttribute("data-blocked-capability-count"));
+  const performanceBlockedCapabilityCount = Number(
+    await performancePanel.getAttribute("data-performance-blocked-capability-count")
+  );
   assert(
     safetyScope === "local_imported_gsc_only",
     `${label} performance snapshot panel must stay local imported GSC only`
   );
   assert(externalWriteAllowed === "false", `${label} performance snapshot panel must keep external writes false`);
+  assert(
+    Number.isInteger(blockedCapabilityCount) && blockedCapabilityCount >= 1,
+    `${label} performance empty state must expose blocked capability diagnostics`
+  );
+  assert(
+    performanceBlockedCapabilityCount === blockedCapabilityCount,
+    `${label} performance empty state must expose matching store-specific blocked capability diagnostics`
+  );
 
   const emptyRow = performancePanel.locator("[data-performance-empty-state='true']");
   await expectVisible(emptyRow, `${label} performance empty-state row`);

@@ -1280,6 +1280,7 @@ function PerformanceSnapshotPanel({
       className="panel performance-snapshot-panel"
       data-blocked-capability-count={blockedCapabilities.length}
       data-external-write-allowed="false"
+      data-performance-blocked-capability-count={blockedCapabilities.length}
       data-performance-snapshot-count={performanceSnapshots.snapshots.length}
       data-performance-snapshot-state={performanceSnapshots.availability}
       data-safety-scope="local_imported_gsc_only"

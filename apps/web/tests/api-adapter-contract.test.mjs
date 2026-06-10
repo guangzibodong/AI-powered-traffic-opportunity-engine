@@ -273,6 +273,10 @@ assert(
 assert(app.includes("PerformanceSnapshotPanel"), "Board must expose a read-only performance snapshot panel");
 assert(app.includes("AssetPerformancePanel"), "Board must expose a read-only asset performance panel");
 assert(app.includes("performance-snapshot-panel"), "Performance snapshot UI must have a stable read-only panel class");
+assert(
+  app.includes("data-performance-blocked-capability-count"),
+  "Performance snapshot UI must expose stable store-specific blocked capability count diagnostics"
+);
 assert(app.includes("performance-comparison-panel"), "Performance snapshot UI must expose a stable before/after comparison panel class");
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
