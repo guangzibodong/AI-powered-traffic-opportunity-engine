@@ -467,6 +467,23 @@ async function assertLocalAssetEditorRetryAfterFailure(page, label) {
   assert(failureCopyCount === 0, `${label} local save failure copy must clear after retry success`);
 }
 
+async function assertLocalAssetEditorCloseWithoutWrite(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} local asset editor`);
+  await editor.locator("input").first().fill("Unsaved close-only local title");
+  await editor.locator("textarea").first().fill("This local edit should be abandoned without a PATCH.");
+  await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close local editor button`);
+
+  const deadline = Date.now() + 5_000;
+  while (Date.now() < deadline) {
+    if ((await page.locator(".asset-editor-panel").count()) === 0) return;
+    await delay(50);
+  }
+
+  throw new Error(`${label} local asset editor did not close`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -2396,6 +2413,65 @@ async function runSmoke() {
       `Retry local save issued unsafe requests: ${JSON.stringify(unsafeRetrySaveRequests)}`
     );
     await retrySaveAssetPage.close();
+
+    const closeOnlyAssetPage = await context.newPage();
+    const closeOnlyAssetRequests = [];
+    closeOnlyAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        closeOnlyAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await closeOnlyAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_close_only",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_close_only",
+                title: "Close-only local draft candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await closeOnlyAssetPage.goto(webUrl);
+    await clickUnique(closeOnlyAssetPage.getByRole("button", { name: "EN" }), "close-only asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(closeOnlyAssetPage, 1, "close-only asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_close_only",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Close-only local draft candidate"
+      }
+    ]);
+    await assertLocalAssetEditorCloseWithoutWrite(closeOnlyAssetPage, "close-only asset workspace");
+    const closeOnlyWriteRequests = closeOnlyAssetRequests.filter((request) => request.method !== "GET");
+    assert(
+      closeOnlyWriteRequests.length === 0,
+      `Closing local editor issued unsafe asset write requests: ${JSON.stringify(closeOnlyWriteRequests)}`
+    );
+    await closeOnlyAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {

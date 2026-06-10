@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local editor retry-after-failure browser coverage is verified; local editor close-without-write coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 local editor close-without-write browser coverage is verified; local editor reopen-after-close reset coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -201,7 +201,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-033 | 167 | done | UI Systems Engineer / QA Lead | Add responsive bilingual editor QA coverage. | Browser or screenshot coverage verifies the local asset editor at desktop and mobile widths, English and Chinese labels, long title/slug wrapping, no overflow, and continued absence of WordPress draft, publish, sync, credential, href navigation, or commerce-write controls. |
 | TASK-S3-QA-034 | 168 | done | Frontend Product Engineer / QA Lead | Add local editor save-failure browser coverage. | Browser smoke verifies a failed local asset PATCH shows safe local failure feedback, keeps the editor open, re-enables local save controls, and still makes no WordPress draft, publish, sync, credential, href navigation, or commerce-write requests. |
 | TASK-S3-QA-035 | 169 | done | Frontend Product Engineer / QA Lead | Add local editor retry-after-failure browser coverage. | Browser smoke verifies a failed local asset PATCH can be retried successfully through the same local editor, clears the failure feedback with safe success feedback, and still makes only allowed local asset PATCH requests. |
-| TASK-S3-QA-036 | 170 | todo | Frontend Product Engineer / QA Lead | Add local editor close-without-write browser coverage. | Browser smoke verifies closing the local editor hides the form without issuing a local asset PATCH or any WordPress draft, publish, sync, credential, href navigation, or commerce-write request. |
+| TASK-S3-QA-036 | 170 | done | Frontend Product Engineer / QA Lead | Add local editor close-without-write browser coverage. | Browser smoke verifies closing the local editor hides the form without issuing a local asset PATCH or any WordPress draft, publish, sync, credential, href navigation, or commerce-write request. |
+| TASK-S3-QA-037 | 171 | todo | Frontend Product Engineer / QA Lead | Add local editor reopen-after-close reset coverage. | Browser smoke verifies unsaved local editor changes are discarded after Close and reopening the same candidate restores the safe asset preview fields without issuing draft, publish, sync, credential, navigation, commerce-write, or local PATCH requests. |
 
 ## Blockers
 
@@ -535,6 +536,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local editor retry-after-failure browser coverage is next because users need proof that a transient local-only save failure can recover without opening WordPress, sync, credential, external navigation, or commerce-write paths.
 - Local editor retry-after-failure browser coverage is verified by browser smoke that fails the first local asset PATCH, retries the same editor successfully, clears the failure feedback with `Local draft saved`, and records only two allowed local PATCH requests.
 - Local editor close-without-write browser coverage is next because closing or abandoning the local editor should be visibly safe and should not create draft, sync, credential, navigation, or commerce-write side effects.
+- Local editor close-without-write browser coverage is verified by browser smoke that edits local form fields, clicks `Close`, confirms the editor hides, and records no local PATCH or unsafe write requests.
+- Local editor reopen-after-close reset coverage is next because abandoned local edits should not linger invisibly when the same candidate is opened again.
 
 ## Completion Rule
 
