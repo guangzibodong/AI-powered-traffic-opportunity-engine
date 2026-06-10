@@ -1935,6 +1935,7 @@ function LocalAssetEditor({
   const [editorNote, setEditorNote] = useState("");
   const isSaving = feedback?.kind === "pending";
   const editorSaveState = isSaving ? "pending" : feedback?.kind === "saved" ? "saved" : feedback?.kind === "failed" ? "failed" : "idle";
+  const editorFieldState = (value: string) => (value.trim().length > 0 ? "filled" : "empty");
   const editorFieldValues = [title, slug, metaTitle, metaDescription, sectionBody, editorNote];
   const editorFieldCount = editorFieldValues.length;
   const editorFilledFieldCount = editorFieldValues.filter((value) => value.trim().length > 0).length;
@@ -2046,27 +2047,51 @@ function LocalAssetEditor({
           });
         }}
       >
-        <label>
+        <label
+          data-asset-editor-field="true"
+          data-asset-editor-field-key="title"
+          data-asset-editor-field-state={editorFieldState(title)}
+        >
           <span>{copy.title}</span>
           <input value={title} onChange={(event) => setTitle(event.target.value)} />
         </label>
-        <label>
+        <label
+          data-asset-editor-field="true"
+          data-asset-editor-field-key="slug"
+          data-asset-editor-field-state={editorFieldState(slug)}
+        >
           <span>{copy.slug}</span>
           <input value={slug} onChange={(event) => setSlug(event.target.value)} />
         </label>
-        <label>
+        <label
+          data-asset-editor-field="true"
+          data-asset-editor-field-key="meta_title"
+          data-asset-editor-field-state={editorFieldState(metaTitle)}
+        >
           <span>{copy.metaTitle}</span>
           <input value={metaTitle} onChange={(event) => setMetaTitle(event.target.value)} />
         </label>
-        <label>
+        <label
+          data-asset-editor-field="true"
+          data-asset-editor-field-key="meta_description"
+          data-asset-editor-field-state={editorFieldState(metaDescription)}
+        >
           <span>{copy.metaDescription}</span>
           <textarea value={metaDescription} onChange={(event) => setMetaDescription(event.target.value)} />
         </label>
-        <label>
+        <label
+          data-asset-editor-field="true"
+          data-asset-editor-field-key="structured_section"
+          data-asset-editor-field-state={editorFieldState(sectionBody)}
+        >
           <span>{copy.structuredSection}</span>
           <textarea value={sectionBody} onChange={(event) => setSectionBody(event.target.value)} />
         </label>
-        <label>
+        <label
+          data-asset-editor-field="true"
+          data-asset-editor-field-key="editor_note"
+          data-asset-editor-field-state={editorFieldState(editorNote)}
+        >
           <span>{copy.editorNote}</span>
           <textarea value={editorNote} onChange={(event) => setEditorNote(event.target.value)} />
         </label>

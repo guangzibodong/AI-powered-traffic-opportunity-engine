@@ -435,6 +435,14 @@ assert(
   app.includes("data-asset-editor-field-summary"),
   "Local asset editor UI must expose stable visible field summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-field-key"),
+  "Local asset editor UI must expose stable per-field key diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-field-state"),
+  "Local asset editor UI must expose stable per-field fill state diagnostics"
+);
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(

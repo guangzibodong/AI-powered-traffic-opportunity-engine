@@ -1129,6 +1129,42 @@ async function assertLocalAssetEditorFieldDiagnostics(
     fieldSummary.getByText(`${expectedFilled}/6 ${filledCopy}`),
     `${label} visible editor field fill summary`
   );
+  const expectedFieldKeys = [
+    "title",
+    "slug",
+    "meta_title",
+    "meta_description",
+    "structured_section",
+    "editor_note"
+  ];
+  const fieldRows = await editor.locator("[data-asset-editor-field='true']").evaluateAll((elements) =>
+    elements.map((element) => ({
+      key: element.getAttribute("data-asset-editor-field-key"),
+      state: element.getAttribute("data-asset-editor-field-state")
+    }))
+  );
+  assert(
+    fieldRows.length === expectedFieldKeys.length,
+    `${label} editor field row count mismatch: expected ${expectedFieldKeys.length}, got ${fieldRows.length}`
+  );
+  for (const expectedKey of expectedFieldKeys) {
+    const fieldRow = fieldRows.find((row) => row.key === expectedKey);
+    assert(fieldRow, `${label} editor missing field diagnostics for ${expectedKey}`);
+    assert(
+      fieldRow.state === "filled" || fieldRow.state === "empty",
+      `${label} editor field ${expectedKey} has invalid fill state: ${fieldRow.state ?? "missing"}`
+    );
+  }
+  const filledFieldRows = fieldRows.filter((row) => row.state === "filled").length;
+  const emptyFieldRows = fieldRows.filter((row) => row.state === "empty").length;
+  assert(
+    filledFieldRows === expectedFilled,
+    `${label} editor filled field row mismatch: expected ${expectedFilled}, got ${filledFieldRows}`
+  );
+  assert(
+    emptyFieldRows === expectedEmpty,
+    `${label} editor empty field row mismatch: expected ${expectedEmpty}, got ${emptyFieldRows}`
+  );
 }
 
 async function assertLocalAssetEditorCanSave(
