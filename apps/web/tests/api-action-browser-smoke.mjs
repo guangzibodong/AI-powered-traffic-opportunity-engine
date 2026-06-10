@@ -263,6 +263,7 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
     ctr: "1.90%",
     impressions: "5,000",
     position: "6.4",
+    source: "Imported GSC",
     window: "28d"
   };
   for (const [metric, expectedValue] of Object.entries(expectedMetrics)) {
@@ -3155,6 +3156,7 @@ async function runSmoke() {
       ctr: "2.00%",
       impressions: "1,200",
       position: "4.8",
+      source: "Imported GSC",
       window: "28d"
     });
     await assertEditorControlsStayWithinPanel(populatedEditor, "populated asset workspace");
