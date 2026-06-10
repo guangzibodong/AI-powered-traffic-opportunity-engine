@@ -247,6 +247,7 @@ The first local editor slice is implemented with a conservative scope:
 - Asset workspace rows and the local asset editor render read-only claim ledger diagnostics with stable claim count/detail/source/id DOM markers, preserving safe local evidence context without claim editing, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Asset workspace claim ledger diagnostics expose read-only total, visible, hidden, and reconciliation markers so compact visible rows plus hidden overflow claim counts reconcile with the total safe claim count without claim editing, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Asset workspace and local editor claim ledger diagnostics expose read-only source distribution rows and reconciliation markers so safe claim source counts reconcile with safe claim detail rows without claim editing, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
+- Local asset editor claim ledger diagnostics expose a read-only claim count reconciliation marker so rendered safe claim detail rows match the safe claim count without claim editing, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 
 Still gated:
 

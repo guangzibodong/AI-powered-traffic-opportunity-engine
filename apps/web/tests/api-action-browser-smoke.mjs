@@ -1393,9 +1393,14 @@ async function assertLocalAssetEditorFieldDiagnostics(
 
 async function assertLocalAssetEditorClaimLedger(editor, expectedClaims, label) {
   const claimCount = await editor.getAttribute("data-asset-editor-claim-count");
+  const claimCountsReconciled = await editor.getAttribute("data-asset-editor-claim-counts-reconciled");
   assert(
     claimCount === String(expectedClaims.length),
     `${label} editor claim count mismatch: expected ${expectedClaims.length}, got ${claimCount ?? "missing"}`
+  );
+  assert(
+    claimCountsReconciled === "true",
+    `${label} editor claim count reconciliation marker must be true, got ${claimCountsReconciled ?? "missing"}`
   );
   const claimRows = await editor.locator("[data-asset-editor-claim-detail]").evaluateAll((elements) =>
     elements.map((element) => ({

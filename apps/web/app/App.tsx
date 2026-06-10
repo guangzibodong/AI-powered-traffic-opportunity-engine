@@ -2099,6 +2099,7 @@ function LocalAssetEditor({
   ).sort(([left], [right]) => left.localeCompare(right));
   const editorClaimSourceTotal = editorClaimSourceEntries.reduce((sum, [, count]) => sum + count, 0);
   const editorClaimSourceCountsReconciled = editorClaimSourceTotal === asset.claimCount;
+  const editorClaimCountsReconciled = asset.claimLedger.length === asset.claimCount;
   const editorBlockedCapabilities = [
     { key: "external_writes", label: copy.externalWritesDisabled },
     { key: "wordpress_draft_creation", label: copy.wordpressBlocked },
@@ -2140,6 +2141,7 @@ function LocalAssetEditor({
       className="panel asset-editor-panel"
       data-asset-editor="local-only"
       data-asset-editor-claim-count={asset.claimCount}
+      data-asset-editor-claim-counts-reconciled={editorClaimCountsReconciled}
       data-asset-editor-claim-source-count={editorClaimSourceEntries.length}
       data-asset-editor-claim-source-counts-reconciled={editorClaimSourceCountsReconciled}
       data-asset-editor-claim-source-total-count={editorClaimSourceTotal}

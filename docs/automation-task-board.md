@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset claim ledger source distribution diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor claim count reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -272,6 +272,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-104 | 238 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add visible read-only local asset claim ledger diagnostics. | Asset workspace rows and the local asset editor expose stable read-only claim count and claim detail diagnostics from safe claim previews, redact unsafe claim payloads, and add no claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 | TASK-S3-QA-105 | 239 | done | Frontend Product Engineer / QA Lead | Add local asset claim ledger aggregate reconciliation diagnostics. | Asset workspace exposes read-only total, visible, hidden, and reconciliation markers proving visible claim rows plus hidden claim counts equal total safe claim count, without claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 | TASK-S3-QA-106 | 240 | done | Frontend Product Engineer / QA Lead | Add local asset claim ledger source distribution diagnostics. | Asset workspace and local asset editor expose read-only claim source count rows that reconcile with safe claim detail rows, without claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
+| TASK-S3-QA-107 | 241 | done | Frontend Product Engineer / QA Lead | Add local asset editor claim count reconciliation diagnostics. | Local asset editor exposes a read-only marker proving rendered claim detail rows reconcile with the safe claim count, without claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 
 ## Blockers
 
@@ -690,6 +691,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Visible local asset claim ledger diagnostics are verified by red-green static and browser coverage that first failed on missing workspace/editor claim diagnostics, then passed with read-only claim count and claim detail DOM markers, unsafe claim payload redaction, refreshed desktop editor screenshot evidence, full backend/frontend/browser verification, and no claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 - Local asset claim ledger aggregate reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing claim count reconciliation markers and zero aggregate claims, then passed with total, visible, hidden, and reconciliation DOM diagnostics proving visible plus hidden claim counts equal total safe claims, plus full backend/frontend/browser verification and no claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 - Local asset claim ledger source distribution diagnostics are verified by red-green static and browser coverage that first failed on missing claim source count markers, then passed with workspace and local editor source distribution rows reconciling to safe claim detail totals, plus full backend/frontend/browser verification and no claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
+- Local asset editor claim count reconciliation diagnostics are verified by red-green static and browser coverage that first failed on the missing editor claim count reconciliation marker, then passed with rendered safe claim detail rows reconciling to the safe claim count, plus full backend/frontend/browser verification and no claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 
 ## Completion Rule
 

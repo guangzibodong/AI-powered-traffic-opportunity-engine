@@ -410,6 +410,10 @@ assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must 
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");
 assert(app.includes("data-asset-editor-claim-count"), "Local asset editor UI must expose stable claim count diagnostics");
+assert(
+  app.includes("data-asset-editor-claim-counts-reconciled"),
+  "Local asset editor UI must expose stable claim count reconciliation diagnostics"
+);
 assert(app.includes("data-asset-editor-claim-detail"), "Local asset editor UI must expose stable claim detail diagnostics");
 assert(app.includes("data-asset-editor-claim-id"), "Local asset editor UI must expose stable editor claim id diagnostics");
 assert(app.includes("data-asset-editor-claim-source"), "Local asset editor UI must expose stable editor claim source diagnostics");
