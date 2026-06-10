@@ -484,6 +484,36 @@ async function assertLocalAssetEditorCloseWithoutWrite(page, label) {
   throw new Error(`${label} local asset editor did not close`);
 }
 
+async function assertLocalAssetEditorReopenResetsAfterClose(page, label, expectedTitle) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} first local asset editor`);
+  await editor.locator("input").first().fill("Unsaved reopen reset title");
+  await editor.locator("textarea").first().fill("This abandoned local edit must not survive reopening.");
+  await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close local editor button`);
+
+  const closeDeadline = Date.now() + 5_000;
+  while (Date.now() < closeDeadline) {
+    if ((await page.locator(".asset-editor-panel").count()) === 0) break;
+    await delay(50);
+  }
+  assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} local asset editor must close before reopen`);
+
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} reopen local draft review entry`);
+  const reopenedEditor = page.locator(".asset-editor-panel");
+  await expectVisible(reopenedEditor, `${label} reopened local asset editor`);
+  const reopenedTitle = await reopenedEditor.locator("input").first().inputValue();
+  const reopenedMetaDescription = await reopenedEditor.locator("textarea").first().inputValue();
+  assert(
+    reopenedTitle === expectedTitle,
+    `${label} reopened editor title mismatch: expected ${expectedTitle}, got ${reopenedTitle}`
+  );
+  assert(
+    reopenedMetaDescription === "",
+    `${label} reopened editor must discard unsaved meta description, got ${reopenedMetaDescription}`
+  );
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -2472,6 +2502,70 @@ async function runSmoke() {
       `Closing local editor issued unsafe asset write requests: ${JSON.stringify(closeOnlyWriteRequests)}`
     );
     await closeOnlyAssetPage.close();
+
+    const reopenResetAssetPage = await context.newPage();
+    const reopenResetAssetRequests = [];
+    const reopenResetAssetTitle = "Reopen reset local draft candidate";
+    reopenResetAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        reopenResetAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await reopenResetAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_reopen_reset",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_reopen_reset",
+                title: reopenResetAssetTitle
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await reopenResetAssetPage.goto(webUrl);
+    await clickUnique(reopenResetAssetPage.getByRole("button", { name: "EN" }), "reopen reset asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(reopenResetAssetPage, 1, "reopen reset asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_reopen_reset",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: reopenResetAssetTitle
+      }
+    ]);
+    await assertLocalAssetEditorReopenResetsAfterClose(
+      reopenResetAssetPage,
+      "reopen reset asset workspace",
+      reopenResetAssetTitle
+    );
+    const reopenResetWriteRequests = reopenResetAssetRequests.filter((request) => request.method !== "GET");
+    assert(
+      reopenResetWriteRequests.length === 0,
+      `Reopening local editor after close issued unsafe asset write requests: ${JSON.stringify(reopenResetWriteRequests)}`
+    );
+    await reopenResetAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
