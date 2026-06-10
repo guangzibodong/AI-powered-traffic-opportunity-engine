@@ -146,6 +146,20 @@ assert(adapter.includes("row.window ?? \"imported\""), "imported query row adapt
 assert(adapter.includes("formatImportedQueryRowSource"), "imported query row adapter must centralize source label formatting");
 assert(adapter.includes('source === "csv_import"'), "imported query row adapter must hide raw csv_import source labels");
 assert(adapter.includes('type: "audit"'), "audit log DTO conversion must produce audit evidence rows");
+assert(adapter.includes("formatAuditAction"), "audit log DTO conversion must centralize safe action display copy");
+assert(
+  adapter.includes('"performance.refresh_previewed"'),
+  "audit log DTO conversion must recognize performance refresh preview events"
+);
+const auditLogPreviewType = readExportedType(types, "AuditLogPreview");
+assert(auditLogPreviewType.includes("displayAction"), "Audit log preview must expose safe display action copy");
+assert(auditLogPreviewType.includes("eventKind"), "Audit log preview must expose a safe event kind");
+for (const forbiddenAuditPreviewField of ["metadata", "credential", "token", "secret", "password", "apiKey"]) {
+  assert(
+    !auditLogPreviewType.toLowerCase().includes(forbiddenAuditPreviewField.toLowerCase()),
+    `Audit log preview must not expose ${forbiddenAuditPreviewField}`
+  );
+}
 assert(adapter.includes('status === "connected_stub"'), "integration adapter must handle connected_stub status");
 assert(adapter.includes('status === "not_connected"'), "integration adapter must handle not_connected status");
 assert(adapter.includes("blocked_capabilities"), "adapter must preserve blocked capability context for safety copy");

@@ -391,5 +391,6 @@ Sprint 2 audit logs are local safety records for system events:
 - Detail reads return one audit entry or `404`.
 - Entries include `safety_scope: "local_tracking_only"` and `external_write_allowed: false`.
 - Sensitive metadata fields such as passwords, tokens, secrets, and API keys are redacted before storage.
+- Frontend audit DTOs map `performance.refresh_previewed` into safe display copy (`Performance refresh preview`) and `eventKind: "performance_refresh_preview"` while keeping raw metadata, live source labels, queued state, and credential-like values out of UI models.
 
 Audit logging does not create WordPress drafts, publish content, write WooCommerce data, run real GSC OAuth, or execute external sync jobs.

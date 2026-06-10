@@ -147,6 +147,7 @@ Expected behavior:
 - Imported task previews must stay recommend-only and read-only; no approve/reject/snooze routes, task persistence, asset generation, WordPress draft creation, publishing, WooCommerce writes, or external calls are allowed.
 - Integration status and sync run tracking must not store raw secrets, perform real OAuth, execute external sync jobs, create WordPress drafts, publish content, or write WooCommerce data.
 - Audit logs must redact sensitive metadata and stay read-only; logging must not become an execution, draft, publishing, OAuth, or commerce write path.
+- Frontend audit DTO adapters must map `performance.refresh_previewed` into safe display copy and a local preview event kind without exposing raw audit metadata, credential-like values, live source labels, queued status, or external-write flags.
 - Frontend DTO adapters must clamp unsafe or unknown backend states to safe UI defaults and must not expose `one_click_apply`, `guarded_autopilot`, live publish, applied, or external-write controls.
 - API-backed Safety UI must remain read-only; it can render integration, sync, and audit state, but it must not trigger sync execution, credential flows, draft creation, publishing, or commerce writes.
 - Imported preview frontend DTOs must remain read-only and recommend-only; they must not expose approve/reject/snooze mutation, draft generation, sync execution, credential flows, publishing, or commerce writes.

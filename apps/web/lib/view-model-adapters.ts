@@ -154,7 +154,7 @@ export function mapApiSyncRunsToSyncRunPreviews(response: ApiSyncRunsResponse): 
 export function mapApiAuditLogsToEvidenceRows(response: ApiAuditLogsResponse): EvidenceRow[] {
   return response.audit_logs.map((entry) => ({
     entity: `${entry.target_type}:${entry.target_id}`,
-    metric: entry.action,
+    metric: formatAuditAction(entry.action),
     reason: entry.safety_scope ?? "local_tracking_only",
     source: "Audit",
     type: "audit",
@@ -166,11 +166,23 @@ export function mapApiAuditLogsToPreviews(response: ApiAuditLogsResponse): Audit
   return response.audit_logs.map((entry) => ({
     action: entry.action,
     actor: entry.actor ?? "system",
+    displayAction: formatAuditAction(entry.action),
+    eventKind: mapAuditEventKind(entry.action),
     externalWriteAllowed: false,
     id: entry.id,
     safetyScope: entry.safety_scope ?? "local_tracking_only",
     target: `${entry.target_type}:${entry.target_id}`
   }));
+}
+
+function formatAuditAction(action: string): string {
+  if (action === "performance.refresh_previewed") return "Performance refresh preview";
+  return action;
+}
+
+function mapAuditEventKind(action: string): AuditLogPreview["eventKind"] {
+  if (action === "performance.refresh_previewed") return "performance_refresh_preview";
+  return "local_tracking";
 }
 
 export function mapApiAssetWorkspaceToPreviews(response: ApiAssetWorkspaceResponse): AssetDraftPreview[] {

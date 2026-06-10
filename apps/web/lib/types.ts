@@ -127,6 +127,8 @@ export type SyncRunPreview = {
 export type AuditLogPreview = {
   id: string;
   action: string;
+  displayAction: string;
+  eventKind: "local_tracking" | "performance_refresh_preview";
   actor: string;
   target: string;
   safetyScope: string;

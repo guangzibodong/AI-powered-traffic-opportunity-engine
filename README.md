@@ -154,7 +154,8 @@ Sprint 3 local/demo capabilities completed:
 5. Read-only selected-asset performance snapshots with local token matching.
 6. Store and asset before/after comparison diagnostics that mark follow-up metrics as not yet tracked.
 7. Stable source, snapshot id, evidence count, query/page count, blocked capability, and empty/unavailable diagnostics.
-8. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
+8. Local performance refresh preview diagnostics and audit mapping stay preview-only, local, and hidden from executable UI controls.
+9. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
 
 Current product/engineering ownership:
 

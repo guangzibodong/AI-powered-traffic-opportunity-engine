@@ -108,6 +108,7 @@ Implemented foundation:
 - Backend `POST /performance/refresh` is now a local `preview_only` diagnostic route, not a queued job.
 - The preview route records a sanitized local audit event with `performance.refresh_previewed`, `external_write_allowed: false`, snapshot count, source, status, and local preview safety scope.
 - Frontend API client exposes `previewPerformanceRefresh` and the adapter exposes `mapApiPerformanceRefreshPreviewToPreview` for typed contract coverage only; the visible App does not call the helper and browser smoke still verifies no `/performance/refresh` UI requests.
+- Frontend audit adapters map the `performance.refresh_previewed` audit action to safe read-only display copy and `performance_refresh_preview` event kind while excluding raw metadata, credential-like values, live source labels, queued state, and external-write flags.
 
 Still gated:
 

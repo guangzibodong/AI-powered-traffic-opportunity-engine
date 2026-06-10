@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 performance refresh preview audit logging is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 performance refresh audit frontend mapping is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -23,9 +23,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 | Role | Person/Agent | Current assignment |
 |---|---|---|
 | Product Manager | Main thread + Locke sidecar | Keep local performance preview audit scope explicit and preserve live-integration blockers. |
-| Backend/API Engineer | Main thread | Record sanitized local performance refresh preview audit events without live credentials, OAuth, publishing, drafts, WordPress updates, or commerce writes. |
-| Frontend Product Engineer | Main thread | Keep the visible UI free of refresh controls while backend audit diagnostics evolve. |
-| QA Lead | Main thread + Laplace sidecar | Verify refresh preview audit logging, no UI refresh requests, full matrix, task-board closure, and no-secret safety scans. |
+| Backend/API Engineer | Main thread | Keep sanitized local performance refresh preview audit events stable without live credentials, OAuth, publishing, drafts, WordPress updates, or commerce writes. |
+| Frontend Product Engineer | Main thread | Map performance refresh preview audit events through safe read-only DTOs while keeping the visible UI free of refresh controls. |
+| QA Lead | Main thread + Laplace sidecar | Verify audit DTO redaction, no UI refresh requests, full matrix, task-board closure, and no-secret safety scans. |
 | UI Systems Engineer | Main thread | Keep demo documentation aligned with the current compact bilingual UI and screenshot artifacts. |
 
 ## Task Queue
@@ -241,6 +241,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-PERF-073 | 207 | done | Backend/API Engineer / QA Lead | Add safe local performance refresh preview diagnostics. | `POST /performance/refresh` returns explicit preview-only local diagnostics derived from imported snapshots, exposes blocked capabilities and no external writes, avoids queued/live wording, and does not mutate imported GSC rows, create drafts, update WordPress pages, publish, sync, or write commerce data. |
 | TASK-S3-FE-074 | 208 | done | Frontend Product Engineer / QA Lead | Add frontend performance refresh preview client contract. | Frontend API client and adapter expose a typed local `previewPerformanceRefresh` helper and safe view model for the backend preview-only route, clamp unsafe backend flags, preserve no-body local POST semantics, and keep the visible App free of refresh controls or `/performance/refresh` requests. |
 | TASK-S3-AUDIT-075 | 209 | done | Backend/API Engineer / QA Lead | Add performance refresh preview audit logging. | Calling the local `POST /performance/refresh` preview route records one sanitized local audit event with preview-only metadata, keeps `external_write_allowed: false`, stores no credentials, does not mutate imported snapshots, and does not trigger live GSC, WordPress, WooCommerce, sync, draft, update, or publish behavior. |
+| TASK-S3-FE-076 | 210 | done | Frontend Product Engineer / QA Lead | Add safe frontend mapping for performance refresh audit events. | Frontend audit DTO mapping recognizes `performance.refresh_previewed` as a local preview audit event, exposes only sanitized read-only fields, clamps `externalWriteAllowed: false`, keeps metadata and credential-like values out of UI models, and adds no refresh controls or `/performance/refresh` App calls. |
 
 ## Blockers
 
@@ -628,6 +629,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Safe local performance refresh preview diagnostics are verified by red-green backend tests that first failed on the old `queued` stub, then passed with `preview_only` local diagnostics, blocked credential/WordPress/WooCommerce capabilities, no imported snapshot mutation, full backend/frontend/browser verification, and preserved UI-side no-refresh-request smoke coverage.
 - Frontend performance refresh preview client contract is verified by red-green static and fixture coverage that first failed on the missing helper/adapter, then passed with typed no-body `previewPerformanceRefresh`, safe `PerformanceRefreshPreview` mapping, App-level no-call contract coverage, full backend/frontend/browser verification, and preserved no-refresh-request smoke coverage.
 - Performance refresh preview audit logging is verified by red-green backend coverage that first failed with zero audit events, then passed with a sanitized `performance.refresh_previewed` local event, no credential metadata, no imported snapshot mutation, full backend/frontend/browser verification, and preserved no-refresh-request smoke coverage.
+- Performance refresh audit frontend mapping is verified by red-green fixture coverage that first failed on raw action copy, then passed with safe `Performance refresh preview` display copy, `performance_refresh_preview` event kind, metadata redaction, frontend contract coverage, full backend/frontend/browser verification, and preserved no-refresh-request smoke coverage.
 
 ## Completion Rule
 
