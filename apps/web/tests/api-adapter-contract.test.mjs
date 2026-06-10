@@ -432,6 +432,10 @@ assert(
   "Local asset editor UI must expose stable dirty field key diagnostics"
 );
 assert(
+  app.includes("data-asset-editor-dirty-field-keys-reconciled"),
+  "Local asset editor UI must expose stable dirty field key reconciliation diagnostics"
+);
+assert(
   app.includes('data-asset-editor-dirty-summary="true"'),
   "Local asset editor UI must expose a stable visible dirty-state summary"
 );
@@ -442,6 +446,10 @@ assert(
 assert(
   app.includes("data-asset-editor-dirty-summary-field-keys"),
   "Local asset editor dirty-state summary must expose dirty field key diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-dirty-summary-field-keys-reconciled"),
+  "Local asset editor dirty-state summary must expose dirty field key reconciliation diagnostics"
 );
 assert(
   app.includes("data-asset-editor-field-count"),

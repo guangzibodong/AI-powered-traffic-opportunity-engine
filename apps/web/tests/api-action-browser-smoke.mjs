@@ -1116,9 +1116,16 @@ async function assertLocalAssetEditorDirtyState(
   const dirtyState = await editor.getAttribute("data-asset-editor-dirty-state");
   const dirtyFieldCount = await editor.getAttribute("data-asset-editor-dirty-field-count");
   const dirtyFieldKeys = await editor.getAttribute("data-asset-editor-dirty-field-keys");
+  const dirtyFieldKeysReconciled = await editor.getAttribute("data-asset-editor-dirty-field-keys-reconciled");
   assert(
     dirtyState === expectedState,
     `${label} editor dirty state mismatch: expected ${expectedState}, got ${dirtyState ?? "missing"}`
+  );
+  assert(
+    dirtyFieldKeysReconciled === "true",
+    `${label} editor dirty field key reconciliation mismatch: expected true, got ${
+      dirtyFieldKeysReconciled ?? "missing"
+    }`
   );
   if (expectedDirtyFieldCount !== null) {
     assert(
@@ -1141,6 +1148,15 @@ async function assertLocalAssetEditorDirtyState(
   await expectVisible(dirtySummary, `${label} visible editor dirty-state summary row`);
   const visibleDirtyFieldCount = await dirtySummary.getAttribute("data-asset-editor-dirty-summary-field-count");
   const visibleDirtyFieldKeys = await dirtySummary.getAttribute("data-asset-editor-dirty-summary-field-keys");
+  const visibleDirtyFieldKeysReconciled = await dirtySummary.getAttribute(
+    "data-asset-editor-dirty-summary-field-keys-reconciled"
+  );
+  assert(
+    visibleDirtyFieldKeysReconciled === "true",
+    `${label} visible editor dirty field key reconciliation mismatch: expected true, got ${
+      visibleDirtyFieldKeysReconciled ?? "missing"
+    }`
+  );
   if (expectedDirtyFieldCount !== null) {
     assert(
       visibleDirtyFieldCount === String(expectedDirtyFieldCount),

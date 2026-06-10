@@ -1951,6 +1951,7 @@ function LocalAssetEditor({
   );
   const editorDirtyFieldKeyList = editorDirtyFieldKeys.length > 0 ? editorDirtyFieldKeys.join(",") : "none";
   const editorDirtyFieldCount = Object.values(editorFieldDirtyStates).filter(Boolean).length;
+  const editorDirtyFieldKeysReconciled = editorDirtyFieldKeys.length === editorDirtyFieldCount;
   const editorDirtyState = editorDirtyFieldCount > 0 ? "dirty" : "clean";
   const editorFieldDirtyState = (field: keyof typeof editorFieldDirtyStates) =>
     editorFieldDirtyStates[field] ? "dirty" : "clean";
@@ -1985,6 +1986,7 @@ function LocalAssetEditor({
       data-asset-editor="local-only"
       data-asset-editor-dirty-field-count={editorDirtyFieldCount}
       data-asset-editor-dirty-field-keys={editorDirtyFieldKeyList}
+      data-asset-editor-dirty-field-keys-reconciled={editorDirtyFieldKeysReconciled}
       data-asset-editor-dirty-state={editorDirtyState}
       data-asset-editor-empty-field-count={editorEmptyFieldCount}
       data-asset-editor-field-count={editorFieldCount}
@@ -2043,6 +2045,7 @@ function LocalAssetEditor({
           data-asset-editor-dirty-summary="true"
           data-asset-editor-dirty-summary-field-count={editorDirtyFieldCount}
           data-asset-editor-dirty-summary-field-keys={editorDirtyFieldKeyList}
+          data-asset-editor-dirty-summary-field-keys-reconciled={editorDirtyFieldKeysReconciled}
         >
           <span>{copy.dirtyState}</span>
           <strong>{editorDirtyState}</strong>
