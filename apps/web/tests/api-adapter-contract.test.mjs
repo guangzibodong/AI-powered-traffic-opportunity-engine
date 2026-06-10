@@ -286,6 +286,10 @@ assert(
   app.includes('data-performance-comparison-metric="source"'),
   "Performance comparison UI must expose stable baseline source diagnostics"
 );
+assert(
+  app.includes('data-performance-comparison-metric="baseline_snapshot_id"'),
+  "Performance comparison UI must expose stable baseline snapshot id diagnostics"
+);
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(
@@ -341,6 +345,10 @@ assert(
 assert(
   app.includes('data-asset-performance-comparison-metric="source"'),
   "Asset performance comparison UI must expose stable baseline source diagnostics"
+);
+assert(
+  app.includes('data-asset-performance-comparison-metric="baseline_snapshot_id"'),
+  "Asset performance comparison UI must expose stable baseline snapshot id diagnostics"
 );
 assert(
   app.includes("data-asset-performance-comparison-state"),

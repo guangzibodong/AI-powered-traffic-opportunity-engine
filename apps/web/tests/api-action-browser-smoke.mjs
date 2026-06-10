@@ -342,6 +342,7 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
 
   const expectedComparisonMetrics = {
     after: "Follow-up not tracked",
+    baseline_snapshot_id: "perf_9dd0fb2b550a",
     before: "Imported baseline / 28d",
     clicks: "95 -> follow-up not tracked",
     delta: "Pending local evidence",
@@ -633,6 +634,7 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
 
   const expectedComparisonMetrics = {
     after: "Follow-up not tracked",
+    baseline_snapshot_id: expectedMetrics.snapshot_id,
     before: "Imported asset baseline / 28d",
     clicks: `${expectedMetrics.clicks} -> follow-up not tracked`,
     delta: "Pending local evidence",

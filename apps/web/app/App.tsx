@@ -1394,6 +1394,10 @@ function PerformanceSnapshotPanel({
               <span>Source</span>
               <strong>{primarySnapshot.source}</strong>
             </div>
+            <div className="kv-row" data-performance-comparison-metric="baseline_snapshot_id">
+              <span>Baseline snapshot id</span>
+              <strong>{primarySnapshot.id}</strong>
+            </div>
             <div className="kv-row" data-performance-comparison-metric="after">
               <span>{copy.after}</span>
               <strong>{copy.afterPending}</strong>
@@ -1802,6 +1806,10 @@ function AssetPerformancePanel({
             <div className="kv-row" data-asset-performance-comparison-metric="source">
               <span>Source</span>
               <strong>{primarySnapshot.source}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-comparison-metric="baseline_snapshot_id">
+              <span>Baseline snapshot id</span>
+              <strong>{primarySnapshot.id}</strong>
             </div>
             <div className="kv-row" data-asset-performance-comparison-metric="after">
               <span>{copy.after}</span>
