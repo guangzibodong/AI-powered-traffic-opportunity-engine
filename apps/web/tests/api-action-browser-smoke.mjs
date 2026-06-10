@@ -1860,6 +1860,53 @@ async function assertLocalAssetEditorCanSave(
     qaSummary.getByText(`${editorQaPendingCount}/${editorQaCheckCount} ${qaPendingSuffix}`),
     `${label} visible editor QA pending summary`
   );
+  const expectedQaStatusDistribution = qaDetailRows.reduce((counts, detail) => {
+    counts[detail.status] = (counts[detail.status] ?? 0) + 1;
+    return counts;
+  }, {});
+  const expectedQaStatusEntries = Object.entries(expectedQaStatusDistribution).sort(([left], [right]) =>
+    String(left).localeCompare(String(right))
+  );
+  const editorQaStatusCount = Number(await editor.getAttribute("data-asset-editor-qa-status-count"));
+  const editorQaStatusTotal = Number(await editor.getAttribute("data-asset-editor-qa-status-total-count"));
+  const editorQaStatusReconciled = await editor.getAttribute("data-asset-editor-qa-status-counts-reconciled");
+  const editorQaStatusRows = await editor.locator("[data-asset-editor-qa-status-row='true']").evaluateAll((elements) =>
+    elements.map((element) => ({
+      count: Number(element.getAttribute("data-asset-editor-qa-status-row-count")),
+      status: element.getAttribute("data-asset-editor-qa-status-key"),
+      text: element.textContent ?? ""
+    }))
+  );
+  assert(
+    editorQaStatusCount === expectedQaStatusEntries.length,
+    `${label} editor QA status count mismatch: expected ${expectedQaStatusEntries.length}, got ${editorQaStatusCount}`
+  );
+  assert(
+    editorQaStatusTotal === qaDetailRows.length,
+    `${label} editor QA status total mismatch: expected ${qaDetailRows.length}, got ${editorQaStatusTotal}`
+  );
+  assert(
+    editorQaStatusReconciled === "true",
+    `${label} editor QA status reconciliation marker must be true, got ${editorQaStatusReconciled ?? "missing"}`
+  );
+  assert(
+    editorQaStatusRows.length === expectedQaStatusEntries.length,
+    `${label} editor QA status row count mismatch: expected ${expectedQaStatusEntries.length}, got ${
+      editorQaStatusRows.length
+    }`
+  );
+  assert(
+    editorQaStatusRows.reduce((sum, statusRow) => sum + statusRow.count, 0) === qaDetailRows.length,
+    `${label} editor QA status rows must reconcile with QA detail count`
+  );
+  for (const [status, count] of expectedQaStatusEntries) {
+    assert(
+      editorQaStatusRows.some(
+        (statusRow) => statusRow.status === status && statusRow.count === count && statusRow.text.includes(`${status} ${count}`)
+      ),
+      `${label} editor missing QA status distribution row ${status}:${count}`
+    );
+  }
   for (const qaDetail of qaDetailRows) {
     assert(qaDetail.key, `${label} editor QA detail must expose a key diagnostic`);
     assert(qaDetail.status, `${label} editor QA detail must expose a status diagnostic`);

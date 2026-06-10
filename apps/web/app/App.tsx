@@ -2178,6 +2178,14 @@ function LocalAssetEditor({
   const editorQaPendingCount = asset.qaChecks.filter((check) => check.status === "pending").length;
   const editorQaReadinessState =
     asset.qaChecks.length === 0 ? "not_applicable" : editorQaPendingCount > 0 ? "pending_qa" : "qa_clear";
+  const editorQaStatusEntries = Object.entries(
+    asset.qaChecks.reduce<Record<string, number>>((counts, check) => {
+      counts[check.status] = (counts[check.status] ?? 0) + 1;
+      return counts;
+    }, {})
+  ).sort(([left], [right]) => left.localeCompare(right));
+  const editorQaStatusTotal = editorQaStatusEntries.reduce((sum, [, count]) => sum + count, 0);
+  const editorQaStatusCountsReconciled = editorQaStatusTotal === asset.qaChecks.length;
   const editorContentBlockTypeEntries = Object.entries(
     asset.contentBlockTypes.reduce<Record<string, number>>((counts, blockType) => {
       counts[blockType] = (counts[blockType] ?? 0) + 1;
@@ -2255,6 +2263,9 @@ function LocalAssetEditor({
       data-asset-editor-qa-check-count={asset.qaChecks.length}
       data-asset-editor-qa-pending-count={editorQaPendingCount}
       data-asset-editor-qa-readiness-state={editorQaReadinessState}
+      data-asset-editor-qa-status-count={editorQaStatusEntries.length}
+      data-asset-editor-qa-status-counts-reconciled={editorQaStatusCountsReconciled}
+      data-asset-editor-qa-status-total-count={editorQaStatusTotal}
       data-asset-editor-save-state={editorSaveState}
       data-asset-id={asset.id}
     >
@@ -2385,6 +2396,21 @@ function LocalAssetEditor({
               {editorQaPendingCount}/{asset.qaChecks.length} {copy.qaPending}
             </strong>
           </div>
+        </div>
+      )}
+      {editorQaStatusEntries.length > 0 && (
+        <div className="inline-diagnostics" data-asset-editor-qa-status-list="true">
+          {editorQaStatusEntries.map(([status, count]) => (
+            <span
+              className="pill muted-pill"
+              data-asset-editor-qa-status-key={status}
+              data-asset-editor-qa-status-row="true"
+              data-asset-editor-qa-status-row-count={count}
+              key={`${asset.id}-editor-qa-status-${status}`}
+            >
+              {status} {count}
+            </span>
+          ))}
         </div>
       )}
       {asset.qaChecks.length > 0 && (

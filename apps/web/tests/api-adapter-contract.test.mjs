@@ -469,6 +469,18 @@ assert(app.includes("Claim ledger"), "Asset workspace UI must expose English cla
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");
+assert(
+  app.includes("data-asset-editor-qa-status-count"),
+  "Local asset editor UI must expose stable QA status count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-qa-status-key"),
+  "Local asset editor UI must expose stable QA status key diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-qa-status-counts-reconciled"),
+  "Local asset editor UI must expose stable QA status reconciliation diagnostics"
+);
 assert(app.includes("data-asset-editor-claim-count"), "Local asset editor UI must expose stable claim count diagnostics");
 assert(
   app.includes("data-asset-editor-claim-counts-reconciled"),
