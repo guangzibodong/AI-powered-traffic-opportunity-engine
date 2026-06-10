@@ -228,6 +228,108 @@ async function assertImportedPreviewPanelIsReadOnly(page, label) {
   }
 }
 
+async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
+  const performancePanel = page.locator(".performance-snapshot-panel");
+  await expectVisible(performancePanel, `${label} performance snapshot panel`);
+  await waitForPerformanceSnapshotState(performancePanel, "ready", 1, label);
+
+  const safetyScope = await performancePanel.getAttribute("data-safety-scope");
+  const externalWriteAllowed = await performancePanel.getAttribute("data-external-write-allowed");
+  const blockedCapabilityCount = Number(await performancePanel.getAttribute("data-blocked-capability-count"));
+  assert(
+    safetyScope === "local_imported_gsc_only",
+    `${label} performance snapshot panel must declare local imported GSC scope`
+  );
+  assert(
+    externalWriteAllowed === "false",
+    `${label} performance snapshot panel must clamp external writes to false`
+  );
+  assert(
+    Number.isInteger(blockedCapabilityCount) && blockedCapabilityCount >= 1,
+    `${label} performance snapshot panel must expose blocked capability diagnostics`
+  );
+
+  const performancePanelText = ((await performancePanel.textContent()) ?? "").toLowerCase();
+  for (const expectedCopy of ["performance snapshots", "local imported gsc only", "read-only"]) {
+    assert(
+      performancePanelText.includes(expectedCopy),
+      `${label} performance snapshot panel must show ${expectedCopy}`
+    );
+  }
+
+  const expectedMetrics = {
+    clicks: "95",
+    coverage: "5 queries / 4 pages",
+    ctr: "1.90%",
+    impressions: "5,000",
+    position: "6.4",
+    window: "28d"
+  };
+  for (const [metric, expectedValue] of Object.entries(expectedMetrics)) {
+    const metricValue = (
+      (await performancePanel.locator(`[data-performance-metric='${metric}'] strong`).textContent()) ?? ""
+    ).trim();
+    assert(
+      metricValue === expectedValue,
+      `${label} performance snapshot ${metric} mismatch: expected ${expectedValue}, got ${metricValue}`
+    );
+  }
+
+  const interactiveSelector = [
+    "button",
+    "a",
+    "form",
+    "input",
+    "select",
+    "textarea",
+    "[href]",
+    "[role='button']",
+    "[role='link']"
+  ].join(", ");
+  const interactiveCount = await performancePanel.locator(interactiveSelector).count();
+  assert(
+    interactiveCount === 0,
+    `${label} performance snapshot panel must not render controls, links, forms, or href navigation`
+  );
+
+  const forbiddenCopyPatterns = [
+    /\brefresh\b/,
+    /\bsync\b/,
+    /\bconnect\b/,
+    /\boauth\b/,
+    /\bcredential\b/,
+    /\bpublish\b/,
+    /\bdraft\b/,
+    /\bcommerce\b/,
+    /\btoken\b/,
+    /\bsecret\b/,
+    /\bpassword\b/
+  ];
+  for (const pattern of forbiddenCopyPatterns) {
+    assert(
+      !pattern.test(performancePanelText),
+      `${label} performance snapshot panel exposes unsafe copy: ${pattern}`
+    );
+  }
+}
+
+async function waitForPerformanceSnapshotState(performancePanel, expectedState, expectedCount, label) {
+  const deadline = Date.now() + 10_000;
+  let lastState = "missing";
+  let lastCount = "missing";
+
+  while (Date.now() < deadline) {
+    lastState = (await performancePanel.getAttribute("data-performance-snapshot-state")) ?? "missing";
+    lastCount = (await performancePanel.getAttribute("data-performance-snapshot-count")) ?? "missing";
+    if (lastState === expectedState && lastCount === String(expectedCount)) return;
+    await delay(100);
+  }
+
+  throw new Error(
+    `${label} performance snapshot state did not reach ${expectedState}/${expectedCount}; last ${lastState}/${lastCount}`
+  );
+}
+
 async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, label, expectedAssets = []) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel`);
@@ -2207,6 +2309,7 @@ async function runSmoke() {
     const page = await context.newPage();
     const importedPreviewRequests = [];
     const assetWorkspaceRequests = [];
+    const performanceSnapshotRequests = [];
 
     page.on("request", (request) => {
       const url = request.url();
@@ -2222,6 +2325,9 @@ async function runSmoke() {
       }
       if (url.includes(`/api/stores/${storeId}/assets`)) {
         assetWorkspaceRequests.push({ method: request.method(), url });
+      }
+      if (url.includes(`/api/stores/${storeId}/performance`)) {
+        performanceSnapshotRequests.push({ method: request.method(), url });
       }
     });
 
@@ -2277,6 +2383,7 @@ async function runSmoke() {
     await expectVisible(page.getByText("2 more opportunity previews"), "opportunity preview overflow indicator");
     await expectVisible(page.getByText("2 more task previews"), "task preview overflow indicator");
     await expectVisible(page.getByText("recommend_only"), "recommend-only imported task preview");
+    await assertPerformanceSnapshotPanelIsReadOnly(page, "initial");
     await assertAssetWorkspacePanelIsReadOnly(page, 0, "initial");
     await assertTrackedAssetMetricReconciles(page, 0, "initial");
     await assertAssetWorkspaceBlockedCapabilities(
@@ -2307,6 +2414,22 @@ async function runSmoke() {
     assert(
       unsafeAssetRequests.length === 0,
       `Asset workspace endpoint must stay read-only in UI loading: ${JSON.stringify(unsafeAssetRequests)}`
+    );
+    const performanceSnapshotReads = performanceSnapshotRequests.filter(
+      (request) => request.method === "GET" && request.url.endsWith(`/api/stores/${storeId}/performance`)
+    );
+    assert(
+      performanceSnapshotReads.length === 1,
+      `Performance snapshot endpoint must be read exactly once with GET: ${JSON.stringify(performanceSnapshotRequests)}`
+    );
+    const unsafePerformanceSnapshotRequests = performanceSnapshotRequests.filter((request) => request.method !== "GET");
+    assert(
+      unsafePerformanceSnapshotRequests.length === 0,
+      `Performance snapshot endpoint must stay GET-only: ${JSON.stringify(unsafePerformanceSnapshotRequests)}`
+    );
+    assert(
+      !performanceSnapshotRequests.some((request) => request.url.includes("/performance/refresh")),
+      `Performance snapshot UI must not request refresh routes: ${JSON.stringify(performanceSnapshotRequests)}`
     );
 
     const populatedAssetPage = await context.newPage();

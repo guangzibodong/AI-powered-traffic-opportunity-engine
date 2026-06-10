@@ -15,6 +15,7 @@ import {
   getImportedTasks,
   getIntegrations,
   getOpportunities,
+  getPerformanceSnapshots,
   getSyncRuns,
   getTasks,
   isApiBoardEnabled,
@@ -48,6 +49,7 @@ import {
   mapApiImportedTasksToTasks,
   mapApiIntegrationsToIntegrationHealth,
   mapApiPlanningToBoard,
+  mapApiPerformanceSnapshotsToPreviews,
   mapApiSyncRunsToSyncRunPreviews
 } from "../lib/view-model-adapters";
 import type {
@@ -61,6 +63,7 @@ import type {
   Locale,
   Opportunity,
   OpportunityDetailViewModel,
+  PerformanceSnapshotPreview,
   RelatedEntity,
   ScoreComponent,
   SyncRunPreview,
@@ -93,6 +96,12 @@ type AssetSaveFeedback = {
   assetId: string;
   kind: "failed" | "pending" | "saved";
 } | null;
+
+type PerformanceSnapshotState = {
+  availability: "empty" | "ready" | "unavailable";
+  blockedCapabilities: string[];
+  snapshots: PerformanceSnapshotPreview[];
+};
 
 type ImportedPreviewState = {
   availability: "empty" | "ready" | "unavailable";
@@ -240,6 +249,11 @@ export function App() {
     wordpressDraftReadyCount: 0,
     wordpressDraftTotalCount: 0
   });
+  const [performanceSnapshots, setPerformanceSnapshots] = useState<PerformanceSnapshotState>({
+    availability: "empty",
+    blockedCapabilities: ["real_gsc_oauth"],
+    snapshots: []
+  });
   const [importedPreviews, setImportedPreviews] = useState<ImportedPreviewState>({
     availability: "empty",
     clusters: [],
@@ -343,6 +357,25 @@ export function App() {
               blockedCapabilities: ["asset_workspace_unavailable"],
               wordpressDraftReadyCount: 0,
               wordpressDraftTotalCount: 0
+            });
+          });
+
+        getPerformanceSnapshots(demoStoreId)
+          .then((performanceResponse) => {
+            if (!active) return;
+            const snapshots = mapApiPerformanceSnapshotsToPreviews(performanceResponse);
+            setPerformanceSnapshots({
+              availability: snapshots.length > 0 ? "ready" : "empty",
+              blockedCapabilities: performanceResponse.blocked_capabilities ?? ["real_gsc_oauth"],
+              snapshots
+            });
+          })
+          .catch(() => {
+            if (!active) return;
+            setPerformanceSnapshots({
+              availability: "unavailable",
+              blockedCapabilities: ["performance_snapshots_unavailable"],
+              snapshots: []
             });
           });
 
@@ -557,6 +590,11 @@ export function App() {
           wordpressDraftReadyCount: 0,
           wordpressDraftTotalCount: 0
         });
+        setPerformanceSnapshots({
+          availability: "empty",
+          blockedCapabilities: ["real_gsc_oauth"],
+          snapshots: []
+        });
         setBoardDataState({
           error: error instanceof Error ? error.message : "Unknown API error",
           loading: false,
@@ -696,6 +734,7 @@ export function App() {
               setScreen("task");
             }}
             onSaveAsset={saveLocalAssetDraft}
+            performanceSnapshots={performanceSnapshots}
             selectedAssetId={selectedAssetId}
             t={t}
           />
@@ -834,6 +873,7 @@ function TrafficOperationsPage({
   onOpenAssetEditor,
   onOpenTask,
   onSaveAsset,
+  performanceSnapshots,
   selectedAssetId,
   t
 }: SharedProps & {
@@ -856,6 +896,7 @@ function TrafficOperationsPage({
       title?: string;
     }
   ) => Promise<void>;
+  performanceSnapshots: PerformanceSnapshotState;
   selectedAssetId: string | null;
 }) {
   const selectedAsset = assetWorkspace.assets.find((asset) => asset.id === selectedAssetId) ?? null;
@@ -964,6 +1005,7 @@ function TrafficOperationsPage({
         </section>
         <aside className="side-rail">
           <DataHealthPanel integrations={board.integrations} locale={locale} t={t} />
+          <PerformanceSnapshotPanel locale={locale} performanceSnapshots={performanceSnapshots} />
           <AssetWorkspacePanel assetWorkspace={assetWorkspace} locale={locale} onOpenAssetEditor={onOpenAssetEditor} />
           {selectedAsset && (
             <LocalAssetEditor
@@ -1085,6 +1127,147 @@ function DataHealthPanel({ integrations, locale, t }: SharedProps & { integratio
       </div>
     </section>
   );
+}
+
+function PerformanceSnapshotPanel({
+  locale,
+  performanceSnapshots
+}: {
+  locale: Locale;
+  performanceSnapshots: PerformanceSnapshotState;
+}) {
+  const primarySnapshot = performanceSnapshots.snapshots[0] ?? null;
+  const blockedCapabilities =
+    performanceSnapshots.blockedCapabilities.length > 0
+      ? performanceSnapshots.blockedCapabilities
+      : ["real_gsc_oauth"];
+  const blockedCapabilityCopy = blockedCapabilities
+    .map((capability) => formatPerformanceBlockedCapability(capability, locale))
+    .join(", ");
+  const copy =
+    locale === "zh"
+      ? {
+          averagePosition: "平均排名",
+          blocked: "已禁用",
+          clicks: "点击",
+          coverage: "覆盖",
+          empty: "暂无导入的 GSC 快照",
+          impressions: "曝光",
+          pages: "个页面",
+          queries: "个查询",
+          readOnly: "只读",
+          safetyScope: "安全范围",
+          state: "状态",
+          subtitle: "仅本地导入 GSC",
+          title: "表现快照",
+          unavailable: "表现快照不可用",
+          window: "窗口"
+        }
+      : {
+          averagePosition: "Average position",
+          blocked: "Blocked",
+          clicks: "Clicks",
+          coverage: "Coverage",
+          empty: "No imported GSC snapshot yet",
+          impressions: "Impressions",
+          pages: "pages",
+          queries: "queries",
+          readOnly: "read-only",
+          safetyScope: "Safety scope",
+          state: "State",
+          subtitle: "Local imported GSC only",
+          title: "Performance snapshots",
+          unavailable: "Performance snapshots unavailable",
+          window: "Window"
+        };
+  const coverageCopy =
+    locale === "zh"
+      ? `${primarySnapshot?.queryCount ?? 0} ${copy.queries} / ${primarySnapshot?.pageCount ?? 0} ${copy.pages}`
+      : `${primarySnapshot?.queryCount ?? 0} ${copy.queries} / ${primarySnapshot?.pageCount ?? 0} ${copy.pages}`;
+
+  return (
+    <section
+      className="panel performance-snapshot-panel"
+      data-blocked-capability-count={blockedCapabilities.length}
+      data-external-write-allowed="false"
+      data-performance-snapshot-count={performanceSnapshots.snapshots.length}
+      data-performance-snapshot-state={performanceSnapshots.availability}
+      data-safety-scope="local_imported_gsc_only"
+    >
+      <div className="panel-heading">
+        <div>
+          <h2>{copy.title}</h2>
+          <p className="muted">{copy.subtitle}</p>
+        </div>
+        <span className="status safe">{copy.readOnly}</span>
+      </div>
+      <div className="kv-list">
+        <div className="kv-row">
+          <span>{copy.state}</span>
+          <strong>{performanceSnapshots.availability}</strong>
+        </div>
+        <div className="kv-row">
+          <span>{copy.safetyScope}</span>
+          <strong>local_imported_gsc_only</strong>
+        </div>
+        <div className="kv-row">
+          <span>{copy.blocked}</span>
+          <strong>{blockedCapabilityCopy}</strong>
+        </div>
+        {primarySnapshot ? (
+          <>
+            <div className="kv-row" data-performance-metric="window">
+              <span>{copy.window}</span>
+              <strong>{primarySnapshot.window}</strong>
+            </div>
+            <div className="kv-row" data-performance-metric="impressions">
+              <span>{copy.impressions}</span>
+              <strong>{primarySnapshot.displayImpressions}</strong>
+            </div>
+            <div className="kv-row" data-performance-metric="clicks">
+              <span>{copy.clicks}</span>
+              <strong>{primarySnapshot.displayClicks}</strong>
+            </div>
+            <div className="kv-row" data-performance-metric="ctr">
+              <span>CTR</span>
+              <strong>{primarySnapshot.displayCtr}</strong>
+            </div>
+            <div className="kv-row" data-performance-metric="position">
+              <span>{copy.averagePosition}</span>
+              <strong>{primarySnapshot.displayPosition}</strong>
+            </div>
+            <div className="kv-row" data-performance-metric="coverage">
+              <span>{copy.coverage}</span>
+              <strong>{coverageCopy}</strong>
+            </div>
+          </>
+        ) : (
+          <div className="kv-row" data-performance-empty-state="true">
+            <span>Snapshot</span>
+            <strong>
+              {performanceSnapshots.availability === "unavailable" ? copy.unavailable : copy.empty}
+            </strong>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function formatPerformanceBlockedCapability(capability: string, locale: Locale) {
+  const capabilityLabels: Record<string, Record<Locale, string>> = {
+    live_publish: { en: "Live release disabled", zh: "实时发布已禁用" },
+    performance_snapshots_unavailable: { en: "Performance snapshots unavailable", zh: "表现快照不可用" },
+    real_gsc_oauth: { en: "Live GSC access disabled", zh: "实时 GSC 访问已禁用" },
+    woocommerce_writes: { en: "Store catalog changes disabled", zh: "商品目录更改已禁用" },
+    wordpress_writes: { en: "WordPress changes disabled", zh: "WordPress 更改已禁用" }
+  };
+  const fallbackLabels: Record<Locale, string> = {
+    en: capability.split("_").join(" "),
+    zh: capability.split("_").join(" ")
+  };
+
+  return capabilityLabels[capability]?.[locale] ?? fallbackLabels[locale];
 }
 
 function AssetWorkspacePanel({
