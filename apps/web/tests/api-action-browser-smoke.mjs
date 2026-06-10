@@ -596,6 +596,43 @@ async function assertLocalAssetEditorReopenHasEnabledSaveButton(page, label) {
   assert(stalePendingCount === 0, `${label} reopened editor must not show stale pending save state`);
 }
 
+async function assertLocalAssetEditorDelayedResponseDoesNotRepaintFeedback(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} first local asset editor`);
+  await editor.locator("input").first().fill("Delayed close local title");
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} delayed local save button`);
+  await expectVisible(editor.getByRole("button", { name: "Saving local draft" }), `${label} delayed pending save copy`);
+  await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close delayed editor button`);
+
+  const closeDeadline = Date.now() + 5_000;
+  while (Date.now() < closeDeadline) {
+    if ((await page.locator(".asset-editor-panel").count()) === 0) break;
+    await delay(50);
+  }
+  assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} delayed local asset editor must close`);
+
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} reopen delayed local editor`);
+  const reopenedEditor = page.locator(".asset-editor-panel");
+  await expectVisible(reopenedEditor, `${label} reopened delayed local editor`);
+  await expectVisible(
+    page.getByText("Only local draft fields are saved."),
+    `${label} reopened delayed editor neutral local-only feedback`
+  );
+  await delay(1_200);
+  assert(
+    (await page.getByText("Local draft saved").count()) === 0,
+    `${label} delayed response must not repaint stale success feedback`
+  );
+  assert(
+    (await page.getByText("Local save failed").count()) === 0,
+    `${label} delayed response must not repaint stale failure feedback`
+  );
+  const saveButton = reopenedEditor.getByRole("button", { name: "Save local draft" });
+  await expectVisible(saveButton, `${label} delayed reopened enabled save button`);
+  assert(!(await saveButton.isDisabled()), `${label} delayed reopened save button must remain enabled`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -2934,6 +2971,193 @@ async function runSmoke() {
       `Reopen button state issued unsafe requests: ${JSON.stringify(unsafeReopenButtonRequests)}`
     );
     await reopenButtonAssetPage.close();
+
+    const delayedResponseAssetPage = await context.newPage();
+    const delayedResponseAssetRequests = [];
+    delayedResponseAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        delayedResponseAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await delayedResponseAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_delayed_response",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_delayed_response",
+                title: "Delayed response candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await delayedResponseAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_delayed_response`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        await delay(500);
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_delayed_response",
+              qa_checks: [{ key: "seo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_delayed_response",
+              title: "Delayed close local title"
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await delayedResponseAssetPage.goto(webUrl);
+    await clickUnique(delayedResponseAssetPage.getByRole("button", { name: "EN" }), "delayed response asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(delayedResponseAssetPage, 1, "delayed response asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_delayed_response",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Delayed response candidate"
+      }
+    ]);
+    await assertLocalAssetEditorDelayedResponseDoesNotRepaintFeedback(
+      delayedResponseAssetPage,
+      "delayed response asset workspace"
+    );
+    const delayedResponsePatchRequests = delayedResponseAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_delayed_response`)
+    );
+    assert(
+      delayedResponsePatchRequests.length === 1,
+      `Delayed response should issue exactly one local PATCH, got ${JSON.stringify(delayedResponseAssetRequests)}`
+    );
+    const unsafeDelayedResponseRequests = delayedResponseAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_delayed_response`))
+    );
+    assert(
+      unsafeDelayedResponseRequests.length === 0,
+      `Delayed response issued unsafe requests: ${JSON.stringify(unsafeDelayedResponseRequests)}`
+    );
+    await delayedResponseAssetPage.close();
+
+    const delayedFailureAssetPage = await context.newPage();
+    const delayedFailureAssetRequests = [];
+    delayedFailureAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        delayedFailureAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await delayedFailureAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_delayed_failure",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_delayed_failure",
+                title: "Delayed failure candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await delayedFailureAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_delayed_failure`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        await delay(500);
+        await route.fulfill({
+          contentType: "application/json",
+          status: 500,
+          body: JSON.stringify({ detail: "delayed local save failure fixture" })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await delayedFailureAssetPage.goto(webUrl);
+    await clickUnique(delayedFailureAssetPage.getByRole("button", { name: "EN" }), "delayed failure asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(delayedFailureAssetPage, 1, "delayed failure asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_delayed_failure",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Delayed failure candidate"
+      }
+    ]);
+    await assertLocalAssetEditorDelayedResponseDoesNotRepaintFeedback(
+      delayedFailureAssetPage,
+      "delayed failure asset workspace"
+    );
+    const delayedFailurePatchRequests = delayedFailureAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_delayed_failure`)
+    );
+    assert(
+      delayedFailurePatchRequests.length === 1,
+      `Delayed failure should issue exactly one local PATCH, got ${JSON.stringify(delayedFailureAssetRequests)}`
+    );
+    const unsafeDelayedFailureRequests = delayedFailureAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_delayed_failure`))
+    );
+    assert(
+      unsafeDelayedFailureRequests.length === 0,
+      `Delayed failure issued unsafe requests: ${JSON.stringify(unsafeDelayedFailureRequests)}`
+    );
+    await delayedFailureAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {

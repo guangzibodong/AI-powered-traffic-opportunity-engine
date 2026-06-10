@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
 import { StatusPill } from "../components/tasks/StatusPill";
@@ -274,6 +274,7 @@ export function App() {
   const [taskActionFeedback, setTaskActionFeedback] = useState<TaskActionFeedback>(null);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [assetSaveFeedback, setAssetSaveFeedback] = useState<AssetSaveFeedback>(null);
+  const assetEditorSessionRef = useRef(0);
   const t = useMessages(locale);
   const board = useMemo(() => applyTaskStatusesToBoard(baseBoard, taskStatuses), [baseBoard, taskStatuses]);
   const selectedTask = useMemo(() => {
@@ -643,6 +644,7 @@ export function App() {
       title?: string;
     }
   ) {
+    const saveSession = assetEditorSessionRef.current;
     setAssetSaveFeedback({ assetId, kind: "pending" });
 
     try {
@@ -652,13 +654,24 @@ export function App() {
         ...current,
         assets: current.assets.map((asset) => (asset.id === savedAsset.id ? savedAsset : asset))
       }));
-      setAssetSaveFeedback({ assetId: savedAsset.id, kind: "saved" });
+      if (assetEditorSessionRef.current === saveSession) {
+        setAssetSaveFeedback({ assetId: savedAsset.id, kind: "saved" });
+      }
     } catch {
-      setAssetSaveFeedback({ assetId, kind: "failed" });
+      if (assetEditorSessionRef.current === saveSession) {
+        setAssetSaveFeedback({ assetId, kind: "failed" });
+      }
     }
   }
 
+  function openAssetEditor(assetId: string) {
+    assetEditorSessionRef.current += 1;
+    setAssetSaveFeedback(null);
+    setSelectedAssetId(assetId);
+  }
+
   function closeAssetEditor() {
+    assetEditorSessionRef.current += 1;
     setSelectedAssetId(null);
     setAssetSaveFeedback(null);
   }
@@ -677,7 +690,7 @@ export function App() {
             importedPreviews={importedPreviews}
             locale={locale}
             onCloseAssetEditor={closeAssetEditor}
-            onOpenAssetEditor={setSelectedAssetId}
+            onOpenAssetEditor={openAssetEditor}
             onOpenTask={(task) => {
               setSelectedTaskId(task.id);
               setScreen("task");
