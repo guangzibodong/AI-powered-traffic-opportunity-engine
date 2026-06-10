@@ -110,7 +110,7 @@ The first version is a working product experience, not a marketing landing page.
 
 ## Current Sprint Status
 
-Sprint 1 is complete. The Sprint 2 local/import-only loop is also complete and handed off in [Sprint 2 Local Import Handoff](docs/sprint-2-local-import-handoff.md). The Sprint 3 local asset workspace read-only slice is handed off in [Sprint 3 Asset Workspace Read-Only Handoff](docs/sprint-3-asset-workspace-handoff.md), and the next safe editor boundary is planned in [Sprint 3 Safe Local Asset Editor Contract](docs/sprint-3-local-asset-editor-contract.md). The current branch still does not connect real GSC OAuth, collect live credentials, write WooCommerce data, create WordPress drafts, update WordPress pages, or publish content.
+Sprint 1 is complete. The Sprint 2 local/import-only loop is complete and handed off in [Sprint 2 Local Import Handoff](docs/sprint-2-local-import-handoff.md). Sprint 3 now has local asset workspace, safe local editor, and read-only imported performance diagnostics, with the current demo release summarized in [Local Demo Release Handoff](docs/local-demo-release-handoff.md). The current branch still does not connect real GSC OAuth, collect live credentials, write WooCommerce data, create WordPress drafts, update WordPress pages, or publish content.
 
 Completed capabilities in the current Sprint 1 slice:
 
@@ -144,6 +144,17 @@ Sprint 2 local/import-only capabilities completed:
 15. API-backed imported preview UI renders read-only query clusters, catalog references, opportunity previews, task previews, section health, catalog overflow, action-share diagnostics, and action-mix diagnostics.
 16. Browser smoke coverage reconciles imported action-share and action-mix counts, shares, row states, styling, aggregate totals, and top-row diagnostics across populated, empty, balanced, fallback, and partial-failure states.
 17. Live integration handoff remains parked on credentials and boundary approval through `TASK-S2-LIVE-011`.
+
+Sprint 3 local/demo capabilities completed:
+
+1. Local asset workspace safety foundation and local asset candidate persistence from approved demo tasks.
+2. Safe local asset editor for structured local fields, with browser coverage for save, failure, retry, close, stale feedback, and cross-asset isolation states.
+3. Mobile and desktop local editor screenshot artifacts for bilingual responsive QA.
+4. Read-only store performance snapshots from already-imported GSC data.
+5. Read-only selected-asset performance snapshots with local token matching.
+6. Store and asset before/after comparison diagnostics that mark follow-up metrics as not yet tracked.
+7. Stable source, snapshot id, evidence count, query/page count, blocked capability, and empty/unavailable diagnostics.
+8. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
 
 Current product/engineering ownership:
 
@@ -317,6 +328,10 @@ Let users approve a task, generate a structured draft, create a WordPress draft,
 - [Tech stack decision](docs/tech-stack-decision.md)
 - [MVP PRD](docs/mvp-prd.md)
 - [MVP release gates](docs/release-gates.md)
+- [Local demo release handoff](docs/local-demo-release-handoff.md)
+- [Sprint 2 local import handoff](docs/sprint-2-local-import-handoff.md)
+- [Sprint 3 asset workspace handoff](docs/sprint-3-asset-workspace-handoff.md)
+- [Sprint 3 performance snapshot UI contract](docs/sprint-3-performance-snapshot-ui-contract.md)
 - [MVP requirements and tech stack meeting](docs/meetings/2026-06-08-mvp-requirements-tech-stack.md)
 - [API surface](docs/api.md)
 - [Design system](DESIGN.md)
