@@ -253,6 +253,10 @@ assert(app.includes("getImportedPages("), "App must read API-backed imported pag
 assert(app.includes("getImportedOpportunities("), "App must read API-backed imported opportunities in API mode");
 assert(app.includes("getImportedTasks("), "App must read API-backed imported task previews in API mode");
 assert(app.includes("getPerformanceSnapshots("), "App must read API-backed local performance snapshots in API mode");
+assert(
+  app.includes("getAssetPerformanceSnapshots("),
+  "App must read API-backed local asset performance snapshots when an asset editor opens"
+);
 assert(app.includes("mapApiIntegrationsToIntegrationHealth("), "App must map API integration status into integration health rows");
 assert(app.includes("mapApiSyncRunsToSyncRunPreviews("), "App must map API sync runs through the safe adapter");
 assert(app.includes("mapApiAuditLogsToEvidenceRows("), "App must map audit logs into safe audit evidence rows");
@@ -262,8 +266,14 @@ assert(app.includes("mapApiImportedQueriesToPreviews("), "App must map imported 
 assert(app.includes("mapApiImportedProductsToCatalogPreviews("), "App must map imported products through the safe adapter");
 assert(app.includes("mapApiImportedPagesToCatalogPreviews("), "App must map imported pages through the safe adapter");
 assert(app.includes("mapApiPerformanceSnapshotsToPreviews("), "App must map performance snapshots through the safe adapter");
+assert(
+  app.includes("mapApiAssetPerformanceSnapshotsToPreviews("),
+  "App must map asset performance snapshots through the safe adapter"
+);
 assert(app.includes("PerformanceSnapshotPanel"), "Board must expose a read-only performance snapshot panel");
+assert(app.includes("AssetPerformancePanel"), "Board must expose a read-only asset performance panel");
 assert(app.includes("performance-snapshot-panel"), "Performance snapshot UI must have a stable read-only panel class");
+assert(app.includes("asset-performance-panel"), "Asset performance UI must have a stable read-only panel class");
 assert(app.includes("Local imported GSC only"), "Performance snapshot UI must expose local-only safety copy");
 assert(app.includes("Catalog products"), "Imported preview UI must distinguish imported catalog product count from graph matches");
 assert(app.includes("Catalog pages"), "Imported preview UI must distinguish imported catalog page count from graph matches");

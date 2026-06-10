@@ -7,6 +7,7 @@ import { localizeTaskTitle } from "../components/tasks/task-copy";
 import {
   getAuditLogs,
   getAssets,
+  getAssetPerformanceSnapshots,
   getImportedGraph,
   getImportedPages,
   getImportedProducts,
@@ -39,6 +40,7 @@ import {
 import { createTaskDetailViewModel } from "../lib/task-detail";
 import {
   mapApiAuditLogsToEvidenceRows,
+  mapApiAssetPerformanceSnapshotsToPreviews,
   mapApiAssetResponseToPreview,
   mapApiAssetWorkspaceToPreviews,
   mapApiImportedGraphToClusterPreviews,
@@ -98,6 +100,13 @@ type AssetSaveFeedback = {
 } | null;
 
 type PerformanceSnapshotState = {
+  availability: "empty" | "ready" | "unavailable";
+  blockedCapabilities: string[];
+  snapshots: PerformanceSnapshotPreview[];
+};
+
+type AssetPerformanceState = {
+  assetId: string | null;
   availability: "empty" | "ready" | "unavailable";
   blockedCapabilities: string[];
   snapshots: PerformanceSnapshotPreview[];
@@ -250,6 +259,12 @@ export function App() {
     wordpressDraftTotalCount: 0
   });
   const [performanceSnapshots, setPerformanceSnapshots] = useState<PerformanceSnapshotState>({
+    availability: "empty",
+    blockedCapabilities: ["real_gsc_oauth"],
+    snapshots: []
+  });
+  const [assetPerformance, setAssetPerformance] = useState<AssetPerformanceState>({
+    assetId: null,
     availability: "empty",
     blockedCapabilities: ["real_gsc_oauth"],
     snapshots: []
@@ -704,14 +719,50 @@ export function App() {
 
   function openAssetEditor(assetId: string) {
     assetEditorSessionRef.current += 1;
+    const editorSession = assetEditorSessionRef.current;
     setAssetSaveFeedback(null);
     setSelectedAssetId(assetId);
+    setAssetPerformance({
+      assetId,
+      availability: "empty",
+      blockedCapabilities: ["real_gsc_oauth"],
+      snapshots: []
+    });
+
+    if (!isApiBoardEnabled()) return;
+
+    getAssetPerformanceSnapshots(demoStoreId, assetId)
+      .then((response) => {
+        if (assetEditorSessionRef.current !== editorSession) return;
+        const snapshots = mapApiAssetPerformanceSnapshotsToPreviews(response);
+        setAssetPerformance({
+          assetId,
+          availability: snapshots.length > 0 ? "ready" : "empty",
+          blockedCapabilities: response.blocked_capabilities ?? ["real_gsc_oauth"],
+          snapshots
+        });
+      })
+      .catch(() => {
+        if (assetEditorSessionRef.current !== editorSession) return;
+        setAssetPerformance({
+          assetId,
+          availability: "unavailable",
+          blockedCapabilities: ["performance_snapshots_unavailable"],
+          snapshots: []
+        });
+      });
   }
 
   function closeAssetEditor() {
     assetEditorSessionRef.current += 1;
     setSelectedAssetId(null);
     setAssetSaveFeedback(null);
+    setAssetPerformance({
+      assetId: null,
+      availability: "empty",
+      blockedCapabilities: ["real_gsc_oauth"],
+      snapshots: []
+    });
   }
 
   return (
@@ -734,6 +785,7 @@ export function App() {
               setScreen("task");
             }}
             onSaveAsset={saveLocalAssetDraft}
+            assetPerformance={assetPerformance}
             performanceSnapshots={performanceSnapshots}
             selectedAssetId={selectedAssetId}
             t={t}
@@ -863,6 +915,7 @@ function LanguageSwitcher({ locale, setLocale }: { locale: Locale; setLocale: (l
 }
 
 function TrafficOperationsPage({
+  assetPerformance,
   assetWorkspace,
   assetSaveFeedback,
   board,
@@ -877,6 +930,7 @@ function TrafficOperationsPage({
   selectedAssetId,
   t
 }: SharedProps & {
+  assetPerformance: AssetPerformanceState;
   assetWorkspace: AssetWorkspaceState;
   assetSaveFeedback: AssetSaveFeedback;
   board: BoardViewModel;
@@ -1008,13 +1062,16 @@ function TrafficOperationsPage({
           <PerformanceSnapshotPanel locale={locale} performanceSnapshots={performanceSnapshots} />
           <AssetWorkspacePanel assetWorkspace={assetWorkspace} locale={locale} onOpenAssetEditor={onOpenAssetEditor} />
           {selectedAsset && (
-            <LocalAssetEditor
-              asset={selectedAsset}
-              feedback={assetSaveFeedback?.assetId === selectedAsset.id ? assetSaveFeedback : null}
-              locale={locale}
-              onClose={onCloseAssetEditor}
-              onSave={onSaveAsset}
-            />
+            <>
+              <LocalAssetEditor
+                asset={selectedAsset}
+                feedback={assetSaveFeedback?.assetId === selectedAsset.id ? assetSaveFeedback : null}
+                locale={locale}
+                onClose={onCloseAssetEditor}
+                onSave={onSaveAsset}
+              />
+              <AssetPerformancePanel assetPerformance={assetPerformance} assetId={selectedAsset.id} locale={locale} />
+            </>
           )}
           <ImportedPreviewPanel importedPreviews={importedPreviews} locale={locale} />
           <OpportunityRail opportunities={board.opportunities} locale={locale} t={t} />
@@ -1421,6 +1478,137 @@ function AssetWorkspacePanel({
             : "No local asset candidates yet."}
         </p>
       )}
+    </section>
+  );
+}
+
+function AssetPerformancePanel({
+  assetId,
+  assetPerformance,
+  locale
+}: {
+  assetId: string;
+  assetPerformance: AssetPerformanceState;
+  locale: Locale;
+}) {
+  const primarySnapshot = assetPerformance.assetId === assetId ? assetPerformance.snapshots[0] ?? null : null;
+  const availability = assetPerformance.assetId === assetId ? assetPerformance.availability : "empty";
+  const blockedCapabilities =
+    assetPerformance.assetId === assetId && assetPerformance.blockedCapabilities.length > 0
+      ? assetPerformance.blockedCapabilities
+      : ["real_gsc_oauth"];
+  const blockedCapabilityCopy = blockedCapabilities
+    .map((capability) => formatPerformanceBlockedCapability(capability, locale))
+    .join(", ");
+  const copy =
+    locale === "zh"
+      ? {
+          averagePosition: "平均排名",
+          blocked: "已禁用",
+          clicks: "点击",
+          coverage: "覆盖",
+          empty: "暂无本地资产表现快照",
+          impressions: "曝光",
+          matchScope: "匹配范围",
+          pages: "个页面",
+          queries: "个查询",
+          readOnly: "只读",
+          safetyScope: "安全范围",
+          state: "状态",
+          subtitle: "仅本地导入 GSC",
+          title: "资产表现",
+          unavailable: "资产表现不可用",
+          window: "窗口"
+        }
+      : {
+          averagePosition: "Average position",
+          blocked: "Blocked",
+          clicks: "Clicks",
+          coverage: "Coverage",
+          empty: "No local asset performance snapshot yet",
+          impressions: "Impressions",
+          matchScope: "Match scope",
+          pages: "pages",
+          queries: "queries",
+          readOnly: "read-only",
+          safetyScope: "Safety scope",
+          state: "State",
+          subtitle: "Local imported GSC only",
+          title: "Asset performance",
+          unavailable: "Asset performance unavailable",
+          window: "Window"
+        };
+  const coverageCopy = `${primarySnapshot?.queryCount ?? 0} ${copy.queries} / ${
+    primarySnapshot?.pageCount ?? 0
+  } ${copy.pages}`;
+
+  return (
+    <section
+      className="panel asset-performance-panel"
+      data-asset-id={assetId}
+      data-asset-performance-count={primarySnapshot ? 1 : 0}
+      data-asset-performance-state={availability}
+      data-external-write-allowed="false"
+      data-safety-scope="local_imported_gsc_only"
+    >
+      <div className="panel-heading">
+        <div>
+          <h2>{copy.title}</h2>
+          <p className="muted">{copy.subtitle}</p>
+        </div>
+        <span className="status safe">{copy.readOnly}</span>
+      </div>
+      <div className="kv-list">
+        <div className="kv-row">
+          <span>{copy.state}</span>
+          <strong>{availability}</strong>
+        </div>
+        <div className="kv-row">
+          <span>{copy.safetyScope}</span>
+          <strong>local_imported_gsc_only</strong>
+        </div>
+        <div className="kv-row">
+          <span>{copy.matchScope}</span>
+          <strong>{primarySnapshot?.matchScope ?? "local_asset_query_page_tokens"}</strong>
+        </div>
+        <div className="kv-row">
+          <span>{copy.blocked}</span>
+          <strong>{blockedCapabilityCopy}</strong>
+        </div>
+        {primarySnapshot ? (
+          <>
+            <div className="kv-row" data-asset-performance-metric="window">
+              <span>{copy.window}</span>
+              <strong>{primarySnapshot.window}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-metric="impressions">
+              <span>{copy.impressions}</span>
+              <strong>{primarySnapshot.displayImpressions}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-metric="clicks">
+              <span>{copy.clicks}</span>
+              <strong>{primarySnapshot.displayClicks}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-metric="ctr">
+              <span>CTR</span>
+              <strong>{primarySnapshot.displayCtr}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-metric="position">
+              <span>{copy.averagePosition}</span>
+              <strong>{primarySnapshot.displayPosition}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-metric="coverage">
+              <span>{copy.coverage}</span>
+              <strong>{coverageCopy}</strong>
+            </div>
+          </>
+        ) : (
+          <div className="kv-row" data-asset-performance-empty-state="true">
+            <span>{copy.title}</span>
+            <strong>{availability === "unavailable" ? copy.unavailable : copy.empty}</strong>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

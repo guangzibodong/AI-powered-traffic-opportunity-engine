@@ -388,6 +388,87 @@ async function assertPerformanceSnapshotEmptyStateIsReadOnly(page, label, expect
   }
 }
 
+async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expectedMetrics) {
+  const performancePanel = page.locator(".asset-performance-panel");
+  await expectVisible(performancePanel, `${label} asset performance panel`);
+
+  const renderedAssetId = await performancePanel.getAttribute("data-asset-id");
+  const safetyScope = await performancePanel.getAttribute("data-safety-scope");
+  const externalWriteAllowed = await performancePanel.getAttribute("data-external-write-allowed");
+  const snapshotState = await performancePanel.getAttribute("data-asset-performance-state");
+  const snapshotCount = await performancePanel.getAttribute("data-asset-performance-count");
+  assert(renderedAssetId === assetId, `${label} asset performance id mismatch: expected ${assetId}, got ${renderedAssetId}`);
+  assert(safetyScope === "local_imported_gsc_only", `${label} asset performance must declare local imported GSC scope`);
+  assert(externalWriteAllowed === "false", `${label} asset performance must clamp external writes to false`);
+  assert(snapshotState === "ready", `${label} asset performance state mismatch: expected ready, got ${snapshotState}`);
+  assert(snapshotCount === "1", `${label} asset performance count mismatch: expected 1, got ${snapshotCount}`);
+
+  const panelText = ((await performancePanel.textContent()) ?? "").toLowerCase();
+  for (const expectedCopy of ["asset performance", "local imported gsc only", "read-only", "local_asset_query_page_tokens"]) {
+    assert(panelText.includes(expectedCopy), `${label} asset performance panel must show ${expectedCopy}`);
+  }
+
+  for (const [metric, expectedValue] of Object.entries(expectedMetrics)) {
+    const metricValue = (
+      (await performancePanel.locator(`[data-asset-performance-metric='${metric}'] strong`).textContent()) ?? ""
+    ).trim();
+    assert(
+      metricValue === expectedValue,
+      `${label} asset performance ${metric} mismatch: expected ${expectedValue}, got ${metricValue}`
+    );
+  }
+
+  const interactiveSelector = [
+    "button",
+    "a",
+    "form",
+    "input",
+    "select",
+    "textarea",
+    "[href]",
+    "[role='button']",
+    "[role='link']"
+  ].join(", ");
+  const interactiveCount = await performancePanel.locator(interactiveSelector).count();
+  assert(interactiveCount === 0, `${label} asset performance panel must not render controls or navigation`);
+
+  for (const pattern of [
+    /\brefresh\b/,
+    /\bsync\b/,
+    /\bconnect\b/,
+    /\boauth\b/,
+    /\bcredential\b/,
+    /\bpublish\b/,
+    /\bdraft\b/,
+    /\bcommerce\b/,
+    /\btoken\b/,
+    /\bsecret\b/,
+    /\bpassword\b/
+  ]) {
+    assert(!pattern.test(panelText), `${label} asset performance panel exposes unsafe copy: ${pattern}`);
+  }
+}
+
+function assertAssetPerformanceRequestsReadOnly(requests, expectedReadCount, label, assetId) {
+  const performanceReads = requests.filter(
+    (request) =>
+      request.method === "GET" && request.url.endsWith(`/api/stores/${storeId}/assets/${assetId}/performance`)
+  );
+  assert(
+    performanceReads.length === expectedReadCount,
+    `${label} asset performance GET count mismatch: expected ${expectedReadCount}, got ${JSON.stringify(requests)}`
+  );
+  const unsafePerformanceRequests = requests.filter((request) => request.method !== "GET");
+  assert(
+    unsafePerformanceRequests.length === 0,
+    `${label} asset performance endpoint must stay GET-only: ${JSON.stringify(unsafePerformanceRequests)}`
+  );
+  assert(
+    !requests.some((request) => request.url.includes("/performance/refresh")),
+    `${label} asset performance UI must not request refresh routes: ${JSON.stringify(requests)}`
+  );
+}
+
 function assertPerformanceSnapshotRequestsReadOnly(requests, expectedReadCount, label) {
   const performanceSnapshotReads = requests.filter(
     (request) => request.method === "GET" && request.url.endsWith(`/api/stores/${storeId}/performance`)
@@ -2568,10 +2649,14 @@ async function runSmoke() {
 
     const populatedAssetPage = await context.newPage();
     const populatedAssetRequests = [];
+    const populatedAssetPerformanceRequests = [];
     populatedAssetPage.on("request", (request) => {
       const url = request.url();
       if (url.includes(`/api/stores/${storeId}/assets`)) {
         populatedAssetRequests.push({ method: request.method(), url });
+      }
+      if (url.includes(`/api/stores/${storeId}/assets/asset_task_002/performance`)) {
+        populatedAssetPerformanceRequests.push({ method: request.method(), url });
       }
     });
     await populatedAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
@@ -2661,6 +2746,46 @@ async function runSmoke() {
 
       await route.continue();
     });
+    await populatedAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_002/performance`, async (route) => {
+      if (
+        route.request().method() === "GET" &&
+        route.request().url().endsWith(`/api/stores/${storeId}/assets/asset_task_002/performance`)
+      ) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset_id: "asset_task_002",
+            asset_title: "Create camping portable espresso collection page",
+            blocked_capabilities: ["real_gsc_oauth", "wordpress_writes", "woocommerce_writes", "live_publish"],
+            external_write_allowed: false,
+            match_scope: "local_asset_query_page_tokens",
+            mode: "asset_performance_snapshots",
+            safety_scope: "local_imported_gsc_only",
+            snapshots: [
+              {
+                asset_id: "asset_task_002",
+                clicks: 24,
+                ctr: 0.02,
+                external_write_allowed: false,
+                id: "asset_perf_task_002",
+                impressions: 1200,
+                match_scope: "local_asset_query_page_tokens",
+                page_count: 1,
+                position: 4.8,
+                query_count: 1,
+                source: "imported_gsc_csv",
+                window: "28d"
+              }
+            ],
+            store_id: storeId,
+            summary: { clicks: 24, ctr: 0.02, impressions: 1200, matching_rows: 1, position: 4.8, snapshot_count: 1 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
     await populatedAssetPage.goto(webUrl);
     await clickUnique(populatedAssetPage.getByRole("button", { name: "EN" }), "populated asset language switcher");
     await assertAssetWorkspacePanelIsReadOnly(populatedAssetPage, 3, "populated asset workspace", [
@@ -2703,6 +2828,14 @@ async function runSmoke() {
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     const populatedEditor = await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace");
+    await assertAssetPerformancePanelIsReadOnly(populatedAssetPage, "populated asset workspace", "asset_task_002", {
+      clicks: "24",
+      coverage: "1 queries / 1 pages",
+      ctr: "2.00%",
+      impressions: "1,200",
+      position: "4.8",
+      window: "28d"
+    });
     await assertEditorControlsStayWithinPanel(populatedEditor, "populated asset workspace");
     await populatedAssetPage.screenshot({ fullPage: true, path: desktopAssetEditorScreenshotPath });
     assertScreenshotArtifact(desktopAssetEditorScreenshotPath, "desktop English local asset editor");
@@ -2721,6 +2854,12 @@ async function runSmoke() {
     assert(
       unsafePopulatedAssetRequests.length === 0,
       `Local asset editor issued unsafe asset requests: ${JSON.stringify(unsafePopulatedAssetRequests)}`
+    );
+    assertAssetPerformanceRequestsReadOnly(
+      populatedAssetPerformanceRequests,
+      1,
+      "populated asset workspace",
+      "asset_task_002"
     );
     await populatedAssetPage.close();
 

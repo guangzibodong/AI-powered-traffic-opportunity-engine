@@ -84,9 +84,9 @@ Implemented foundation:
 - Browser smoke verifies empty and unavailable states expose stable `data-performance-empty-state-key` diagnostics while keeping `/performance` GET-only and free of refresh, sync, credential, publish, draft, and commerce-write controls.
 - Backend `GET /assets/{asset_id}/performance` returns local-only imported GSC snapshots matched to local asset draft title, slug, and meta tokens; unknown local assets return 404 and unmatched assets return an empty local-only payload.
 - Frontend API client exposes `getAssetPerformanceSnapshots`; frontend adapter maps asset performance payloads through `mapApiAssetPerformanceSnapshotsToPreviews`, clamps `externalWriteAllowed` to `false`, clamps `matchScope` to `local_asset_query_page_tokens`, and keeps raw live/source fields hidden.
+- Visible local asset editor UI renders a read-only asset performance panel after a safe GET to `/assets/{asset_id}/performance`, showing local imported GSC metrics and match-scope diagnostics without refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 
 Still gated:
 
-- Visible asset-specific performance matching UI.
 - Before/after comparison UI.
 - Live GSC OAuth or refresh.
