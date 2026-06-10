@@ -433,6 +433,15 @@ assert(app.includes("data-asset-editor-faq-answer"), "Local asset editor UI must
 assert(app.includes("FAQ question"), "Local asset editor UI must expose English FAQ question copy");
 assert(app.includes("FAQ answer"), "Local asset editor UI must expose English FAQ answer copy");
 assert(
+  app.includes("data-asset-editor-product-grid-notes-draft"),
+  "Local asset editor UI must expose stable product grid notes draft diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-product-grid-notes"),
+  "Local asset editor UI must expose stable product grid notes diagnostics"
+);
+assert(app.includes("Product grid notes"), "Local asset editor UI must expose English product grid notes copy");
+assert(
   app.includes("data-asset-editor-internal-link-draft"),
   "Local asset editor UI must expose stable internal link draft diagnostics"
 );

@@ -689,7 +689,12 @@ export function App() {
   async function saveLocalAssetDraft(
     assetId: string,
     payload: {
-      content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
+      content_blocks?: Array<{
+        body?: string;
+        heading?: string;
+        items?: string[];
+        type: "product_grid_notes" | "section";
+      }>;
       editor_note?: string;
       faq_items?: Array<{ answer: string; question: string }>;
       internal_links?: string[];
@@ -945,7 +950,12 @@ function TrafficOperationsPage({
   onSaveAsset: (
     assetId: string,
     payload: {
-      content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
+      content_blocks?: Array<{
+        body?: string;
+        heading?: string;
+        items?: string[];
+        type: "product_grid_notes" | "section";
+      }>;
       editor_note?: string;
       faq_items?: Array<{ answer: string; question: string }>;
       internal_links?: string[];
@@ -1900,7 +1910,12 @@ function LocalAssetEditor({
   onSave: (
     assetId: string,
     payload: {
-      content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
+      content_blocks?: Array<{
+        body?: string;
+        heading?: string;
+        items?: string[];
+        type: "product_grid_notes" | "section";
+      }>;
       editor_note?: string;
       faq_items?: Array<{ answer: string; question: string }>;
       internal_links?: string[];
@@ -1927,6 +1942,7 @@ function LocalAssetEditor({
     localSaveSuccess: locale === "zh" ? "本地草稿已保存" : "Local draft saved",
     metaDescription: locale === "zh" ? "Meta 描述" : "Meta description",
     metaTitle: locale === "zh" ? "Meta 标题" : "Meta title",
+    productGridNotes: locale === "zh" ? "产品网格备注" : "Product grid notes",
     qaChecks: locale === "zh" ? "QA 检查" : "QA checks",
     qaPending: locale === "zh" ? "待处理" : "pending",
     qaReadiness: locale === "zh" ? "QA 就绪状态" : "QA readiness",
@@ -1947,6 +1963,7 @@ function LocalAssetEditor({
   const [metaTitle, setMetaTitle] = useState(asset.title);
   const [metaDescription, setMetaDescription] = useState("");
   const [sectionBody, setSectionBody] = useState("");
+  const [productGridNotes, setProductGridNotes] = useState("");
   const [faqQuestion, setFaqQuestion] = useState("");
   const [faqAnswer, setFaqAnswer] = useState("");
   const [schemaPreview, setSchemaPreview] = useState("");
@@ -1960,6 +1977,7 @@ function LocalAssetEditor({
     meta_title: metaTitle !== asset.title,
     meta_description: metaDescription !== "",
     structured_section: sectionBody !== "",
+    product_grid_notes: productGridNotes !== "",
     faq_question: faqQuestion !== "",
     faq_answer: faqAnswer !== "",
     schema_preview: schemaPreview !== "",
@@ -1982,6 +2000,7 @@ function LocalAssetEditor({
     metaTitle,
     metaDescription,
     sectionBody,
+    productGridNotes,
     faqQuestion,
     faqAnswer,
     schemaPreview,
@@ -2008,6 +2027,7 @@ function LocalAssetEditor({
     setMetaTitle(asset.title);
     setMetaDescription("");
     setSectionBody("");
+    setProductGridNotes("");
     setFaqQuestion("");
     setFaqAnswer("");
     setSchemaPreview("");
@@ -2021,6 +2041,7 @@ function LocalAssetEditor({
     setMetaTitle(asset.title);
     setMetaDescription("");
     setSectionBody("");
+    setProductGridNotes("");
     setFaqQuestion("");
     setFaqAnswer("");
     setSchemaPreview("");
@@ -2132,10 +2153,25 @@ function LocalAssetEditor({
         className="asset-editor-form"
         onSubmit={(event) => {
           event.preventDefault();
+          const contentBlocks: Array<{
+            body?: string;
+            heading?: string;
+            items?: string[];
+            type: "product_grid_notes" | "section";
+          }> = [
+            ...(sectionBody ? [{ body: sectionBody, heading: "Local draft section", type: "section" as const }] : []),
+            ...(productGridNotes
+              ? [
+                  {
+                    body: productGridNotes,
+                    heading: "Local product grid notes",
+                    type: "product_grid_notes" as const
+                  }
+                ]
+              : [])
+          ];
           void onSave(asset.id, {
-            content_blocks: sectionBody
-              ? [{ body: sectionBody, heading: "Local draft section", type: "section" }]
-              : undefined,
+            content_blocks: contentBlocks.length > 0 ? contentBlocks : undefined,
             editor_note: editorNote || undefined,
             faq_items:
               faqQuestion || faqAnswer
@@ -2195,6 +2231,18 @@ function LocalAssetEditor({
           <span>{copy.structuredSection}</span>
           <textarea value={sectionBody} onChange={(event) => setSectionBody(event.target.value)} />
         </label>
+        <div className="asset-editor-product-grid-notes-draft" data-asset-editor-product-grid-notes-draft="true">
+          <label
+            data-asset-editor-field="true"
+            data-asset-editor-field-dirty-state={editorFieldDirtyState("product_grid_notes")}
+            data-asset-editor-field-key="product_grid_notes"
+            data-asset-editor-field-state={editorFieldState(productGridNotes)}
+            data-asset-editor-product-grid-notes="true"
+          >
+            <span>{copy.productGridNotes}</span>
+            <textarea value={productGridNotes} onChange={(event) => setProductGridNotes(event.target.value)} />
+          </label>
+        </div>
         <div className="asset-editor-faq-draft" data-asset-editor-faq-draft="true">
           <label
             data-asset-editor-faq-question="true"

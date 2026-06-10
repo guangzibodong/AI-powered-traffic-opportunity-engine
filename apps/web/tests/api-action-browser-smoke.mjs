@@ -1192,6 +1192,7 @@ async function assertLocalAssetEditorFieldDiagnostics(
     "meta_title",
     "meta_description",
     "structured_section",
+    "product_grid_notes",
     "faq_question",
     "faq_answer",
     "schema_preview",
@@ -1359,7 +1360,7 @@ async function assertLocalAssetEditorCanSave(
     qaChecksCopy = "QA checks",
     qaPendingSuffix = "pending",
     qaReadinessCopy = "QA readiness",
-    savedEmptyFieldCount = 7,
+    savedEmptyFieldCount = 8,
     savedFilledFieldCount = 3,
     saveName = "Save local draft",
     saveSuccessCopy = "Local draft saved",
@@ -1381,12 +1382,13 @@ async function assertLocalAssetEditorCanSave(
       internal_link_reference: "clean",
       meta_description: "clean",
       meta_title: "clean",
+      product_grid_notes: "clean",
       schema_preview: "clean",
       slug: "clean",
       structured_section: "clean",
       title: "clean"
     },
-    expectedEmpty: 7,
+    expectedEmpty: 8,
     expectedFilled: 3,
     fieldCopy,
     filledCopy,
@@ -1514,13 +1516,15 @@ async function assertLocalAssetEditorCanSave(
 
   await editor.locator("input").first().fill(titleValue);
   await editor.locator("textarea").first().fill("Compare portable espresso kits for camp coffee.");
+  await editor.locator("[data-asset-editor-product-grid-notes='true'] textarea").fill("Feature manual brewers, compact grinders, and kettle bundles.");
   await editor.locator("[data-asset-editor-faq-question='true'] input").fill("Can I use a manual espresso maker at camp?");
   await editor.locator("[data-asset-editor-faq-answer='true'] textarea").fill("Yes. Use a compact brewer and preheat the cup.");
   await editor.locator("[data-asset-editor-schema-preview='true'] input").fill("FAQPage");
   await editor.locator("[data-asset-editor-internal-link-reference='true'] input").fill("collection:camping-coffee");
-  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 6, [
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 7, [
     "title",
     "meta_description",
+    "product_grid_notes",
     "faq_question",
     "faq_answer",
     "schema_preview",
@@ -1534,13 +1538,14 @@ async function assertLocalAssetEditorCanSave(
       internal_link_reference: "dirty",
       meta_description: "dirty",
       meta_title: "clean",
+      product_grid_notes: "dirty",
       schema_preview: "dirty",
       slug: "clean",
       structured_section: "clean",
       title: "dirty"
     },
     expectedEmpty: 2,
-    expectedFilled: 8,
+    expectedFilled: 9,
     fieldCopy,
     filledCopy,
     label: `${label} edited`
@@ -1557,6 +1562,7 @@ async function assertLocalAssetEditorCanSave(
       internal_link_reference: "clean",
       meta_description: "clean",
       meta_title: "clean",
+      product_grid_notes: "clean",
       schema_preview: "clean",
       slug: "clean",
       structured_section: "clean",
@@ -1578,14 +1584,16 @@ async function assertLocalAssetEditorFieldReadinessCanBecomeComplete(
 ) {
   await editor.locator("textarea").nth(0).fill("Compare portable espresso kits for camp coffee.");
   await editor.locator("textarea").nth(1).fill("Local section covers buyer objections and comparisons.");
+  await editor.locator("[data-asset-editor-product-grid-notes='true'] textarea").fill("Feature compact grinders, manual brewers, and kettle bundles.");
   await editor.locator("[data-asset-editor-faq-question='true'] input").fill("Can I use this at a campsite?");
   await editor.locator("[data-asset-editor-faq-answer='true'] textarea").fill("Yes. Keep the brewer compact and water hot.");
   await editor.locator("[data-asset-editor-schema-preview='true'] input").fill("FAQPage");
   await editor.locator("[data-asset-editor-internal-link-reference='true'] input").fill("collection:camping-coffee");
-  await editor.locator("textarea").nth(3).fill("Keep claims grounded in imported evidence.");
-  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} complete`, 7, [
+  await editor.locator("[data-asset-editor-field-key='editor_note'] textarea").fill("Keep claims grounded in imported evidence.");
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} complete`, 8, [
     "meta_description",
     "structured_section",
+    "product_grid_notes",
     "faq_question",
     "faq_answer",
     "schema_preview",
@@ -1600,13 +1608,14 @@ async function assertLocalAssetEditorFieldReadinessCanBecomeComplete(
       internal_link_reference: "dirty",
       meta_description: "dirty",
       meta_title: "clean",
+      product_grid_notes: "dirty",
       schema_preview: "dirty",
       slug: "clean",
       structured_section: "dirty",
       title: "clean"
     },
     expectedEmpty: 0,
-    expectedFilled: 10,
+    expectedFilled: 11,
     fieldCopy,
     filledCopy,
     label: `${label} complete`
@@ -1669,17 +1678,19 @@ async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitl
   await editor.locator("input").nth(2).fill("Reset-only unsaved meta title");
   await editor.locator("textarea").nth(0).fill("Reset-only unsaved meta description.");
   await editor.locator("textarea").nth(1).fill("Reset-only unsaved local section.");
+  await editor.locator("[data-asset-editor-product-grid-notes='true'] textarea").fill("Reset-only unsaved product grid notes.");
   await editor.locator("[data-asset-editor-faq-question='true'] input").fill("Reset-only unsaved FAQ question?");
   await editor.locator("[data-asset-editor-faq-answer='true'] textarea").fill("Reset-only unsaved FAQ answer.");
   await editor.locator("[data-asset-editor-schema-preview='true'] input").fill("FAQPage");
   await editor.locator("[data-asset-editor-internal-link-reference='true'] input").fill("collection:reset-only");
-  await editor.locator("textarea").nth(3).fill("Reset-only unsaved editor note.");
-  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 10, [
+  await editor.locator("[data-asset-editor-field-key='editor_note'] textarea").fill("Reset-only unsaved editor note.");
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 11, [
     "title",
     "slug",
     "meta_title",
     "meta_description",
     "structured_section",
+    "product_grid_notes",
     "faq_question",
     "faq_answer",
     "schema_preview",
@@ -1694,13 +1705,14 @@ async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitl
       internal_link_reference: "dirty",
       meta_description: "dirty",
       meta_title: "dirty",
+      product_grid_notes: "dirty",
       schema_preview: "dirty",
       slug: "dirty",
       structured_section: "dirty",
       title: "dirty"
     },
     expectedEmpty: 0,
-    expectedFilled: 10,
+    expectedFilled: 11,
     label: `${label} edited`
   });
 
@@ -1713,11 +1725,12 @@ async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitl
   const resetMetaTitle = await editor.locator("input").nth(2).inputValue();
   const resetMetaDescription = await editor.locator("textarea").nth(0).inputValue();
   const resetSection = await editor.locator("textarea").nth(1).inputValue();
+  const resetProductGridNotes = await editor.locator("[data-asset-editor-product-grid-notes='true'] textarea").inputValue();
   const resetFaqQuestion = await editor.locator("[data-asset-editor-faq-question='true'] input").inputValue();
   const resetFaqAnswer = await editor.locator("[data-asset-editor-faq-answer='true'] textarea").inputValue();
   const resetSchemaPreview = await editor.locator("[data-asset-editor-schema-preview='true'] input").inputValue();
   const resetInternalLinkReference = await editor.locator("[data-asset-editor-internal-link-reference='true'] input").inputValue();
-  const resetEditorNote = await editor.locator("textarea").nth(3).inputValue();
+  const resetEditorNote = await editor.locator("[data-asset-editor-field-key='editor_note'] textarea").inputValue();
   assert(resetTitle === expectedTitle, `${label} reset title mismatch: expected ${expectedTitle}, got ${resetTitle}`);
   assert(
     resetSlug === expectedTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
@@ -1729,6 +1742,10 @@ async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitl
   );
   assert(resetMetaDescription === "", `${label} reset meta description must be empty, got ${resetMetaDescription}`);
   assert(resetSection === "", `${label} reset structured section must be empty, got ${resetSection}`);
+  assert(
+    resetProductGridNotes === "",
+    `${label} reset product grid notes must be empty, got ${resetProductGridNotes}`
+  );
   assert(resetFaqQuestion === "", `${label} reset FAQ question must be empty, got ${resetFaqQuestion}`);
   assert(resetFaqAnswer === "", `${label} reset FAQ answer must be empty, got ${resetFaqAnswer}`);
   assert(resetSchemaPreview === "", `${label} reset schema preview must be empty, got ${resetSchemaPreview}`);
@@ -1747,12 +1764,13 @@ async function assertLocalAssetEditorResetLocalChanges(page, label, expectedTitl
       internal_link_reference: "clean",
       meta_description: "clean",
       meta_title: "clean",
+      product_grid_notes: "clean",
       schema_preview: "clean",
       slug: "clean",
       structured_section: "clean",
       title: "clean"
     },
-    expectedEmpty: 7,
+    expectedEmpty: 8,
     expectedFilled: 3,
     label: `${label} reset`
   });
@@ -3714,6 +3732,15 @@ async function runSmoke() {
         const payload = route.request().postDataJSON();
         assert(payload.title === "Updated local camping espresso draft", "Local asset PATCH must send edited title");
         assert(payload.meta_description === "Compare portable espresso kits for camp coffee.", "Local asset PATCH must send edited meta description");
+        assert(Array.isArray(payload.content_blocks), "Local asset PATCH must send local content blocks");
+        assert(
+          payload.content_blocks.some(
+            (block) =>
+              block?.type === "product_grid_notes" &&
+              block?.body === "Feature manual brewers, compact grinders, and kettle bundles."
+          ),
+          "Local asset PATCH must send product grid notes as a safe content block"
+        );
         assert(Array.isArray(payload.faq_items), "Local asset PATCH must send local FAQ draft items");
         assert(
           payload.faq_items[0]?.question === "Can I use a manual espresso maker at camp?",
@@ -4101,7 +4128,7 @@ async function runSmoke() {
       qaChecksCopy: "QA 检查",
       qaPendingSuffix: "待处理",
       qaReadinessCopy: "QA 就绪状态",
-      savedEmptyFieldCount: 8,
+      savedEmptyFieldCount: 9,
       savedFilledFieldCount: 2,
       saveName: "保存本地草稿",
       saveSuccessCopy: "本地草稿已保存",
