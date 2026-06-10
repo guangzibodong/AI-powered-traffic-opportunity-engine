@@ -372,7 +372,8 @@ Sprint 3 performance endpoints are still local-only:
 - `GET /performance` returns `mode: "performance_snapshots"`, `safety_scope: "local_imported_gsc_only"`, `external_write_allowed: false`, blocked capabilities, and deterministic aggregate snapshots from already-imported GSC CSV rows grouped by window.
 - Each snapshot includes imported-row totals for clicks, impressions, CTR, weighted average position, query/page counts, and source row ids.
 - Empty imported data returns an empty snapshot list with zeroed summary totals.
-- `POST /performance/refresh` is a local tracking preview with `external_write_allowed: false`; it does not run real GSC OAuth, call Google APIs, create WordPress drafts, update pages, publish content, or write commerce data.
+- `POST /performance/refresh` returns `mode: "performance_refresh_preview"`, `status: "preview_only"`, `safety_scope: "local_tracking_preview_only"`, `external_write_allowed: false`, `source: "imported_gsc_csv"`, `snapshot_count`, current local snapshot `summary`, and blocked capabilities for real GSC OAuth, credential collection, external sync execution, WordPress draft creation, WordPress page updates, WordPress publishing, and WooCommerce writes.
+- The refresh preview is diagnostic only. It derives its counts from already-imported GSC rows, does not enqueue a job, does not mutate imported snapshots, does not run real GSC OAuth, does not call Google APIs, does not create WordPress drafts, does not update pages, does not publish content, and does not write commerce data.
 
 ## Audit Logs
 

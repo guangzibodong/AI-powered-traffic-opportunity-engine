@@ -8,6 +8,15 @@ from app.services.gsc_ingestion_service import list_imported_gsc_rows
 
 
 _blocked_capabilities = ["real_gsc_oauth", "wordpress_writes", "woocommerce_writes", "live_publish"]
+_refresh_preview_blocked_capabilities = [
+    "real_gsc_oauth",
+    "credential_collection",
+    "external_sync_execution",
+    "wordpress_draft_creation",
+    "wordpress_page_updates",
+    "wordpress_publish",
+    "woocommerce_writes",
+]
 _asset_match_stopwords = {"and", "collection", "for", "page", "the", "with"}
 
 
@@ -50,6 +59,26 @@ def list_asset_performance_snapshots(store_id: str, asset_id: str) -> dict[str, 
         "snapshots": snapshots,
         "store_id": store_id,
         "summary": summary,
+    }
+
+
+def build_performance_refresh_preview(store_id: str) -> dict[str, Any]:
+    snapshot_payload = list_store_performance_snapshots(store_id)
+
+    return {
+        "blocked_capabilities": _refresh_preview_blocked_capabilities,
+        "external_write_allowed": False,
+        "mode": "performance_refresh_preview",
+        "safety_scope": "local_tracking_preview_only",
+        "snapshot_count": len(snapshot_payload["snapshots"]),
+        "source": "imported_gsc_csv",
+        "status": "preview_only",
+        "store_id": store_id,
+        "summary": snapshot_payload["summary"],
+        "would_call_external_gsc": False,
+        "would_create_wordpress_draft": False,
+        "would_update_wordpress_page": False,
+        "would_write_woocommerce": False,
     }
 
 

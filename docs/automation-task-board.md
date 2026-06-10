@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local demo release handoff is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 safe local performance refresh preview diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -22,10 +22,10 @@ These are internal execution-board statuses, not TrafScope product task review s
 
 | Role | Person/Agent | Current assignment |
 |---|---|---|
-| Product Manager | Main thread + Locke sidecar | Close the local demo release handoff, keep stakeholder scope clear, and preserve live-integration blockers. |
-| Backend/API Engineer | Main thread | Preserve existing read-only imported APIs; no live credentials, OAuth, publishing, drafts, WordPress updates, or commerce writes. |
+| Product Manager | Main thread + Locke sidecar | Keep local performance preview scope explicit and preserve live-integration blockers. |
+| Backend/API Engineer | Main thread | Tighten the local performance refresh preview route without live credentials, OAuth, publishing, drafts, WordPress updates, or commerce writes. |
 | Frontend Product Engineer | Main thread | Keep the current demo UI behavior documented without adding new controls. |
-| QA Lead | Main thread + Laplace sidecar | Verify local demo handoff closure, full matrix, task-board closure, and no-secret safety scans. |
+| QA Lead | Main thread + Laplace sidecar | Verify performance refresh preview diagnostics, full matrix, task-board closure, and no-secret safety scans. |
 | UI Systems Engineer | Main thread | Keep demo documentation aligned with the current compact bilingual UI and screenshot artifacts. |
 
 ## Task Queue
@@ -238,6 +238,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-070 | 204 | done | Frontend Product Engineer / QA Lead | Add performance comparison baseline snapshot diagnostics. | Store and asset before/after performance comparison panels expose stable read-only baseline snapshot id metric rows for populated local imported baselines while keeping empty/unavailable comparison states free of populated metric rows and preserving no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-QA-071 | 205 | done | Frontend Product Engineer / QA Lead | Add performance comparison evidence count diagnostics. | Store and asset before/after performance comparison panels expose stable read-only evidence count metric rows for populated local imported baselines while keeping empty/unavailable comparison states free of populated metric rows and preserving no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-DOC-072 | 206 | done | Product Manager / Documentation Lead / QA Lead | Close local demo release handoff. | Documentation summarizes what is demo-ready now, exact safety boundaries, demo walkthrough, verification commands, no-go blockers, and README links without adding credential, sync, draft, WordPress update, publishing, navigation, or commerce-write controls. |
+| TASK-S3-PERF-073 | 207 | done | Backend/API Engineer / QA Lead | Add safe local performance refresh preview diagnostics. | `POST /performance/refresh` returns explicit preview-only local diagnostics derived from imported snapshots, exposes blocked capabilities and no external writes, avoids queued/live wording, and does not mutate imported GSC rows, create drafts, update WordPress pages, publish, sync, or write commerce data. |
 
 ## Blockers
 
@@ -622,6 +623,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Performance comparison baseline snapshot diagnostics are verified by red-green static and browser coverage that first failed on missing store and asset comparison baseline snapshot metric rows, then passed for populated local imported baselines while empty and unavailable comparison states keep populated metric rows hidden and preserve GET-only reads with no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 - Performance comparison evidence count diagnostics are verified by red-green static and browser coverage that first failed on missing store and asset comparison evidence count metric rows, then passed for populated local imported baselines while empty and unavailable comparison states keep populated metric rows hidden and preserve GET-only reads with no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 - Local demo release handoff is verified in `docs/local-demo-release-handoff.md`, README points to it, PM and QA sidecars reviewed the scope, and the full backend/frontend/browser matrix plus task-board and secret scans preserve the local/demo/imported-only boundary.
+- Safe local performance refresh preview diagnostics are verified by red-green backend tests that first failed on the old `queued` stub, then passed with `preview_only` local diagnostics, blocked credential/WordPress/WooCommerce capabilities, no imported snapshot mutation, full backend/frontend/browser verification, and preserved UI-side no-refresh-request smoke coverage.
 
 ## Completion Rule
 

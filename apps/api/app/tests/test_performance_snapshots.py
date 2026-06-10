@@ -223,3 +223,44 @@ class PerformanceSnapshotApiTests(unittest.TestCase):
         self.assertFalse(payload["external_write_allowed"])
         self.assertEqual(payload["summary"]["impressions"], 1840)
         self.assertEqual(payload["snapshots"][0]["window"], "28d")
+
+    def test_performance_refresh_endpoint_returns_preview_only_local_diagnostics(self):
+        self.client.post(
+            "/api/stores/store-demo-outdoor-coffee/queries/import-csv",
+            json={"csv_text": PERFORMANCE_GSC_CSV, "window": "28d"},
+        )
+
+        response = self.client.post("/api/stores/store-demo-outdoor-coffee/performance/refresh")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["mode"], "performance_refresh_preview")
+        self.assertEqual(payload["status"], "preview_only")
+        self.assertEqual(payload["store_id"], "store-demo-outdoor-coffee")
+        self.assertEqual(payload["safety_scope"], "local_tracking_preview_only")
+        self.assertFalse(payload["external_write_allowed"])
+        self.assertEqual(payload["source"], "imported_gsc_csv")
+        self.assertEqual(payload["snapshot_count"], 1)
+        self.assertEqual(payload["summary"]["impressions"], 1840)
+        self.assertEqual(payload["summary"]["clicks"], 32)
+        self.assertIn("real_gsc_oauth", payload["blocked_capabilities"])
+        self.assertIn("credential_collection", payload["blocked_capabilities"])
+        self.assertIn("wordpress_draft_creation", payload["blocked_capabilities"])
+        self.assertIn("wordpress_page_updates", payload["blocked_capabilities"])
+        self.assertIn("woocommerce_writes", payload["blocked_capabilities"])
+        self.assertNotIn("queued", str(payload).lower())
+
+    def test_performance_refresh_preview_does_not_mutate_imported_snapshots(self):
+        self.client.post(
+            "/api/stores/store-demo-outdoor-coffee/queries/import-csv",
+            json={"csv_text": PERFORMANCE_GSC_CSV, "window": "28d"},
+        )
+        before = self.client.get("/api/stores/store-demo-outdoor-coffee/performance").json()
+
+        response = self.client.post("/api/stores/store-demo-outdoor-coffee/performance/refresh")
+        after = self.client.get("/api/stores/store-demo-outdoor-coffee/performance").json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(after["summary"], before["summary"])
+        self.assertEqual(after["snapshots"], before["snapshots"])
+        self.assertFalse(response.json()["external_write_allowed"])
