@@ -214,6 +214,7 @@ The first local editor slice is implemented with a conservative scope:
 - Browser smoke verifies closing during a pending local save does not submit again, does not reopen the editor after the delayed response, and records only one local PATCH.
 - Browser smoke verifies closing during a pending local save, waiting for the delayed response to resolve, and reopening the same asset starts from neutral local-only feedback with no stale success/failure copy and only one local PATCH.
 - Browser smoke captures and verifies `docs/design-mockups/screenshots/local-asset-editor-mobile-zh.png` as a mobile local editor QA artifact after confirming Chinese local-only safety copy, contained editor controls, one safe local PATCH, and no unsafe requests.
+- Browser smoke captures and verifies `docs/design-mockups/screenshots/local-asset-editor-desktop-en.png` as a desktop local editor QA artifact after confirming English local-only safety copy, contained editor controls, one safe local PATCH, and no unsafe requests.
 
 Still gated:
 

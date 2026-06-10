@@ -17,6 +17,13 @@ const apiPort = Number(process.env.TRAFSCOPE_API_ACTION_API_PORT ?? 8120);
 const webPort = Number(process.env.TRAFSCOPE_API_ACTION_WEB_PORT ?? 5177);
 const apiUrl = `http://127.0.0.1:${apiPort}`;
 const webUrl = `http://127.0.0.1:${webPort}`;
+const desktopAssetEditorScreenshotPath = join(
+  repoRoot,
+  "docs",
+  "design-mockups",
+  "screenshots",
+  "local-asset-editor-desktop-en.png"
+);
 const mobileAssetEditorScreenshotPath = join(
   repoRoot,
   "docs",
@@ -2438,7 +2445,10 @@ async function runSmoke() {
     await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
-    await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace");
+    const populatedEditor = await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace");
+    await assertEditorControlsStayWithinPanel(populatedEditor, "populated asset workspace");
+    await populatedAssetPage.screenshot({ fullPage: true, path: desktopAssetEditorScreenshotPath });
+    assertScreenshotArtifact(desktopAssetEditorScreenshotPath, "desktop English local asset editor");
     const localAssetPatchRequests = populatedAssetRequests.filter(
       (request) => request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_002`)
     );

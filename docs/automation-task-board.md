@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local editor mobile screenshot QA artifact coverage is verified; desktop screenshot artifact coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 local editor desktop screenshot QA artifact coverage is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -213,7 +213,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-045 | 179 | done | Frontend Product Engineer / QA Lead | Add local editor pending-close duplicate-request coverage. | Browser smoke verifies closing the local editor while a save is pending does not trigger an additional local PATCH and still exposes no draft, publish, sync, credential, navigation, or commerce-write requests. |
 | TASK-S3-QA-046 | 180 | done | Frontend Product Engineer / QA Lead | Add local editor pending-close stale-feedback coverage. | Browser smoke verifies after closing during a pending local save and letting the response resolve, reopening the same asset shows neutral local-only feedback and no stale success/failure copy, with only allowed local PATCH requests. |
 | TASK-S3-QA-047 | 181 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add local editor mobile screenshot QA artifact coverage. | Browser smoke captures and verifies a mobile local editor screenshot artifact with visible bilingual local-only safety copy, contained editor controls, and no WordPress draft, publish, sync, credential, navigation, or commerce-write requests. |
-| TASK-S3-QA-048 | 182 | todo | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add local editor desktop screenshot QA artifact coverage. | Browser smoke captures and verifies a desktop local editor screenshot artifact with visible English local-only safety copy, contained editor controls, and no WordPress draft, publish, sync, credential, navigation, or commerce-write requests. |
+| TASK-S3-QA-048 | 182 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add local editor desktop screenshot QA artifact coverage. | Browser smoke captures and verifies a desktop local editor screenshot artifact with visible English local-only safety copy, contained editor controls, and no WordPress draft, publish, sync, credential, navigation, or commerce-write requests. |
 
 ## Blockers
 
@@ -571,6 +571,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Mobile screenshot QA artifact coverage is next because the local editor has mobile smoke coverage, but the Sprint 3 editor contract still needs a saved visual artifact proving mobile copy and controls remain contained.
 - Mobile screenshot QA artifact coverage is verified by browser smoke that captures `docs/design-mockups/screenshots/local-asset-editor-mobile-zh.png`, checks the artifact size, validates Chinese local-only safety copy, and keeps request coverage local-only.
 - Desktop screenshot QA artifact coverage is next because the editor contract also calls for desktop visual evidence before expanding beyond the compact local editor.
+- Desktop screenshot QA artifact coverage is verified by browser smoke that captures `docs/design-mockups/screenshots/local-asset-editor-desktop-en.png`, checks the artifact size, validates English local-only safety copy, and keeps request coverage local-only.
 
 ## Completion Rule
 
