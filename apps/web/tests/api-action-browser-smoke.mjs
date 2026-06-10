@@ -746,6 +746,25 @@ async function assertLocalAssetEditorSameAssetDoubleSubmitBlocked(page, label) {
   await expectVisible(page.getByText("Local draft saved"), `${label} local save success copy`);
 }
 
+async function assertLocalAssetEditorPendingCloseDoesNotDuplicateRequest(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} local asset editor`);
+  await editor.locator("input").first().fill("Pending close duplicate guard title");
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} pending local save button`);
+  await expectVisible(editor.getByRole("button", { name: "Saving local draft" }), `${label} pending local save copy`);
+  await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close pending local editor button`);
+
+  const closeDeadline = Date.now() + 5_000;
+  while (Date.now() < closeDeadline) {
+    if ((await page.locator(".asset-editor-panel").count()) === 0) break;
+    await delay(50);
+  }
+  assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} pending local editor must close`);
+  await delay(700);
+  assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} delayed response must not reopen editor`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -3651,6 +3670,103 @@ async function runSmoke() {
       `Double-submit guard issued unsafe requests: ${JSON.stringify(unsafeDoubleSubmitRequests)}`
     );
     await doubleSubmitAssetPage.close();
+
+    const pendingCloseAssetPage = await context.newPage();
+    const pendingCloseAssetRequests = [];
+    pendingCloseAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        pendingCloseAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await pendingCloseAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_pending_close",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_pending_close",
+                title: "Pending close candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await pendingCloseAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_pending_close`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        await delay(500);
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_pending_close",
+              qa_checks: [{ key: "seo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_pending_close",
+              title: "Pending close duplicate guard title"
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await pendingCloseAssetPage.goto(webUrl);
+    await clickUnique(pendingCloseAssetPage.getByRole("button", { name: "EN" }), "pending close asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(pendingCloseAssetPage, 1, "pending close asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_pending_close",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Pending close candidate"
+      }
+    ]);
+    await assertLocalAssetEditorPendingCloseDoesNotDuplicateRequest(pendingCloseAssetPage, "pending close asset workspace");
+    const pendingClosePatchRequests = pendingCloseAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_pending_close`)
+    );
+    assert(
+      pendingClosePatchRequests.length === 1,
+      `Pending close should issue exactly one local PATCH, got ${JSON.stringify(pendingCloseAssetRequests)}`
+    );
+    const unsafePendingCloseRequests = pendingCloseAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_pending_close`))
+    );
+    assert(
+      unsafePendingCloseRequests.length === 0,
+      `Pending close issued unsafe requests: ${JSON.stringify(unsafePendingCloseRequests)}`
+    );
+    await pendingCloseAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
