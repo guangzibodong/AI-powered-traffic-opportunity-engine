@@ -386,9 +386,18 @@ assert(
 assert(app.includes("data-asset-qa-detail"), "Asset workspace UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-qa-key"), "Asset workspace UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-qa-status"), "Asset workspace UI must expose stable QA status diagnostics");
+assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
+assert(app.includes("data-asset-claim-detail"), "Asset workspace UI must expose stable claim detail diagnostics");
+assert(app.includes("data-asset-claim-id"), "Asset workspace UI must expose stable claim id diagnostics");
+assert(app.includes("data-asset-claim-source"), "Asset workspace UI must expose stable claim source diagnostics");
+assert(app.includes("Claim ledger"), "Asset workspace UI must expose English claim ledger copy");
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");
+assert(app.includes("data-asset-editor-claim-count"), "Local asset editor UI must expose stable claim count diagnostics");
+assert(app.includes("data-asset-editor-claim-detail"), "Local asset editor UI must expose stable claim detail diagnostics");
+assert(app.includes("data-asset-editor-claim-id"), "Local asset editor UI must expose stable editor claim id diagnostics");
+assert(app.includes("data-asset-editor-claim-source"), "Local asset editor UI must expose stable editor claim source diagnostics");
 assert(
   app.includes("data-asset-editor-qa-check-count"),
   "Local asset editor UI must expose stable QA check count diagnostics"

@@ -1494,6 +1494,7 @@ function AssetWorkspacePanel({
       return counts;
     }, {})
   ).sort(([left], [right]) => left.localeCompare(right));
+  const claimTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.claimCount, 0);
   const qaCheckTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
   const qaPendingTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaPendingCount, 0);
   const qaReadinessState =
@@ -1552,6 +1553,12 @@ function AssetWorkspacePanel({
             </strong>
           </div>
         )}
+        {claimTotal > 0 && (
+          <div className="kv-row" data-asset-claim-summary="true" data-asset-total-claim-count={claimTotal}>
+            <span>Claim ledger</span>
+            <strong>{claimTotal} claims</strong>
+          </div>
+        )}
         {qaCheckTotal > 0 && (
           <div className="kv-row" data-asset-qa-readiness="true">
             <span>QA readiness</span>
@@ -1585,6 +1592,7 @@ function AssetWorkspacePanel({
           {visibleAssets.map((asset) => (
             <div
               className="mini-card"
+              data-asset-claim-count={asset.claimCount}
               data-asset-content-block-count={asset.contentBlockCount}
               data-asset-content-block-types={asset.contentBlockTypes.join(",")}
               data-asset-id={asset.id}
@@ -1597,8 +1605,24 @@ function AssetWorkspacePanel({
               <span>
                 {asset.assetType} / {asset.reviewState} / {asset.contentBlockCount} blocks
                 {asset.contentBlockTypes.length > 0 ? ` / ${asset.contentBlockTypes.join(", ")}` : ""}
+                {asset.claimCount > 0 ? ` / claims ${asset.claimCount}` : ""}
                 {asset.qaCheckCount > 0 ? ` / qa ${asset.qaPendingCount}/${asset.qaCheckCount} pending` : ""}
               </span>
+              {asset.claimLedger.length > 0 && (
+                <div className="inline-diagnostics" data-asset-claim-detail-list="true">
+                  {asset.claimLedger.map((claim) => (
+                    <span
+                      className="pill muted-pill"
+                      data-asset-claim-detail="true"
+                      data-asset-claim-id={claim.id}
+                      data-asset-claim-source={claim.source}
+                      key={`${asset.id}-${claim.id}-${claim.source}`}
+                    >
+                      {claim.source}:{claim.text}
+                    </span>
+                  ))}
+                </div>
+              )}
               {asset.qaChecks.length > 0 && (
                 <div className="inline-diagnostics" data-asset-qa-detail-list="true">
                   {asset.qaChecks.map((check) => (
@@ -1932,6 +1956,7 @@ function LocalAssetEditor({
     fieldReadiness: locale === "zh" ? "字段状态" : "Field readiness",
     close: locale === "zh" ? "关闭" : "Close",
     editorNote: locale === "zh" ? "编辑备注" : "Editor note",
+    claimLedger: locale === "zh" ? "Claim ledger" : "Claim ledger",
     externalWritesDisabled: locale === "zh" ? "外部写入已关闭" : "External writes disabled",
     fields: locale === "zh" ? "字段" : "Fields",
     filled: locale === "zh" ? "已填写" : "filled",
@@ -2059,6 +2084,7 @@ function LocalAssetEditor({
     <section
       className="panel asset-editor-panel"
       data-asset-editor="local-only"
+      data-asset-editor-claim-count={asset.claimCount}
       data-asset-editor-dirty-field-count={editorDirtyFieldCount}
       data-asset-editor-dirty-field-keys={editorDirtyFieldKeyList}
       data-asset-editor-dirty-field-keys-reconciled={editorDirtyFieldKeysReconciled}
@@ -2126,6 +2152,29 @@ function LocalAssetEditor({
           <strong>{editorDirtyState}</strong>
         </div>
       </div>
+      {asset.claimLedger.length > 0 && (
+        <div className="kv-list" data-asset-editor-claim-summary="true">
+          <div className="kv-row">
+            <span>{copy.claimLedger}</span>
+            <strong>{asset.claimCount} claims</strong>
+          </div>
+        </div>
+      )}
+      {asset.claimLedger.length > 0 && (
+        <div className="inline-diagnostics" data-asset-editor-claim-detail-list="true">
+          {asset.claimLedger.map((claim) => (
+            <span
+              className="pill muted-pill"
+              data-asset-editor-claim-detail="true"
+              data-asset-editor-claim-id={claim.id}
+              data-asset-editor-claim-source={claim.source}
+              key={`${asset.id}-editor-claim-${claim.id}-${claim.source}`}
+            >
+              {claim.source}:{claim.text}
+            </span>
+          ))}
+        </div>
+      )}
       {asset.qaChecks.length > 0 && (
         <div className="kv-list" data-asset-editor-qa-summary="true">
           <div className="kv-row" data-asset-editor-qa-readiness="true">

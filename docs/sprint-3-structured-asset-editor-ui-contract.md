@@ -244,6 +244,7 @@ The first local editor slice is implemented with a conservative scope:
 - Local asset editor renders one plain local schema preview draft field with `data-asset-editor-schema-preview-draft` and `data-asset-editor-schema-preview`, includes it in field readiness and dirty diagnostics, and saves it only through safe `schema_json` without script tags, schema publishing, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Local asset editor renders one plain internal link reference draft field with `data-asset-editor-internal-link-draft` and `data-asset-editor-internal-link-reference`, includes it in field readiness and dirty diagnostics, and saves it only through safe `internal_links` without external hrefs, navigation, draft creation, publishing, sync, OAuth, credential, or commerce-write controls.
 - Frontend asset draft adapters expose safe read-only claim ledger previews with local id/source/text fields and claim counts, clamping unknown or credential-like values to local review defaults without claim editing, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
+- Asset workspace rows and the local asset editor render read-only claim ledger diagnostics with stable claim count/detail/source/id DOM markers, preserving safe local evidence context without claim editing, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 
 Still gated:
 

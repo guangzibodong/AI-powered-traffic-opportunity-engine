@@ -925,6 +925,7 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
     const reviewState = await row.getAttribute("data-asset-review-state");
     const contentBlockCount = await row.getAttribute("data-asset-content-block-count");
     const contentBlockTypes = await row.getAttribute("data-asset-content-block-types");
+    const claimCount = await row.getAttribute("data-asset-claim-count");
     const qaCheckCount = await row.getAttribute("data-asset-qa-check-count");
     const qaPendingCount = await row.getAttribute("data-asset-qa-pending-count");
     assert(
@@ -959,6 +960,14 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
         `${label} asset row ${expectedAsset.id} QA pending count mismatch: expected ${
           expectedAsset.qaPendingCount
         }, got ${qaPendingCount ?? "missing"}`
+      );
+    }
+    if (expectedAsset.claimCount !== undefined) {
+      assert(
+        claimCount === String(expectedAsset.claimCount),
+        `${label} asset row ${expectedAsset.id} claim count mismatch: expected ${expectedAsset.claimCount}, got ${
+          claimCount ?? "missing"
+        }`
       );
     }
     const rowText = (await row.textContent()) ?? "";
@@ -999,6 +1008,39 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
         assert(
           !serializedQaDetails.toLowerCase().includes(forbidden),
           `${label} asset row ${expectedAsset.id} QA detail leaked unsafe copy: ${forbidden}`
+        );
+      }
+    }
+    if (expectedAsset.claims) {
+      const claimRows = await row.locator("[data-asset-claim-detail]").evaluateAll((elements) =>
+        elements.map((element) => ({
+          id: element.getAttribute("data-asset-claim-id"),
+          source: element.getAttribute("data-asset-claim-source"),
+          text: element.textContent ?? ""
+        }))
+      );
+      assert(
+        claimRows.length === expectedAsset.claims.length,
+        `${label} asset row ${expectedAsset.id} claim detail count mismatch: expected ${
+          expectedAsset.claims.length
+        }, got ${claimRows.length}`
+      );
+      for (const expectedClaim of expectedAsset.claims) {
+        assert(
+          claimRows.some(
+            (claim) =>
+              claim.id === expectedClaim.id &&
+              claim.source === expectedClaim.source &&
+              claim.text.includes(expectedClaim.text)
+          ),
+          `${label} asset row ${expectedAsset.id} missing claim detail ${expectedClaim.id}`
+        );
+      }
+      const serializedClaims = JSON.stringify(claimRows);
+      for (const forbidden of ["metadata", "credential", "token", "secret", "password", "api_key", "published"]) {
+        assert(
+          !serializedClaims.toLowerCase().includes(forbidden),
+          `${label} asset row ${expectedAsset.id} claim detail leaked unsafe copy: ${forbidden}`
         );
       }
     }
@@ -1349,6 +1391,43 @@ async function assertLocalAssetEditorFieldDiagnostics(
   );
 }
 
+async function assertLocalAssetEditorClaimLedger(editor, expectedClaims, label) {
+  const claimCount = await editor.getAttribute("data-asset-editor-claim-count");
+  assert(
+    claimCount === String(expectedClaims.length),
+    `${label} editor claim count mismatch: expected ${expectedClaims.length}, got ${claimCount ?? "missing"}`
+  );
+  const claimRows = await editor.locator("[data-asset-editor-claim-detail]").evaluateAll((elements) =>
+    elements.map((element) => ({
+      id: element.getAttribute("data-asset-editor-claim-id"),
+      source: element.getAttribute("data-asset-editor-claim-source"),
+      text: element.textContent ?? ""
+    }))
+  );
+  assert(
+    claimRows.length === expectedClaims.length,
+    `${label} editor claim row count mismatch: expected ${expectedClaims.length}, got ${claimRows.length}`
+  );
+  for (const expectedClaim of expectedClaims) {
+    assert(
+      claimRows.some(
+        (claim) =>
+          claim.id === expectedClaim.id &&
+          claim.source === expectedClaim.source &&
+          claim.text.includes(expectedClaim.text)
+      ),
+      `${label} editor missing claim detail ${expectedClaim.id}`
+    );
+  }
+  const serializedClaims = JSON.stringify(claimRows);
+  for (const forbidden of ["metadata", "credential", "token", "secret", "password", "api_key", "published"]) {
+    assert(
+      !serializedClaims.toLowerCase().includes(forbidden),
+      `${label} editor claim detail leaked unsafe copy: ${forbidden}`
+    );
+  }
+}
+
 async function assertLocalAssetEditorCanSave(
   page,
   label,
@@ -1366,6 +1445,7 @@ async function assertLocalAssetEditorCanSave(
     saveName = "Save local draft",
     saveSuccessCopy = "Local draft saved",
     titleValue = "Updated local camping espresso draft",
+    expectedClaims = null,
     wordpressBlockedCopy = "WordPress draft creation blocked",
     woocommerceBlockedCopy = "WooCommerce writes blocked"
   } = {}
@@ -1400,6 +1480,9 @@ async function assertLocalAssetEditorCanSave(
   await expectVisible(page.getByText(externalWritesCopy), `${label} external-write disabled editor copy`);
   await expectVisible(page.getByText(wordpressBlockedCopy), `${label} WordPress block editor copy`);
   await expectVisible(page.getByText(woocommerceBlockedCopy), `${label} WooCommerce block editor copy`);
+  if (expectedClaims) {
+    await assertLocalAssetEditorClaimLedger(editor, expectedClaims, `${label} initial`);
+  }
   const expectedSafetyCapabilities = [
     { copy: externalWritesCopy, key: "external_writes" },
     { copy: wordpressBlockedCopy, key: "wordpress_draft_creation" },
@@ -3695,6 +3778,19 @@ async function runSmoke() {
               {
                 asset_type: "collection_page",
                 blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                claim_ledger: [
+                  {
+                    id: "claim_ctr_gap",
+                    source: "gsc_import",
+                    text: "Imported GSC row shows low CTR on camping espresso queries."
+                  },
+                  {
+                    id: "token-secret-claim",
+                    metadata: { password: "unsafe-password" },
+                    source: "secret_source",
+                    text: "token-secret-password"
+                  }
+                ],
                 content_blocks: [{ type: "answer_summary" }, { type: "metadata_only" }, { type: "faq" }],
                 external_write_allowed: false,
                 id: "asset_task_002",
@@ -3783,6 +3879,18 @@ async function runSmoke() {
             asset: {
               asset_type: "collection_page",
               blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              claim_ledger: [
+                {
+                  id: "claim_ctr_gap",
+                  source: "gsc_import",
+                  text: "Imported GSC row shows low CTR on camping espresso queries."
+                },
+                {
+                  id: "claim_2",
+                  source: "local_evidence",
+                  text: "Local claim requires review"
+                }
+              ],
               content_blocks: [{ type: "section" }],
               external_write_allowed: false,
               id: "asset_task_002",
@@ -3874,6 +3982,15 @@ async function runSmoke() {
       {
         contentBlockCount: 3,
         contentBlockTypes: ["answer_summary", "metadata_only", "faq"],
+        claimCount: 2,
+        claims: [
+          {
+            id: "claim_ctr_gap",
+            source: "gsc_import",
+            text: "Imported GSC row shows low CTR on camping espresso queries."
+          },
+          { id: "claim_2", source: "local_evidence", text: "Local claim requires review" }
+        ],
         id: "asset_task_002",
         qaCheckCount: 3,
         qaPendingCount: 2,
@@ -3909,7 +4026,16 @@ async function runSmoke() {
     await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
-    const populatedEditor = await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace");
+    const populatedEditor = await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace", {
+      expectedClaims: [
+        {
+          id: "claim_ctr_gap",
+          source: "gsc_import",
+          text: "Imported GSC row shows low CTR on camping espresso queries."
+        },
+        { id: "claim_2", source: "local_evidence", text: "Local claim requires review" }
+      ]
+    });
     await assertLocalAssetEditorFieldReadinessCanBecomeComplete(populatedEditor, "populated asset workspace");
     await assertAssetPerformancePanelIsReadOnly(populatedAssetPage, "populated asset workspace", "asset_task_002", {
       clicks: "24",
