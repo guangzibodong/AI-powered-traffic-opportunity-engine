@@ -658,6 +658,11 @@ export function App() {
     }
   }
 
+  function closeAssetEditor() {
+    setSelectedAssetId(null);
+    setAssetSaveFeedback(null);
+  }
+
   return (
     <div className="app-shell">
       <NavigationRail locale={locale} screen={screen} setScreen={setScreen} t={t} />
@@ -671,7 +676,7 @@ export function App() {
             dataState={boardDataState}
             importedPreviews={importedPreviews}
             locale={locale}
-            onCloseAssetEditor={() => setSelectedAssetId(null)}
+            onCloseAssetEditor={closeAssetEditor}
             onOpenAssetEditor={setSelectedAssetId}
             onOpenTask={(task) => {
               setSelectedTaskId(task.id);

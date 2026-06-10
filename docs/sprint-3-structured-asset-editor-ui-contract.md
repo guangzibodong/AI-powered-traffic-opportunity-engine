@@ -204,6 +204,7 @@ The first local editor slice is implemented with a conservative scope:
 - Browser smoke verifies retry-after-failure by failing the first local asset PATCH, succeeding on the second local PATCH, clearing the failure copy with `Local draft saved`, and still recording no unsafe requests.
 - Browser smoke verifies `Close` hides the local editor after unsaved edits without issuing a local asset PATCH or any WordPress draft, publish, sync, credential, external navigation, or commerce-write request.
 - Browser smoke verifies reopening after close discards unsaved local edits, restores the safe asset preview title and empty local-only editor fields, and records no write requests.
+- Browser smoke verifies close-after-failed-save feedback reset with red-green coverage: stale `Local save failed` feedback is cleared when the local editor closes, and reopening starts from neutral local-only feedback.
 
 Still gated:
 
@@ -213,7 +214,7 @@ Still gated:
 - Rich schema editor.
 - Rich text editor.
 - Mobile screenshot QA.
-- Close-after-failed-save feedback reset browser coverage.
+- Close-after-success feedback reset browser coverage.
 
 ## Out Of Scope
 

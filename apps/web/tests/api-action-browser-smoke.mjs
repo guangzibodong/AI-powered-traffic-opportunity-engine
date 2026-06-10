@@ -514,6 +514,32 @@ async function assertLocalAssetEditorReopenResetsAfterClose(page, label, expecte
   );
 }
 
+async function assertLocalAssetEditorCloseAfterFailedSaveClearsFeedback(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} first local asset editor`);
+  await editor.locator("input").first().fill("Close failed save title");
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} failing local save button`);
+  await expectVisible(page.getByText("Local save failed"), `${label} local save failure copy`);
+  await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close failed editor button`);
+
+  const closeDeadline = Date.now() + 5_000;
+  while (Date.now() < closeDeadline) {
+    if ((await page.locator(".asset-editor-panel").count()) === 0) break;
+    await delay(50);
+  }
+  assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} failed local asset editor must close`);
+
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} reopen failed local editor`);
+  await expectVisible(page.locator(".asset-editor-panel"), `${label} reopened failed local editor`);
+  const staleFailureCopyCount = await page.getByText("Local save failed").count();
+  assert(staleFailureCopyCount === 0, `${label} stale local save failure feedback must clear after close`);
+  await expectVisible(
+    page.getByText("Only local draft fields are saved."),
+    `${label} reopened editor neutral local-only feedback`
+  );
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -2566,6 +2592,92 @@ async function runSmoke() {
       `Reopening local editor after close issued unsafe asset write requests: ${JSON.stringify(reopenResetWriteRequests)}`
     );
     await reopenResetAssetPage.close();
+
+    const closeFailedAssetPage = await context.newPage();
+    const closeFailedAssetRequests = [];
+    closeFailedAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        closeFailedAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await closeFailedAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_close_failed",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_close_failed",
+                title: "Close failed patch candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await closeFailedAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_close_failed`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        await route.fulfill({
+          contentType: "application/json",
+          status: 500,
+          body: JSON.stringify({ detail: "close failed local save fixture failure" })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await closeFailedAssetPage.goto(webUrl);
+    await clickUnique(closeFailedAssetPage.getByRole("button", { name: "EN" }), "close failed asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(closeFailedAssetPage, 1, "close failed asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_close_failed",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Close failed patch candidate"
+      }
+    ]);
+    await assertLocalAssetEditorCloseAfterFailedSaveClearsFeedback(
+      closeFailedAssetPage,
+      "close failed asset workspace"
+    );
+    const closeFailedPatchRequests = closeFailedAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_close_failed`)
+    );
+    assert(
+      closeFailedPatchRequests.length === 1,
+      `Close-after-failed-save should issue exactly one local PATCH, got ${JSON.stringify(closeFailedAssetRequests)}`
+    );
+    const unsafeCloseFailedRequests = closeFailedAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_close_failed`))
+    );
+    assert(
+      unsafeCloseFailedRequests.length === 0,
+      `Close-after-failed-save issued unsafe requests: ${JSON.stringify(unsafeCloseFailedRequests)}`
+    );
+    await closeFailedAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
