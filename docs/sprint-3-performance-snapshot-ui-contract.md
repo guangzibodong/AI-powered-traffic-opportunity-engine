@@ -81,6 +81,7 @@ Implemented foundation:
 - Frontend view model exposes `PerformanceSnapshotPreview` with `externalWriteAllowed: false` and `safetyScope: "local_imported_gsc_only"`.
 - Visible workbench panel renders local imported GSC snapshot metrics with compact read-only safety diagnostics.
 - Browser smoke verifies the panel reads `/performance` exactly once with GET, shows `Local imported GSC only`, renders imported clicks, impressions, CTR, position, and coverage, and exposes no controls, links, credential fields, refresh, sync, publish, draft, or commerce-write copy.
+- Browser smoke verifies empty and unavailable states expose stable `data-performance-empty-state-key` diagnostics while keeping `/performance` GET-only and free of refresh, sync, credential, publish, draft, and commerce-write controls.
 
 Still gated:
 

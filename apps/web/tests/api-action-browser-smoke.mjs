@@ -330,6 +330,85 @@ async function waitForPerformanceSnapshotState(performancePanel, expectedState, 
   );
 }
 
+async function assertPerformanceSnapshotEmptyStateIsReadOnly(page, label, expectedState, expectedEmptyStateKey, expectedCopy) {
+  const performancePanel = page.locator(".performance-snapshot-panel");
+  await expectVisible(performancePanel, `${label} performance snapshot panel`);
+  await waitForPerformanceSnapshotState(performancePanel, expectedState, 0, label);
+
+  const safetyScope = await performancePanel.getAttribute("data-safety-scope");
+  const externalWriteAllowed = await performancePanel.getAttribute("data-external-write-allowed");
+  assert(
+    safetyScope === "local_imported_gsc_only",
+    `${label} performance snapshot panel must stay local imported GSC only`
+  );
+  assert(externalWriteAllowed === "false", `${label} performance snapshot panel must keep external writes false`);
+
+  const emptyRow = performancePanel.locator("[data-performance-empty-state='true']");
+  await expectVisible(emptyRow, `${label} performance empty-state row`);
+  const emptyStateKey = await emptyRow.getAttribute("data-performance-empty-state-key");
+  assert(
+    emptyStateKey === expectedEmptyStateKey,
+    `${label} performance empty-state key mismatch: expected ${expectedEmptyStateKey}, got ${emptyStateKey ?? "missing"}`
+  );
+  await expectVisible(performancePanel.getByText(expectedCopy), `${label} performance empty-state copy`);
+
+  const metricCount = await performancePanel.locator("[data-performance-metric]").count();
+  assert(metricCount === 0, `${label} performance empty state must not render populated metric rows`);
+
+  const interactiveSelector = [
+    "button",
+    "a",
+    "form",
+    "input",
+    "select",
+    "textarea",
+    "[href]",
+    "[role='button']",
+    "[role='link']"
+  ].join(", ");
+  const interactiveCount = await performancePanel.locator(interactiveSelector).count();
+  assert(interactiveCount === 0, `${label} performance empty state must not render controls or navigation`);
+
+  const performancePanelText = ((await performancePanel.textContent()) ?? "").toLowerCase();
+  const forbiddenCopyPatterns = [
+    /\brefresh\b/,
+    /\bsync\b/,
+    /\bconnect\b/,
+    /\boauth\b/,
+    /\bcredential\b/,
+    /\bpublish\b/,
+    /\bdraft\b/,
+    /\bcommerce\b/,
+    /\btoken\b/,
+    /\bsecret\b/,
+    /\bpassword\b/
+  ];
+  for (const pattern of forbiddenCopyPatterns) {
+    assert(!pattern.test(performancePanelText), `${label} performance empty state exposes unsafe copy: ${pattern}`);
+  }
+}
+
+function assertPerformanceSnapshotRequestsReadOnly(requests, expectedReadCount, label) {
+  const performanceSnapshotReads = requests.filter(
+    (request) => request.method === "GET" && request.url.endsWith(`/api/stores/${storeId}/performance`)
+  );
+  assert(
+    performanceSnapshotReads.length === expectedReadCount,
+    `${label} performance snapshot endpoint GET count mismatch: expected ${expectedReadCount}, got ${JSON.stringify(
+      requests
+    )}`
+  );
+  const unsafePerformanceSnapshotRequests = requests.filter((request) => request.method !== "GET");
+  assert(
+    unsafePerformanceSnapshotRequests.length === 0,
+    `${label} performance snapshot endpoint must stay GET-only: ${JSON.stringify(unsafePerformanceSnapshotRequests)}`
+  );
+  assert(
+    !requests.some((request) => request.url.includes("/performance/refresh")),
+    `${label} performance snapshot UI must not request refresh routes: ${JSON.stringify(requests)}`
+  );
+}
+
 async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, label, expectedAssets = []) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel`);
@@ -2415,22 +2494,77 @@ async function runSmoke() {
       unsafeAssetRequests.length === 0,
       `Asset workspace endpoint must stay read-only in UI loading: ${JSON.stringify(unsafeAssetRequests)}`
     );
-    const performanceSnapshotReads = performanceSnapshotRequests.filter(
-      (request) => request.method === "GET" && request.url.endsWith(`/api/stores/${storeId}/performance`)
+    assertPerformanceSnapshotRequestsReadOnly(performanceSnapshotRequests, 1, "initial");
+
+    const emptyPerformancePage = await context.newPage();
+    const emptyPerformanceRequests = [];
+    emptyPerformancePage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/performance`)) {
+        emptyPerformanceRequests.push({ method: request.method(), url });
+      }
+    });
+    await emptyPerformancePage.route(`**/api/stores/${storeId}/performance`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/performance`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            blocked_capabilities: ["real_gsc_oauth", "wordpress_writes", "woocommerce_writes", "live_publish"],
+            external_write_allowed: false,
+            mode: "performance_snapshots",
+            safety_scope: "local_imported_gsc_only",
+            snapshots: [],
+            store_id: storeId,
+            summary: { clicks: 0, ctr: 0, impressions: 0, position: 0, snapshot_count: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await emptyPerformancePage.goto(webUrl);
+    await clickUnique(emptyPerformancePage.getByRole("button", { name: "EN" }), "empty performance language switcher");
+    await assertPerformanceSnapshotEmptyStateIsReadOnly(
+      emptyPerformancePage,
+      "empty performance",
+      "empty",
+      "no_imported_gsc_snapshot",
+      "No imported GSC snapshot yet"
     );
-    assert(
-      performanceSnapshotReads.length === 1,
-      `Performance snapshot endpoint must be read exactly once with GET: ${JSON.stringify(performanceSnapshotRequests)}`
+    assertPerformanceSnapshotRequestsReadOnly(emptyPerformanceRequests, 1, "empty performance");
+    await emptyPerformancePage.close();
+
+    const unavailablePerformancePage = await context.newPage();
+    const unavailablePerformanceRequests = [];
+    unavailablePerformancePage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/performance`)) {
+        unavailablePerformanceRequests.push({ method: request.method(), url });
+      }
+    });
+    await unavailablePerformancePage.route(`**/api/stores/${storeId}/performance`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/performance`)) {
+        await route.abort("failed");
+        return;
+      }
+
+      await route.continue();
+    });
+    await unavailablePerformancePage.goto(webUrl);
+    await clickUnique(
+      unavailablePerformancePage.getByRole("button", { name: "EN" }),
+      "unavailable performance language switcher"
     );
-    const unsafePerformanceSnapshotRequests = performanceSnapshotRequests.filter((request) => request.method !== "GET");
-    assert(
-      unsafePerformanceSnapshotRequests.length === 0,
-      `Performance snapshot endpoint must stay GET-only: ${JSON.stringify(unsafePerformanceSnapshotRequests)}`
+    await assertPerformanceSnapshotEmptyStateIsReadOnly(
+      unavailablePerformancePage,
+      "unavailable performance",
+      "unavailable",
+      "performance_snapshots_unavailable",
+      "Performance snapshots unavailable"
     );
-    assert(
-      !performanceSnapshotRequests.some((request) => request.url.includes("/performance/refresh")),
-      `Performance snapshot UI must not request refresh routes: ${JSON.stringify(performanceSnapshotRequests)}`
-    );
+    assertPerformanceSnapshotRequestsReadOnly(unavailablePerformanceRequests, 1, "unavailable performance");
+    await unavailablePerformancePage.close();
 
     const populatedAssetPage = await context.newPage();
     const populatedAssetRequests = [];

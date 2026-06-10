@@ -1137,6 +1137,10 @@ function PerformanceSnapshotPanel({
   performanceSnapshots: PerformanceSnapshotState;
 }) {
   const primarySnapshot = performanceSnapshots.snapshots[0] ?? null;
+  const performanceEmptyStateKey =
+    performanceSnapshots.availability === "unavailable"
+      ? "performance_snapshots_unavailable"
+      : "no_imported_gsc_snapshot";
   const blockedCapabilities =
     performanceSnapshots.blockedCapabilities.length > 0
       ? performanceSnapshots.blockedCapabilities
@@ -1242,7 +1246,11 @@ function PerformanceSnapshotPanel({
             </div>
           </>
         ) : (
-          <div className="kv-row" data-performance-empty-state="true">
+          <div
+            className="kv-row"
+            data-performance-empty-state="true"
+            data-performance-empty-state-key={performanceEmptyStateKey}
+          >
             <span>Snapshot</span>
             <strong>
               {performanceSnapshots.availability === "unavailable" ? copy.unavailable : copy.empty}

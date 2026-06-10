@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 read-only performance snapshot UI panel is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 performance snapshot empty/unavailable diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -218,6 +218,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-FE-050 | 184 | done | Frontend Product Engineer / QA Lead | Add frontend performance snapshot client contract. | Frontend API client and view-model adapters expose read-only local performance snapshots with safety markers and no refresh execution, credential, WordPress draft/page update, publish, sync, or commerce-write controls. |
 | TASK-S3-PM-051 | 185 | done | Product Manager / UI Systems Engineer / QA Lead | Plan read-only performance snapshot UI contract. | Documentation defines the future local-only performance panel, allowed snapshot fields, forbidden refresh/sync/credential/publish/commerce controls, and required browser gates before UI rendering. |
 | TASK-S3-FE-052 | 186 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only performance snapshot UI panel. | API mode reads local performance snapshots, renders a compact read-only panel with safe imported GSC metrics and safety markers, and exposes no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
+| TASK-S3-QA-053 | 187 | done | Frontend Product Engineer / QA Lead | Add performance snapshot empty/unavailable DOM diagnostics. | Browser smoke verifies empty and unavailable performance snapshot panel states expose stable local-only DOM diagnostics, issue no non-GET performance requests, and render no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -582,6 +583,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Frontend performance snapshot client contract is verified by fixture and static contract tests proving `getPerformanceSnapshots` is GET-only, performance previews clamp external writes, and raw live/source fields are hidden.
 - Read-only performance snapshot UI contract is verified in `docs/sprint-3-performance-snapshot-ui-contract.md`, keeping visible performance work gated behind browser checks and forbidding refresh, sync, credential, WordPress, publish, and commerce-write controls.
 - Read-only performance snapshot UI panel is verified by browser smoke coverage that reads `/performance` exactly once with GET, renders local imported GSC metrics, exposes local-only safety diagnostics, and keeps refresh, sync, credential, WordPress draft/page update, publish, navigation, and commerce-write controls absent.
+- Performance snapshot empty/unavailable diagnostics are verified by red-green browser smoke coverage that first failed on a missing `data-performance-empty-state-key`, then passed with stable empty and unavailable keys while keeping performance reads GET-only and free of refresh, sync, credential, draft, publish, navigation, and commerce-write controls.
 
 ## Completion Rule
 
