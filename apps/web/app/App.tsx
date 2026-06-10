@@ -692,6 +692,7 @@ export function App() {
       content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
       editor_note?: string;
       faq_items?: Array<{ answer: string; question: string }>;
+      internal_links?: string[];
       meta_description?: string;
       meta_title?: string;
       slug?: string;
@@ -946,6 +947,7 @@ function TrafficOperationsPage({
       content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
       editor_note?: string;
       faq_items?: Array<{ answer: string; question: string }>;
+      internal_links?: string[];
       meta_description?: string;
       meta_title?: string;
       slug?: string;
@@ -1899,6 +1901,7 @@ function LocalAssetEditor({
       content_blocks?: Array<{ body?: string; heading?: string; items?: string[]; type: "section" }>;
       editor_note?: string;
       faq_items?: Array<{ answer: string; question: string }>;
+      internal_links?: string[];
       meta_description?: string;
       meta_title?: string;
       slug?: string;
@@ -1924,6 +1927,7 @@ function LocalAssetEditor({
     qaChecks: locale === "zh" ? "QA 检查" : "QA checks",
     qaPending: locale === "zh" ? "待处理" : "pending",
     qaReadiness: locale === "zh" ? "QA 就绪状态" : "QA readiness",
+    internalLinkReference: locale === "zh" ? "内部链接引用" : "Internal link reference",
     saveLocalDraft: locale === "zh" ? "保存本地草稿" : "Save local draft",
     resetLocalChanges: locale === "zh" ? "重置本地修改" : "Reset local changes",
     slug: locale === "zh" ? "Slug" : "Slug",
@@ -1941,6 +1945,7 @@ function LocalAssetEditor({
   const [sectionBody, setSectionBody] = useState("");
   const [faqQuestion, setFaqQuestion] = useState("");
   const [faqAnswer, setFaqAnswer] = useState("");
+  const [internalLinkReference, setInternalLinkReference] = useState("");
   const [editorNote, setEditorNote] = useState("");
   const isSaving = feedback?.kind === "pending";
   const editorSaveState = isSaving ? "pending" : feedback?.kind === "saved" ? "saved" : feedback?.kind === "failed" ? "failed" : "idle";
@@ -1952,6 +1957,7 @@ function LocalAssetEditor({
     structured_section: sectionBody !== "",
     faq_question: faqQuestion !== "",
     faq_answer: faqAnswer !== "",
+    internal_link_reference: internalLinkReference !== "",
     editor_note: editorNote !== ""
   };
   const editorDirtyFieldKeys = (Object.keys(editorFieldDirtyStates) as Array<keyof typeof editorFieldDirtyStates>).filter(
@@ -1964,7 +1970,17 @@ function LocalAssetEditor({
   const editorFieldDirtyState = (field: keyof typeof editorFieldDirtyStates) =>
     editorFieldDirtyStates[field] ? "dirty" : "clean";
   const editorFieldState = (value: string) => (value.trim().length > 0 ? "filled" : "empty");
-  const editorFieldValues = [title, slug, metaTitle, metaDescription, sectionBody, faqQuestion, faqAnswer, editorNote];
+  const editorFieldValues = [
+    title,
+    slug,
+    metaTitle,
+    metaDescription,
+    sectionBody,
+    faqQuestion,
+    faqAnswer,
+    internalLinkReference,
+    editorNote
+  ];
   const editorFieldCount = editorFieldValues.length;
   const editorFilledFieldCount = editorFieldValues.filter((value) => value.trim().length > 0).length;
   const editorEmptyFieldCount = editorFieldCount - editorFilledFieldCount;
@@ -1987,6 +2003,7 @@ function LocalAssetEditor({
     setSectionBody("");
     setFaqQuestion("");
     setFaqAnswer("");
+    setInternalLinkReference("");
     setEditorNote("");
   }, [asset.id, asset.title, editorDefaultSlug]);
 
@@ -1998,6 +2015,7 @@ function LocalAssetEditor({
     setSectionBody("");
     setFaqQuestion("");
     setFaqAnswer("");
+    setInternalLinkReference("");
     setEditorNote("");
   }
 
@@ -2114,6 +2132,7 @@ function LocalAssetEditor({
               faqQuestion || faqAnswer
                 ? [{ answer: faqAnswer, question: faqQuestion }]
                 : undefined,
+            internal_links: internalLinkReference ? [internalLinkReference] : undefined,
             meta_description: metaDescription || undefined,
             meta_title: metaTitle || undefined,
             slug,
@@ -2186,6 +2205,18 @@ function LocalAssetEditor({
           >
             <span>{locale === "zh" ? "FAQ 回答" : "FAQ answer"}</span>
             <textarea value={faqAnswer} onChange={(event) => setFaqAnswer(event.target.value)} />
+          </label>
+        </div>
+        <div className="asset-editor-internal-link-draft" data-asset-editor-internal-link-draft="true">
+          <label
+            data-asset-editor-field="true"
+            data-asset-editor-field-dirty-state={editorFieldDirtyState("internal_link_reference")}
+            data-asset-editor-field-key="internal_link_reference"
+            data-asset-editor-field-state={editorFieldState(internalLinkReference)}
+            data-asset-editor-internal-link-reference="true"
+          >
+            <span>{copy.internalLinkReference}</span>
+            <input value={internalLinkReference} onChange={(event) => setInternalLinkReference(event.target.value)} />
           </label>
         </div>
         <label
