@@ -683,6 +683,54 @@ async function assertLocalAssetEditorCrossAssetFeedbackIsolation(
   assert(!(await saveButton.isDisabled()), `${label} second asset save button must remain enabled`);
 }
 
+async function assertLocalAssetEditorSecondAssetSaveIsolation(
+  page,
+  label,
+  { firstAssetId, secondAssetId, secondSavedTitle, secondTitle }
+) {
+  const firstRow = page.locator(`[data-asset-id='${firstAssetId}']`);
+  const secondRow = page.locator(`[data-asset-id='${secondAssetId}']`);
+  await clickUnique(firstRow.getByRole("button", { name: "Review local draft" }), `${label} first asset review entry`);
+  const firstEditor = page.locator(".asset-editor-panel");
+  await expectVisible(firstEditor, `${label} first asset editor`);
+  await firstEditor.locator("input").first().fill("First asset delayed save before second save");
+  await clickUnique(firstEditor.getByRole("button", { name: "Save local draft" }), `${label} first asset delayed save`);
+  await expectVisible(firstEditor.getByRole("button", { name: "Saving local draft" }), `${label} first asset pending save copy`);
+
+  await clickUnique(secondRow.getByRole("button", { name: "Review local draft" }), `${label} second asset review entry`);
+  const secondEditor = page.locator(".asset-editor-panel");
+  const switchDeadline = Date.now() + 5_000;
+  let secondEditorAssetId = await secondEditor.getAttribute("data-asset-id");
+  while (Date.now() < switchDeadline && secondEditorAssetId !== secondAssetId) {
+    await delay(50);
+    secondEditorAssetId = await secondEditor.getAttribute("data-asset-id");
+  }
+  await expectVisible(secondEditor, `${label} second asset editor`);
+  assert(secondEditorAssetId === secondAssetId, `${label} expected second editor asset ${secondAssetId}, got ${secondEditorAssetId}`);
+  let secondEditorTitle = await secondEditor.locator("input").first().inputValue();
+  const titleDeadline = Date.now() + 5_000;
+  while (Date.now() < titleDeadline && secondEditorTitle !== secondTitle) {
+    await delay(50);
+    secondEditorTitle = await secondEditor.locator("input").first().inputValue();
+  }
+  assert(secondEditorTitle === secondTitle, `${label} second editor title mismatch: expected ${secondTitle}, got ${secondEditorTitle}`);
+
+  await secondEditor.locator("input").first().fill(secondSavedTitle);
+  await clickUnique(secondEditor.getByRole("button", { name: "Save local draft" }), `${label} second asset save button`);
+  await expectVisible(page.getByText("Local draft saved"), `${label} second asset local save success copy`);
+  const activeEditorAssetId = await secondEditor.getAttribute("data-asset-id");
+  assert(activeEditorAssetId === secondAssetId, `${label} second asset must remain selected after save`);
+  const activeEditorTitle = await secondEditor.locator("input").first().inputValue();
+  assert(
+    activeEditorTitle === secondSavedTitle,
+    `${label} second editor saved title mismatch: expected ${secondSavedTitle}, got ${activeEditorTitle}`
+  );
+  assert(
+    (await page.getByText("Local save failed").count()) === 0,
+    `${label} second asset save must not show stale failure feedback`
+  );
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -3329,6 +3377,168 @@ async function runSmoke() {
       `Cross-asset isolation issued unsafe requests: ${JSON.stringify(unsafeCrossAssetRequests)}`
     );
     await crossAssetPage.close();
+
+    const secondAssetSavePage = await context.newPage();
+    const secondAssetSaveRequests = [];
+    const secondAssetSavedTitle = "Second asset isolated local save title";
+    secondAssetSavePage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        secondAssetSaveRequests.push({ method: request.method(), url });
+      }
+    });
+    await secondAssetSavePage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_second_save_first",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_second_save_first",
+                title: "Isolation first candidate"
+              },
+              {
+                asset_type: "buying_guide",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "faq" }],
+                external_write_allowed: false,
+                id: "asset_task_second_save_second",
+                qa_checks: [{ key: "geo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_second_save_second",
+                title: "Isolation target candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 2, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await secondAssetSavePage.route(`**/api/stores/${storeId}/assets/asset_task_second_save_first`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        await delay(500);
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_second_save_first",
+              qa_checks: [{ key: "seo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_second_save_first",
+              title: "First asset delayed save before second save"
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await secondAssetSavePage.route(`**/api/stores/${storeId}/assets/asset_task_second_save_second`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        const payload = route.request().postDataJSON();
+        assert(payload.title === secondAssetSavedTitle, "Second asset PATCH must send edited second asset title");
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "buying_guide",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_second_save_second",
+              qa_checks: [{ key: "geo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_second_save_second",
+              title: secondAssetSavedTitle
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await secondAssetSavePage.goto(webUrl);
+    await clickUnique(secondAssetSavePage.getByRole("button", { name: "EN" }), "second asset save language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(secondAssetSavePage, 2, "second asset save workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_second_save_first",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Isolation first candidate"
+      },
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["faq"],
+        id: "asset_task_second_save_second",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Isolation target candidate"
+      }
+    ]);
+    await assertLocalAssetEditorSecondAssetSaveIsolation(secondAssetSavePage, "second asset save workspace", {
+      firstAssetId: "asset_task_second_save_first",
+      secondAssetId: "asset_task_second_save_second",
+      secondSavedTitle: secondAssetSavedTitle,
+      secondTitle: "Isolation target candidate"
+    });
+    const secondAssetFirstPatchRequests = secondAssetSaveRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_second_save_first`)
+    );
+    const secondAssetSecondPatchRequests = secondAssetSaveRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_second_save_second`)
+    );
+    assert(
+      secondAssetFirstPatchRequests.length === 1,
+      `Second-asset isolation should issue one first asset PATCH, got ${JSON.stringify(secondAssetSaveRequests)}`
+    );
+    assert(
+      secondAssetSecondPatchRequests.length === 1,
+      `Second-asset isolation should issue one second asset PATCH, got ${JSON.stringify(secondAssetSaveRequests)}`
+    );
+    const unsafeSecondAssetSaveRequests = secondAssetSaveRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(
+          request.method === "PATCH" &&
+          (request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_second_save_first`) ||
+            request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_second_save_second`))
+        )
+    );
+    assert(
+      unsafeSecondAssetSaveRequests.length === 0,
+      `Second-asset isolation issued unsafe requests: ${JSON.stringify(unsafeSecondAssetSaveRequests)}`
+    );
+    await secondAssetSavePage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
