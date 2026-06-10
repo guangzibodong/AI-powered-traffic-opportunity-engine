@@ -1217,6 +1217,8 @@ function PerformanceSnapshotPanel({
           comparisonSubtitle: "仅本地导入基线",
           comparisonTitle: "前后对比",
           clicks: "点击",
+          comparisonEmpty: "暂无导入的 GSC 对比",
+          comparisonUnavailable: "表现对比不可用",
           coverage: "覆盖",
           delta: "变化",
           deltaPending: "等待本地证据",
@@ -1242,6 +1244,8 @@ function PerformanceSnapshotPanel({
           comparisonSubtitle: "Baseline now, follow-up locked",
           comparisonTitle: "Before / after tracking",
           clicks: "Clicks",
+          comparisonEmpty: "No imported GSC comparison yet",
+          comparisonUnavailable: "Performance comparison unavailable",
           coverage: "Coverage",
           delta: "Delta",
           deltaPending: "Pending local evidence",
@@ -1261,6 +1265,15 @@ function PerformanceSnapshotPanel({
     locale === "zh"
       ? `${primarySnapshot?.queryCount ?? 0} ${copy.queries} / ${primarySnapshot?.pageCount ?? 0} ${copy.pages}`
       : `${primarySnapshot?.queryCount ?? 0} ${copy.queries} / ${primarySnapshot?.pageCount ?? 0} ${copy.pages}`;
+  const performanceComparisonState = primarySnapshot
+    ? "baseline_only"
+    : performanceSnapshots.availability === "unavailable"
+      ? "unavailable"
+      : "empty";
+  const performanceComparisonEmptyStateKey =
+    performanceSnapshots.availability === "unavailable"
+      ? "performance_comparison_unavailable"
+      : "no_imported_gsc_comparison";
 
   return (
     <section
@@ -1331,23 +1344,23 @@ function PerformanceSnapshotPanel({
           </div>
         )}
       </div>
-      {primarySnapshot && (
-        <div
-          className="performance-comparison-panel"
-          data-after-snapshot-id="not_tracked"
-          data-before-snapshot-id={primarySnapshot.id}
-          data-external-write-allowed="false"
-          data-performance-comparison-state="baseline_only"
-          data-safety-scope="local_imported_gsc_only"
-          data-snapshot-count={performanceSnapshots.snapshots.length}
-        >
-          <div className="comparison-heading">
-            <div>
-              <h3>{copy.comparisonTitle}</h3>
-              <p className="muted">{copy.comparisonSubtitle}</p>
-            </div>
-            <span className="status safe">{copy.readOnly}</span>
+      <div
+        className="performance-comparison-panel"
+        data-after-snapshot-id="not_tracked"
+        data-before-snapshot-id={primarySnapshot?.id ?? "none"}
+        data-external-write-allowed="false"
+        data-performance-comparison-state={performanceComparisonState}
+        data-safety-scope="local_imported_gsc_only"
+        data-snapshot-count={performanceSnapshots.snapshots.length}
+      >
+        <div className="comparison-heading">
+          <div>
+            <h3>{copy.comparisonTitle}</h3>
+            <p className="muted">{copy.comparisonSubtitle}</p>
           </div>
+          <span className="status safe">{copy.readOnly}</span>
+        </div>
+        {primarySnapshot ? (
           <div className="kv-list">
             <div className="kv-row" data-performance-comparison-metric="before">
               <span>{copy.before}</span>
@@ -1376,8 +1389,23 @@ function PerformanceSnapshotPanel({
               <strong>{copy.deltaPending}</strong>
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="kv-list">
+            <div
+              className="kv-row"
+              data-performance-comparison-empty-state="true"
+              data-performance-comparison-empty-state-key={performanceComparisonEmptyStateKey}
+            >
+              <span>{copy.comparisonTitle}</span>
+              <strong>
+                {performanceSnapshots.availability === "unavailable"
+                  ? copy.comparisonUnavailable
+                  : copy.comparisonEmpty}
+              </strong>
+            </div>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

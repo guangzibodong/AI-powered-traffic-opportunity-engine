@@ -423,6 +423,45 @@ async function assertPerformanceSnapshotEmptyStateIsReadOnly(page, label, expect
   const metricCount = await performancePanel.locator("[data-performance-metric]").count();
   assert(metricCount === 0, `${label} performance empty state must not render populated metric rows`);
 
+  const comparisonPanel = performancePanel.locator(".performance-comparison-panel");
+  await expectVisible(comparisonPanel, `${label} performance comparison empty-state panel`);
+  const comparisonState = await comparisonPanel.getAttribute("data-performance-comparison-state");
+  const comparisonSafetyScope = await comparisonPanel.getAttribute("data-safety-scope");
+  const comparisonExternalWriteAllowed = await comparisonPanel.getAttribute("data-external-write-allowed");
+  const comparisonSnapshotCount = await comparisonPanel.getAttribute("data-snapshot-count");
+  assert(
+    comparisonState === expectedState,
+    `${label} performance comparison state mismatch: expected ${expectedState}, got ${comparisonState ?? "missing"}`
+  );
+  assert(
+    comparisonSafetyScope === "local_imported_gsc_only",
+    `${label} performance comparison empty state must stay local imported GSC only`
+  );
+  assert(
+    comparisonExternalWriteAllowed === "false",
+    `${label} performance comparison empty state must keep external writes false`
+  );
+  assert(
+    comparisonSnapshotCount === "0",
+    `${label} performance comparison empty-state snapshot count mismatch: expected 0, got ${
+      comparisonSnapshotCount ?? "missing"
+    }`
+  );
+
+  const comparisonEmptyRow = comparisonPanel.locator("[data-performance-comparison-empty-state='true']");
+  await expectVisible(comparisonEmptyRow, `${label} performance comparison empty-state row`);
+  const comparisonEmptyStateKey = await comparisonEmptyRow.getAttribute("data-performance-comparison-empty-state-key");
+  assert(
+    comparisonEmptyStateKey ===
+      (expectedState === "unavailable" ? "performance_comparison_unavailable" : "no_imported_gsc_comparison"),
+    `${label} performance comparison empty-state key mismatch: got ${comparisonEmptyStateKey ?? "missing"}`
+  );
+  const comparisonMetricCount = await comparisonPanel.locator("[data-performance-comparison-metric]").count();
+  assert(
+    comparisonMetricCount === 0,
+    `${label} performance comparison empty state must not render populated comparison metric rows`
+  );
+
   const interactiveSelector = [
     "button",
     "a",
@@ -436,6 +475,11 @@ async function assertPerformanceSnapshotEmptyStateIsReadOnly(page, label, expect
   ].join(", ");
   const interactiveCount = await performancePanel.locator(interactiveSelector).count();
   assert(interactiveCount === 0, `${label} performance empty state must not render controls or navigation`);
+  const comparisonInteractiveCount = await comparisonPanel.locator(interactiveSelector).count();
+  assert(
+    comparisonInteractiveCount === 0,
+    `${label} performance comparison empty state must not render controls or navigation`
+  );
 
   const performancePanelText = ((await performancePanel.textContent()) ?? "").toLowerCase();
   const forbiddenCopyPatterns = [
