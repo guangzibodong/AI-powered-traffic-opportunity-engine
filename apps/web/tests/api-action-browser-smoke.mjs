@@ -275,6 +275,69 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
     );
   }
 
+  const comparisonPanel = performancePanel.locator(".performance-comparison-panel");
+  await expectVisible(comparisonPanel, `${label} performance before/after comparison panel`);
+  const comparisonState = await comparisonPanel.getAttribute("data-performance-comparison-state");
+  const comparisonSafetyScope = await comparisonPanel.getAttribute("data-safety-scope");
+  const comparisonExternalWriteAllowed = await comparisonPanel.getAttribute("data-external-write-allowed");
+  const beforeSnapshotId = await comparisonPanel.getAttribute("data-before-snapshot-id");
+  const afterSnapshotId = await comparisonPanel.getAttribute("data-after-snapshot-id");
+  const comparisonSnapshotCount = await comparisonPanel.getAttribute("data-snapshot-count");
+  assert(
+    comparisonState === "baseline_only",
+    `${label} performance comparison state mismatch: expected baseline_only, got ${comparisonState ?? "missing"}`
+  );
+  assert(
+    comparisonSafetyScope === "local_imported_gsc_only",
+    `${label} performance comparison must declare local imported GSC scope`
+  );
+  assert(
+    comparisonExternalWriteAllowed === "false",
+    `${label} performance comparison must clamp external writes to false`
+  );
+  assert(
+    Boolean(beforeSnapshotId),
+    `${label} performance comparison must expose the imported baseline snapshot id`
+  );
+  assert(
+    afterSnapshotId === "not_tracked",
+    `${label} performance comparison after snapshot id mismatch: expected not_tracked, got ${afterSnapshotId ?? "missing"}`
+  );
+  assert(
+    comparisonSnapshotCount === "1",
+    `${label} performance comparison snapshot count mismatch: expected 1, got ${comparisonSnapshotCount ?? "missing"}`
+  );
+
+  const comparisonText = ((await comparisonPanel.textContent()) ?? "").toLowerCase();
+  for (const expectedCopy of [
+    "before / after tracking",
+    "imported baseline",
+    "follow-up not tracked",
+    "pending local evidence"
+  ]) {
+    assert(
+      comparisonText.includes(expectedCopy),
+      `${label} performance comparison panel must show ${expectedCopy}`
+    );
+  }
+
+  const expectedComparisonMetrics = {
+    after: "Follow-up not tracked",
+    before: "Imported baseline / 28d",
+    clicks: "95 -> follow-up not tracked",
+    delta: "Pending local evidence",
+    impressions: "5,000 -> follow-up not tracked"
+  };
+  for (const [metric, expectedValue] of Object.entries(expectedComparisonMetrics)) {
+    const metricValue = (
+      (await comparisonPanel.locator(`[data-performance-comparison-metric='${metric}'] strong`).textContent()) ?? ""
+    ).trim();
+    assert(
+      metricValue === expectedValue,
+      `${label} performance comparison ${metric} mismatch: expected ${expectedValue}, got ${metricValue}`
+    );
+  }
+
   const interactiveSelector = [
     "button",
     "a",
@@ -290,6 +353,11 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
   assert(
     interactiveCount === 0,
     `${label} performance snapshot panel must not render controls, links, forms, or href navigation`
+  );
+  const comparisonInteractiveCount = await comparisonPanel.locator(interactiveSelector).count();
+  assert(
+    comparisonInteractiveCount === 0,
+    `${label} performance comparison panel must not render controls, links, forms, or href navigation`
   );
 
   const forbiddenCopyPatterns = [

@@ -738,6 +738,27 @@ tr:last-child td {
   padding: 0 2px;
 }
 
+.performance-comparison-panel {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0;
+}
+
+.comparison-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 14px 14px 0;
+}
+
+.comparison-heading h3 {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.25;
+  margin: 0 0 4px;
+}
+
 .kv-list {
   display: grid;
   gap: 9px;

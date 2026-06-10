@@ -1209,9 +1209,17 @@ function PerformanceSnapshotPanel({
     locale === "zh"
       ? {
           averagePosition: "平均排名",
+          after: "之后",
+          afterPending: "后续表现未追踪",
+          baseline: "导入基线",
           blocked: "已禁用",
+          before: "之前",
+          comparisonSubtitle: "仅本地导入基线",
+          comparisonTitle: "前后对比",
           clicks: "点击",
           coverage: "覆盖",
+          delta: "变化",
+          deltaPending: "等待本地证据",
           empty: "暂无导入的 GSC 快照",
           impressions: "曝光",
           pages: "个页面",
@@ -1226,9 +1234,17 @@ function PerformanceSnapshotPanel({
         }
       : {
           averagePosition: "Average position",
+          after: "After",
+          afterPending: "Follow-up not tracked",
+          baseline: "Imported baseline",
           blocked: "Blocked",
+          before: "Before",
+          comparisonSubtitle: "Baseline now, follow-up locked",
+          comparisonTitle: "Before / after tracking",
           clicks: "Clicks",
           coverage: "Coverage",
+          delta: "Delta",
+          deltaPending: "Pending local evidence",
           empty: "No imported GSC snapshot yet",
           impressions: "Impressions",
           pages: "pages",
@@ -1315,6 +1331,53 @@ function PerformanceSnapshotPanel({
           </div>
         )}
       </div>
+      {primarySnapshot && (
+        <div
+          className="performance-comparison-panel"
+          data-after-snapshot-id="not_tracked"
+          data-before-snapshot-id={primarySnapshot.id}
+          data-external-write-allowed="false"
+          data-performance-comparison-state="baseline_only"
+          data-safety-scope="local_imported_gsc_only"
+          data-snapshot-count={performanceSnapshots.snapshots.length}
+        >
+          <div className="comparison-heading">
+            <div>
+              <h3>{copy.comparisonTitle}</h3>
+              <p className="muted">{copy.comparisonSubtitle}</p>
+            </div>
+            <span className="status safe">{copy.readOnly}</span>
+          </div>
+          <div className="kv-list">
+            <div className="kv-row" data-performance-comparison-metric="before">
+              <span>{copy.before}</span>
+              <strong>
+                {copy.baseline} / {primarySnapshot.window}
+              </strong>
+            </div>
+            <div className="kv-row" data-performance-comparison-metric="after">
+              <span>{copy.after}</span>
+              <strong>{copy.afterPending}</strong>
+            </div>
+            <div className="kv-row" data-performance-comparison-metric="impressions">
+              <span>{copy.impressions}</span>
+              <strong>
+                {primarySnapshot.displayImpressions} -&gt; {copy.afterPending.toLowerCase()}
+              </strong>
+            </div>
+            <div className="kv-row" data-performance-comparison-metric="clicks">
+              <span>{copy.clicks}</span>
+              <strong>
+                {primarySnapshot.displayClicks} -&gt; {copy.afterPending.toLowerCase()}
+              </strong>
+            </div>
+            <div className="kv-row" data-performance-comparison-metric="delta">
+              <span>{copy.delta}</span>
+              <strong>{copy.deltaPending}</strong>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

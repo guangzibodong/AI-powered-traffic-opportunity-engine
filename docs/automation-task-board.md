@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 visible asset performance UI is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 read-only before/after performance comparison UI is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -222,6 +222,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-PERF-054 | 188 | done | Backend/API Engineer / QA Lead | Add asset-specific performance matching API foundation. | `GET /assets/{asset_id}/performance` returns local imported GSC snapshots matched to a local asset draft by safe title/slug/meta/query/page tokens, returns 404 for unknown assets, and exposes no refresh, OAuth, credential, WordPress draft/page update, publish, or commerce-write behavior. |
 | TASK-S3-FE-055 | 189 | done | Frontend Product Engineer / QA Lead | Add frontend asset performance client contract. | Frontend API client and view-model adapters expose read-only local asset performance snapshot helpers, encode store/asset ids, clamp external writes and safety scope, and add no refresh, OAuth, credential, WordPress draft/page update, publish, sync, navigation, or commerce-write controls. |
 | TASK-S3-FE-056 | 190 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add visible asset-specific performance UI panel. | Opening a local asset editor reads local asset performance snapshots with GET, renders a compact read-only asset performance panel with local imported GSC metrics and match-scope diagnostics, and exposes no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
+| TASK-S3-FE-057 | 191 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only before/after performance comparison UI. | Performance snapshots render a local-only before/after comparison section that shows imported baseline metrics, clearly marks follow-up metrics as not yet tracked, and exposes no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -590,6 +591,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset-specific performance matching API foundation is verified by red-green backend tests that first failed on the stubbed asset performance route and missing service, then passed with local token-matched imported GSC snapshots, empty unmatched assets, unknown-asset 404s, and no external write capability.
 - Frontend asset performance client contract is verified by red-green contract and fixture tests that first failed on the missing helper and adapter, then passed with encoded GET-only asset performance reads, local-only match-scope clamping, imported GSC source copy, and no refresh, OAuth, credential, draft, publish, sync, navigation, or commerce-write helpers.
 - Visible asset-specific performance UI is verified by red-green static and browser coverage that opens a local asset editor, reads `/assets/{asset_id}/performance` exactly once with GET, renders local imported GSC metrics and `local_asset_query_page_tokens` diagnostics, and keeps refresh, sync, credential, draft, publish, navigation, and commerce-write controls absent.
+- Read-only before/after performance comparison UI is verified by red-green static and browser coverage that first failed on the missing `.performance-comparison-panel`, then passed with imported baseline metrics, after metrics marked as not tracked, stable local-only DOM diagnostics, GET-only performance reads, and no refresh, sync, credential, draft, publish, navigation, or commerce-write controls.
 
 ## Completion Rule
 
