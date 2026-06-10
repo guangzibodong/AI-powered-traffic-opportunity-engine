@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 visible local asset editor dirty-state summary is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor dirty field count diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -258,6 +258,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-090 | 224 | done | Frontend Product Engineer / QA Lead | Add local asset editor field readiness count reconciliation marker. | The visible local asset editor field readiness summary row exposes a read-only reconciliation marker proving filled plus empty equals total and matches editor field count while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-QA-091 | 225 | done | Frontend Product Engineer / QA Lead | Add local asset editor dirty-state diagnostics. | The local asset editor exposes a read-only clean/dirty state for unsaved local field changes across open, edit, save, and refill states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-QA-092 | 226 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add visible local asset editor dirty-state summary. | The local asset editor renders a visible read-only dirty-state summary row for clean and dirty local field states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
+| TASK-S3-QA-093 | 227 | done | Frontend Product Engineer / QA Lead | Add local asset editor dirty field count diagnostics. | The local asset editor exposes read-only dirty field count diagnostics across clean, edited, saved, and refilled states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -662,6 +663,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local asset editor field readiness count reconciliation is verified by red-green static and browser coverage that first failed on missing `data-asset-editor-field-readiness-counts-reconciled`, then passed with a visible readiness row marker proving filled plus empty equals total and matches editor field count across incomplete and fully filled states, plus full backend/frontend/browser verification and no unsafe mutation controls.
 - Local asset editor dirty-state diagnostics are verified by red-green static and browser coverage that first failed on missing `data-asset-editor-dirty-state`, then passed with clean states on open/save and dirty states after local edits/refills, plus full backend/frontend/browser verification and no unsafe mutation controls.
 - Visible local asset editor dirty-state summary is verified by red-green static and browser coverage that first failed on missing `data-asset-editor-dirty-summary`, then passed with visible clean/dirty rows, refreshed desktop/mobile QA screenshots, full backend/frontend/browser verification, and no unsafe mutation controls.
+- Local asset editor dirty field count diagnostics are verified by red-green static and browser coverage that first failed on missing dirty count attributes, then passed with root and visible-summary dirty field counts across clean, edited, saved, and refilled states, plus full backend/frontend/browser verification and no unsafe mutation controls.
 
 ## Completion Rule
 
