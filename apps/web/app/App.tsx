@@ -1773,6 +1773,7 @@ function AssetPerformancePanel({
         data-after-snapshot-id="not_tracked"
         data-asset-id={assetId}
         data-asset-performance-comparison-blocked-capability-count={blockedCapabilities.length}
+        data-asset-performance-comparison-snapshot-count={primarySnapshot ? 1 : 0}
         data-asset-performance-comparison-state={assetPerformanceComparisonState}
         data-before-snapshot-id={primarySnapshot?.id ?? "none"}
         data-external-write-allowed="false"

@@ -584,6 +584,7 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
   const comparisonMatchScope = await comparisonPanel.getAttribute("data-match-scope");
   const beforeSnapshotId = await comparisonPanel.getAttribute("data-before-snapshot-id");
   const afterSnapshotId = await comparisonPanel.getAttribute("data-after-snapshot-id");
+  const comparisonSnapshotCount = await comparisonPanel.getAttribute("data-asset-performance-comparison-snapshot-count");
   const comparisonBlockedCapabilityCount = Number(
     await comparisonPanel.getAttribute("data-asset-performance-comparison-blocked-capability-count")
   );
@@ -608,6 +609,10 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
   assert(
     afterSnapshotId === "not_tracked",
     `${label} asset comparison after snapshot id mismatch: expected not_tracked, got ${afterSnapshotId ?? "missing"}`
+  );
+  assert(
+    comparisonSnapshotCount === "1",
+    `${label} asset comparison snapshot count mismatch: expected 1, got ${comparisonSnapshotCount ?? "missing"}`
   );
   assert(
     comparisonBlockedCapabilityCount === blockedCapabilityCount,
@@ -721,6 +726,7 @@ async function assertAssetPerformanceEmptyStateIsReadOnly(page, label, assetId, 
   const comparisonMatchScope = await comparisonPanel.getAttribute("data-match-scope");
   const beforeSnapshotId = await comparisonPanel.getAttribute("data-before-snapshot-id");
   const afterSnapshotId = await comparisonPanel.getAttribute("data-after-snapshot-id");
+  const comparisonSnapshotCount = await comparisonPanel.getAttribute("data-asset-performance-comparison-snapshot-count");
   const comparisonBlockedCapabilityCount = Number(
     await comparisonPanel.getAttribute("data-asset-performance-comparison-blocked-capability-count")
   );
@@ -748,6 +754,12 @@ async function assertAssetPerformanceEmptyStateIsReadOnly(page, label, assetId, 
   assert(
     afterSnapshotId === "not_tracked",
     `${label} asset comparison empty after snapshot mismatch: expected not_tracked, got ${afterSnapshotId ?? "missing"}`
+  );
+  assert(
+    comparisonSnapshotCount === "0",
+    `${label} asset comparison empty snapshot count mismatch: expected 0, got ${
+      comparisonSnapshotCount ?? "missing"
+    }`
   );
   assert(
     comparisonBlockedCapabilityCount === blockedCapabilityCount,

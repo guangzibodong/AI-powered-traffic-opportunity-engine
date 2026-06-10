@@ -331,6 +331,10 @@ assert(
   "Asset performance comparison UI must expose stable blocked capability count diagnostics"
 );
 assert(
+  app.includes("data-asset-performance-comparison-snapshot-count"),
+  "Asset performance comparison UI must expose stable snapshot count diagnostics"
+);
+assert(
   app.includes("data-asset-performance-comparison-state"),
   "Asset performance comparison UI must expose stable local-only state diagnostics"
 );
