@@ -1929,6 +1929,9 @@ function LocalAssetEditor({
   const [sectionBody, setSectionBody] = useState("");
   const [editorNote, setEditorNote] = useState("");
   const isSaving = feedback?.kind === "pending";
+  const editorQaPendingCount = asset.qaChecks.filter((check) => check.status === "pending").length;
+  const editorQaReadinessState =
+    asset.qaChecks.length === 0 ? "not_applicable" : editorQaPendingCount > 0 ? "pending_qa" : "qa_clear";
 
   useEffect(() => {
     setTitle(asset.title);
@@ -1940,7 +1943,14 @@ function LocalAssetEditor({
   }, [asset.id, asset.title]);
 
   return (
-    <section className="panel asset-editor-panel" data-asset-editor="local-only" data-asset-id={asset.id}>
+    <section
+      className="panel asset-editor-panel"
+      data-asset-editor="local-only"
+      data-asset-editor-qa-check-count={asset.qaChecks.length}
+      data-asset-editor-qa-pending-count={editorQaPendingCount}
+      data-asset-editor-qa-readiness-state={editorQaReadinessState}
+      data-asset-id={asset.id}
+    >
       <div className="panel-heading">
         <div>
           <h2>{copy.titleHeading}</h2>

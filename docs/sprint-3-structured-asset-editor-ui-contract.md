@@ -218,6 +218,7 @@ The first local editor slice is implemented with a conservative scope:
 - Frontend asset adapters expose safe local QA check detail previews with allowlisted keys/statuses, clamp unsafe values to `local_review` and `pending`, preserve aggregate counts, and do not expose raw QA metadata, credential-like values, QA mutation controls, WordPress draft creation, publishing, sync, OAuth, or commerce writes.
 - Asset workspace rows render safe QA detail labels with stable `data-asset-qa-detail`, `data-asset-qa-key`, and `data-asset-qa-status` diagnostics while browser smoke keeps unsafe QA metadata and draft/publish/sync controls absent.
 - Local asset editor renders the same safe QA detail labels with editor-specific `data-asset-editor-qa-detail`, `data-asset-editor-qa-key`, and `data-asset-editor-qa-status` diagnostics while keeping QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, and commerce-write controls absent.
+- Local asset editor exposes read-only QA aggregate diagnostics with `data-asset-editor-qa-check-count`, `data-asset-editor-qa-pending-count`, and `data-asset-editor-qa-readiness-state`, derived only from safe local QA previews.
 
 Still gated:
 

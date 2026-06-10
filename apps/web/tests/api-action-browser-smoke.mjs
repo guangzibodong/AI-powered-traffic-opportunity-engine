@@ -1112,6 +1112,12 @@ async function assertLocalAssetEditorCanSave(
   await expectVisible(page.getByText(externalWritesCopy), `${label} external-write disabled editor copy`);
   await expectVisible(page.getByText(wordpressBlockedCopy), `${label} WordPress block editor copy`);
   await expectVisible(page.getByText(woocommerceBlockedCopy), `${label} WooCommerce block editor copy`);
+  const editorQaCheckCount = await editor.getAttribute("data-asset-editor-qa-check-count");
+  const editorQaPendingCount = await editor.getAttribute("data-asset-editor-qa-pending-count");
+  const editorQaReadinessState = await editor.getAttribute("data-asset-editor-qa-readiness-state");
+  assert(editorQaCheckCount !== null, `${label} editor must expose QA check count diagnostics`);
+  assert(editorQaPendingCount !== null, `${label} editor must expose QA pending count diagnostics`);
+  assert(editorQaReadinessState !== null, `${label} editor must expose QA readiness diagnostics`);
   const qaDetailRows = await editor.locator("[data-asset-editor-qa-detail]").evaluateAll((elements) =>
     elements.map((element) => ({
       key: element.getAttribute("data-asset-editor-qa-key"),
@@ -1120,6 +1126,21 @@ async function assertLocalAssetEditorCanSave(
     }))
   );
   assert(qaDetailRows.length > 0, `${label} editor must render read-only QA detail diagnostics`);
+  assert(
+    editorQaCheckCount === String(qaDetailRows.length),
+    `${label} editor QA check count should equal detail rows: expected ${qaDetailRows.length}, got ${editorQaCheckCount}`
+  );
+  const pendingQaRows = qaDetailRows.filter((detail) => detail.status === "pending").length;
+  assert(
+    editorQaPendingCount === String(pendingQaRows),
+    `${label} editor QA pending count should equal pending detail rows: expected ${pendingQaRows}, got ${editorQaPendingCount}`
+  );
+  assert(
+    editorQaReadinessState === (pendingQaRows > 0 ? "pending_qa" : "qa_clear"),
+    `${label} editor QA readiness mismatch: expected ${
+      pendingQaRows > 0 ? "pending_qa" : "qa_clear"
+    }, got ${editorQaReadinessState}`
+  );
   for (const qaDetail of qaDetailRows) {
     assert(qaDetail.key, `${label} editor QA detail must expose a key diagnostic`);
     assert(qaDetail.status, `${label} editor QA detail must expose a status diagnostic`);
