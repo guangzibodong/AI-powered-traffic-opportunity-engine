@@ -279,6 +279,14 @@ assert(
   "Performance comparison UI must expose stable local-only state diagnostics"
 );
 assert(app.includes("asset-performance-panel"), "Asset performance UI must have a stable read-only panel class");
+assert(
+  app.includes("asset-performance-comparison-panel"),
+  "Asset performance UI must expose a stable asset before/after comparison panel class"
+);
+assert(
+  app.includes("data-asset-performance-comparison-state"),
+  "Asset performance comparison UI must expose stable local-only state diagnostics"
+);
 assert(app.includes("Local imported GSC only"), "Performance snapshot UI must expose local-only safety copy");
 assert(app.includes("Catalog products"), "Imported preview UI must distinguish imported catalog product count from graph matches");
 assert(app.includes("Catalog pages"), "Imported preview UI must distinguish imported catalog page count from graph matches");

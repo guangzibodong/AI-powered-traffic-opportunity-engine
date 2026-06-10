@@ -1595,9 +1595,17 @@ function AssetPerformancePanel({
     locale === "zh"
       ? {
           averagePosition: "平均排名",
+          after: "之后",
+          afterPending: "后续表现未追踪",
+          assetBaseline: "导入资产基线",
+          before: "之前",
           blocked: "已禁用",
+          comparisonSubtitle: "仅本地资产匹配基线",
+          comparisonTitle: "资产前后对比",
           clicks: "点击",
           coverage: "覆盖",
+          delta: "变化",
+          deltaPending: "等待本地证据",
           empty: "暂无本地资产表现快照",
           impressions: "曝光",
           matchScope: "匹配范围",
@@ -1613,9 +1621,17 @@ function AssetPerformancePanel({
         }
       : {
           averagePosition: "Average position",
+          after: "After",
+          afterPending: "Follow-up not tracked",
+          assetBaseline: "Imported asset baseline",
+          before: "Before",
           blocked: "Blocked",
+          comparisonSubtitle: "Local asset baseline only",
+          comparisonTitle: "Asset before / after",
           clicks: "Clicks",
           coverage: "Coverage",
+          delta: "Delta",
+          deltaPending: "Pending local evidence",
           empty: "No local asset performance snapshot yet",
           impressions: "Impressions",
           matchScope: "Match scope",
@@ -1700,6 +1716,58 @@ function AssetPerformancePanel({
           </div>
         )}
       </div>
+      {primarySnapshot && (
+        <div
+          className="performance-comparison-panel asset-performance-comparison-panel"
+          data-after-snapshot-id="not_tracked"
+          data-asset-id={assetId}
+          data-asset-performance-comparison-state="baseline_only"
+          data-before-snapshot-id={primarySnapshot.id}
+          data-external-write-allowed="false"
+          data-match-scope={primarySnapshot.matchScope ?? "local_asset_query_page_tokens"}
+          data-safety-scope="local_imported_gsc_only"
+        >
+          <div className="comparison-heading">
+            <div>
+              <h3>{copy.comparisonTitle}</h3>
+              <p className="muted">{copy.comparisonSubtitle}</p>
+            </div>
+            <span className="status safe">{copy.readOnly}</span>
+          </div>
+          <div className="kv-list">
+            <div className="kv-row" data-asset-performance-comparison-metric="before">
+              <span>{copy.before}</span>
+              <strong>
+                {copy.assetBaseline} / {primarySnapshot.window}
+              </strong>
+            </div>
+            <div className="kv-row" data-asset-performance-comparison-metric="after">
+              <span>{copy.after}</span>
+              <strong>{copy.afterPending}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-comparison-metric="match_scope">
+              <span>{copy.matchScope}</span>
+              <strong>{primarySnapshot.matchScope ?? "local_asset_query_page_tokens"}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-comparison-metric="impressions">
+              <span>{copy.impressions}</span>
+              <strong>
+                {primarySnapshot.displayImpressions} -&gt; {copy.afterPending.toLowerCase()}
+              </strong>
+            </div>
+            <div className="kv-row" data-asset-performance-comparison-metric="clicks">
+              <span>{copy.clicks}</span>
+              <strong>
+                {primarySnapshot.displayClicks} -&gt; {copy.afterPending.toLowerCase()}
+              </strong>
+            </div>
+            <div className="kv-row" data-asset-performance-comparison-metric="delta">
+              <span>{copy.delta}</span>
+              <strong>{copy.deltaPending}</strong>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

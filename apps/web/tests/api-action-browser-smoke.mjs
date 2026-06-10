@@ -530,6 +530,68 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
     );
   }
 
+  const comparisonPanel = performancePanel.locator(".asset-performance-comparison-panel");
+  await expectVisible(comparisonPanel, `${label} asset performance before/after comparison panel`);
+  const comparisonAssetId = await comparisonPanel.getAttribute("data-asset-id");
+  const comparisonState = await comparisonPanel.getAttribute("data-asset-performance-comparison-state");
+  const comparisonSafetyScope = await comparisonPanel.getAttribute("data-safety-scope");
+  const comparisonExternalWriteAllowed = await comparisonPanel.getAttribute("data-external-write-allowed");
+  const comparisonMatchScope = await comparisonPanel.getAttribute("data-match-scope");
+  const beforeSnapshotId = await comparisonPanel.getAttribute("data-before-snapshot-id");
+  const afterSnapshotId = await comparisonPanel.getAttribute("data-after-snapshot-id");
+  assert(comparisonAssetId === assetId, `${label} asset comparison id mismatch: expected ${assetId}, got ${comparisonAssetId}`);
+  assert(
+    comparisonState === "baseline_only",
+    `${label} asset comparison state mismatch: expected baseline_only, got ${comparisonState ?? "missing"}`
+  );
+  assert(
+    comparisonSafetyScope === "local_imported_gsc_only",
+    `${label} asset comparison must declare local imported GSC scope`
+  );
+  assert(
+    comparisonExternalWriteAllowed === "false",
+    `${label} asset comparison must clamp external writes to false`
+  );
+  assert(
+    comparisonMatchScope === "local_asset_query_page_tokens",
+    `${label} asset comparison match scope mismatch: got ${comparisonMatchScope ?? "missing"}`
+  );
+  assert(Boolean(beforeSnapshotId), `${label} asset comparison must expose the imported baseline snapshot id`);
+  assert(
+    afterSnapshotId === "not_tracked",
+    `${label} asset comparison after snapshot id mismatch: expected not_tracked, got ${afterSnapshotId ?? "missing"}`
+  );
+
+  const comparisonText = ((await comparisonPanel.textContent()) ?? "").toLowerCase();
+  for (const expectedCopy of [
+    "asset before / after",
+    "imported asset baseline",
+    "follow-up not tracked",
+    "pending local evidence",
+    "local_asset_query_page_tokens"
+  ]) {
+    assert(comparisonText.includes(expectedCopy), `${label} asset comparison panel must show ${expectedCopy}`);
+  }
+
+  const expectedComparisonMetrics = {
+    after: "Follow-up not tracked",
+    before: "Imported asset baseline / 28d",
+    clicks: `${expectedMetrics.clicks} -> follow-up not tracked`,
+    delta: "Pending local evidence",
+    impressions: `${expectedMetrics.impressions} -> follow-up not tracked`,
+    match_scope: "local_asset_query_page_tokens"
+  };
+  for (const [metric, expectedValue] of Object.entries(expectedComparisonMetrics)) {
+    const metricValue = (
+      (await comparisonPanel.locator(`[data-asset-performance-comparison-metric='${metric}'] strong`).textContent()) ??
+      ""
+    ).trim();
+    assert(
+      metricValue === expectedValue,
+      `${label} asset comparison ${metric} mismatch: expected ${expectedValue}, got ${metricValue}`
+    );
+  }
+
   const interactiveSelector = [
     "button",
     "a",
@@ -543,6 +605,8 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
   ].join(", ");
   const interactiveCount = await performancePanel.locator(interactiveSelector).count();
   assert(interactiveCount === 0, `${label} asset performance panel must not render controls or navigation`);
+  const comparisonInteractiveCount = await comparisonPanel.locator(interactiveSelector).count();
+  assert(comparisonInteractiveCount === 0, `${label} asset comparison panel must not render controls or navigation`);
 
   for (const pattern of [
     /\brefresh\b/,
