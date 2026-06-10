@@ -1114,6 +1114,8 @@ async function assertLocalAssetEditorFieldDiagnostics(
   const filledFieldCount = await editor.getAttribute("data-asset-editor-filled-field-count");
   const emptyFieldCount = await editor.getAttribute("data-asset-editor-empty-field-count");
   const countsReconciled = await editor.getAttribute("data-asset-editor-field-counts-reconciled");
+  const fieldReadinessState = await editor.getAttribute("data-asset-editor-field-readiness-state");
+  const expectedReadinessState = expectedEmpty === 0 ? "all_fields_filled" : "incomplete_fields";
   assert(fieldCount === "6", `${label} editor field count mismatch: expected 6, got ${fieldCount ?? "missing"}`);
   assert(
     filledFieldCount === String(expectedFilled),
@@ -1126,6 +1128,12 @@ async function assertLocalAssetEditorFieldDiagnostics(
   assert(
     countsReconciled === "true",
     `${label} editor field count reconciliation mismatch: expected true, got ${countsReconciled ?? "missing"}`
+  );
+  assert(
+    fieldReadinessState === expectedReadinessState,
+    `${label} editor field readiness mismatch: expected ${expectedReadinessState}, got ${
+      fieldReadinessState ?? "missing"
+    }`
   );
   const fieldSummary = editor.locator("[data-asset-editor-field-summary='true']");
   await expectVisible(fieldSummary, `${label} editor field summary diagnostics`);
@@ -1354,6 +1362,23 @@ async function assertLocalAssetEditorCanSave(
     label: `${label} saved`
   });
   return editor;
+}
+
+async function assertLocalAssetEditorFieldReadinessCanBecomeComplete(
+  editor,
+  label,
+  { fieldCopy = "Fields", filledCopy = "filled" } = {}
+) {
+  await editor.locator("textarea").nth(0).fill("Compare portable espresso kits for camp coffee.");
+  await editor.locator("textarea").nth(1).fill("Local section covers buyer objections and comparisons.");
+  await editor.locator("textarea").nth(2).fill("Keep claims grounded in imported evidence.");
+  await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedEmpty: 0,
+    expectedFilled: 6,
+    fieldCopy,
+    filledCopy,
+    label: `${label} complete`
+  });
 }
 
 async function assertLocalAssetEditorSaveFailure(page, label) {
@@ -3489,6 +3514,7 @@ async function runSmoke() {
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     const populatedEditor = await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace");
+    await assertLocalAssetEditorFieldReadinessCanBecomeComplete(populatedEditor, "populated asset workspace");
     await assertAssetPerformancePanelIsReadOnly(populatedAssetPage, "populated asset workspace", "asset_task_002", {
       clicks: "24",
       coverage: "1 queries / 1 pages",
