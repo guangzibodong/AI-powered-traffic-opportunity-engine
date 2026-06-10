@@ -394,6 +394,15 @@ assert(
   app.includes("data-asset-claim-counts-reconciled"),
   "Asset workspace UI must expose stable claim count reconciliation diagnostics"
 );
+assert(
+  app.includes("data-asset-claim-source-count"),
+  "Asset workspace UI must expose stable claim source count diagnostics"
+);
+assert(app.includes("data-asset-claim-source-key"), "Asset workspace UI must expose stable claim source key diagnostics");
+assert(
+  app.includes("data-asset-claim-source-counts-reconciled"),
+  "Asset workspace UI must expose stable claim source count reconciliation diagnostics"
+);
 assert(app.includes("data-visible-asset-claim-count"), "Asset workspace UI must expose visible claim count diagnostics");
 assert(app.includes("data-hidden-asset-claim-count"), "Asset workspace UI must expose hidden claim count diagnostics");
 assert(app.includes("Claim ledger"), "Asset workspace UI must expose English claim ledger copy");
@@ -404,6 +413,18 @@ assert(app.includes("data-asset-editor-claim-count"), "Local asset editor UI mus
 assert(app.includes("data-asset-editor-claim-detail"), "Local asset editor UI must expose stable claim detail diagnostics");
 assert(app.includes("data-asset-editor-claim-id"), "Local asset editor UI must expose stable editor claim id diagnostics");
 assert(app.includes("data-asset-editor-claim-source"), "Local asset editor UI must expose stable editor claim source diagnostics");
+assert(
+  app.includes("data-asset-editor-claim-source-count"),
+  "Local asset editor UI must expose stable claim source count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-claim-source-key"),
+  "Local asset editor UI must expose stable editor claim source key diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-claim-source-counts-reconciled"),
+  "Local asset editor UI must expose stable editor claim source count reconciliation diagnostics"
+);
 assert(
   app.includes("data-asset-editor-qa-check-count"),
   "Local asset editor UI must expose stable QA check count diagnostics"

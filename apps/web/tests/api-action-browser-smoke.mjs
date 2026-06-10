@@ -1428,6 +1428,44 @@ async function assertLocalAssetEditorClaimLedger(editor, expectedClaims, label) 
   }
 }
 
+async function assertLocalAssetEditorClaimSourceDistribution(editor, expectedDistribution, label) {
+  const expectedEntries = Object.entries(expectedDistribution).sort(([left], [right]) => left.localeCompare(right));
+  const expectedTotal = expectedEntries.reduce((sum, [, count]) => sum + count, 0);
+  const sourceCount = Number(await editor.getAttribute("data-asset-editor-claim-source-count"));
+  const totalCount = Number(await editor.getAttribute("data-asset-editor-claim-source-total-count"));
+  const reconciled = await editor.getAttribute("data-asset-editor-claim-source-counts-reconciled");
+  const rows = await editor.locator("[data-asset-editor-claim-source-row='true']").evaluateAll((elements) =>
+    elements.map((element) => ({
+      count: Number(element.getAttribute("data-asset-editor-claim-source-row-count")),
+      source: element.getAttribute("data-asset-editor-claim-source-key"),
+      text: element.textContent ?? ""
+    }))
+  );
+  assert(
+    sourceCount === expectedEntries.length,
+    `${label} editor claim source count mismatch: expected ${expectedEntries.length}, got ${sourceCount}`
+  );
+  assert(
+    totalCount === expectedTotal,
+    `${label} editor claim source total mismatch: expected ${expectedTotal}, got ${totalCount}`
+  );
+  assert(reconciled === "true", `${label} editor claim source reconciliation marker must be true`);
+  assert(
+    rows.length === expectedEntries.length,
+    `${label} editor claim source row count mismatch: expected ${expectedEntries.length}, got ${rows.length}`
+  );
+  assert(
+    rows.reduce((sum, row) => sum + row.count, 0) === expectedTotal,
+    `${label} editor claim source rows must reconcile with total ${expectedTotal}`
+  );
+  for (const [source, count] of expectedEntries) {
+    assert(
+      rows.some((row) => row.source === source && row.count === count && row.text.includes(`${source} ${count}`)),
+      `${label} editor missing claim source distribution row ${source}:${count}`
+    );
+  }
+}
+
 async function assertLocalAssetEditorCanSave(
   page,
   label,
@@ -2506,6 +2544,43 @@ async function assertAssetWorkspaceClaimAggregateReconciles(page, expectedTotal,
     visibleClaimCount + hiddenClaimCount === totalClaimCount,
     `${label} visible plus hidden claims must equal total claims`
   );
+}
+
+async function assertAssetWorkspaceClaimSourceDistribution(page, expectedDistribution, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for claim source diagnostics`);
+  const expectedEntries = Object.entries(expectedDistribution).sort(([left], [right]) => left.localeCompare(right));
+  const expectedTotal = expectedEntries.reduce((sum, [, count]) => sum + count, 0);
+  const sourceCount = Number(await assetPanel.getAttribute("data-asset-claim-source-count"));
+  const totalCount = Number(await assetPanel.getAttribute("data-asset-claim-source-total-count"));
+  const reconciled = await assetPanel.getAttribute("data-asset-claim-source-counts-reconciled");
+  const rows = await assetPanel.locator("[data-asset-claim-source-row='true']").evaluateAll((elements) =>
+    elements.map((element) => ({
+      count: Number(element.getAttribute("data-asset-claim-source-row-count")),
+      source: element.getAttribute("data-asset-claim-source-key"),
+      text: element.textContent ?? ""
+    }))
+  );
+  assert(
+    sourceCount === expectedEntries.length,
+    `${label} claim source count mismatch: expected ${expectedEntries.length}, got ${sourceCount}`
+  );
+  assert(totalCount === expectedTotal, `${label} claim source total mismatch: expected ${expectedTotal}, got ${totalCount}`);
+  assert(reconciled === "true", `${label} claim source reconciliation marker must be true`);
+  assert(
+    rows.length === expectedEntries.length,
+    `${label} claim source row count mismatch: expected ${expectedEntries.length}, got ${rows.length}`
+  );
+  assert(
+    rows.reduce((sum, row) => sum + row.count, 0) === expectedTotal,
+    `${label} claim source rows must reconcile with total ${expectedTotal}`
+  );
+  for (const [source, count] of expectedEntries) {
+    assert(
+      rows.some((row) => row.source === source && row.count === count && row.text.includes(`${source} ${count}`)),
+      `${label} missing claim source distribution row ${source}:${count}`
+    );
+  }
 }
 
 async function assertImportedPreviewState(page, expectedAvailability, expectedWarningCount, label) {
@@ -4066,6 +4141,11 @@ async function runSmoke() {
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     await assertAssetWorkspaceClaimAggregateReconciles(populatedAssetPage, 3, 2, 1, "populated asset workspace");
+    await assertAssetWorkspaceClaimSourceDistribution(
+      populatedAssetPage,
+      { gsc_import: 1, local_evidence: 2 },
+      "populated asset workspace"
+    );
     const populatedEditor = await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace", {
       expectedClaims: [
         {
@@ -4076,6 +4156,11 @@ async function runSmoke() {
         { id: "claim_2", source: "local_evidence", text: "Local claim requires review" }
       ]
     });
+    await assertLocalAssetEditorClaimSourceDistribution(
+      populatedEditor,
+      { gsc_import: 1, local_evidence: 1 },
+      "populated asset workspace"
+    );
     await assertLocalAssetEditorFieldReadinessCanBecomeComplete(populatedEditor, "populated asset workspace");
     await assertAssetPerformancePanelIsReadOnly(populatedAssetPage, "populated asset workspace", "asset_task_002", {
       clicks: "24",

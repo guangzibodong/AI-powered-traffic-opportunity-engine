@@ -1498,6 +1498,16 @@ function AssetWorkspacePanel({
   const visibleClaimTotal = visibleAssets.reduce((sum, asset) => sum + asset.claimCount, 0);
   const hiddenClaimTotal = claimTotal - visibleClaimTotal;
   const claimCountsReconciled = visibleClaimTotal + hiddenClaimTotal === claimTotal;
+  const claimSourceEntries = Object.entries(
+    assetWorkspace.assets.reduce<Record<string, number>>((counts, asset) => {
+      asset.claimLedger.forEach((claim) => {
+        counts[claim.source] = (counts[claim.source] ?? 0) + 1;
+      });
+      return counts;
+    }, {})
+  ).sort(([left], [right]) => left.localeCompare(right));
+  const claimSourceTotal = claimSourceEntries.reduce((sum, [, count]) => sum + count, 0);
+  const claimSourceCountsReconciled = claimSourceTotal === claimTotal;
   const qaCheckTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
   const qaPendingTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaPendingCount, 0);
   const qaReadinessState =
@@ -1515,6 +1525,9 @@ function AssetWorkspacePanel({
       className="panel asset-workspace-panel"
       data-asset-claim-count={claimTotal}
       data-asset-claim-counts-reconciled={claimCountsReconciled}
+      data-asset-claim-source-count={claimSourceEntries.length}
+      data-asset-claim-source-counts-reconciled={claimSourceCountsReconciled}
+      data-asset-claim-source-total-count={claimSourceTotal}
       data-asset-draft-count={assetWorkspace.assets.length}
       data-asset-overflow-count={assetOverflowCount}
       data-asset-qa-readiness-state={qaReadinessState}
@@ -1566,6 +1579,18 @@ function AssetWorkspacePanel({
             <strong>{claimTotal} claims</strong>
           </div>
         )}
+        {claimSourceEntries.length > 0 && (
+          <div
+            className="kv-row"
+            data-asset-claim-source-count={claimSourceEntries.length}
+            data-asset-claim-source-counts-reconciled={claimSourceCountsReconciled}
+            data-asset-claim-source-summary="true"
+            data-asset-claim-source-total-count={claimSourceTotal}
+          >
+            <span>Claim sources</span>
+            <strong>{claimSourceEntries.map(([source, count]) => `${source} ${count}`).join(" / ")}</strong>
+          </div>
+        )}
         {qaCheckTotal > 0 && (
           <div className="kv-row" data-asset-qa-readiness="true">
             <span>QA readiness</span>
@@ -1594,6 +1619,21 @@ function AssetWorkspacePanel({
           <strong>{blockedCapabilities.join(" / ")}</strong>
         </div>
       </div>
+      {claimSourceEntries.length > 0 && (
+        <div className="inline-diagnostics" data-asset-claim-source-list="true">
+          {claimSourceEntries.map(([source, count]) => (
+            <span
+              className="pill muted-pill"
+              data-asset-claim-source-key={source}
+              data-asset-claim-source-row="true"
+              data-asset-claim-source-row-count={count}
+              key={`asset-claim-source-${source}`}
+            >
+              {source} {count}
+            </span>
+          ))}
+        </div>
+      )}
       {visibleAssets.length > 0 ? (
         <div className="mini-list" data-asset-row-aggregate="true" data-visible-asset-count={visibleAssets.length}>
           {visibleAssets.map((asset) => (
@@ -2051,6 +2091,14 @@ function LocalAssetEditor({
   const editorQaPendingCount = asset.qaChecks.filter((check) => check.status === "pending").length;
   const editorQaReadinessState =
     asset.qaChecks.length === 0 ? "not_applicable" : editorQaPendingCount > 0 ? "pending_qa" : "qa_clear";
+  const editorClaimSourceEntries = Object.entries(
+    asset.claimLedger.reduce<Record<string, number>>((counts, claim) => {
+      counts[claim.source] = (counts[claim.source] ?? 0) + 1;
+      return counts;
+    }, {})
+  ).sort(([left], [right]) => left.localeCompare(right));
+  const editorClaimSourceTotal = editorClaimSourceEntries.reduce((sum, [, count]) => sum + count, 0);
+  const editorClaimSourceCountsReconciled = editorClaimSourceTotal === asset.claimCount;
   const editorBlockedCapabilities = [
     { key: "external_writes", label: copy.externalWritesDisabled },
     { key: "wordpress_draft_creation", label: copy.wordpressBlocked },
@@ -2092,6 +2140,9 @@ function LocalAssetEditor({
       className="panel asset-editor-panel"
       data-asset-editor="local-only"
       data-asset-editor-claim-count={asset.claimCount}
+      data-asset-editor-claim-source-count={editorClaimSourceEntries.length}
+      data-asset-editor-claim-source-counts-reconciled={editorClaimSourceCountsReconciled}
+      data-asset-editor-claim-source-total-count={editorClaimSourceTotal}
       data-asset-editor-dirty-field-count={editorDirtyFieldCount}
       data-asset-editor-dirty-field-keys={editorDirtyFieldKeyList}
       data-asset-editor-dirty-field-keys-reconciled={editorDirtyFieldKeysReconciled}
@@ -2165,6 +2216,31 @@ function LocalAssetEditor({
             <span>{copy.claimLedger}</span>
             <strong>{asset.claimCount} claims</strong>
           </div>
+          <div
+            className="kv-row"
+            data-asset-editor-claim-source-count={editorClaimSourceEntries.length}
+            data-asset-editor-claim-source-counts-reconciled={editorClaimSourceCountsReconciled}
+            data-asset-editor-claim-source-summary="true"
+            data-asset-editor-claim-source-total-count={editorClaimSourceTotal}
+          >
+            <span>Claim sources</span>
+            <strong>{editorClaimSourceEntries.map(([source, count]) => `${source} ${count}`).join(" / ")}</strong>
+          </div>
+        </div>
+      )}
+      {editorClaimSourceEntries.length > 0 && (
+        <div className="inline-diagnostics" data-asset-editor-claim-source-list="true">
+          {editorClaimSourceEntries.map(([source, count]) => (
+            <span
+              className="pill muted-pill"
+              data-asset-editor-claim-source-key={source}
+              data-asset-editor-claim-source-row="true"
+              data-asset-editor-claim-source-row-count={count}
+              key={`${asset.id}-editor-claim-source-${source}`}
+            >
+              {source} {count}
+            </span>
+          ))}
         </div>
       )}
       {asset.claimLedger.length > 0 && (
