@@ -1907,6 +1907,8 @@ function LocalAssetEditor({
     close: locale === "zh" ? "关闭" : "Close",
     editorNote: locale === "zh" ? "编辑备注" : "Editor note",
     externalWritesDisabled: locale === "zh" ? "外部写入已关闭" : "External writes disabled",
+    fields: locale === "zh" ? "字段" : "Fields",
+    filled: locale === "zh" ? "已填写" : "filled",
     localDraftOnly: locale === "zh" ? "仅本地草稿" : "Local draft only",
     localOnlySaved: locale === "zh" ? "仅保存本地草稿字段。" : "Only local draft fields are saved.",
     localSaveFailed: locale === "zh" ? "本地保存失败" : "Local save failed",
@@ -1933,6 +1935,10 @@ function LocalAssetEditor({
   const [editorNote, setEditorNote] = useState("");
   const isSaving = feedback?.kind === "pending";
   const editorSaveState = isSaving ? "pending" : feedback?.kind === "saved" ? "saved" : feedback?.kind === "failed" ? "failed" : "idle";
+  const editorFieldValues = [title, slug, metaTitle, metaDescription, sectionBody, editorNote];
+  const editorFieldCount = editorFieldValues.length;
+  const editorFilledFieldCount = editorFieldValues.filter((value) => value.trim().length > 0).length;
+  const editorEmptyFieldCount = editorFieldCount - editorFilledFieldCount;
   const editorQaPendingCount = asset.qaChecks.filter((check) => check.status === "pending").length;
   const editorQaReadinessState =
     asset.qaChecks.length === 0 ? "not_applicable" : editorQaPendingCount > 0 ? "pending_qa" : "qa_clear";
@@ -1955,6 +1961,9 @@ function LocalAssetEditor({
     <section
       className="panel asset-editor-panel"
       data-asset-editor="local-only"
+      data-asset-editor-empty-field-count={editorEmptyFieldCount}
+      data-asset-editor-field-count={editorFieldCount}
+      data-asset-editor-filled-field-count={editorFilledFieldCount}
       data-asset-editor-qa-check-count={asset.qaChecks.length}
       data-asset-editor-qa-pending-count={editorQaPendingCount}
       data-asset-editor-qa-readiness-state={editorQaReadinessState}
@@ -1983,6 +1992,14 @@ function LocalAssetEditor({
             {capability.label}
           </span>
         ))}
+      </div>
+      <div className="kv-list" data-asset-editor-field-summary="true">
+        <div className="kv-row">
+          <span>{copy.fields}</span>
+          <strong>
+            {editorFilledFieldCount}/{editorFieldCount} {copy.filled}
+          </strong>
+        </div>
       </div>
       {asset.qaChecks.length > 0 && (
         <div className="kv-list" data-asset-editor-qa-summary="true">

@@ -419,6 +419,22 @@ assert(
   app.includes("data-asset-editor-save-feedback"),
   "Local asset editor UI must expose stable save feedback diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-field-count"),
+  "Local asset editor UI must expose stable field count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-filled-field-count"),
+  "Local asset editor UI must expose stable filled field count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-empty-field-count"),
+  "Local asset editor UI must expose stable empty field count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-field-summary"),
+  "Local asset editor UI must expose stable visible field summary diagnostics"
+);
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(

@@ -1106,16 +1106,45 @@ async function assertLocalAssetEditorSaveState(editor, expectedState, label) {
   );
 }
 
+async function assertLocalAssetEditorFieldDiagnostics(
+  editor,
+  { expectedEmpty, expectedFilled, fieldCopy = "Fields", filledCopy = "filled", label }
+) {
+  const fieldCount = await editor.getAttribute("data-asset-editor-field-count");
+  const filledFieldCount = await editor.getAttribute("data-asset-editor-filled-field-count");
+  const emptyFieldCount = await editor.getAttribute("data-asset-editor-empty-field-count");
+  assert(fieldCount === "6", `${label} editor field count mismatch: expected 6, got ${fieldCount ?? "missing"}`);
+  assert(
+    filledFieldCount === String(expectedFilled),
+    `${label} editor filled field count mismatch: expected ${expectedFilled}, got ${filledFieldCount ?? "missing"}`
+  );
+  assert(
+    emptyFieldCount === String(expectedEmpty),
+    `${label} editor empty field count mismatch: expected ${expectedEmpty}, got ${emptyFieldCount ?? "missing"}`
+  );
+  const fieldSummary = editor.locator("[data-asset-editor-field-summary='true']");
+  await expectVisible(fieldSummary, `${label} editor field summary diagnostics`);
+  await expectVisible(fieldSummary.getByText(fieldCopy), `${label} visible editor field summary label`);
+  await expectVisible(
+    fieldSummary.getByText(`${expectedFilled}/6 ${filledCopy}`),
+    `${label} visible editor field fill summary`
+  );
+}
+
 async function assertLocalAssetEditorCanSave(
   page,
   label,
   {
     entryName = "Review local draft",
     externalWritesCopy = "External writes disabled",
+    fieldCopy = "Fields",
+    filledCopy = "filled",
     localOnlyCopy = "Local draft only",
     qaChecksCopy = "QA checks",
     qaPendingSuffix = "pending",
     qaReadinessCopy = "QA readiness",
+    savedEmptyFieldCount = 3,
+    savedFilledFieldCount = 3,
     saveName = "Save local draft",
     saveSuccessCopy = "Local draft saved",
     titleValue = "Updated local camping espresso draft",
@@ -1127,6 +1156,13 @@ async function assertLocalAssetEditorCanSave(
   const editor = page.locator(".asset-editor-panel");
   await expectVisible(editor, `${label} local asset editor`);
   await assertLocalAssetEditorSaveState(editor, "idle", `${label} initial`);
+  await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedEmpty: 3,
+    expectedFilled: 3,
+    fieldCopy,
+    filledCopy,
+    label: `${label} initial`
+  });
   await expectVisible(page.getByText(localOnlyCopy), `${label} local-only editor copy`);
   await expectVisible(page.getByText(externalWritesCopy), `${label} external-write disabled editor copy`);
   await expectVisible(page.getByText(wordpressBlockedCopy), `${label} WordPress block editor copy`);
@@ -1249,9 +1285,23 @@ async function assertLocalAssetEditorCanSave(
 
   await editor.locator("input").first().fill(titleValue);
   await editor.locator("textarea").first().fill("Compare portable espresso kits for camp coffee.");
+  await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedEmpty: 2,
+    expectedFilled: 4,
+    fieldCopy,
+    filledCopy,
+    label: `${label} edited`
+  });
   await clickUnique(editor.getByRole("button", { name: saveName }), `${label} local save button`);
   await expectVisible(page.getByText(saveSuccessCopy), `${label} local save success copy`);
   await assertLocalAssetEditorSaveState(editor, "saved", `${label} saved`);
+  await assertLocalAssetEditorFieldDiagnostics(editor, {
+    expectedEmpty: savedEmptyFieldCount,
+    expectedFilled: savedFilledFieldCount,
+    fieldCopy,
+    filledCopy,
+    label: `${label} saved`
+  });
   return editor;
 }
 
@@ -3620,10 +3670,14 @@ async function runSmoke() {
     const mobileEditor = await assertLocalAssetEditorCanSave(mobileAssetPage, "mobile Chinese asset workspace", {
       entryName: "审核本地草稿",
       externalWritesCopy: "外部写入已关闭",
+      fieldCopy: "字段",
+      filledCopy: "已填写",
       localOnlyCopy: "仅本地草稿",
       qaChecksCopy: "QA 检查",
       qaPendingSuffix: "待处理",
       qaReadinessCopy: "QA 就绪状态",
+      savedEmptyFieldCount: 4,
+      savedFilledFieldCount: 2,
       saveName: "保存本地草稿",
       saveSuccessCopy: "本地草稿已保存",
       titleValue: "移动端本地草稿保存验证标题",

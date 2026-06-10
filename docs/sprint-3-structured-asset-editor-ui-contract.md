@@ -222,6 +222,7 @@ The first local editor slice is implemented with a conservative scope:
 - Local asset editor renders a compact visible read-only QA aggregate summary with `data-asset-editor-qa-summary`, `data-asset-editor-qa-readiness`, and `data-asset-editor-qa-checks`, showing bilingual-safe readiness and pending/check copy without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Local asset editor renders a read-only safety strip with `data-asset-editor-safety`, `data-asset-editor-blocked-capability-count`, and `data-asset-editor-blocked-capability-key`, keeping external writes, WordPress draft creation, and WooCommerce writes visible as blocked diagnostics only.
 - Local asset editor renders read-only save-state diagnostics with `data-asset-editor-save-state` and `data-asset-editor-save-feedback`, keeping idle, pending, saved, and failed local save states visible without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
+- Local asset editor renders read-only field fill diagnostics with `data-asset-editor-field-count`, `data-asset-editor-filled-field-count`, `data-asset-editor-empty-field-count`, and `data-asset-editor-field-summary`, keeping draft field completeness visible without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 
 Still gated:
 
