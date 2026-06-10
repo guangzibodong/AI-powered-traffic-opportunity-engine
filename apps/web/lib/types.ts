@@ -135,6 +135,11 @@ export type AuditLogPreview = {
   externalWriteAllowed: false;
 };
 
+export type AssetQaCheckPreview = {
+  key: "seo" | "geo" | "factual_grounding" | "schema" | "local_review";
+  status: "pending" | "passed" | "failed";
+};
+
 export type AssetDraftPreview = {
   assetType: string;
   blockedCapabilities: string[];
@@ -143,6 +148,7 @@ export type AssetDraftPreview = {
   externalWriteAllowed: false;
   id: string;
   qaCheckCount: number;
+  qaChecks: AssetQaCheckPreview[];
   qaPendingCount: number;
   reviewState: string;
   sourceTaskId: string;

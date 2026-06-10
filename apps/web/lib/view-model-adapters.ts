@@ -1,6 +1,7 @@
 import type {
   BoardViewModel,
   AssetDraftPreview,
+  AssetQaCheckPreview,
   AuditLogPreview,
   EvidenceRow,
   ImportedCatalogPreview,
@@ -58,6 +59,14 @@ const sprintOneRules = new Set<SprintOneRuleId>([
 
 const visibleTaskStatuses = new Set<VisibleTaskStatus>(["new", "approved", "rejected", "snoozed"]);
 const catalogHrefDisplayMaxLength = 72;
+const assetQaCheckKeys = new Set<AssetQaCheckPreview["key"]>([
+  "seo",
+  "geo",
+  "factual_grounding",
+  "schema",
+  "local_review"
+]);
+const assetQaCheckStatuses = new Set<AssetQaCheckPreview["status"]>(["pending", "passed", "failed"]);
 
 export function mapApiPlanningToBoard(
   tasksResponse: ApiTasksResponse,
@@ -197,6 +206,7 @@ function mapApiAssetDraftToPreview(
   asset: ApiAssetResponse["asset"],
   workspaceBlockedCapabilities: string[] = []
 ): AssetDraftPreview {
+  const qaChecks = mapAssetQaChecks(asset.qa_checks);
   return {
     assetType: asset.asset_type,
     blockedCapabilities: asset.blocked_capabilities ?? workspaceBlockedCapabilities,
@@ -204,8 +214,9 @@ function mapApiAssetDraftToPreview(
     contentBlockTypes: mapAssetContentBlockTypes(asset.content_blocks),
     externalWriteAllowed: false,
     id: asset.id,
-    qaCheckCount: countAssetQaChecks(asset.qa_checks),
-    qaPendingCount: countPendingAssetQaChecks(asset.qa_checks),
+    qaCheckCount: qaChecks.length,
+    qaChecks,
+    qaPendingCount: qaChecks.filter((check) => check.status === "pending").length,
     reviewState: asset.review_state,
     sourceTaskId: asset.source_task_id,
     title: asset.title
@@ -221,18 +232,21 @@ function mapAssetContentBlockTypes(contentBlocks: unknown[] | undefined): string
   });
 }
 
-function countAssetQaChecks(qaChecks: unknown[] | undefined): number {
-  return Array.isArray(qaChecks) ? qaChecks.filter(isAssetQaCheck).length : 0;
-}
-
-function countPendingAssetQaChecks(qaChecks: unknown[] | undefined): number {
-  if (!Array.isArray(qaChecks)) return 0;
-  return qaChecks.filter((check) => isAssetQaCheck(check) && check.status === "pending").length;
-}
-
-function isAssetQaCheck(check: unknown): check is { status: string } {
-  if (!check || typeof check !== "object" || !("status" in check)) return false;
-  return typeof (check as { status?: unknown }).status === "string";
+function mapAssetQaChecks(qaChecks: unknown[] | undefined): AssetQaCheckPreview[] {
+  if (!Array.isArray(qaChecks)) return [];
+  return qaChecks.flatMap((check) => {
+    if (!check || typeof check !== "object") return [];
+    const rawKey = (check as { key?: unknown }).key;
+    const rawStatus = (check as { status?: unknown }).status;
+    if (typeof rawKey !== "string" && typeof rawStatus !== "string") return [];
+    const key = assetQaCheckKeys.has(rawKey as AssetQaCheckPreview["key"])
+      ? (rawKey as AssetQaCheckPreview["key"])
+      : "local_review";
+    const status = assetQaCheckStatuses.has(rawStatus as AssetQaCheckPreview["status"])
+      ? (rawStatus as AssetQaCheckPreview["status"])
+      : "pending";
+    return [{ key, status }];
+  });
 }
 
 export function mapApiImportedGraphToClusterPreviews(

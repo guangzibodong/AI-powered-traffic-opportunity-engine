@@ -21,8 +21,8 @@ function collectObjectKeys(value) {
   return [];
 }
 
-async function loadApiClientModule() {
-  const source = readFileSync(join(root, "lib/api-client.ts"), "utf8");
+async function loadModule(relativePath) {
+  const source = readFileSync(join(root, relativePath), "utf8");
   const { outputText } = ts.transpileModule(source, {
     compilerOptions: {
       importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove,
@@ -35,7 +35,8 @@ async function loadApiClientModule() {
   return import(`data:text/javascript;base64,${encoded}`);
 }
 
-const apiClient = await loadApiClientModule();
+const apiClient = await loadModule("lib/api-client.ts");
+const adapter = await loadModule("lib/view-model-adapters.ts");
 const fetchCalls = [];
 const apiBaseUrl = "https://api.example.test/base";
 const storeId = "Store A/100%";
@@ -179,5 +180,64 @@ for (const forbidden of ["PUT", "DELETE", "oauth", "sync", "publish", "woocommer
 }
 assert(!("publishWordpressDraft" in apiClient), "API client must not expose WordPress draft publishing");
 assert("updateAsset" in apiClient, "API client must expose safe local asset update after backend QA gates");
+
+const unsafeAssetWorkspacePayload = {
+  assets: [
+    {
+      asset_type: "collection_page",
+      blocked_capabilities: ["wordpress_draft_creation"],
+      content_blocks: [{ type: "section" }],
+      external_write_allowed: true,
+      id: "asset-safe-qa",
+      qa_checks: [
+        { key: "seo", status: "passed" },
+        { key: "geo", status: "pending" },
+        {
+          credential_hint: "token-password-secret",
+          key: "oauth_token",
+          metadata: { api_key: "unsafe-api-key" },
+          status: "published"
+        }
+      ],
+      review_state: "draft_candidate",
+      source_task_id: "task-safe-qa",
+      title: "Safe local QA draft"
+    }
+  ],
+  blocked_capabilities: ["wordpress_draft_creation"],
+  external_write_allowed: true,
+  mode: "asset_draft_workspace",
+  store_id: storeId
+};
+
+const assetPreviews = adapter.mapApiAssetWorkspaceToPreviews(unsafeAssetWorkspacePayload);
+assert(assetPreviews.length === 1, "Asset adapter should map one local asset draft");
+assert(assetPreviews[0].qaCheckCount === 3, "Asset adapter should preserve local QA check counts");
+assert(assetPreviews[0].qaPendingCount === 2, "Asset adapter should count clamped unsafe QA status as pending");
+assert(Array.isArray(assetPreviews[0].qaChecks), "Asset adapter should expose safe local QA check details");
+assert(assetPreviews[0].qaChecks.length === 3, "Asset adapter should preserve QA check detail rows");
+assert(assetPreviews[0].qaChecks[0].key === "seo", "Asset QA detail should preserve allowlisted SEO key");
+assert(assetPreviews[0].qaChecks[0].status === "passed", "Asset QA detail should preserve allowlisted passed status");
+assert(assetPreviews[0].qaChecks[1].key === "geo", "Asset QA detail should preserve allowlisted GEO key");
+assert(assetPreviews[0].qaChecks[1].status === "pending", "Asset QA detail should preserve allowlisted pending status");
+assert(
+  assetPreviews[0].qaChecks[2].key === "local_review",
+  "Asset QA detail should clamp unknown or credential-like QA keys"
+);
+assert(assetPreviews[0].qaChecks[2].status === "pending", "Asset QA detail should clamp unsafe QA statuses");
+assert(assetPreviews[0].externalWriteAllowed === false, "Asset adapter must clamp external writes");
+
+const serializedAssetPreviews = JSON.stringify(assetPreviews);
+for (const forbidden of [
+  "token-password-secret",
+  "unsafe-api-key",
+  "credential_hint",
+  "metadata",
+  "oauth_token",
+  "published",
+  "external_write_allowed"
+]) {
+  assert(!serializedAssetPreviews.includes(forbidden), `Asset QA preview leaked unsafe QA payload field ${forbidden}`);
+}
 
 console.log("Asset API client fixture contract passed");

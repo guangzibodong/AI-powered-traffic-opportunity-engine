@@ -150,12 +150,13 @@ Sprint 3 local/demo capabilities completed:
 1. Local asset workspace safety foundation and local asset candidate persistence from approved demo tasks.
 2. Safe local asset editor for structured local fields, with browser coverage for save, failure, retry, close, stale feedback, and cross-asset isolation states.
 3. Mobile and desktop local editor screenshot artifacts for bilingual responsive QA.
-4. Read-only store performance snapshots from already-imported GSC data.
-5. Read-only selected-asset performance snapshots with local token matching.
-6. Store and asset before/after comparison diagnostics that mark follow-up metrics as not yet tracked.
-7. Stable source, snapshot id, evidence count, query/page count, blocked capability, and empty/unavailable diagnostics.
-8. Local performance refresh preview diagnostics and audit mapping stay preview-only, local, and hidden from executable UI controls.
-9. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
+4. Safe local asset QA check detail mapping with allowlisted keys/statuses and no QA mutation controls.
+5. Read-only store performance snapshots from already-imported GSC data.
+6. Read-only selected-asset performance snapshots with local token matching.
+7. Store and asset before/after comparison diagnostics that mark follow-up metrics as not yet tracked.
+8. Stable source, snapshot id, evidence count, query/page count, blocked capability, and empty/unavailable diagnostics.
+9. Local performance refresh preview diagnostics and audit mapping stay preview-only, local, and hidden from executable UI controls.
+10. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
 
 Current product/engineering ownership:
 

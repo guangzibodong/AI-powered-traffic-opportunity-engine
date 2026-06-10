@@ -63,10 +63,14 @@ assert(adapter.includes("mapApiImportedOpportunitiesToOpportunities"), "adapter 
 assert(adapter.includes("mapApiImportedTasksToTasks"), "adapter must expose imported task preview DTO conversion");
 assert(adapter.includes("automationLevel: \"recommend_only\""), "imported task preview adapter must keep imported previews recommend-only");
 assert(types.includes("AssetDraftPreview"), "types must expose a safe asset draft preview view model");
+assert(types.includes("AssetQaCheckPreview"), "types must expose safe asset QA check previews");
 assert(adapter.includes("mapApiAssetWorkspaceToPreviews"), "adapter must expose asset workspace DTO conversion");
 assert(adapter.includes("mapApiAssetResponseToPreview"), "adapter must expose asset detail DTO conversion");
 assert(adapter.includes("externalWriteAllowed: false"), "asset adapter must clamp external write state to false");
 assert(adapter.includes("blocked_capabilities"), "asset adapter must preserve blocked capability context");
+assert(adapter.includes("mapAssetQaChecks"), "asset adapter must map QA checks through a safe helper");
+assert(adapter.includes("assetQaCheckKeys"), "asset adapter must allowlist asset QA check keys");
+assert(adapter.includes("assetQaCheckStatuses"), "asset adapter must allowlist asset QA check statuses");
 assert(adapter.includes("mapApiPerformanceSnapshotsToPreviews"), "adapter must expose performance snapshot DTO conversion");
 assert(
   adapter.includes("mapApiAssetPerformanceSnapshotsToPreviews"),
@@ -80,10 +84,20 @@ assert(adapter.includes("local_imported_gsc_only"), "performance snapshot adapte
 assert(adapter.includes("local_tracking_preview_only"), "performance refresh preview adapter must clamp to local preview scope");
 const assetDraftPreviewType = readExportedType(types, "AssetDraftPreview");
 assert(assetDraftPreviewType.includes("externalWriteAllowed: false"), "Asset draft preview must keep external write as literal false");
+assert(assetDraftPreviewType.includes("qaChecks: AssetQaCheckPreview[]"), "Asset draft preview must expose safe QA check details");
 for (const forbiddenAssetPreviewField of ["href", "publish", "sync", "credential", "commerce", "wordpressDraft"]) {
   assert(
     !assetDraftPreviewType.toLowerCase().includes(forbiddenAssetPreviewField.toLowerCase()),
     `Asset draft preview must not expose ${forbiddenAssetPreviewField}`
+  );
+}
+const assetQaCheckPreviewType = readExportedType(types, "AssetQaCheckPreview");
+assert(assetQaCheckPreviewType.includes('"local_review"'), "Asset QA check preview must include a safe local review fallback");
+assert(assetQaCheckPreviewType.includes('"pending"'), "Asset QA check preview must expose pending status");
+for (const forbiddenAssetQaField of ["metadata", "credential", "token", "secret", "password", "apiKey", "publish", "sync"]) {
+  assert(
+    !assetQaCheckPreviewType.toLowerCase().includes(forbiddenAssetQaField.toLowerCase()),
+    `Asset QA check preview must not expose ${forbiddenAssetQaField}`
   );
 }
 const performanceSnapshotPreviewType = readExportedType(types, "PerformanceSnapshotPreview");
