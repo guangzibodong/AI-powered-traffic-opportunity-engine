@@ -633,6 +633,56 @@ async function assertLocalAssetEditorDelayedResponseDoesNotRepaintFeedback(page,
   assert(!(await saveButton.isDisabled()), `${label} delayed reopened save button must remain enabled`);
 }
 
+async function assertLocalAssetEditorCrossAssetFeedbackIsolation(
+  page,
+  label,
+  { firstAssetId, secondAssetId, secondTitle }
+) {
+  const firstRow = page.locator(`[data-asset-id='${firstAssetId}']`);
+  const secondRow = page.locator(`[data-asset-id='${secondAssetId}']`);
+  await clickUnique(firstRow.getByRole("button", { name: "Review local draft" }), `${label} first asset review entry`);
+  const firstEditor = page.locator(".asset-editor-panel");
+  await expectVisible(firstEditor, `${label} first asset editor`);
+  await firstEditor.locator("input").first().fill("First asset delayed save title");
+  await clickUnique(firstEditor.getByRole("button", { name: "Save local draft" }), `${label} first asset delayed save`);
+  await expectVisible(firstEditor.getByRole("button", { name: "Saving local draft" }), `${label} first asset pending save copy`);
+
+  await clickUnique(secondRow.getByRole("button", { name: "Review local draft" }), `${label} second asset review entry`);
+  const secondEditor = page.locator(".asset-editor-panel");
+  const switchDeadline = Date.now() + 5_000;
+  let secondEditorAssetId = await secondEditor.getAttribute("data-asset-id");
+  while (Date.now() < switchDeadline && secondEditorAssetId !== secondAssetId) {
+    await delay(50);
+    secondEditorAssetId = await secondEditor.getAttribute("data-asset-id");
+  }
+  await expectVisible(secondEditor, `${label} second asset editor`);
+  assert(secondEditorAssetId === secondAssetId, `${label} expected second editor asset ${secondAssetId}, got ${secondEditorAssetId}`);
+  let secondEditorTitle = await secondEditor.locator("input").first().inputValue();
+  const titleDeadline = Date.now() + 5_000;
+  while (Date.now() < titleDeadline && secondEditorTitle !== secondTitle) {
+    await delay(50);
+    secondEditorTitle = await secondEditor.locator("input").first().inputValue();
+  }
+  assert(secondEditorTitle === secondTitle, `${label} second editor title mismatch: expected ${secondTitle}, got ${secondEditorTitle}`);
+  await expectVisible(
+    page.getByText("Only local draft fields are saved."),
+    `${label} second asset neutral local-only feedback`
+  );
+
+  await delay(1_200);
+  assert(
+    (await page.getByText("Local draft saved").count()) === 0,
+    `${label} first asset delayed success must not repaint second editor feedback`
+  );
+  assert(
+    (await page.getByText("Local save failed").count()) === 0,
+    `${label} first asset delayed failure must not repaint second editor feedback`
+  );
+  const saveButton = secondEditor.getByRole("button", { name: "Save local draft" });
+  await expectVisible(saveButton, `${label} second asset enabled save button`);
+  assert(!(await saveButton.isDisabled()), `${label} second asset save button must remain enabled`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -3158,6 +3208,127 @@ async function runSmoke() {
       `Delayed failure issued unsafe requests: ${JSON.stringify(unsafeDelayedFailureRequests)}`
     );
     await delayedFailureAssetPage.close();
+
+    const crossAssetPage = await context.newPage();
+    const crossAssetRequests = [];
+    crossAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        crossAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await crossAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_cross_first",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_cross_first",
+                title: "Cross asset first candidate"
+              },
+              {
+                asset_type: "buying_guide",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "faq" }],
+                external_write_allowed: false,
+                id: "asset_task_cross_second",
+                qa_checks: [{ key: "geo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_cross_second",
+                title: "Cross asset second candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 2, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await crossAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_cross_first`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        await delay(500);
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_cross_first",
+              qa_checks: [{ key: "seo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_cross_first",
+              title: "First asset delayed save title"
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await crossAssetPage.goto(webUrl);
+    await clickUnique(crossAssetPage.getByRole("button", { name: "EN" }), "cross asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(crossAssetPage, 2, "cross asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_cross_first",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Cross asset first candidate"
+      },
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["faq"],
+        id: "asset_task_cross_second",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Cross asset second candidate"
+      }
+    ]);
+    await assertLocalAssetEditorCrossAssetFeedbackIsolation(crossAssetPage, "cross asset workspace", {
+      firstAssetId: "asset_task_cross_first",
+      secondAssetId: "asset_task_cross_second",
+      secondTitle: "Cross asset second candidate"
+    });
+    const crossAssetPatchRequests = crossAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_cross_first`)
+    );
+    assert(
+      crossAssetPatchRequests.length === 1,
+      `Cross-asset isolation should issue exactly one local PATCH, got ${JSON.stringify(crossAssetRequests)}`
+    );
+    const unsafeCrossAssetRequests = crossAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_cross_first`))
+    );
+    assert(
+      unsafeCrossAssetRequests.length === 0,
+      `Cross-asset isolation issued unsafe requests: ${JSON.stringify(unsafeCrossAssetRequests)}`
+    );
+    await crossAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
