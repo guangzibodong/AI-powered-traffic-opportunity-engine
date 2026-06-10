@@ -263,7 +263,9 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
     ctr: "1.90%",
     evidence_count: "1",
     impressions: "5,000",
+    page_count: "4",
     position: "6.4",
+    query_count: "5",
     snapshot_id: "perf_9dd0fb2b550a",
     source: "Imported GSC",
     window: "28d"
@@ -3158,7 +3160,9 @@ async function runSmoke() {
       ctr: "2.00%",
       evidence_count: "1",
       impressions: "1,200",
+      page_count: "1",
       position: "4.8",
+      query_count: "1",
       snapshot_id: "asset_perf_task_002",
       source: "Imported GSC",
       window: "28d"

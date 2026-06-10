@@ -281,6 +281,14 @@ assert(
   "Performance snapshot UI must expose stable evidence count diagnostics"
 );
 assert(
+  app.includes('data-performance-metric="query_count"'),
+  "Performance snapshot UI must expose stable query count diagnostics"
+);
+assert(
+  app.includes('data-performance-metric="page_count"'),
+  "Performance snapshot UI must expose stable page count diagnostics"
+);
+assert(
   app.includes("data-performance-comparison-state"),
   "Performance comparison UI must expose stable local-only state diagnostics"
 );
@@ -293,6 +301,14 @@ assert(app.includes('data-asset-performance-metric="source"'), "Asset performanc
 assert(
   app.includes('data-asset-performance-metric="evidence_count"'),
   "Asset performance UI must expose stable evidence count diagnostics"
+);
+assert(
+  app.includes('data-asset-performance-metric="query_count"'),
+  "Asset performance UI must expose stable query count diagnostics"
+);
+assert(
+  app.includes('data-asset-performance-metric="page_count"'),
+  "Asset performance UI must expose stable page count diagnostics"
 );
 assert(
   app.includes("asset-performance-comparison-panel"),

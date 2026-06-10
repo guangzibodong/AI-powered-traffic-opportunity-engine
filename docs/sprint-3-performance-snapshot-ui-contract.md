@@ -97,6 +97,7 @@ Implemented foundation:
 - Store and asset performance panels expose a stable read-only `Imported GSC` source diagnostic from the safe frontend adapter without exposing raw live source labels or adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Store and asset performance panels expose stable read-only local snapshot id diagnostics for populated imported GSC baselines without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Store and asset performance panels expose stable read-only evidence count diagnostics for populated imported GSC baselines without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
+- Store and asset performance panels expose stable read-only split query count and page count diagnostics alongside compact coverage copy without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 
 Still gated:
 

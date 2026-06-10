@@ -1342,6 +1342,14 @@ function PerformanceSnapshotPanel({
               <span>{copy.coverage}</span>
               <strong>{coverageCopy}</strong>
             </div>
+            <div className="kv-row" data-performance-metric="query_count">
+              <span>{locale === "zh" ? "查询数" : "Query count"}</span>
+              <strong>{primarySnapshot.queryCount}</strong>
+            </div>
+            <div className="kv-row" data-performance-metric="page_count">
+              <span>{locale === "zh" ? "页面数" : "Page count"}</span>
+              <strong>{primarySnapshot.pageCount}</strong>
+            </div>
           </>
         ) : (
           <div
@@ -1740,6 +1748,14 @@ function AssetPerformancePanel({
             <div className="kv-row" data-asset-performance-metric="coverage">
               <span>{copy.coverage}</span>
               <strong>{coverageCopy}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-metric="query_count">
+              <span>{locale === "zh" ? "查询数" : "Query count"}</span>
+              <strong>{primarySnapshot.queryCount}</strong>
+            </div>
+            <div className="kv-row" data-asset-performance-metric="page_count">
+              <span>{locale === "zh" ? "页面数" : "Page count"}</span>
+              <strong>{primarySnapshot.pageCount}</strong>
             </div>
           </>
         ) : (
