@@ -1091,6 +1091,21 @@ async function assertAssetEditorUiGate(assetPanel, label) {
   }
 }
 
+async function assertLocalAssetEditorSaveState(editor, expectedState, label) {
+  const editorSaveState = await editor.getAttribute("data-asset-editor-save-state");
+  assert(
+    editorSaveState === expectedState,
+    `${label} editor save state mismatch: expected ${expectedState}, got ${editorSaveState ?? "missing"}`
+  );
+  const feedback = editor.locator("[data-asset-editor-save-feedback='true']");
+  await expectVisible(feedback, `${label} editor save feedback diagnostics`);
+  const feedbackState = await feedback.getAttribute("data-asset-editor-save-state");
+  assert(
+    feedbackState === expectedState,
+    `${label} editor save feedback state mismatch: expected ${expectedState}, got ${feedbackState ?? "missing"}`
+  );
+}
+
 async function assertLocalAssetEditorCanSave(
   page,
   label,
@@ -1111,6 +1126,7 @@ async function assertLocalAssetEditorCanSave(
   await clickUnique(page.getByRole("button", { name: entryName }).first(), `${label} local draft review entry`);
   const editor = page.locator(".asset-editor-panel");
   await expectVisible(editor, `${label} local asset editor`);
+  await assertLocalAssetEditorSaveState(editor, "idle", `${label} initial`);
   await expectVisible(page.getByText(localOnlyCopy), `${label} local-only editor copy`);
   await expectVisible(page.getByText(externalWritesCopy), `${label} external-write disabled editor copy`);
   await expectVisible(page.getByText(wordpressBlockedCopy), `${label} WordPress block editor copy`);
@@ -1235,6 +1251,7 @@ async function assertLocalAssetEditorCanSave(
   await editor.locator("textarea").first().fill("Compare portable espresso kits for camp coffee.");
   await clickUnique(editor.getByRole("button", { name: saveName }), `${label} local save button`);
   await expectVisible(page.getByText(saveSuccessCopy), `${label} local save success copy`);
+  await assertLocalAssetEditorSaveState(editor, "saved", `${label} saved`);
   return editor;
 }
 
@@ -1245,6 +1262,7 @@ async function assertLocalAssetEditorSaveFailure(page, label) {
   await editor.locator("input").first().fill("Failed local save test");
   await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} local save button`);
   await expectVisible(page.getByText("Local save failed"), `${label} local save failure copy`);
+  await assertLocalAssetEditorSaveState(editor, "failed", `${label} failed`);
   const saveButtonDisabled = await editor.getByRole("button", { name: "Save local draft" }).isDisabled();
   assert(!saveButtonDisabled, `${label} local save button must be re-enabled after failure`);
 }
@@ -1256,8 +1274,10 @@ async function assertLocalAssetEditorRetryAfterFailure(page, label) {
   await editor.locator("input").first().fill("Recovered local save test");
   await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} first local save button`);
   await expectVisible(page.getByText("Local save failed"), `${label} local save failure copy`);
+  await assertLocalAssetEditorSaveState(editor, "failed", `${label} retry failed`);
   await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} retry local save button`);
   await expectVisible(page.getByText("Local draft saved"), `${label} local save retry success copy`);
+  await assertLocalAssetEditorSaveState(editor, "saved", `${label} retry saved`);
   const failureCopyCount = await page.getByText("Local save failed").count();
   assert(failureCopyCount === 0, `${label} local save failure copy must clear after retry success`);
 }
@@ -1372,6 +1392,7 @@ async function assertLocalAssetEditorReopenHasEnabledSaveButton(page, label) {
   await editor.locator("input").first().fill("Pending close local title");
   await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} pending local save button`);
   await expectVisible(editor.getByRole("button", { name: "Saving local draft" }), `${label} pending local save copy`);
+  await assertLocalAssetEditorSaveState(editor, "pending", `${label} pending`);
   await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close pending editor button`);
 
   const closeDeadline = Date.now() + 5_000;
@@ -1398,6 +1419,7 @@ async function assertLocalAssetEditorDelayedResponseDoesNotRepaintFeedback(page,
   await editor.locator("input").first().fill("Delayed close local title");
   await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} delayed local save button`);
   await expectVisible(editor.getByRole("button", { name: "Saving local draft" }), `${label} delayed pending save copy`);
+  await assertLocalAssetEditorSaveState(editor, "pending", `${label} delayed pending`);
   await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close delayed editor button`);
 
   const closeDeadline = Date.now() + 5_000;

@@ -411,6 +411,14 @@ assert(
   app.includes("data-asset-editor-blocked-capability-key"),
   "Local asset editor UI must expose stable blocked capability key diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-save-state"),
+  "Local asset editor UI must expose stable save-state diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-save-feedback"),
+  "Local asset editor UI must expose stable save feedback diagnostics"
+);
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(

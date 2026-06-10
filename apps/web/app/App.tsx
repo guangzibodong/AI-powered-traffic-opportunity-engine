@@ -1932,6 +1932,7 @@ function LocalAssetEditor({
   const [sectionBody, setSectionBody] = useState("");
   const [editorNote, setEditorNote] = useState("");
   const isSaving = feedback?.kind === "pending";
+  const editorSaveState = isSaving ? "pending" : feedback?.kind === "saved" ? "saved" : feedback?.kind === "failed" ? "failed" : "idle";
   const editorQaPendingCount = asset.qaChecks.filter((check) => check.status === "pending").length;
   const editorQaReadinessState =
     asset.qaChecks.length === 0 ? "not_applicable" : editorQaPendingCount > 0 ? "pending_qa" : "qa_clear";
@@ -1957,6 +1958,7 @@ function LocalAssetEditor({
       data-asset-editor-qa-check-count={asset.qaChecks.length}
       data-asset-editor-qa-pending-count={editorQaPendingCount}
       data-asset-editor-qa-readiness-state={editorQaReadinessState}
+      data-asset-editor-save-state={editorSaveState}
       data-asset-id={asset.id}
     >
       <div className="panel-heading">
@@ -2059,10 +2061,10 @@ function LocalAssetEditor({
             {copy.close}
           </button>
         </div>
-        <p aria-live="polite" className="muted">
-          {feedback?.kind === "saved"
+        <p aria-live="polite" className="muted" data-asset-editor-save-feedback="true" data-asset-editor-save-state={editorSaveState}>
+          {editorSaveState === "saved"
             ? copy.localSaveSuccess
-            : feedback?.kind === "failed"
+            : editorSaveState === "failed"
               ? copy.localSaveFailed
               : copy.localOnlySaved}
         </p>
