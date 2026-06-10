@@ -358,11 +358,13 @@ export type ApiAssetResponse = {
 };
 
 export type ApiPerformanceSnapshot = {
+  asset_id?: string;
   clicks?: number;
   ctr?: number;
   external_write_allowed?: boolean;
   id: string;
   impressions?: number;
+  match_scope?: string;
   page_count?: number;
   position?: number;
   query_count?: number;
@@ -375,6 +377,19 @@ export type ApiPerformanceSnapshotsResponse = {
   blocked_capabilities?: string[];
   external_write_allowed?: boolean;
   mode: "performance_snapshots";
+  safety_scope?: string;
+  snapshots: ApiPerformanceSnapshot[];
+  store_id: string;
+  summary?: Record<string, number>;
+};
+
+export type ApiAssetPerformanceSnapshotsResponse = {
+  asset_id: string;
+  asset_title?: string;
+  blocked_capabilities?: string[];
+  external_write_allowed?: boolean;
+  match_scope?: string;
+  mode: "asset_performance_snapshots";
   safety_scope?: string;
   snapshots: ApiPerformanceSnapshot[];
   store_id: string;
@@ -514,6 +529,13 @@ export async function getAssets(storeId: string, apiBaseUrl = getApiBaseUrl()) {
 
 export async function getPerformanceSnapshots(storeId: string, apiBaseUrl = getApiBaseUrl()) {
   return fetchJson<ApiPerformanceSnapshotsResponse>(`${storeApiPath(apiBaseUrl, storeId)}/performance`);
+}
+
+export async function getAssetPerformanceSnapshots(storeId: string, assetId: string, apiBaseUrl = getApiBaseUrl()) {
+  const encodedAssetId = encodeURIComponent(assetId);
+  return fetchJson<ApiAssetPerformanceSnapshotsResponse>(
+    `${storeApiPath(apiBaseUrl, storeId)}/assets/${encodedAssetId}/performance`
+  );
 }
 
 export async function getAsset(storeId: string, assetId: string, apiBaseUrl = getApiBaseUrl()) {

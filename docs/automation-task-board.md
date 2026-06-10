@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset-specific performance matching API foundation is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 frontend asset performance client contract is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -220,6 +220,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-FE-052 | 186 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add read-only performance snapshot UI panel. | API mode reads local performance snapshots, renders a compact read-only panel with safe imported GSC metrics and safety markers, and exposes no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-QA-053 | 187 | done | Frontend Product Engineer / QA Lead | Add performance snapshot empty/unavailable DOM diagnostics. | Browser smoke verifies empty and unavailable performance snapshot panel states expose stable local-only DOM diagnostics, issue no non-GET performance requests, and render no refresh, sync, credential, WordPress draft/page update, publish, navigation, or commerce-write controls. |
 | TASK-S3-PERF-054 | 188 | done | Backend/API Engineer / QA Lead | Add asset-specific performance matching API foundation. | `GET /assets/{asset_id}/performance` returns local imported GSC snapshots matched to a local asset draft by safe title/slug/meta/query/page tokens, returns 404 for unknown assets, and exposes no refresh, OAuth, credential, WordPress draft/page update, publish, or commerce-write behavior. |
+| TASK-S3-FE-055 | 189 | done | Frontend Product Engineer / QA Lead | Add frontend asset performance client contract. | Frontend API client and view-model adapters expose read-only local asset performance snapshot helpers, encode store/asset ids, clamp external writes and safety scope, and add no refresh, OAuth, credential, WordPress draft/page update, publish, sync, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -586,6 +587,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Read-only performance snapshot UI panel is verified by browser smoke coverage that reads `/performance` exactly once with GET, renders local imported GSC metrics, exposes local-only safety diagnostics, and keeps refresh, sync, credential, WordPress draft/page update, publish, navigation, and commerce-write controls absent.
 - Performance snapshot empty/unavailable diagnostics are verified by red-green browser smoke coverage that first failed on a missing `data-performance-empty-state-key`, then passed with stable empty and unavailable keys while keeping performance reads GET-only and free of refresh, sync, credential, draft, publish, navigation, and commerce-write controls.
 - Asset-specific performance matching API foundation is verified by red-green backend tests that first failed on the stubbed asset performance route and missing service, then passed with local token-matched imported GSC snapshots, empty unmatched assets, unknown-asset 404s, and no external write capability.
+- Frontend asset performance client contract is verified by red-green contract and fixture tests that first failed on the missing helper and adapter, then passed with encoded GET-only asset performance reads, local-only match-scope clamping, imported GSC source copy, and no refresh, OAuth, credential, draft, publish, sync, navigation, or commerce-write helpers.
 
 ## Completion Rule
 

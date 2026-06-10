@@ -18,6 +18,7 @@ import type {
 } from "./types";
 import type {
   ApiAssetResponse,
+  ApiAssetPerformanceSnapshotsResponse,
   ApiAssetWorkspaceResponse,
   ApiAuditLogsResponse,
   ApiEvidence,
@@ -243,6 +244,22 @@ export function mapApiImportedQueryResponseToPreview(response: ApiImportedQueryR
 export function mapApiPerformanceSnapshotsToPreviews(
   response: ApiPerformanceSnapshotsResponse
 ): PerformanceSnapshotPreview[] {
+  return mapApiPerformanceSnapshotResponseToPreviews(response);
+}
+
+export function mapApiAssetPerformanceSnapshotsToPreviews(
+  response: ApiAssetPerformanceSnapshotsResponse
+): PerformanceSnapshotPreview[] {
+  return mapApiPerformanceSnapshotResponseToPreviews(response, {
+    assetId: response.asset_id,
+    matchScope: "local_asset_query_page_tokens"
+  });
+}
+
+function mapApiPerformanceSnapshotResponseToPreviews(
+  response: ApiPerformanceSnapshotsResponse | ApiAssetPerformanceSnapshotsResponse,
+  options: { assetId?: string; matchScope?: "local_asset_query_page_tokens" } = {}
+): PerformanceSnapshotPreview[] {
   return response.snapshots.map((snapshot) => {
     const clicks = normalizeImportedQueryRowNumber(snapshot.clicks);
     const ctr = normalizeImportedQueryRowNumber(snapshot.ctr);
@@ -256,6 +273,7 @@ export function mapApiPerformanceSnapshotsToPreviews(
     const displayPosition = formatImportedQueryRowPosition(position);
 
     return {
+      ...(options.assetId || snapshot.asset_id ? { assetId: options.assetId ?? snapshot.asset_id } : {}),
       blockedCapabilities: response.blocked_capabilities ?? [],
       clicks,
       ctr,
@@ -276,6 +294,7 @@ export function mapApiPerformanceSnapshotsToPreviews(
       externalWriteAllowed: false,
       id: snapshot.id,
       impressions,
+      ...(options.matchScope ? { matchScope: options.matchScope } : {}),
       pageCount: snapshot.page_count ?? 0,
       position,
       queryCount: snapshot.query_count ?? 0,

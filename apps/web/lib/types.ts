@@ -179,6 +179,7 @@ export type ImportedQueryRowPreview = {
 };
 
 export type PerformanceSnapshotPreview = {
+  assetId?: string;
   blockedCapabilities: string[];
   clicks: number;
   ctr: number;
@@ -190,6 +191,7 @@ export type PerformanceSnapshotPreview = {
   externalWriteAllowed: false;
   id: string;
   impressions: number;
+  matchScope?: "local_asset_query_page_tokens";
   pageCount: number;
   position: number;
   queryCount: number;

@@ -68,6 +68,10 @@ assert(adapter.includes("mapApiAssetResponseToPreview"), "adapter must expose as
 assert(adapter.includes("externalWriteAllowed: false"), "asset adapter must clamp external write state to false");
 assert(adapter.includes("blocked_capabilities"), "asset adapter must preserve blocked capability context");
 assert(adapter.includes("mapApiPerformanceSnapshotsToPreviews"), "adapter must expose performance snapshot DTO conversion");
+assert(
+  adapter.includes("mapApiAssetPerformanceSnapshotsToPreviews"),
+  "adapter must expose asset performance snapshot DTO conversion"
+);
 assert(adapter.includes("local_imported_gsc_only"), "performance snapshot adapter must clamp to local imported GSC scope");
 const assetDraftPreviewType = readExportedType(types, "AssetDraftPreview");
 assert(assetDraftPreviewType.includes("externalWriteAllowed: false"), "Asset draft preview must keep external write as literal false");
@@ -153,6 +157,7 @@ assert(apiClient.includes("ApiAssetUpdatePayload"), "API client must type safe l
 assert(apiClient.includes("ApiAssetWorkspaceResponse"), "API client must type asset workspace list responses");
 assert(apiClient.includes("ApiAssetResponse"), "API client must type asset detail and creation responses");
 assert(apiClient.includes("ApiPerformanceSnapshotsResponse"), "API client must type performance snapshot responses");
+assert(apiClient.includes("ApiAssetPerformanceSnapshotsResponse"), "API client must type asset performance snapshot responses");
 assert(apiClient.includes("getIntegrations"), "API client must expose integration status reads");
 assert(apiClient.includes("getSyncRuns"), "API client must expose sync run reads");
 assert(apiClient.includes("getAuditLogs"), "API client must expose audit log reads");
@@ -175,10 +180,26 @@ assert(apiClient.includes("createAssetFromTask"), "API client must expose local 
 assert(!apiClient.includes("publishWordpressDraft"), "API client must not expose WordPress draft publishing");
 assert(apiClient.includes("updateAsset"), "API client must expose safe local asset mutation after backend QA gates");
 assert(apiClient.includes("getPerformanceSnapshots"), "API client must expose performance snapshot reads");
+assert(apiClient.includes("getAssetPerformanceSnapshots"), "API client must expose asset performance snapshot reads");
 const performanceSnapshotClient = readExportedFunction(apiClient, "getPerformanceSnapshots");
 assert(performanceSnapshotClient.includes("/performance"), "Performance snapshot client must target the read-only performance endpoint");
 for (const unsafeMethod of ['method: "POST"', 'method: "PATCH"', 'method: "PUT"', 'method: "DELETE"']) {
   assert(!performanceSnapshotClient.includes(unsafeMethod), `Performance snapshot client must stay read-only and not use ${unsafeMethod}`);
+}
+const assetPerformanceSnapshotClient = readExportedFunction(apiClient, "getAssetPerformanceSnapshots");
+assert(
+  assetPerformanceSnapshotClient.includes("encodeURIComponent(assetId)"),
+  "Asset performance snapshot client must encode asset ids"
+);
+assert(
+  assetPerformanceSnapshotClient.includes("/assets/${encodedAssetId}/performance"),
+  "Asset performance snapshot client must target the read-only asset performance endpoint"
+);
+for (const unsafeMethod of ['method: "POST"', 'method: "PATCH"', 'method: "PUT"', 'method: "DELETE"']) {
+  assert(
+    !assetPerformanceSnapshotClient.includes(unsafeMethod),
+    `Asset performance snapshot client must stay read-only and not use ${unsafeMethod}`
+  );
 }
 const assetUpdateClient = readExportedFunction(apiClient, "updateAsset");
 assert(assetUpdateClient.includes("encodeURIComponent(assetId)"), "Asset update client must encode asset path segments");
