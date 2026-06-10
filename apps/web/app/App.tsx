@@ -1306,6 +1306,10 @@ function PerformanceSnapshotPanel({
         </div>
         {primarySnapshot ? (
           <>
+            <div className="kv-row" data-performance-metric="snapshot_id">
+              <span>Snapshot id</span>
+              <strong>{primarySnapshot.id}</strong>
+            </div>
             <div className="kv-row" data-performance-metric="source">
               <span>Source</span>
               <strong>{primarySnapshot.source}</strong>
@@ -1697,6 +1701,10 @@ function AssetPerformancePanel({
         </div>
         {primarySnapshot ? (
           <>
+            <div className="kv-row" data-asset-performance-metric="snapshot_id">
+              <span>Snapshot id</span>
+              <strong>{primarySnapshot.id}</strong>
+            </div>
             <div className="kv-row" data-asset-performance-metric="source">
               <span>Source</span>
               <strong>{primarySnapshot.source}</strong>

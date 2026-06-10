@@ -263,6 +263,7 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
     ctr: "1.90%",
     impressions: "5,000",
     position: "6.4",
+    snapshot_id: "perf_9dd0fb2b550a",
     source: "Imported GSC",
     window: "28d"
   };
@@ -3156,6 +3157,7 @@ async function runSmoke() {
       ctr: "2.00%",
       impressions: "1,200",
       position: "4.8",
+      snapshot_id: "asset_perf_task_002",
       source: "Imported GSC",
       window: "28d"
     });

@@ -274,12 +274,17 @@ assert(app.includes("PerformanceSnapshotPanel"), "Board must expose a read-only 
 assert(app.includes("AssetPerformancePanel"), "Board must expose a read-only asset performance panel");
 assert(app.includes("performance-snapshot-panel"), "Performance snapshot UI must have a stable read-only panel class");
 assert(app.includes("performance-comparison-panel"), "Performance snapshot UI must expose a stable before/after comparison panel class");
+assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(
   app.includes("data-performance-comparison-state"),
   "Performance comparison UI must expose stable local-only state diagnostics"
 );
 assert(app.includes("asset-performance-panel"), "Asset performance UI must have a stable read-only panel class");
+assert(
+  app.includes('data-asset-performance-metric="snapshot_id"'),
+  "Asset performance UI must expose stable snapshot id diagnostics"
+);
 assert(app.includes('data-asset-performance-metric="source"'), "Asset performance UI must expose stable source diagnostics");
 assert(
   app.includes("asset-performance-comparison-panel"),

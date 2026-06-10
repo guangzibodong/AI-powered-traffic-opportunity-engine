@@ -94,6 +94,7 @@ Implemented foundation:
 - Visible local asset performance UI renders a read-only asset before/after comparison section for the selected local asset baseline, marks follow-up metrics as not yet tracked, preserves `local_asset_query_page_tokens` diagnostics, and exposes no refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Browser smoke verifies asset before/after comparison empty and unavailable states stay visible with stable local-only keys, preserve `local_asset_query_page_tokens`, render zero populated comparison metric rows, and expose no refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 - Store and asset performance panels expose a stable read-only `Imported GSC` source diagnostic from the safe frontend adapter without exposing raw live source labels or adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
+- Store and asset performance panels expose stable read-only local snapshot id diagnostics for populated imported GSC baselines without adding refresh, sync, credential, WordPress, publish, navigation, or commerce-write controls.
 
 Still gated:
 
