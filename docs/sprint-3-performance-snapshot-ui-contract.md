@@ -106,6 +106,7 @@ Implemented foundation:
 - Store and asset before/after comparison panels expose stable read-only baseline snapshot id metric rows for populated local imported baselines while empty and unavailable states keep populated metric rows hidden.
 - Store and asset before/after comparison panels expose stable read-only evidence count metric rows for populated local imported baselines while empty and unavailable states keep populated metric rows hidden.
 - Backend `POST /performance/refresh` is now a local `preview_only` diagnostic route, not a queued job.
+- The preview route records a sanitized local audit event with `performance.refresh_previewed`, `external_write_allowed: false`, snapshot count, source, status, and local preview safety scope.
 - Frontend API client exposes `previewPerformanceRefresh` and the adapter exposes `mapApiPerformanceRefreshPreviewToPreview` for typed contract coverage only; the visible App does not call the helper and browser smoke still verifies no `/performance/refresh` UI requests.
 
 Still gated:

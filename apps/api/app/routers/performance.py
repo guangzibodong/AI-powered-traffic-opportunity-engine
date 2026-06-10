@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
+from app.services.audit_log_service import record_audit_log
 from app.services.performance_snapshot_service import (
     build_performance_refresh_preview,
     list_asset_performance_snapshots,
@@ -25,4 +26,18 @@ async def get_asset_performance(store_id: str, asset_id: str) -> dict:
 
 @router.post("/{store_id}/performance/refresh")
 async def refresh_performance(store_id: str) -> dict:
-    return build_performance_refresh_preview(store_id)
+    preview = build_performance_refresh_preview(store_id)
+    record_audit_log(
+        store_id,
+        action="performance.refresh_previewed",
+        target_type="performance",
+        target_id="performance_refresh_preview",
+        metadata={
+            "external_write_allowed": preview["external_write_allowed"],
+            "safety_scope": preview["safety_scope"],
+            "snapshot_count": preview["snapshot_count"],
+            "source": preview["source"],
+            "status": preview["status"],
+        },
+    )
+    return preview

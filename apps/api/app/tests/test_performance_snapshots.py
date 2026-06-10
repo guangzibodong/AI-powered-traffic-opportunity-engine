@@ -1,3 +1,4 @@
+import json
 import unittest
 
 try:
@@ -165,15 +166,19 @@ class PerformanceSnapshotApiTests(unittest.TestCase):
     def setUp(self) -> None:
         assert TestClient is not None
         assert create_app is not None
+        from app.services.audit_log_service import clear_audit_logs
         from app.services.gsc_ingestion_service import clear_imported_gsc_rows
 
+        clear_audit_logs()
         clear_imported_gsc_rows()
         self.client = TestClient(create_app())
 
     def tearDown(self) -> None:
+        from app.services.audit_log_service import clear_audit_logs
         from app.services.asset_workspace_service import clear_asset_workspace
         from app.services.gsc_ingestion_service import clear_imported_gsc_rows
 
+        clear_audit_logs()
         clear_asset_workspace()
         clear_imported_gsc_rows()
 
@@ -264,3 +269,31 @@ class PerformanceSnapshotApiTests(unittest.TestCase):
         self.assertEqual(after["summary"], before["summary"])
         self.assertEqual(after["snapshots"], before["snapshots"])
         self.assertFalse(response.json()["external_write_allowed"])
+
+    def test_performance_refresh_preview_records_sanitized_audit_event(self):
+        self.client.post(
+            "/api/stores/store-demo-outdoor-coffee/queries/import-csv",
+            json={"csv_text": PERFORMANCE_GSC_CSV, "window": "28d"},
+        )
+
+        response = self.client.post("/api/stores/store-demo-outdoor-coffee/performance/refresh")
+
+        self.assertEqual(response.status_code, 200)
+        audit_response = self.client.get("/api/stores/store-demo-outdoor-coffee/audit-logs")
+        self.assertEqual(audit_response.status_code, 200)
+        audit_payload = audit_response.json()
+        self.assertEqual(audit_payload["summary"]["audit_logs"], 1)
+        event = audit_payload["audit_logs"][0]
+        self.assertEqual(event["action"], "performance.refresh_previewed")
+        self.assertEqual(event["target_type"], "performance")
+        self.assertEqual(event["target_id"], "performance_refresh_preview")
+        self.assertEqual(event["metadata"]["status"], "preview_only")
+        self.assertEqual(event["metadata"]["snapshot_count"], 1)
+        self.assertEqual(event["metadata"]["source"], "imported_gsc_csv")
+        self.assertEqual(event["metadata"]["safety_scope"], "local_tracking_preview_only")
+        self.assertFalse(event["metadata"]["external_write_allowed"])
+        self.assertFalse(event["external_write_allowed"])
+        serialized = json.dumps(audit_payload)
+        self.assertNotIn("dummy-password-for-test", serialized)
+        self.assertNotIn("refresh_token", serialized)
+        self.assertNotIn("consumer_secret", serialized)
