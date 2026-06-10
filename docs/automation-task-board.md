@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset QA detail mapping is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 visible local asset QA detail diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -22,11 +22,11 @@ These are internal execution-board statuses, not TrafScope product task review s
 
 | Role | Person/Agent | Current assignment |
 |---|---|---|
-| Product Manager | Main thread + Locke sidecar | Keep local asset QA detail scope explicit and preserve live-integration blockers. |
+| Product Manager | Main thread + Locke sidecar | Keep visible local asset QA diagnostics read-only and preserve live-integration blockers. |
 | Backend/API Engineer | Main thread | Keep local asset draft QA payloads read-only and blocked from draft, publish, sync, OAuth, or commerce writes. |
-| Frontend Product Engineer | Main thread | Map local asset QA checks through safe read-only DTOs while keeping QA actions and WordPress draft controls gated. |
-| QA Lead | Main thread + Laplace sidecar | Verify QA DTO redaction, no QA mutation controls, full matrix, task-board closure, and no-secret safety scans. |
-| UI Systems Engineer | Main thread | Keep demo documentation aligned with compact bilingual QA diagnostics and screenshot artifacts. |
+| Frontend Product Engineer | Main thread | Render safe local asset QA details as diagnostics while keeping QA actions and WordPress draft controls gated. |
+| QA Lead | Main thread + Laplace sidecar | Verify QA DOM diagnostics, no QA mutation controls, full matrix, task-board closure, and no-secret safety scans. |
+| UI Systems Engineer | Main thread | Keep compact bilingual QA diagnostics aligned with the current workbench UI and screenshot artifacts. |
 
 ## Task Queue
 
@@ -243,6 +243,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-AUDIT-075 | 209 | done | Backend/API Engineer / QA Lead | Add performance refresh preview audit logging. | Calling the local `POST /performance/refresh` preview route records one sanitized local audit event with preview-only metadata, keeps `external_write_allowed: false`, stores no credentials, does not mutate imported snapshots, and does not trigger live GSC, WordPress, WooCommerce, sync, draft, update, or publish behavior. |
 | TASK-S3-FE-076 | 210 | done | Frontend Product Engineer / QA Lead | Add safe frontend mapping for performance refresh audit events. | Frontend audit DTO mapping recognizes `performance.refresh_previewed` as a local preview audit event, exposes only sanitized read-only fields, clamps `externalWriteAllowed: false`, keeps metadata and credential-like values out of UI models, and adds no refresh controls or `/performance/refresh` App calls. |
 | TASK-S3-FE-077 | 211 | done | Frontend Product Engineer / QA Lead | Add safe frontend mapping for local asset QA check details. | Frontend asset draft DTO mapping exposes local QA check detail previews with allowlisted keys and statuses, clamps unsafe values to local review/pending defaults, preserves aggregate counts, keeps credential-like QA metadata out of UI models, and adds no QA mutation, WordPress draft, publish, sync, OAuth, or commerce-write controls. |
+| TASK-S3-QA-078 | 212 | done | Frontend Product Engineer / QA Lead | Add visible read-only local asset QA detail diagnostics. | Asset workspace rows render safe QA detail labels and stable DOM markers for allowlisted and clamped local QA checks, preserve aggregate counts, keep unsafe QA metadata out of visible copy, and add no QA mutation, WordPress draft, publish, sync, OAuth, or commerce-write controls. |
 
 ## Blockers
 
@@ -632,6 +633,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Performance refresh preview audit logging is verified by red-green backend coverage that first failed with zero audit events, then passed with a sanitized `performance.refresh_previewed` local event, no credential metadata, no imported snapshot mutation, full backend/frontend/browser verification, and preserved no-refresh-request smoke coverage.
 - Performance refresh audit frontend mapping is verified by red-green fixture coverage that first failed on raw action copy, then passed with safe `Performance refresh preview` display copy, `performance_refresh_preview` event kind, metadata redaction, frontend contract coverage, full backend/frontend/browser verification, and preserved no-refresh-request smoke coverage.
 - Local asset QA detail mapping is verified by red-green fixture coverage that first failed on unsafe QA status counting, then passed with allowlisted QA detail previews, unknown key/status clamping to `local_review` and `pending`, metadata redaction, frontend contract coverage, full backend/frontend/browser verification, and preserved no-draft/no-publish/no-sync smoke coverage.
+- Visible local asset QA detail diagnostics are verified by red-green browser smoke coverage that first failed on missing QA detail rows, then passed with safe QA labels, stable `data-asset-qa-*` markers, unsafe metadata redaction, full backend/frontend/browser verification, and refreshed desktop/mobile QA screenshots.
 
 ## Completion Rule
 

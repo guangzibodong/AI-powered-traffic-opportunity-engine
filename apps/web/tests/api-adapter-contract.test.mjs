@@ -369,6 +369,9 @@ assert(
   app.includes('data-performance-comparison-metric="evidence_count"'),
   "Performance comparison UI must expose stable evidence count diagnostics"
 );
+assert(app.includes("data-asset-qa-detail"), "Asset workspace UI must expose stable QA detail diagnostics");
+assert(app.includes("data-asset-qa-key"), "Asset workspace UI must expose stable QA key diagnostics");
+assert(app.includes("data-asset-qa-status"), "Asset workspace UI must expose stable QA status diagnostics");
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(

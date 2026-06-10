@@ -969,6 +969,39 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
         `${label} asset row ${expectedAsset.id} must show QA pending summary`
       );
     }
+    if (expectedAsset.qaDetails) {
+      const qaDetailRows = await row.locator("[data-asset-qa-detail]").evaluateAll((elements) =>
+        elements.map((element) => ({
+          key: element.getAttribute("data-asset-qa-key"),
+          status: element.getAttribute("data-asset-qa-status"),
+          text: element.textContent ?? ""
+        }))
+      );
+      assert(
+        qaDetailRows.length === expectedAsset.qaDetails.length,
+        `${label} asset row ${expectedAsset.id} QA detail count mismatch: expected ${
+          expectedAsset.qaDetails.length
+        }, got ${qaDetailRows.length}`
+      );
+      for (const expectedQaDetail of expectedAsset.qaDetails) {
+        assert(
+          qaDetailRows.some(
+            (detail) =>
+              detail.key === expectedQaDetail.key &&
+              detail.status === expectedQaDetail.status &&
+              detail.text.includes(`${expectedQaDetail.key}:${expectedQaDetail.status}`)
+          ),
+          `${label} asset row ${expectedAsset.id} missing QA detail ${expectedQaDetail.key}:${expectedQaDetail.status}`
+        );
+      }
+      const serializedQaDetails = JSON.stringify(qaDetailRows);
+      for (const forbidden of ["metadata", "credential", "token", "secret", "password", "api_key", "published"]) {
+        assert(
+          !serializedQaDetails.toLowerCase().includes(forbidden),
+          `${label} asset row ${expectedAsset.id} QA detail leaked unsafe copy: ${forbidden}`
+        );
+      }
+    }
     for (const contentBlockType of expectedAsset.contentBlockTypes ?? []) {
       assert(
         rowText.includes(contentBlockType),
@@ -4876,7 +4909,13 @@ async function runSmoke() {
                 id: "asset_task_qa_clear",
                 qa_checks: [
                   { key: "seo", status: "passed" },
-                  { key: "geo", status: "passed" }
+                  { key: "geo", status: "passed" },
+                  {
+                    credential_hint: "token-password-secret",
+                    key: "oauth_token",
+                    metadata: { api_key: "unsafe-api-key" },
+                    status: "published"
+                  }
                 ],
                 review_state: "draft_candidate",
                 source_task_id: "task_qa_clear",
@@ -4902,14 +4941,19 @@ async function runSmoke() {
         contentBlockCount: 1,
         contentBlockTypes: ["answer_summary"],
         id: "asset_task_qa_clear",
-        qaCheckCount: 2,
-        qaPendingCount: 0,
+        qaCheckCount: 3,
+        qaDetails: [
+          { key: "seo", status: "passed" },
+          { key: "geo", status: "passed" },
+          { key: "local_review", status: "pending" }
+        ],
+        qaPendingCount: 1,
         reviewState: "draft_candidate",
         title: "QA clear collection page"
       }
     ]);
-    await assertAssetWorkspaceQaSummary(qaClearAssetPage, 2, 0, "QA clear asset workspace");
-    await assertAssetWorkspaceQaReadiness(qaClearAssetPage, "qa_clear", "QA clear asset workspace");
+    await assertAssetWorkspaceQaSummary(qaClearAssetPage, 3, 1, "QA clamped asset workspace");
+    await assertAssetWorkspaceQaReadiness(qaClearAssetPage, "pending_qa", "QA clamped asset workspace");
     await qaClearAssetPage.close();
 
     const noQaAssetPage = await context.newPage();

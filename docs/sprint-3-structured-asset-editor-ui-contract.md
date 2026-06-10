@@ -216,6 +216,7 @@ The first local editor slice is implemented with a conservative scope:
 - Browser smoke captures and verifies `docs/design-mockups/screenshots/local-asset-editor-mobile-zh.png` as a mobile local editor QA artifact after confirming Chinese local-only safety copy, contained editor controls, one safe local PATCH, and no unsafe requests.
 - Browser smoke captures and verifies `docs/design-mockups/screenshots/local-asset-editor-desktop-en.png` as a desktop local editor QA artifact after confirming English local-only safety copy, contained editor controls, one safe local PATCH, and no unsafe requests.
 - Frontend asset adapters expose safe local QA check detail previews with allowlisted keys/statuses, clamp unsafe values to `local_review` and `pending`, preserve aggregate counts, and do not expose raw QA metadata, credential-like values, QA mutation controls, WordPress draft creation, publishing, sync, OAuth, or commerce writes.
+- Asset workspace rows render safe QA detail labels with stable `data-asset-qa-detail`, `data-asset-qa-key`, and `data-asset-qa-status` diagnostics while browser smoke keeps unsafe QA metadata and draft/publish/sync controls absent.
 
 Still gated:
 

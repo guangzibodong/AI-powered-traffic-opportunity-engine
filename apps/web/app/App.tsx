@@ -1583,6 +1583,21 @@ function AssetWorkspacePanel({
                 {asset.contentBlockTypes.length > 0 ? ` / ${asset.contentBlockTypes.join(", ")}` : ""}
                 {asset.qaCheckCount > 0 ? ` / qa ${asset.qaPendingCount}/${asset.qaCheckCount} pending` : ""}
               </span>
+              {asset.qaChecks.length > 0 && (
+                <div className="inline-diagnostics" data-asset-qa-detail-list="true">
+                  {asset.qaChecks.map((check) => (
+                    <span
+                      className="pill muted-pill"
+                      data-asset-qa-detail="true"
+                      data-asset-qa-key={check.key}
+                      data-asset-qa-status={check.status}
+                      key={`${asset.id}-${check.key}-${check.status}`}
+                    >
+                      {check.key}:{check.status}
+                    </span>
+                  ))}
+                </div>
+              )}
               {onOpenAssetEditor && (
                 <button className="button" onClick={() => onOpenAssetEditor(asset.id)} type="button">
                   {reviewLocalDraftCopy}
