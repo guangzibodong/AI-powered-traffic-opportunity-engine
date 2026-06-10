@@ -1904,6 +1904,7 @@ function LocalAssetEditor({
   ) => Promise<void>;
 }) {
   const copy = {
+    dirtyState: locale === "zh" ? "本地改动" : "Local changes",
     fieldReadiness: locale === "zh" ? "字段状态" : "Field readiness",
     close: locale === "zh" ? "关闭" : "Close",
     editorNote: locale === "zh" ? "编辑备注" : "Editor note",
@@ -2026,6 +2027,10 @@ function LocalAssetEditor({
         >
           <span>{copy.fieldReadiness}</span>
           <strong>{editorFieldReadinessState}</strong>
+        </div>
+        <div className="kv-row" data-asset-editor-dirty-summary="true">
+          <span>{copy.dirtyState}</span>
+          <strong>{editorDirtyState}</strong>
         </div>
       </div>
       {asset.qaChecks.length > 0 && (

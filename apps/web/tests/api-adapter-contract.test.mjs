@@ -424,6 +424,10 @@ assert(
   "Local asset editor UI must expose stable dirty-state diagnostics"
 );
 assert(
+  app.includes('data-asset-editor-dirty-summary="true"'),
+  "Local asset editor UI must expose a stable visible dirty-state summary"
+);
+assert(
   app.includes("data-asset-editor-field-count"),
   "Local asset editor UI must expose stable field count diagnostics"
 );

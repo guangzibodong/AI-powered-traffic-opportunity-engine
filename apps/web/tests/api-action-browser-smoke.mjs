@@ -1112,6 +1112,13 @@ async function assertLocalAssetEditorDirtyState(editor, expectedState, label) {
     dirtyState === expectedState,
     `${label} editor dirty state mismatch: expected ${expectedState}, got ${dirtyState ?? "missing"}`
   );
+  const dirtySummary = editor.locator("[data-asset-editor-dirty-summary='true']");
+  await expectVisible(dirtySummary, `${label} visible editor dirty-state summary row`);
+  const visibleDirtyState = ((await dirtySummary.locator("strong").textContent()) ?? "").trim();
+  assert(
+    visibleDirtyState === expectedState,
+    `${label} visible editor dirty state mismatch: expected ${expectedState}, got ${visibleDirtyState || "missing"}`
+  );
 }
 
 async function assertLocalAssetEditorFieldDiagnostics(

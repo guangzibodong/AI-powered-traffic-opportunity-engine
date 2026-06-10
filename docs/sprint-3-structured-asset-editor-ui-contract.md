@@ -230,6 +230,7 @@ The first local editor slice is implemented with a conservative scope:
 - Local asset editor renders read-only readiness row count diagnostics with `data-asset-editor-field-readiness-filled-count`, `data-asset-editor-field-readiness-empty-count`, and `data-asset-editor-field-readiness-total-count`, keeping the visible readiness row reconcilable with field totals without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Local asset editor renders a read-only readiness row count reconciliation marker with `data-asset-editor-field-readiness-counts-reconciled`, proving filled plus empty equals total without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Local asset editor renders a read-only dirty-state marker with `data-asset-editor-dirty-state`, distinguishing `clean` from `dirty` local field states across open, edit, save, and refill flows without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
+- Local asset editor renders a visible read-only dirty-state summary row with `data-asset-editor-dirty-summary`, keeping clean and dirty local field states visible without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 
 Still gated:
 
