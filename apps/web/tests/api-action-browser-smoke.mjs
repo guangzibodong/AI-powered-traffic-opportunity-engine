@@ -731,6 +731,21 @@ async function assertLocalAssetEditorSecondAssetSaveIsolation(
   );
 }
 
+async function assertLocalAssetEditorSameAssetDoubleSubmitBlocked(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} local asset editor`);
+  await editor.locator("input").first().fill("Double submit local title");
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} first local save button`);
+  const pendingButton = editor.getByRole("button", { name: "Saving local draft" });
+  await expectVisible(pendingButton, `${label} pending save button`);
+  assert(await pendingButton.isDisabled(), `${label} pending save button must be disabled`);
+  await pendingButton.click({ force: true });
+  await delay(100);
+  assert(await pendingButton.isDisabled(), `${label} forced second click must not re-enable pending save button`);
+  await expectVisible(page.getByText("Local draft saved"), `${label} local save success copy`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -3539,6 +3554,103 @@ async function runSmoke() {
       `Second-asset isolation issued unsafe requests: ${JSON.stringify(unsafeSecondAssetSaveRequests)}`
     );
     await secondAssetSavePage.close();
+
+    const doubleSubmitAssetPage = await context.newPage();
+    const doubleSubmitAssetRequests = [];
+    doubleSubmitAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        doubleSubmitAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await doubleSubmitAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_double_submit",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_double_submit",
+                title: "Double submit candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await doubleSubmitAssetPage.route(`**/api/stores/${storeId}/assets/asset_task_double_submit`, async (route) => {
+      if (route.request().method() === "PATCH") {
+        await delay(500);
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            asset: {
+              asset_type: "collection_page",
+              blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+              content_blocks: [{ type: "section" }],
+              external_write_allowed: false,
+              id: "asset_task_double_submit",
+              qa_checks: [{ key: "seo", status: "pending" }],
+              review_state: "draft_candidate",
+              source_task_id: "task_double_submit",
+              title: "Double submit local title"
+            },
+            mode: "asset_draft_workspace",
+            store_id: storeId
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await doubleSubmitAssetPage.goto(webUrl);
+    await clickUnique(doubleSubmitAssetPage.getByRole("button", { name: "EN" }), "double submit asset language switcher");
+    await assertAssetWorkspacePanelIsReadOnly(doubleSubmitAssetPage, 1, "double submit asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_double_submit",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Double submit candidate"
+      }
+    ]);
+    await assertLocalAssetEditorSameAssetDoubleSubmitBlocked(doubleSubmitAssetPage, "double submit asset workspace");
+    const doubleSubmitPatchRequests = doubleSubmitAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_double_submit`)
+    );
+    assert(
+      doubleSubmitPatchRequests.length === 1,
+      `Double-submit guard should issue exactly one local PATCH, got ${JSON.stringify(doubleSubmitAssetRequests)}`
+    );
+    const unsafeDoubleSubmitRequests = doubleSubmitAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(request.method === "PATCH" && request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_double_submit`))
+    );
+    assert(
+      unsafeDoubleSubmitRequests.length === 0,
+      `Double-submit guard issued unsafe requests: ${JSON.stringify(unsafeDoubleSubmitRequests)}`
+    );
+    await doubleSubmitAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {

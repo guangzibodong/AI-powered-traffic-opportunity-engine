@@ -210,6 +210,7 @@ The first local editor slice is implemented with a conservative scope:
 - Browser smoke verifies delayed local save success and failure responses after Close do not repaint stale feedback into a reopened local editor; stale async feedback is suppressed by the local editor session guard.
 - Browser smoke verifies cross-asset feedback isolation: switching from a delayed first asset save to a second asset editor keeps the second editor neutral after the first response resolves.
 - Browser smoke verifies second-asset save isolation: after switching from a delayed first asset save, saving the second asset targets only the second asset PATCH, shows second-asset feedback, and avoids unsafe requests.
+- Browser smoke verifies same-asset double-submit protection: a forced click on the disabled pending save button still results in exactly one local PATCH and no unsafe requests.
 
 Still gated:
 
@@ -219,7 +220,7 @@ Still gated:
 - Rich schema editor.
 - Rich text editor.
 - Mobile screenshot QA.
-- Same-asset double-submit coverage.
+- Pending-close duplicate-request coverage.
 
 ## Out Of Scope
 

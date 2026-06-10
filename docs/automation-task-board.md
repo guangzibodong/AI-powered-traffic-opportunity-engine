@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local editor second-asset save isolation coverage is verified; local editor same-asset double-submit coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 local editor same-asset double-submit coverage is verified; local editor pending-close duplicate-request coverage is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -209,7 +209,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-041 | 175 | done | Frontend Product Engineer / QA Lead | Add local editor pending-response-after-close feedback coverage. | Browser smoke verifies a delayed local save response that resolves after Close does not reintroduce stale success or failure feedback into a reopened local editor, while keeping only allowed local PATCH requests. |
 | TASK-S3-QA-042 | 176 | done | Frontend Product Engineer / QA Lead | Add local editor cross-asset feedback isolation coverage. | Browser smoke verifies switching from one local asset editor to another clears stale save feedback and prevents delayed responses from the first asset from repainting feedback into the second asset editor, with only allowed local PATCH requests. |
 | TASK-S3-QA-043 | 177 | done | Frontend Product Engineer / QA Lead | Add local editor second-asset save isolation coverage. | Browser smoke verifies after switching from a delayed first local asset save to a second asset, saving the second asset sends only its own local PATCH, shows feedback for the second asset only, and never creates draft, publish, sync, credential, navigation, or commerce-write requests. |
-| TASK-S3-QA-044 | 178 | todo | Frontend Product Engineer / QA Lead | Add local editor same-asset double-submit coverage. | Browser smoke verifies clicking `Save local draft` while a same-asset local save is pending cannot send a duplicate local PATCH and still exposes no draft, publish, sync, credential, navigation, or commerce-write requests. |
+| TASK-S3-QA-044 | 178 | done | Frontend Product Engineer / QA Lead | Add local editor same-asset double-submit coverage. | Browser smoke verifies clicking `Save local draft` while a same-asset local save is pending cannot send a duplicate local PATCH and still exposes no draft, publish, sync, credential, navigation, or commerce-write requests. |
+| TASK-S3-QA-045 | 179 | todo | Frontend Product Engineer / QA Lead | Add local editor pending-close duplicate-request coverage. | Browser smoke verifies closing the local editor while a save is pending does not trigger an additional local PATCH and still exposes no draft, publish, sync, credential, navigation, or commerce-write requests. |
 
 ## Blockers
 
@@ -559,6 +560,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local editor second-asset save isolation coverage is next because after switching assets, the next save should target only the currently selected local draft candidate.
 - Local editor second-asset save isolation coverage is verified by browser smoke that starts a delayed first asset save, switches to a second asset, saves the second asset through its own local PATCH, shows second-asset success feedback, and records no unsafe requests.
 - Local editor same-asset double-submit coverage is next because the disabled pending save state should prevent duplicate local PATCH requests for the same asset.
+- Local editor same-asset double-submit coverage is verified by browser smoke that forces a click on the disabled pending save button and still records exactly one local asset PATCH and no unsafe requests.
+- Local editor pending-close duplicate-request coverage is next because closing during a pending local save should not submit the form again.
 
 ## Completion Rule
 
