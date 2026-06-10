@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local editor desktop screenshot QA artifact coverage is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
+Current loop: Sprint 3 local imported performance snapshot foundation is verified; frontend performance snapshot client contract is queued next. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, and no WordPress publishing.
 
 ## Status Legend
 
@@ -214,6 +214,8 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-046 | 180 | done | Frontend Product Engineer / QA Lead | Add local editor pending-close stale-feedback coverage. | Browser smoke verifies after closing during a pending local save and letting the response resolve, reopening the same asset shows neutral local-only feedback and no stale success/failure copy, with only allowed local PATCH requests. |
 | TASK-S3-QA-047 | 181 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add local editor mobile screenshot QA artifact coverage. | Browser smoke captures and verifies a mobile local editor screenshot artifact with visible bilingual local-only safety copy, contained editor controls, and no WordPress draft, publish, sync, credential, navigation, or commerce-write requests. |
 | TASK-S3-QA-048 | 182 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add local editor desktop screenshot QA artifact coverage. | Browser smoke captures and verifies a desktop local editor screenshot artifact with visible English local-only safety copy, contained editor controls, and no WordPress draft, publish, sync, credential, navigation, or commerce-write requests. |
+| TASK-S3-PERF-049 | 183 | done | Backend/API Engineer / QA Lead | Add local imported performance snapshot foundation. | `GET /performance` returns deterministic read-only aggregate snapshots from imported GSC CSV rows with local-only safety markers, no real GSC OAuth, no external refresh, no WordPress draft/page updates, and no commerce writes. |
+| TASK-S3-FE-050 | 184 | todo | Frontend Product Engineer / QA Lead | Add frontend performance snapshot client contract. | Frontend API client and view-model adapters expose read-only local performance snapshots with safety markers and no refresh execution, credential, WordPress draft/page update, publish, sync, or commerce-write controls. |
 
 ## Blockers
 
@@ -572,6 +574,9 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Mobile screenshot QA artifact coverage is verified by browser smoke that captures `docs/design-mockups/screenshots/local-asset-editor-mobile-zh.png`, checks the artifact size, validates Chinese local-only safety copy, and keeps request coverage local-only.
 - Desktop screenshot QA artifact coverage is next because the editor contract also calls for desktop visual evidence before expanding beyond the compact local editor.
 - Desktop screenshot QA artifact coverage is verified by browser smoke that captures `docs/design-mockups/screenshots/local-asset-editor-desktop-en.png`, checks the artifact size, validates English local-only safety copy, and keeps request coverage local-only.
+- Local imported performance snapshot foundation is next because Sprint 3 needs performance visibility, but the safe loop can start from already-imported GSC CSV rows without OAuth or external refresh.
+- Local imported performance snapshot foundation is verified by backend service/API tests that aggregate imported GSC rows by window, return local-only safety markers, and keep refresh as a non-executing tracking preview.
+- Frontend performance snapshot client contract is next because the backend now exposes local-only performance snapshots that need typed read adapters before UI rendering.
 
 ## Completion Rule
 

@@ -367,6 +367,13 @@ The local-only editor contract is documented in [Sprint 3 Safe Local Asset Edito
 - `GET /api/stores/:storeId/assets/:assetId/performance`
 - `POST /api/stores/:storeId/performance/refresh`
 
+Sprint 3 performance endpoints are still local-only:
+
+- `GET /performance` returns `mode: "performance_snapshots"`, `safety_scope: "local_imported_gsc_only"`, `external_write_allowed: false`, blocked capabilities, and deterministic aggregate snapshots from already-imported GSC CSV rows grouped by window.
+- Each snapshot includes imported-row totals for clicks, impressions, CTR, weighted average position, query/page counts, and source row ids.
+- Empty imported data returns an empty snapshot list with zeroed summary totals.
+- `POST /performance/refresh` is a local tracking preview with `external_write_allowed: false`; it does not run real GSC OAuth, call Google APIs, create WordPress drafts, update pages, publish content, or write commerce data.
+
 ## Audit Logs
 
 - `GET /api/stores/:storeId/audit-logs`
