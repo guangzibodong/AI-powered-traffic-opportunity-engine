@@ -399,6 +399,18 @@ assert(
   app.includes("data-asset-editor-qa-checks"),
   "Local asset editor UI must expose stable visible QA check summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-safety"),
+  "Local asset editor UI must expose stable safety diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-blocked-capability-count"),
+  "Local asset editor UI must expose stable blocked capability count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-blocked-capability-key"),
+  "Local asset editor UI must expose stable blocked capability key diagnostics"
+);
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(

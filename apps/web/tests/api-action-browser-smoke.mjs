@@ -1115,6 +1115,42 @@ async function assertLocalAssetEditorCanSave(
   await expectVisible(page.getByText(externalWritesCopy), `${label} external-write disabled editor copy`);
   await expectVisible(page.getByText(wordpressBlockedCopy), `${label} WordPress block editor copy`);
   await expectVisible(page.getByText(woocommerceBlockedCopy), `${label} WooCommerce block editor copy`);
+  const expectedSafetyCapabilities = [
+    { copy: externalWritesCopy, key: "external_writes" },
+    { copy: wordpressBlockedCopy, key: "wordpress_draft_creation" },
+    { copy: woocommerceBlockedCopy, key: "woocommerce_writes" }
+  ];
+  const safetyPanel = editor.locator("[data-asset-editor-safety='blocked']");
+  await expectVisible(safetyPanel, `${label} editor safety diagnostics`);
+  const blockedCapabilityCount = await safetyPanel.getAttribute("data-asset-editor-blocked-capability-count");
+  assert(
+    blockedCapabilityCount === String(expectedSafetyCapabilities.length),
+    `${label} editor blocked capability count mismatch: expected ${expectedSafetyCapabilities.length}, got ${
+      blockedCapabilityCount ?? "missing"
+    }`
+  );
+  const blockedCapabilities = await safetyPanel
+    .locator("[data-asset-editor-blocked-capability='true']")
+    .evaluateAll((elements) =>
+      elements.map((element) => ({
+        key: element.getAttribute("data-asset-editor-blocked-capability-key"),
+        text: element.textContent ?? ""
+      }))
+    );
+  assert(
+    blockedCapabilities.length === expectedSafetyCapabilities.length,
+    `${label} editor blocked capability rows mismatch: expected ${
+      expectedSafetyCapabilities.length
+    }, got ${blockedCapabilities.length}`
+  );
+  for (const expectedCapability of expectedSafetyCapabilities) {
+    const matchingCapability = blockedCapabilities.find((capability) => capability.key === expectedCapability.key);
+    assert(matchingCapability, `${label} editor missing blocked capability key: ${expectedCapability.key}`);
+    assert(
+      matchingCapability.text.includes(expectedCapability.copy),
+      `${label} editor blocked capability ${expectedCapability.key} missing visible safety copy`
+    );
+  }
   const editorQaCheckCount = await editor.getAttribute("data-asset-editor-qa-check-count");
   const editorQaPendingCount = await editor.getAttribute("data-asset-editor-qa-pending-count");
   const editorQaReadinessState = await editor.getAttribute("data-asset-editor-qa-readiness-state");

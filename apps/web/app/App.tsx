@@ -1935,6 +1935,11 @@ function LocalAssetEditor({
   const editorQaPendingCount = asset.qaChecks.filter((check) => check.status === "pending").length;
   const editorQaReadinessState =
     asset.qaChecks.length === 0 ? "not_applicable" : editorQaPendingCount > 0 ? "pending_qa" : "qa_clear";
+  const editorBlockedCapabilities = [
+    { key: "external_writes", label: copy.externalWritesDisabled },
+    { key: "wordpress_draft_creation", label: copy.wordpressBlocked },
+    { key: "woocommerce_writes", label: copy.woocommerceBlocked }
+  ];
 
   useEffect(() => {
     setTitle(asset.title);
@@ -1961,10 +1966,21 @@ function LocalAssetEditor({
         </div>
         <span className="status safe">local save</span>
       </div>
-      <div className="asset-editor-safety" aria-label="Asset editor safety">
-        <span>{copy.externalWritesDisabled}</span>
-        <span>{copy.wordpressBlocked}</span>
-        <span>{copy.woocommerceBlocked}</span>
+      <div
+        aria-label="Asset editor safety"
+        className="asset-editor-safety"
+        data-asset-editor-blocked-capability-count={editorBlockedCapabilities.length}
+        data-asset-editor-safety="blocked"
+      >
+        {editorBlockedCapabilities.map((capability) => (
+          <span
+            data-asset-editor-blocked-capability="true"
+            data-asset-editor-blocked-capability-key={capability.key}
+            key={capability.key}
+          >
+            {capability.label}
+          </span>
+        ))}
       </div>
       {asset.qaChecks.length > 0 && (
         <div className="kv-list" data-asset-editor-qa-summary="true">

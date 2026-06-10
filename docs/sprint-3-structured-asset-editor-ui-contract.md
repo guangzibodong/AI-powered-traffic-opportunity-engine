@@ -220,6 +220,7 @@ The first local editor slice is implemented with a conservative scope:
 - Local asset editor renders the same safe QA detail labels with editor-specific `data-asset-editor-qa-detail`, `data-asset-editor-qa-key`, and `data-asset-editor-qa-status` diagnostics while keeping QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, and commerce-write controls absent.
 - Local asset editor exposes read-only QA aggregate diagnostics with `data-asset-editor-qa-check-count`, `data-asset-editor-qa-pending-count`, and `data-asset-editor-qa-readiness-state`, derived only from safe local QA previews.
 - Local asset editor renders a compact visible read-only QA aggregate summary with `data-asset-editor-qa-summary`, `data-asset-editor-qa-readiness`, and `data-asset-editor-qa-checks`, showing bilingual-safe readiness and pending/check copy without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
+- Local asset editor renders a read-only safety strip with `data-asset-editor-safety`, `data-asset-editor-blocked-capability-count`, and `data-asset-editor-blocked-capability-key`, keeping external writes, WordPress draft creation, and WooCommerce writes visible as blocked diagnostics only.
 
 Still gated:
 
