@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset editor per-field dirty diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor dirty field key diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -260,6 +260,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-092 | 226 | done | Frontend Product Engineer / UI Systems Engineer / QA Lead | Add visible local asset editor dirty-state summary. | The local asset editor renders a visible read-only dirty-state summary row for clean and dirty local field states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-QA-093 | 227 | done | Frontend Product Engineer / QA Lead | Add local asset editor dirty field count diagnostics. | The local asset editor exposes read-only dirty field count diagnostics across clean, edited, saved, and refilled states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-QA-094 | 228 | done | Frontend Product Engineer / QA Lead | Add local asset editor per-field dirty diagnostics. | Each local asset editor field row exposes a read-only clean/dirty state that reconciles with the root dirty field count across open, edit, save, and refill states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
+| TASK-S3-QA-095 | 229 | done | Frontend Product Engineer / QA Lead | Add local asset editor dirty field key diagnostics. | The local asset editor root and visible dirty summary expose read-only dirty field key lists that reconcile with per-field clean/dirty states while adding no QA mutation, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 
 ## Blockers
 
@@ -666,6 +667,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Visible local asset editor dirty-state summary is verified by red-green static and browser coverage that first failed on missing `data-asset-editor-dirty-summary`, then passed with visible clean/dirty rows, refreshed desktop/mobile QA screenshots, full backend/frontend/browser verification, and no unsafe mutation controls.
 - Local asset editor dirty field count diagnostics are verified by red-green static and browser coverage that first failed on missing dirty count attributes, then passed with root and visible-summary dirty field counts across clean, edited, saved, and refilled states, plus full backend/frontend/browser verification and no unsafe mutation controls.
 - Local asset editor per-field dirty diagnostics are verified by red-green static and browser coverage that first failed on missing `data-asset-editor-field-dirty-state`, then passed with title, slug, meta title, meta description, structured section, and editor note clean/dirty markers reconciled against the root dirty field count, plus full backend/frontend/browser verification and no unsafe mutation controls.
+- Local asset editor dirty field key diagnostics are verified by red-green static and browser coverage that first failed on missing dirty field key attributes, then passed with root and visible-summary key lists for clean, edited, saved, and refilled local draft states, plus full backend/frontend/browser verification and no unsafe mutation controls.
 
 ## Completion Rule
 

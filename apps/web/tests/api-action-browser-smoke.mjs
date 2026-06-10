@@ -1106,9 +1106,16 @@ async function assertLocalAssetEditorSaveState(editor, expectedState, label) {
   );
 }
 
-async function assertLocalAssetEditorDirtyState(editor, expectedState, label, expectedDirtyFieldCount = null) {
+async function assertLocalAssetEditorDirtyState(
+  editor,
+  expectedState,
+  label,
+  expectedDirtyFieldCount = null,
+  expectedDirtyFieldKeys = null
+) {
   const dirtyState = await editor.getAttribute("data-asset-editor-dirty-state");
   const dirtyFieldCount = await editor.getAttribute("data-asset-editor-dirty-field-count");
+  const dirtyFieldKeys = await editor.getAttribute("data-asset-editor-dirty-field-keys");
   assert(
     dirtyState === expectedState,
     `${label} editor dirty state mismatch: expected ${expectedState}, got ${dirtyState ?? "missing"}`
@@ -1121,15 +1128,35 @@ async function assertLocalAssetEditorDirtyState(editor, expectedState, label, ex
       }`
     );
   }
+  if (expectedDirtyFieldKeys !== null) {
+    const actualDirtyFieldKeys = dirtyFieldKeys === "none" ? [] : (dirtyFieldKeys ?? "").split(",").filter(Boolean);
+    assert(
+      JSON.stringify(actualDirtyFieldKeys) === JSON.stringify(expectedDirtyFieldKeys),
+      `${label} editor dirty field keys mismatch: expected ${expectedDirtyFieldKeys.join(",") || "none"}, got ${
+        dirtyFieldKeys ?? "missing"
+      }`
+    );
+  }
   const dirtySummary = editor.locator("[data-asset-editor-dirty-summary='true']");
   await expectVisible(dirtySummary, `${label} visible editor dirty-state summary row`);
   const visibleDirtyFieldCount = await dirtySummary.getAttribute("data-asset-editor-dirty-summary-field-count");
+  const visibleDirtyFieldKeys = await dirtySummary.getAttribute("data-asset-editor-dirty-summary-field-keys");
   if (expectedDirtyFieldCount !== null) {
     assert(
       visibleDirtyFieldCount === String(expectedDirtyFieldCount),
       `${label} visible editor dirty field count mismatch: expected ${expectedDirtyFieldCount}, got ${
         visibleDirtyFieldCount ?? "missing"
       }`
+    );
+  }
+  if (expectedDirtyFieldKeys !== null) {
+    const actualVisibleDirtyFieldKeys =
+      visibleDirtyFieldKeys === "none" ? [] : (visibleDirtyFieldKeys ?? "").split(",").filter(Boolean);
+    assert(
+      JSON.stringify(actualVisibleDirtyFieldKeys) === JSON.stringify(expectedDirtyFieldKeys),
+      `${label} visible editor dirty field keys mismatch: expected ${
+        expectedDirtyFieldKeys.join(",") || "none"
+      }, got ${visibleDirtyFieldKeys ?? "missing"}`
     );
   }
   const visibleDirtyState = ((await dirtySummary.locator("strong").textContent()) ?? "").trim();
@@ -1321,7 +1348,7 @@ async function assertLocalAssetEditorCanSave(
   const editor = page.locator(".asset-editor-panel");
   await expectVisible(editor, `${label} local asset editor`);
   await assertLocalAssetEditorSaveState(editor, "idle", `${label} initial`);
-  await assertLocalAssetEditorDirtyState(editor, "clean", `${label} initial`, 0);
+  await assertLocalAssetEditorDirtyState(editor, "clean", `${label} initial`, 0, []);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "clean",
@@ -1459,7 +1486,7 @@ async function assertLocalAssetEditorCanSave(
 
   await editor.locator("input").first().fill(titleValue);
   await editor.locator("textarea").first().fill("Compare portable espresso kits for camp coffee.");
-  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 2);
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} edited`, 2, ["title", "meta_description"]);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "clean",
@@ -1478,7 +1505,7 @@ async function assertLocalAssetEditorCanSave(
   await clickUnique(editor.getByRole("button", { name: saveName }), `${label} local save button`);
   await expectVisible(page.getByText(saveSuccessCopy), `${label} local save success copy`);
   await assertLocalAssetEditorSaveState(editor, "saved", `${label} saved`);
-  await assertLocalAssetEditorDirtyState(editor, "clean", `${label} saved`, 0);
+  await assertLocalAssetEditorDirtyState(editor, "clean", `${label} saved`, 0, []);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "clean",
@@ -1505,7 +1532,11 @@ async function assertLocalAssetEditorFieldReadinessCanBecomeComplete(
   await editor.locator("textarea").nth(0).fill("Compare portable espresso kits for camp coffee.");
   await editor.locator("textarea").nth(1).fill("Local section covers buyer objections and comparisons.");
   await editor.locator("textarea").nth(2).fill("Keep claims grounded in imported evidence.");
-  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} complete`, 3);
+  await assertLocalAssetEditorDirtyState(editor, "dirty", `${label} complete`, 3, [
+    "meta_description",
+    "structured_section",
+    "editor_note"
+  ]);
   await assertLocalAssetEditorFieldDiagnostics(editor, {
     expectedDirtyStates: {
       editor_note: "dirty",

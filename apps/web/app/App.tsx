@@ -1939,13 +1939,17 @@ function LocalAssetEditor({
   const isSaving = feedback?.kind === "pending";
   const editorSaveState = isSaving ? "pending" : feedback?.kind === "saved" ? "saved" : feedback?.kind === "failed" ? "failed" : "idle";
   const editorFieldDirtyStates = {
-    editor_note: editorNote !== "",
-    meta_description: metaDescription !== "",
-    meta_title: metaTitle !== asset.title,
+    title: title !== asset.title,
     slug: slug !== editorDefaultSlug,
+    meta_title: metaTitle !== asset.title,
+    meta_description: metaDescription !== "",
     structured_section: sectionBody !== "",
-    title: title !== asset.title
+    editor_note: editorNote !== ""
   };
+  const editorDirtyFieldKeys = (Object.keys(editorFieldDirtyStates) as Array<keyof typeof editorFieldDirtyStates>).filter(
+    (field) => editorFieldDirtyStates[field]
+  );
+  const editorDirtyFieldKeyList = editorDirtyFieldKeys.length > 0 ? editorDirtyFieldKeys.join(",") : "none";
   const editorDirtyFieldCount = Object.values(editorFieldDirtyStates).filter(Boolean).length;
   const editorDirtyState = editorDirtyFieldCount > 0 ? "dirty" : "clean";
   const editorFieldDirtyState = (field: keyof typeof editorFieldDirtyStates) =>
@@ -1980,6 +1984,7 @@ function LocalAssetEditor({
       className="panel asset-editor-panel"
       data-asset-editor="local-only"
       data-asset-editor-dirty-field-count={editorDirtyFieldCount}
+      data-asset-editor-dirty-field-keys={editorDirtyFieldKeyList}
       data-asset-editor-dirty-state={editorDirtyState}
       data-asset-editor-empty-field-count={editorEmptyFieldCount}
       data-asset-editor-field-count={editorFieldCount}
@@ -2037,6 +2042,7 @@ function LocalAssetEditor({
           className="kv-row"
           data-asset-editor-dirty-summary="true"
           data-asset-editor-dirty-summary-field-count={editorDirtyFieldCount}
+          data-asset-editor-dirty-summary-field-keys={editorDirtyFieldKeyList}
         >
           <span>{copy.dirtyState}</span>
           <strong>{editorDirtyState}</strong>
