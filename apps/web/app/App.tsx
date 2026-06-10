@@ -1636,20 +1636,32 @@ function AssetWorkspacePanel({
       )}
       {visibleAssets.length > 0 ? (
         <div className="mini-list" data-asset-row-aggregate="true" data-visible-asset-count={visibleAssets.length}>
-          {visibleAssets.map((asset) => (
-            <div
-              className="mini-card"
-              data-asset-claim-count={asset.claimCount}
-              data-asset-content-block-count={asset.contentBlockCount}
-              data-asset-content-block-types={asset.contentBlockTypes.join(",")}
-              data-asset-id={asset.id}
-              data-asset-qa-check-count={asset.qaCheckCount}
-              data-asset-qa-pending-count={asset.qaPendingCount}
-              data-asset-review-state={asset.reviewState}
-              data-asset-row-claim-counts-reconciled={asset.claimLedger.length === asset.claimCount}
-              data-asset-row-claim-detail-count={asset.claimLedger.length}
-              key={asset.id}
-            >
+          {visibleAssets.map((asset) => {
+            const assetClaimSourceEntries = Object.entries(
+              asset.claimLedger.reduce<Record<string, number>>((counts, claim) => {
+                counts[claim.source] = (counts[claim.source] ?? 0) + 1;
+                return counts;
+              }, {})
+            ).sort(([left], [right]) => left.localeCompare(right));
+            const assetClaimSourceTotal = assetClaimSourceEntries.reduce((sum, [, count]) => sum + count, 0);
+            const assetClaimSourceCountsReconciled = assetClaimSourceTotal === asset.claimLedger.length;
+            return (
+              <div
+                className="mini-card"
+                data-asset-claim-count={asset.claimCount}
+                data-asset-content-block-count={asset.contentBlockCount}
+                data-asset-content-block-types={asset.contentBlockTypes.join(",")}
+                data-asset-id={asset.id}
+                data-asset-qa-check-count={asset.qaCheckCount}
+                data-asset-qa-pending-count={asset.qaPendingCount}
+                data-asset-review-state={asset.reviewState}
+                data-asset-row-claim-counts-reconciled={asset.claimLedger.length === asset.claimCount}
+                data-asset-row-claim-detail-count={asset.claimLedger.length}
+                data-asset-row-claim-source-count={assetClaimSourceEntries.length}
+                data-asset-row-claim-source-counts-reconciled={assetClaimSourceCountsReconciled}
+                data-asset-row-claim-source-total-count={assetClaimSourceTotal}
+                key={asset.id}
+              >
               <strong>{asset.title}</strong>
               <span>
                 {asset.assetType} / {asset.reviewState} / {asset.contentBlockCount} blocks
@@ -1668,6 +1680,21 @@ function AssetWorkspacePanel({
                       key={`${asset.id}-${claim.id}-${claim.source}`}
                     >
                       {claim.source}:{claim.text}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {assetClaimSourceEntries.length > 0 && (
+                <div className="inline-diagnostics" data-asset-row-claim-source-list="true">
+                  {assetClaimSourceEntries.map(([source, count]) => (
+                    <span
+                      className="pill muted-pill"
+                      data-asset-row-claim-source-key={source}
+                      data-asset-row-claim-source-row="true"
+                      data-asset-row-claim-source-row-count={count}
+                      key={`${asset.id}-claim-source-${source}`}
+                    >
+                      {source} {count}
                     </span>
                   ))}
                 </div>
@@ -1692,8 +1719,9 @@ function AssetWorkspacePanel({
                   {reviewLocalDraftCopy}
                 </button>
               )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
           {assetOverflowCount > 0 && (
             <p className="muted" data-asset-overflow-label={assetOverflowCount}>
               {assetOverflowCount} more asset candidates

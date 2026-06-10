@@ -1050,6 +1050,59 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
           `${label} asset row ${expectedAsset.id} missing claim detail ${expectedClaim.id}`
         );
       }
+      const expectedClaimSourceDistribution = expectedAsset.claims.reduce((counts, claim) => {
+        counts[claim.source] = (counts[claim.source] ?? 0) + 1;
+        return counts;
+      }, {});
+      const expectedClaimSourceEntries = Object.entries(expectedClaimSourceDistribution).sort(([left], [right]) =>
+        left.localeCompare(right)
+      );
+      const rowClaimSourceCount = Number(await row.getAttribute("data-asset-row-claim-source-count"));
+      const rowClaimSourceTotal = Number(await row.getAttribute("data-asset-row-claim-source-total-count"));
+      const rowClaimSourceReconciled = await row.getAttribute("data-asset-row-claim-source-counts-reconciled");
+      const rowClaimSourceRows = await row.locator("[data-asset-row-claim-source-row='true']").evaluateAll((elements) =>
+        elements.map((element) => ({
+          count: Number(element.getAttribute("data-asset-row-claim-source-row-count")),
+          source: element.getAttribute("data-asset-row-claim-source-key"),
+          text: element.textContent ?? ""
+        }))
+      );
+      assert(
+        rowClaimSourceCount === expectedClaimSourceEntries.length,
+        `${label} asset row ${expectedAsset.id} claim source count mismatch: expected ${
+          expectedClaimSourceEntries.length
+        }, got ${rowClaimSourceCount}`
+      );
+      assert(
+        rowClaimSourceTotal === expectedAsset.claims.length,
+        `${label} asset row ${expectedAsset.id} claim source total mismatch: expected ${
+          expectedAsset.claims.length
+        }, got ${rowClaimSourceTotal}`
+      );
+      assert(
+        rowClaimSourceReconciled === "true",
+        `${label} asset row ${expectedAsset.id} claim source reconciliation marker must be true, got ${
+          rowClaimSourceReconciled ?? "missing"
+        }`
+      );
+      assert(
+        rowClaimSourceRows.length === expectedClaimSourceEntries.length,
+        `${label} asset row ${expectedAsset.id} claim source row count mismatch: expected ${
+          expectedClaimSourceEntries.length
+        }, got ${rowClaimSourceRows.length}`
+      );
+      assert(
+        rowClaimSourceRows.reduce((sum, sourceRow) => sum + sourceRow.count, 0) === expectedAsset.claims.length,
+        `${label} asset row ${expectedAsset.id} claim source rows must reconcile with detail count`
+      );
+      for (const [source, count] of expectedClaimSourceEntries) {
+        assert(
+          rowClaimSourceRows.some(
+            (sourceRow) => sourceRow.source === source && sourceRow.count === count && sourceRow.text.includes(`${source} ${count}`)
+          ),
+          `${label} asset row ${expectedAsset.id} missing claim source distribution row ${source}:${count}`
+        );
+      }
       const serializedClaims = JSON.stringify(claimRows);
       for (const forbidden of ["metadata", "credential", "token", "secret", "password", "api_key", "published"]) {
         assert(

@@ -395,6 +395,18 @@ assert(
   app.includes("data-asset-row-claim-counts-reconciled"),
   "Asset workspace UI must expose stable row-level claim count reconciliation diagnostics"
 );
+assert(
+  app.includes("data-asset-row-claim-source-count"),
+  "Asset workspace UI must expose stable row-level claim source count diagnostics"
+);
+assert(
+  app.includes("data-asset-row-claim-source-key"),
+  "Asset workspace UI must expose stable row-level claim source key diagnostics"
+);
+assert(
+  app.includes("data-asset-row-claim-source-counts-reconciled"),
+  "Asset workspace UI must expose stable row-level claim source reconciliation diagnostics"
+);
 assert(app.includes("data-asset-claim-detail"), "Asset workspace UI must expose stable claim detail diagnostics");
 assert(app.includes("data-asset-claim-id"), "Asset workspace UI must expose stable claim id diagnostics");
 assert(app.includes("data-asset-claim-source"), "Asset workspace UI must expose stable claim source diagnostics");
