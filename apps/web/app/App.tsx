@@ -1653,6 +1653,7 @@ function AssetWorkspacePanel({
             ).sort(([left], [right]) => left.localeCompare(right));
             const assetQaStatusTotal = assetQaStatusEntries.reduce((sum, [, count]) => sum + count, 0);
             const assetQaStatusCountsReconciled = assetQaStatusTotal === asset.qaChecks.length;
+            const assetQaPendingDetailCount = asset.qaChecks.filter((check) => check.status === "pending").length;
             return (
               <div
                 className="mini-card"
@@ -1663,6 +1664,10 @@ function AssetWorkspacePanel({
                 data-asset-qa-check-count={asset.qaCheckCount}
                 data-asset-qa-pending-count={asset.qaPendingCount}
                 data-asset-review-state={asset.reviewState}
+                data-asset-row-qa-counts-reconciled={asset.qaChecks.length === asset.qaCheckCount}
+                data-asset-row-qa-detail-count={asset.qaChecks.length}
+                data-asset-row-qa-pending-counts-reconciled={assetQaPendingDetailCount === asset.qaPendingCount}
+                data-asset-row-qa-pending-detail-count={assetQaPendingDetailCount}
                 data-asset-row-qa-status-count={assetQaStatusEntries.length}
                 data-asset-row-qa-status-counts-reconciled={assetQaStatusCountsReconciled}
                 data-asset-row-qa-status-total-count={assetQaStatusTotal}

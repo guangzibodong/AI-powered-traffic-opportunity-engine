@@ -1006,6 +1006,35 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
           expectedAsset.qaDetails.length
         }, got ${qaDetailRows.length}`
       );
+      const rowQaDetailCount = Number(await row.getAttribute("data-asset-row-qa-detail-count"));
+      const rowQaPendingDetailCount = Number(await row.getAttribute("data-asset-row-qa-pending-detail-count"));
+      const rowQaCountsReconciled = await row.getAttribute("data-asset-row-qa-counts-reconciled");
+      const rowQaPendingCountsReconciled = await row.getAttribute("data-asset-row-qa-pending-counts-reconciled");
+      const expectedPendingQaDetails = expectedAsset.qaDetails.filter((detail) => detail.status === "pending").length;
+      assert(
+        rowQaDetailCount === expectedAsset.qaDetails.length,
+        `${label} asset row ${expectedAsset.id} QA detail diagnostic mismatch: expected ${
+          expectedAsset.qaDetails.length
+        }, got ${rowQaDetailCount}`
+      );
+      assert(
+        rowQaPendingDetailCount === expectedPendingQaDetails,
+        `${label} asset row ${expectedAsset.id} QA pending detail diagnostic mismatch: expected ${
+          expectedPendingQaDetails
+        }, got ${rowQaPendingDetailCount}`
+      );
+      assert(
+        rowQaCountsReconciled === "true",
+        `${label} asset row ${expectedAsset.id} QA count reconciliation marker must be true, got ${
+          rowQaCountsReconciled ?? "missing"
+        }`
+      );
+      assert(
+        rowQaPendingCountsReconciled === "true",
+        `${label} asset row ${expectedAsset.id} QA pending count reconciliation marker must be true, got ${
+          rowQaPendingCountsReconciled ?? "missing"
+        }`
+      );
       for (const expectedQaDetail of expectedAsset.qaDetails) {
         assert(
           qaDetailRows.some(

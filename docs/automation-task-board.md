@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 visible asset row QA status distribution diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 visible asset row QA count reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -276,6 +276,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-108 | 242 | done | Frontend Product Engineer / QA Lead | Add visible asset row claim count reconciliation diagnostics. | Each visible asset workspace row exposes read-only claim detail count and reconciliation markers proving rendered safe claim details match that row's safe claim count, without claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 | TASK-S3-QA-109 | 243 | done | Frontend Product Engineer / QA Lead | Add visible asset row claim source distribution diagnostics. | Each visible asset workspace row exposes read-only claim source count rows and reconciliation markers proving row-level source counts match that row's safe claim details, without claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 | TASK-S3-QA-110 | 244 | done | Frontend Product Engineer / QA Lead | Add visible asset row QA status distribution diagnostics. | Each visible asset workspace row exposes read-only QA status count rows and reconciliation markers proving row-level status counts match that row's safe QA details, without QA mutation, claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
+| TASK-S3-QA-111 | 245 | done | Frontend Product Engineer / QA Lead | Add visible asset row QA count reconciliation diagnostics. | Each visible asset workspace row exposes read-only QA detail count, pending detail count, and reconciliation markers proving rendered safe QA details match that row's safe QA count and pending count, without QA mutation, claim editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 
 ## Blockers
 
@@ -698,6 +699,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Visible asset row claim count reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing row-level claim detail count markers, then passed with each visible asset row proving rendered safe claim detail rows match that row's safe claim count, plus full backend/frontend/browser verification and no claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 - Visible asset row claim source distribution diagnostics are verified by red-green static and browser coverage that first failed on missing row-level claim source count markers, then passed with each visible asset row proving row-level source counts reconcile with that row's safe claim details, plus full backend/frontend/browser verification and no claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 - Visible asset row QA status distribution diagnostics are verified by red-green static and browser coverage that first failed on missing row-level QA status count markers, then passed with each visible asset row proving row-level status counts reconcile with that row's safe QA details, plus full backend/frontend/browser verification and no QA mutation, claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
+- Visible asset row QA count reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing row-level QA detail count markers, then passed with each visible asset row proving rendered safe QA details and pending details match that row's safe QA counts, plus full backend/frontend/browser verification and no QA mutation, claim editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 
 ## Completion Rule
 
