@@ -295,6 +295,9 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
   const beforeSnapshotId = await comparisonPanel.getAttribute("data-before-snapshot-id");
   const afterSnapshotId = await comparisonPanel.getAttribute("data-after-snapshot-id");
   const comparisonSnapshotCount = await comparisonPanel.getAttribute("data-snapshot-count");
+  const comparisonBlockedCapabilityCount = Number(
+    await comparisonPanel.getAttribute("data-performance-comparison-blocked-capability-count")
+  );
   assert(
     comparisonState === "baseline_only",
     `${label} performance comparison state mismatch: expected baseline_only, got ${comparisonState ?? "missing"}`
@@ -318,6 +321,10 @@ async function assertPerformanceSnapshotPanelIsReadOnly(page, label) {
   assert(
     comparisonSnapshotCount === "1",
     `${label} performance comparison snapshot count mismatch: expected 1, got ${comparisonSnapshotCount ?? "missing"}`
+  );
+  assert(
+    comparisonBlockedCapabilityCount === performanceBlockedCapabilityCount,
+    `${label} performance comparison must expose matching blocked capability count diagnostics`
   );
 
   const comparisonText = ((await comparisonPanel.textContent()) ?? "").toLowerCase();
@@ -453,6 +460,9 @@ async function assertPerformanceSnapshotEmptyStateIsReadOnly(page, label, expect
   const comparisonSafetyScope = await comparisonPanel.getAttribute("data-safety-scope");
   const comparisonExternalWriteAllowed = await comparisonPanel.getAttribute("data-external-write-allowed");
   const comparisonSnapshotCount = await comparisonPanel.getAttribute("data-snapshot-count");
+  const comparisonBlockedCapabilityCount = Number(
+    await comparisonPanel.getAttribute("data-performance-comparison-blocked-capability-count")
+  );
   assert(
     comparisonState === expectedState,
     `${label} performance comparison state mismatch: expected ${expectedState}, got ${comparisonState ?? "missing"}`
@@ -470,6 +480,10 @@ async function assertPerformanceSnapshotEmptyStateIsReadOnly(page, label, expect
     `${label} performance comparison empty-state snapshot count mismatch: expected 0, got ${
       comparisonSnapshotCount ?? "missing"
     }`
+  );
+  assert(
+    comparisonBlockedCapabilityCount === performanceBlockedCapabilityCount,
+    `${label} performance comparison empty state must expose matching blocked capability count diagnostics`
   );
 
   const comparisonEmptyRow = comparisonPanel.locator("[data-performance-comparison-empty-state='true']");
@@ -570,6 +584,9 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
   const comparisonMatchScope = await comparisonPanel.getAttribute("data-match-scope");
   const beforeSnapshotId = await comparisonPanel.getAttribute("data-before-snapshot-id");
   const afterSnapshotId = await comparisonPanel.getAttribute("data-after-snapshot-id");
+  const comparisonBlockedCapabilityCount = Number(
+    await comparisonPanel.getAttribute("data-asset-performance-comparison-blocked-capability-count")
+  );
   assert(comparisonAssetId === assetId, `${label} asset comparison id mismatch: expected ${assetId}, got ${comparisonAssetId}`);
   assert(
     comparisonState === "baseline_only",
@@ -591,6 +608,10 @@ async function assertAssetPerformancePanelIsReadOnly(page, label, assetId, expec
   assert(
     afterSnapshotId === "not_tracked",
     `${label} asset comparison after snapshot id mismatch: expected not_tracked, got ${afterSnapshotId ?? "missing"}`
+  );
+  assert(
+    comparisonBlockedCapabilityCount === blockedCapabilityCount,
+    `${label} asset comparison must expose matching blocked capability count diagnostics`
   );
 
   const comparisonText = ((await comparisonPanel.textContent()) ?? "").toLowerCase();
@@ -700,6 +721,9 @@ async function assertAssetPerformanceEmptyStateIsReadOnly(page, label, assetId, 
   const comparisonMatchScope = await comparisonPanel.getAttribute("data-match-scope");
   const beforeSnapshotId = await comparisonPanel.getAttribute("data-before-snapshot-id");
   const afterSnapshotId = await comparisonPanel.getAttribute("data-after-snapshot-id");
+  const comparisonBlockedCapabilityCount = Number(
+    await comparisonPanel.getAttribute("data-asset-performance-comparison-blocked-capability-count")
+  );
   assert(comparisonAssetId === assetId, `${label} asset comparison id mismatch: expected ${assetId}, got ${comparisonAssetId}`);
   assert(
     comparisonState === expectedState,
@@ -724,6 +748,10 @@ async function assertAssetPerformanceEmptyStateIsReadOnly(page, label, assetId, 
   assert(
     afterSnapshotId === "not_tracked",
     `${label} asset comparison empty after snapshot mismatch: expected not_tracked, got ${afterSnapshotId ?? "missing"}`
+  );
+  assert(
+    comparisonBlockedCapabilityCount === blockedCapabilityCount,
+    `${label} asset comparison empty state must expose matching blocked capability count diagnostics`
   );
 
   const comparisonEmptyRow = comparisonPanel.locator("[data-asset-performance-comparison-empty-state='true']");

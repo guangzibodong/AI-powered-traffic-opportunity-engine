@@ -278,6 +278,10 @@ assert(
   "Performance snapshot UI must expose stable store-specific blocked capability count diagnostics"
 );
 assert(app.includes("performance-comparison-panel"), "Performance snapshot UI must expose a stable before/after comparison panel class");
+assert(
+  app.includes("data-performance-comparison-blocked-capability-count"),
+  "Performance comparison UI must expose stable blocked capability count diagnostics"
+);
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");
 assert(app.includes('data-performance-metric="source"'), "Performance snapshot UI must expose stable source diagnostics");
 assert(
@@ -321,6 +325,10 @@ assert(
 assert(
   app.includes("asset-performance-comparison-panel"),
   "Asset performance UI must expose a stable asset before/after comparison panel class"
+);
+assert(
+  app.includes("data-asset-performance-comparison-blocked-capability-count"),
+  "Asset performance comparison UI must expose stable blocked capability count diagnostics"
 );
 assert(
   app.includes("data-asset-performance-comparison-state"),

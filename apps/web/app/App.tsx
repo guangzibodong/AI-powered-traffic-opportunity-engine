@@ -1370,6 +1370,7 @@ function PerformanceSnapshotPanel({
         data-after-snapshot-id="not_tracked"
         data-before-snapshot-id={primarySnapshot?.id ?? "none"}
         data-external-write-allowed="false"
+        data-performance-comparison-blocked-capability-count={blockedCapabilities.length}
         data-performance-comparison-state={performanceComparisonState}
         data-safety-scope="local_imported_gsc_only"
         data-snapshot-count={performanceSnapshots.snapshots.length}
@@ -1771,6 +1772,7 @@ function AssetPerformancePanel({
         className="performance-comparison-panel asset-performance-comparison-panel"
         data-after-snapshot-id="not_tracked"
         data-asset-id={assetId}
+        data-asset-performance-comparison-blocked-capability-count={blockedCapabilities.length}
         data-asset-performance-comparison-state={assetPerformanceComparisonState}
         data-before-snapshot-id={primarySnapshot?.id ?? "none"}
         data-external-write-allowed="false"
