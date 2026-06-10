@@ -695,6 +695,7 @@ export function App() {
       internal_links?: string[];
       meta_description?: string;
       meta_title?: string;
+      schema_json?: Record<string, unknown>;
       slug?: string;
       title?: string;
     }
@@ -950,6 +951,7 @@ function TrafficOperationsPage({
       internal_links?: string[];
       meta_description?: string;
       meta_title?: string;
+      schema_json?: Record<string, unknown>;
       slug?: string;
       title?: string;
     }
@@ -1904,6 +1906,7 @@ function LocalAssetEditor({
       internal_links?: string[];
       meta_description?: string;
       meta_title?: string;
+      schema_json?: Record<string, unknown>;
       slug?: string;
       title?: string;
     }
@@ -1930,6 +1933,7 @@ function LocalAssetEditor({
     internalLinkReference: locale === "zh" ? "内部链接引用" : "Internal link reference",
     saveLocalDraft: locale === "zh" ? "保存本地草稿" : "Save local draft",
     resetLocalChanges: locale === "zh" ? "重置本地修改" : "Reset local changes",
+    schemaPreview: locale === "zh" ? "Schema 预览" : "Schema preview",
     slug: locale === "zh" ? "Slug" : "Slug",
     structuredSection: locale === "zh" ? "结构化段落" : "Structured section",
     title: locale === "zh" ? "标题" : "Title",
@@ -1945,6 +1949,7 @@ function LocalAssetEditor({
   const [sectionBody, setSectionBody] = useState("");
   const [faqQuestion, setFaqQuestion] = useState("");
   const [faqAnswer, setFaqAnswer] = useState("");
+  const [schemaPreview, setSchemaPreview] = useState("");
   const [internalLinkReference, setInternalLinkReference] = useState("");
   const [editorNote, setEditorNote] = useState("");
   const isSaving = feedback?.kind === "pending";
@@ -1957,6 +1962,7 @@ function LocalAssetEditor({
     structured_section: sectionBody !== "",
     faq_question: faqQuestion !== "",
     faq_answer: faqAnswer !== "",
+    schema_preview: schemaPreview !== "",
     internal_link_reference: internalLinkReference !== "",
     editor_note: editorNote !== ""
   };
@@ -1978,6 +1984,7 @@ function LocalAssetEditor({
     sectionBody,
     faqQuestion,
     faqAnswer,
+    schemaPreview,
     internalLinkReference,
     editorNote
   ];
@@ -2003,6 +2010,7 @@ function LocalAssetEditor({
     setSectionBody("");
     setFaqQuestion("");
     setFaqAnswer("");
+    setSchemaPreview("");
     setInternalLinkReference("");
     setEditorNote("");
   }, [asset.id, asset.title, editorDefaultSlug]);
@@ -2015,6 +2023,7 @@ function LocalAssetEditor({
     setSectionBody("");
     setFaqQuestion("");
     setFaqAnswer("");
+    setSchemaPreview("");
     setInternalLinkReference("");
     setEditorNote("");
   }
@@ -2135,6 +2144,7 @@ function LocalAssetEditor({
             internal_links: internalLinkReference ? [internalLinkReference] : undefined,
             meta_description: metaDescription || undefined,
             meta_title: metaTitle || undefined,
+            schema_json: schemaPreview.trim() ? { "@type": schemaPreview.trim() } : undefined,
             slug,
             title
           });
@@ -2205,6 +2215,18 @@ function LocalAssetEditor({
           >
             <span>{locale === "zh" ? "FAQ 回答" : "FAQ answer"}</span>
             <textarea value={faqAnswer} onChange={(event) => setFaqAnswer(event.target.value)} />
+          </label>
+        </div>
+        <div className="asset-editor-schema-preview-draft" data-asset-editor-schema-preview-draft="true">
+          <label
+            data-asset-editor-field="true"
+            data-asset-editor-field-dirty-state={editorFieldDirtyState("schema_preview")}
+            data-asset-editor-field-key="schema_preview"
+            data-asset-editor-field-state={editorFieldState(schemaPreview)}
+            data-asset-editor-schema-preview="true"
+          >
+            <span>{copy.schemaPreview}</span>
+            <input value={schemaPreview} onChange={(event) => setSchemaPreview(event.target.value)} />
           </label>
         </div>
         <div className="asset-editor-internal-link-draft" data-asset-editor-internal-link-draft="true">

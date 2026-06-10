@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset editor internal link reference field is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor schema preview field is verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -265,6 +265,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-FE-097 | 231 | done | Frontend Product Engineer / QA Lead | Add local asset editor reset-local-changes control. | The local asset editor exposes the allowed `Reset local changes` control, resets unsaved local form fields and dirty diagnostics without closing the editor, and issues no local PATCH, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write requests. |
 | TASK-S3-FE-098 | 232 | done | Frontend Product Engineer / QA Lead | Add local asset editor FAQ draft fields. | The local asset editor exposes one local FAQ question/answer draft pair, includes it in field readiness and dirty diagnostics, saves it through safe `faq_items`, and adds no FAQ schema publishing, WordPress draft, publish, sync, OAuth, credential, navigation, or commerce-write controls. |
 | TASK-S3-FE-099 | 233 | done | Frontend Product Engineer / QA Lead | Add local asset editor internal link reference field. | The local asset editor exposes one store-relative internal link reference field, includes it in field readiness and dirty diagnostics, saves it through safe `internal_links`, and adds no external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
+| TASK-S3-FE-100 | 234 | done | Frontend Product Engineer / QA Lead | Add local asset editor schema preview field. | The local asset editor exposes one plain local schema preview field, includes it in field readiness and dirty diagnostics, saves it through safe `schema_json`, and adds no script tags, schema publishing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls. |
 
 ## Blockers
 
@@ -676,6 +677,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local asset editor reset-local-changes control is verified by red-green static and browser coverage that first failed on missing reset control diagnostics, then passed with local-only form reset behavior, clean dirty diagnostics, no asset PATCH requests, plus full backend/frontend/browser verification and no unsafe mutation controls.
 - Local asset editor FAQ draft fields are verified by red-green static and browser coverage that first failed on missing FAQ field diagnostics, then passed with local FAQ question/answer fields included in field readiness, dirty diagnostics, safe `faq_items` PATCH payloads, plus full backend/frontend/browser verification and no unsafe mutation controls.
 - Local asset editor internal link reference field is verified by red-green static and browser coverage that first failed on missing internal link diagnostics and field count, then passed with one plain store-relative reference field included in readiness and dirty diagnostics, safe `internal_links` PATCH payloads, refreshed desktop/mobile screenshots, full backend/frontend/browser verification, and no href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
+- Local asset editor schema preview field is verified by red-green static and browser coverage that first failed on missing schema preview diagnostics and field count, then passed with one plain local schema preview field included in readiness and dirty diagnostics, safe `schema_json` PATCH payloads, refreshed desktop/mobile screenshots, full backend/frontend/browser verification, and no script tags, schema publishing, href, navigation, WordPress draft, publish, sync, OAuth, credential, or commerce-write controls.
 
 ## Completion Rule
 

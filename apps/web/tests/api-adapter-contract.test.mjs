@@ -442,6 +442,15 @@ assert(
 );
 assert(app.includes("Internal link reference"), "Local asset editor UI must expose English internal link reference copy");
 assert(
+  app.includes("data-asset-editor-schema-preview-draft"),
+  "Local asset editor UI must expose stable schema preview draft diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-schema-preview"),
+  "Local asset editor UI must expose stable schema preview diagnostics"
+);
+assert(app.includes("Schema preview"), "Local asset editor UI must expose English schema preview copy");
+assert(
   app.includes("data-asset-editor-dirty-state"),
   "Local asset editor UI must expose stable dirty-state diagnostics"
 );
