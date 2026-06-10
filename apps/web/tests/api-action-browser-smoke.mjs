@@ -765,6 +765,47 @@ async function assertLocalAssetEditorPendingCloseDoesNotDuplicateRequest(page, l
   assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} delayed response must not reopen editor`);
 }
 
+async function assertLocalAssetEditorPendingCloseReopensNeutralAfterResponse(page, label) {
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} local draft review entry`);
+  const editor = page.locator(".asset-editor-panel");
+  await expectVisible(editor, `${label} local asset editor`);
+  await editor.locator("input").first().fill("Pending close stale feedback title");
+  await clickUnique(editor.getByRole("button", { name: "Save local draft" }), `${label} pending local save button`);
+  await expectVisible(editor.getByRole("button", { name: "Saving local draft" }), `${label} pending local save copy`);
+  await clickUnique(editor.getByRole("button", { name: "Close" }), `${label} close pending local editor button`);
+
+  const closeDeadline = Date.now() + 5_000;
+  while (Date.now() < closeDeadline) {
+    if ((await page.locator(".asset-editor-panel").count()) === 0) break;
+    await delay(50);
+  }
+  assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} pending local editor must close`);
+
+  await delay(700);
+  assert((await page.locator(".asset-editor-panel").count()) === 0, `${label} delayed response must not reopen editor`);
+
+  await clickUnique(page.getByRole("button", { name: "Review local draft" }).first(), `${label} reopen after resolved save`);
+  const reopenedEditor = page.locator(".asset-editor-panel");
+  await expectVisible(reopenedEditor, `${label} reopened local asset editor`);
+  await expectVisible(
+    page.getByText("Only local draft fields are saved."),
+    `${label} reopened editor neutral local-only feedback`
+  );
+  assert(
+    (await page.getByText("Local draft saved").count()) === 0,
+    `${label} resolved pending close response must not leave stale success feedback`
+  );
+  assert(
+    (await page.getByText("Local save failed").count()) === 0,
+    `${label} resolved pending close response must not leave stale failure feedback`
+  );
+  const saveButton = reopenedEditor.getByRole("button", { name: "Save local draft" });
+  await expectVisible(saveButton, `${label} reopened enabled save button`);
+  assert(!(await saveButton.isDisabled()), `${label} reopened save button must be enabled`);
+  const stalePendingCount = await reopenedEditor.getByRole("button", { name: "Saving local draft" }).count();
+  assert(stalePendingCount === 0, `${label} reopened editor must not show stale pending save state`);
+}
+
 async function assertEditorControlsStayWithinPanel(editor, label) {
   const panelBox = await editor.boundingBox();
   assert(panelBox, `${label} editor panel must have a bounding box`);
@@ -3767,6 +3808,118 @@ async function runSmoke() {
       `Pending close issued unsafe requests: ${JSON.stringify(unsafePendingCloseRequests)}`
     );
     await pendingCloseAssetPage.close();
+
+    const pendingCloseStaleAssetPage = await context.newPage();
+    const pendingCloseStaleAssetRequests = [];
+    pendingCloseStaleAssetPage.on("request", (request) => {
+      const url = request.url();
+      if (url.includes(`/api/stores/${storeId}/assets`)) {
+        pendingCloseStaleAssetRequests.push({ method: request.method(), url });
+      }
+    });
+    await pendingCloseStaleAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
+      if (route.request().method() === "GET" && route.request().url().endsWith(`/api/stores/${storeId}/assets`)) {
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            assets: [
+              {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "answer_summary" }],
+                external_write_allowed: false,
+                id: "asset_task_pending_close_stale",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_pending_close_stale",
+                title: "Pending close stale feedback candidate"
+              }
+            ],
+            blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+            external_write_allowed: false,
+            mode: "asset_draft_workspace",
+            store_id: storeId,
+            summary: { asset_drafts: 1, ready_for_wordpress_draft: 0 }
+          })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+    await pendingCloseStaleAssetPage.route(
+      `**/api/stores/${storeId}/assets/asset_task_pending_close_stale`,
+      async (route) => {
+        if (route.request().method() === "PATCH") {
+          await delay(500);
+          await route.fulfill({
+            contentType: "application/json",
+            body: JSON.stringify({
+              asset: {
+                asset_type: "collection_page",
+                blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                content_blocks: [{ type: "section" }],
+                external_write_allowed: false,
+                id: "asset_task_pending_close_stale",
+                qa_checks: [{ key: "seo", status: "pending" }],
+                review_state: "draft_candidate",
+                source_task_id: "task_pending_close_stale",
+                title: "Pending close stale feedback title"
+              },
+              mode: "asset_draft_workspace",
+              store_id: storeId
+            })
+          });
+          return;
+        }
+
+        await route.continue();
+      }
+    );
+    await pendingCloseStaleAssetPage.goto(webUrl);
+    await clickUnique(
+      pendingCloseStaleAssetPage.getByRole("button", { name: "EN" }),
+      "pending close stale asset language switcher"
+    );
+    await assertAssetWorkspacePanelIsReadOnly(pendingCloseStaleAssetPage, 1, "pending close stale asset workspace", [
+      {
+        contentBlockCount: 1,
+        contentBlockTypes: ["answer_summary"],
+        id: "asset_task_pending_close_stale",
+        qaCheckCount: 1,
+        qaPendingCount: 1,
+        reviewState: "draft_candidate",
+        title: "Pending close stale feedback candidate"
+      }
+    ]);
+    await assertLocalAssetEditorPendingCloseReopensNeutralAfterResponse(
+      pendingCloseStaleAssetPage,
+      "pending close stale asset workspace"
+    );
+    const pendingCloseStalePatchRequests = pendingCloseStaleAssetRequests.filter(
+      (request) =>
+        request.method === "PATCH" &&
+        request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_pending_close_stale`)
+    );
+    assert(
+      pendingCloseStalePatchRequests.length === 1,
+      `Pending close stale feedback should issue exactly one local PATCH, got ${JSON.stringify(
+        pendingCloseStaleAssetRequests
+      )}`
+    );
+    const unsafePendingCloseStaleRequests = pendingCloseStaleAssetRequests.filter(
+      (request) =>
+        request.method !== "GET" &&
+        !(
+          request.method === "PATCH" &&
+          request.url.endsWith(`/api/stores/${storeId}/assets/asset_task_pending_close_stale`)
+        )
+    );
+    assert(
+      unsafePendingCloseStaleRequests.length === 0,
+      `Pending close stale feedback issued unsafe requests: ${JSON.stringify(unsafePendingCloseStaleRequests)}`
+    );
+    await pendingCloseStaleAssetPage.close();
 
     const qaClearAssetPage = await context.newPage();
     await qaClearAssetPage.route(`**/api/stores/${storeId}/assets`, async (route) => {
