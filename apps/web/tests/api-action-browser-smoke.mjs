@@ -2476,6 +2476,38 @@ async function assertAssetWorkspaceRowAggregateReconciles(page, label) {
   );
 }
 
+async function assertAssetWorkspaceClaimAggregateReconciles(page, expectedTotal, expectedVisible, expectedHidden, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for claim aggregate diagnostics`);
+  const totalClaimCount = Number(await assetPanel.getAttribute("data-asset-claim-count"));
+  const visibleClaimCount = Number(await assetPanel.getAttribute("data-visible-asset-claim-count"));
+  const hiddenClaimCount = Number(await assetPanel.getAttribute("data-hidden-asset-claim-count"));
+  const reconciled = await assetPanel.getAttribute("data-asset-claim-counts-reconciled");
+  const visibleRows = await assetPanel.locator("[data-asset-id]").all();
+  let actualVisibleClaimCount = 0;
+  for (const row of visibleRows) {
+    actualVisibleClaimCount += Number(await row.getAttribute("data-asset-claim-count"));
+  }
+  assert(totalClaimCount === expectedTotal, `${label} total claim count mismatch: expected ${expectedTotal}, got ${totalClaimCount}`);
+  assert(
+    visibleClaimCount === expectedVisible,
+    `${label} visible claim count mismatch: expected ${expectedVisible}, got ${visibleClaimCount}`
+  );
+  assert(
+    hiddenClaimCount === expectedHidden,
+    `${label} hidden claim count mismatch: expected ${expectedHidden}, got ${hiddenClaimCount}`
+  );
+  assert(
+    actualVisibleClaimCount === visibleClaimCount,
+    `${label} visible claim rows must reconcile with visible claim count: expected ${visibleClaimCount}, got ${actualVisibleClaimCount}`
+  );
+  assert(reconciled === "true", `${label} claim count reconciliation marker must be true, got ${reconciled ?? "missing"}`);
+  assert(
+    visibleClaimCount + hiddenClaimCount === totalClaimCount,
+    `${label} visible plus hidden claims must equal total claims`
+  );
+}
+
 async function assertImportedPreviewState(page, expectedAvailability, expectedWarningCount, label) {
   const importedPanel = page.locator(".imported-preview-panel");
   const availability = await importedPanel.getAttribute("data-preview-availability");
@@ -3817,6 +3849,13 @@ async function runSmoke() {
               {
                 asset_type: "product_seo",
                 blocked_capabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
+                claim_ledger: [
+                  {
+                    id: "claim_product_metadata",
+                    source: "local_evidence",
+                    text: "Product SEO draft should keep claims grounded in imported product data."
+                  }
+                ],
                 content_blocks: [{ type: "metadata_only" }],
                 external_write_allowed: false,
                 id: "asset_task_004",
@@ -4026,6 +4065,7 @@ async function runSmoke() {
     await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
+    await assertAssetWorkspaceClaimAggregateReconciles(populatedAssetPage, 3, 2, 1, "populated asset workspace");
     const populatedEditor = await assertLocalAssetEditorCanSave(populatedAssetPage, "populated asset workspace", {
       expectedClaims: [
         {

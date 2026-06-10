@@ -390,6 +390,12 @@ assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose s
 assert(app.includes("data-asset-claim-detail"), "Asset workspace UI must expose stable claim detail diagnostics");
 assert(app.includes("data-asset-claim-id"), "Asset workspace UI must expose stable claim id diagnostics");
 assert(app.includes("data-asset-claim-source"), "Asset workspace UI must expose stable claim source diagnostics");
+assert(
+  app.includes("data-asset-claim-counts-reconciled"),
+  "Asset workspace UI must expose stable claim count reconciliation diagnostics"
+);
+assert(app.includes("data-visible-asset-claim-count"), "Asset workspace UI must expose visible claim count diagnostics");
+assert(app.includes("data-hidden-asset-claim-count"), "Asset workspace UI must expose hidden claim count diagnostics");
 assert(app.includes("Claim ledger"), "Asset workspace UI must expose English claim ledger copy");
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");

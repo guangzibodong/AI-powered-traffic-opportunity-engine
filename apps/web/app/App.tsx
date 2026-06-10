@@ -1495,6 +1495,9 @@ function AssetWorkspacePanel({
     }, {})
   ).sort(([left], [right]) => left.localeCompare(right));
   const claimTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.claimCount, 0);
+  const visibleClaimTotal = visibleAssets.reduce((sum, asset) => sum + asset.claimCount, 0);
+  const hiddenClaimTotal = claimTotal - visibleClaimTotal;
+  const claimCountsReconciled = visibleClaimTotal + hiddenClaimTotal === claimTotal;
   const qaCheckTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
   const qaPendingTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaPendingCount, 0);
   const qaReadinessState =
@@ -1510,12 +1513,16 @@ function AssetWorkspacePanel({
   return (
     <section
       className="panel asset-workspace-panel"
+      data-asset-claim-count={claimTotal}
+      data-asset-claim-counts-reconciled={claimCountsReconciled}
       data-asset-draft-count={assetWorkspace.assets.length}
       data-asset-overflow-count={assetOverflowCount}
       data-asset-qa-readiness-state={qaReadinessState}
       data-asset-workspace-availability={assetWorkspace.availability}
       data-blocked-capability-count={blockedCapabilities.length}
       data-external-write-allowed="false"
+      data-hidden-asset-claim-count={hiddenClaimTotal}
+      data-visible-asset-claim-count={visibleClaimTotal}
     >
       <div className="panel-heading">
         <div>
