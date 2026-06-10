@@ -227,6 +227,7 @@ The first local editor slice is implemented with a conservative scope:
 - Local asset editor renders a read-only field reconciliation marker with `data-asset-editor-field-counts-reconciled`, proving the per-field rows reconcile with field count, filled count, and empty count across initial, edited, and saved local draft states without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Local asset editor renders a read-only field readiness state with `data-asset-editor-field-readiness-state`, distinguishing `incomplete_fields` from `all_fields_filled` without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 - Local asset editor renders a visible read-only field readiness summary row with `data-asset-editor-field-readiness`, keeping incomplete and complete local draft field states visible without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
+- Local asset editor renders read-only readiness row count diagnostics with `data-asset-editor-field-readiness-filled-count`, `data-asset-editor-field-readiness-empty-count`, and `data-asset-editor-field-readiness-total-count`, keeping the visible readiness row reconcilable with field totals without QA mutation, draft creation, publishing, sync, OAuth, credential, navigation, or commerce-write controls.
 
 Still gated:
 

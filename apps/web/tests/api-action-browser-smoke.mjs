@@ -1140,6 +1140,33 @@ async function assertLocalAssetEditorFieldDiagnostics(
   await expectVisible(fieldSummary.getByText(fieldCopy), `${label} visible editor field summary label`);
   const fieldReadinessSummary = fieldSummary.locator("[data-asset-editor-field-readiness='true']");
   await expectVisible(fieldReadinessSummary, `${label} visible editor field readiness summary row`);
+  const visibleReadinessFilledCount = await fieldReadinessSummary.getAttribute(
+    "data-asset-editor-field-readiness-filled-count"
+  );
+  const visibleReadinessEmptyCount = await fieldReadinessSummary.getAttribute(
+    "data-asset-editor-field-readiness-empty-count"
+  );
+  const visibleReadinessTotalCount = await fieldReadinessSummary.getAttribute(
+    "data-asset-editor-field-readiness-total-count"
+  );
+  assert(
+    visibleReadinessFilledCount === String(expectedFilled),
+    `${label} visible field readiness filled count mismatch: expected ${expectedFilled}, got ${
+      visibleReadinessFilledCount ?? "missing"
+    }`
+  );
+  assert(
+    visibleReadinessEmptyCount === String(expectedEmpty),
+    `${label} visible field readiness empty count mismatch: expected ${expectedEmpty}, got ${
+      visibleReadinessEmptyCount ?? "missing"
+    }`
+  );
+  assert(
+    visibleReadinessTotalCount === fieldCount,
+    `${label} visible field readiness total count mismatch: expected ${fieldCount}, got ${
+      visibleReadinessTotalCount ?? "missing"
+    }`
+  );
   const visibleReadinessState = ((await fieldReadinessSummary.locator("strong").textContent()) ?? "").trim();
   assert(
     visibleReadinessState === expectedReadinessState,

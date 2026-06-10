@@ -455,6 +455,18 @@ assert(
   app.includes('data-asset-editor-field-readiness="true"'),
   "Local asset editor UI must expose a stable visible field readiness summary"
 );
+assert(
+  app.includes("data-asset-editor-field-readiness-filled-count"),
+  "Local asset editor field readiness summary must expose filled count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-field-readiness-empty-count"),
+  "Local asset editor field readiness summary must expose empty count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-field-readiness-total-count"),
+  "Local asset editor field readiness summary must expose total count diagnostics"
+);
 assert(app.includes('"all_fields_filled"'), "Local asset editor UI must expose a complete field readiness state");
 assert(app.includes('"incomplete_fields"'), "Local asset editor UI must expose an incomplete field readiness state");
 assert(app.includes('data-performance-metric="snapshot_id"'), "Performance snapshot UI must expose stable snapshot id diagnostics");

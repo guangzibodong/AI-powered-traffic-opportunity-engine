@@ -2006,7 +2006,13 @@ function LocalAssetEditor({
             {editorFilledFieldCount}/{editorFieldCount} {copy.filled}
           </strong>
         </div>
-        <div className="kv-row" data-asset-editor-field-readiness="true">
+        <div
+          className="kv-row"
+          data-asset-editor-field-readiness="true"
+          data-asset-editor-field-readiness-empty-count={editorEmptyFieldCount}
+          data-asset-editor-field-readiness-filled-count={editorFilledFieldCount}
+          data-asset-editor-field-readiness-total-count={editorFieldCount}
+        >
           <span>{copy.fieldReadiness}</span>
           <strong>{editorFieldReadinessState}</strong>
         </div>
