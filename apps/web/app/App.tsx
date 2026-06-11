@@ -1522,9 +1522,11 @@ function AssetWorkspacePanel({
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   const blockedCapabilityRows = blockedCapabilities.map((capability, index) => ({ capability, index }));
   const blockedCapabilityCountsReconciled = blockedCapabilityRows.length === blockedCapabilities.length;
+  const assetDraftCount = assetWorkspace.assets.length;
+  const assetDraftCountsReconciled = assetDraftCount === assetWorkspace.assets.length;
   const wordpressDraftReadinessCountsReconciled =
     assetWorkspace.wordpressDraftReadyCount <= assetWorkspace.wordpressDraftTotalCount &&
-    assetWorkspace.wordpressDraftTotalCount === assetWorkspace.assets.length;
+    assetWorkspace.wordpressDraftTotalCount === assetDraftCount;
   const assetWorkspaceAvailabilityState = assetWorkspace.availability;
   const assetWorkspaceAvailabilityReconciled = assetWorkspaceAvailabilityState === assetWorkspace.availability;
   const externalWriteAllowed = false;
@@ -1537,7 +1539,8 @@ function AssetWorkspacePanel({
       data-asset-claim-source-count={claimSourceEntries.length}
       data-asset-claim-source-counts-reconciled={claimSourceCountsReconciled}
       data-asset-claim-source-total-count={claimSourceTotal}
-      data-asset-draft-count={assetWorkspace.assets.length}
+      data-asset-draft-count={assetDraftCount}
+      data-asset-draft-counts-reconciled={assetDraftCountsReconciled}
       data-asset-overflow-count={assetOverflowCount}
       data-asset-qa-readiness-state={qaReadinessState}
       data-asset-workspace-availability={assetWorkspaceAvailabilityState}
@@ -1559,7 +1562,11 @@ function AssetWorkspacePanel({
       <div className="kv-list">
         <div className="kv-row">
           <span>Local candidates</span>
-          <strong>{assetWorkspace.assets.length}</strong>
+          <strong>{assetDraftCount}</strong>
+        </div>
+        <div className="kv-row" data-asset-draft-count-row="true" data-asset-draft-count-row-value={assetDraftCount}>
+          <span>Local candidate count</span>
+          <strong>{assetDraftCount}</strong>
         </div>
         <div
           className="kv-row"

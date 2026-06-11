@@ -878,6 +878,7 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
   const availability = await assetPanel.getAttribute("data-asset-workspace-availability");
   const availabilityReconciled = await assetPanel.getAttribute("data-asset-workspace-availability-reconciled");
   const draftCountText = await assetPanel.getAttribute("data-asset-draft-count");
+  const draftCountsReconciled = await assetPanel.getAttribute("data-asset-draft-counts-reconciled");
   const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
   const draftCount = Number(draftCountText);
   const expectedAvailability = expectedDraftCount > 0 ? "ready" : "empty";
@@ -887,6 +888,19 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
       draftCountText ?? "missing"
     }`
   );
+  assert(
+    draftCountsReconciled === "true",
+    `${label} asset workspace draft count reconciliation marker must be true, got ${
+      draftCountsReconciled ?? "missing"
+    }`
+  );
+  const draftCountRow = assetPanel.locator("[data-asset-draft-count-row='true']");
+  await expectVisible(draftCountRow, `${label} visible asset workspace draft count row`);
+  assert(
+    (await draftCountRow.getAttribute("data-asset-draft-count-row-value")) === String(expectedDraftCount),
+    `${label} visible asset workspace draft count row value mismatch`
+  );
+  await expectVisible(draftCountRow.getByText(String(expectedDraftCount)), `${label} visible asset workspace draft count`);
   assert(
     availability === expectedAvailability,
     `${label} asset workspace availability mismatch: expected ${expectedAvailability}, got ${
@@ -1389,6 +1403,7 @@ async function assertAssetWorkspacePanelUnavailable(page, label) {
   await expectVisible(assetPanel, `${label} asset workspace panel`);
   const availability = await assetPanel.getAttribute("data-asset-workspace-availability");
   const availabilityReconciled = await assetPanel.getAttribute("data-asset-workspace-availability-reconciled");
+  const draftCountsReconciled = await assetPanel.getAttribute("data-asset-draft-counts-reconciled");
   const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
   assert(
     availability === "unavailable",
@@ -1399,6 +1414,18 @@ async function assertAssetWorkspacePanelUnavailable(page, label) {
     `${label} unavailable asset workspace availability reconciliation marker must be true, got ${
       availabilityReconciled ?? "missing"
     }`
+  );
+  assert(
+    draftCountsReconciled === "true",
+    `${label} unavailable asset workspace draft count reconciliation marker must be true, got ${
+      draftCountsReconciled ?? "missing"
+    }`
+  );
+  const draftCountRow = assetPanel.locator("[data-asset-draft-count-row='true']");
+  await expectVisible(draftCountRow, `${label} unavailable visible asset workspace draft count row`);
+  assert(
+    (await draftCountRow.getAttribute("data-asset-draft-count-row-value")) === "0",
+    `${label} unavailable visible asset workspace draft count row value mismatch`
   );
   const availabilityRow = assetPanel.locator("[data-asset-workspace-availability-row='true']");
   await expectVisible(availabilityRow, `${label} unavailable visible asset workspace availability row`);

@@ -482,6 +482,18 @@ assert(
   app.includes("data-asset-workspace-availability-row-state"),
   "Asset workspace UI must expose stable visible availability row state diagnostics"
 );
+assert(
+  app.includes("data-asset-draft-counts-reconciled"),
+  "Asset workspace UI must expose stable draft count reconciliation diagnostics"
+);
+assert(
+  app.includes('data-asset-draft-count-row="true"'),
+  "Asset workspace UI must expose a stable visible draft count row diagnostic"
+);
+assert(
+  app.includes("data-asset-draft-count-row-value"),
+  "Asset workspace UI must expose stable visible draft count row value diagnostics"
+);
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
   app.includes("data-asset-row-content-block-type-count"),
