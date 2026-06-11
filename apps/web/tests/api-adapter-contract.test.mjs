@@ -572,6 +572,30 @@ assert(
   "Asset workspace UI must expose stable hidden content block aggregate diagnostics"
 );
 assert(
+  app.includes("data-asset-workspace-content-block-type-count"),
+  "Asset workspace UI must expose stable workspace content block type count diagnostics"
+);
+assert(
+  app.includes("data-asset-workspace-content-block-type-total-count"),
+  "Asset workspace UI must expose stable workspace content block type total diagnostics"
+);
+assert(
+  app.includes("data-asset-workspace-content-block-type-counts-reconciled"),
+  "Asset workspace UI must expose stable workspace content block type reconciliation diagnostics"
+);
+assert(
+  app.includes('data-asset-workspace-content-block-type-row="true"'),
+  "Asset workspace UI must expose stable workspace content block type rows"
+);
+assert(
+  app.includes("data-asset-workspace-content-block-type-key"),
+  "Asset workspace UI must expose stable workspace content block type key diagnostics"
+);
+assert(
+  app.includes("data-asset-workspace-content-block-type-row-count"),
+  "Asset workspace UI must expose stable workspace content block type row count diagnostics"
+);
+assert(
   app.includes("data-asset-row-content-block-type-count"),
   "Asset workspace UI must expose stable row-level content block type count diagnostics"
 );

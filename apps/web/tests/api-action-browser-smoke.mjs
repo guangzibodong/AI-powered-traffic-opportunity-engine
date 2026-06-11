@@ -3277,6 +3277,48 @@ async function assertAssetWorkspaceContentBlockAggregateReconciles(
   );
 }
 
+async function assertAssetWorkspaceContentBlockTypeDistribution(page, expectedDistribution, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for content block type diagnostics`);
+  const expectedEntries = Object.entries(expectedDistribution).sort(([left], [right]) => left.localeCompare(right));
+  const expectedTotal = expectedEntries.reduce((sum, [, count]) => sum + count, 0);
+  const typeCount = Number(await assetPanel.getAttribute("data-asset-workspace-content-block-type-count"));
+  const totalCount = Number(await assetPanel.getAttribute("data-asset-workspace-content-block-type-total-count"));
+  const reconciled = await assetPanel.getAttribute("data-asset-workspace-content-block-type-counts-reconciled");
+  const rows = await assetPanel
+    .locator("[data-asset-workspace-content-block-type-row='true']")
+    .evaluateAll((elements) =>
+      elements.map((element) => ({
+        count: Number(element.getAttribute("data-asset-workspace-content-block-type-row-count")),
+        text: element.textContent ?? "",
+        type: element.getAttribute("data-asset-workspace-content-block-type-key")
+      }))
+    );
+  assert(
+    typeCount === expectedEntries.length,
+    `${label} content block type count mismatch: expected ${expectedEntries.length}, got ${typeCount}`
+  );
+  assert(totalCount === expectedTotal, `${label} content block type total mismatch: expected ${expectedTotal}, got ${totalCount}`);
+  assert(
+    reconciled === "true",
+    `${label} content block type reconciliation marker must be true, got ${reconciled ?? "missing"}`
+  );
+  assert(
+    rows.length === expectedEntries.length,
+    `${label} content block type row count mismatch: expected ${expectedEntries.length}, got ${rows.length}`
+  );
+  assert(
+    rows.reduce((sum, row) => sum + row.count, 0) === expectedTotal,
+    `${label} content block type rows must sum to ${expectedTotal}`
+  );
+  for (const [blockType, count] of expectedEntries) {
+    assert(
+      rows.some((row) => row.type === blockType && row.count === count && row.text.includes(`${blockType} ${count}`)),
+      `${label} missing content block type row ${blockType}:${count}`
+    );
+  }
+}
+
 async function assertAssetWorkspaceClaimAggregateReconciles(page, expectedTotal, expectedVisible, expectedHidden, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for claim aggregate diagnostics`);
@@ -4912,6 +4954,11 @@ async function runSmoke() {
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     await assertAssetWorkspaceContentBlockAggregateReconciles(populatedAssetPage, 6, 5, 1, "populated asset workspace");
+    await assertAssetWorkspaceContentBlockTypeDistribution(
+      populatedAssetPage,
+      { answer_summary: 2, faq: 2, metadata_only: 2 },
+      "populated asset workspace"
+    );
     await assertAssetWorkspaceClaimAggregateReconciles(populatedAssetPage, 3, 2, 1, "populated asset workspace");
     await assertAssetWorkspaceClaimSourceDistribution(
       populatedAssetPage,

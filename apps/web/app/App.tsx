@@ -1515,6 +1515,16 @@ function AssetWorkspacePanel({
   const visibleContentBlockTotal = visibleAssets.reduce((sum, asset) => sum + asset.contentBlockCount, 0);
   const hiddenContentBlockTotal = contentBlockTotal - visibleContentBlockTotal;
   const contentBlockCountsReconciled = visibleContentBlockTotal + hiddenContentBlockTotal === contentBlockTotal;
+  const contentBlockTypeEntries = Object.entries(
+    assetWorkspace.assets.reduce<Record<string, number>>((counts, asset) => {
+      asset.contentBlockTypes.forEach((blockType) => {
+        counts[blockType] = (counts[blockType] ?? 0) + 1;
+      });
+      return counts;
+    }, {})
+  ).sort(([left], [right]) => left.localeCompare(right));
+  const contentBlockTypeTotal = contentBlockTypeEntries.reduce((sum, [, count]) => sum + count, 0);
+  const contentBlockTypeCountsReconciled = contentBlockTypeTotal === contentBlockTotal;
   const qaCheckTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
   const qaPendingTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaPendingCount, 0);
   const visibleQaCheckTotal = visibleAssets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
@@ -1567,6 +1577,9 @@ function AssetWorkspacePanel({
       data-asset-overflow-count={assetOverflowCount}
       data-asset-workspace-content-block-count={contentBlockTotal}
       data-asset-workspace-content-block-counts-reconciled={contentBlockCountsReconciled}
+      data-asset-workspace-content-block-type-count={contentBlockTypeEntries.length}
+      data-asset-workspace-content-block-type-counts-reconciled={contentBlockTypeCountsReconciled}
+      data-asset-workspace-content-block-type-total-count={contentBlockTypeTotal}
       data-asset-qa-check-count={qaCheckTotal}
       data-asset-qa-counts-reconciled={qaCountsReconciled}
       data-asset-qa-pending-count={qaPendingTotal}
@@ -1626,6 +1639,18 @@ function AssetWorkspacePanel({
           >
             <span>Asset type mix</span>
             <strong>{assetTypeEntries.map(([assetType, count]) => `${assetType} ${count}`).join(" / ")}</strong>
+          </div>
+        )}
+        {contentBlockTypeEntries.length > 0 && (
+          <div
+            className="kv-row"
+            data-asset-workspace-content-block-type-count={contentBlockTypeEntries.length}
+            data-asset-workspace-content-block-type-counts-reconciled={contentBlockTypeCountsReconciled}
+            data-asset-workspace-content-block-type-summary="true"
+            data-asset-workspace-content-block-type-total-count={contentBlockTypeTotal}
+          >
+            <span>Content block mix</span>
+            <strong>{contentBlockTypeEntries.map(([blockType, count]) => `${blockType} ${count}`).join(" / ")}</strong>
           </div>
         )}
         {qaCheckTotal > 0 && (
@@ -1711,6 +1736,21 @@ function AssetWorkspacePanel({
               key={`asset-type-${assetType}`}
             >
               {assetType} {count}
+            </span>
+          ))}
+        </div>
+      )}
+      {contentBlockTypeEntries.length > 0 && (
+        <div className="inline-diagnostics" data-asset-workspace-content-block-type-list="true">
+          {contentBlockTypeEntries.map(([blockType, count]) => (
+            <span
+              className="pill muted-pill"
+              data-asset-workspace-content-block-type-key={blockType}
+              data-asset-workspace-content-block-type-row="true"
+              data-asset-workspace-content-block-type-row-count={count}
+              key={`asset-workspace-content-block-type-${blockType}`}
+            >
+              {blockType} {count}
             </span>
           ))}
         </div>
