@@ -1896,10 +1896,19 @@ async function assertLocalAssetEditorCanSave(
   const safetyPanel = editor.locator("[data-asset-editor-safety='blocked']");
   await expectVisible(safetyPanel, `${label} editor safety diagnostics`);
   const blockedCapabilityCount = await safetyPanel.getAttribute("data-asset-editor-blocked-capability-count");
+  const blockedCapabilityCountsReconciled = await safetyPanel.getAttribute(
+    "data-asset-editor-blocked-capability-counts-reconciled"
+  );
   assert(
     blockedCapabilityCount === String(expectedSafetyCapabilities.length),
     `${label} editor blocked capability count mismatch: expected ${expectedSafetyCapabilities.length}, got ${
       blockedCapabilityCount ?? "missing"
+    }`
+  );
+  assert(
+    blockedCapabilityCountsReconciled === "true",
+    `${label} editor blocked capability reconciliation marker must be true, got ${
+      blockedCapabilityCountsReconciled ?? "missing"
     }`
   );
   const blockedCapabilities = await safetyPanel
@@ -1915,6 +1924,10 @@ async function assertLocalAssetEditorCanSave(
     `${label} editor blocked capability rows mismatch: expected ${
       expectedSafetyCapabilities.length
     }, got ${blockedCapabilities.length}`
+  );
+  assert(
+    blockedCapabilities.length === Number(blockedCapabilityCount),
+    `${label} editor blocked capability rows must reconcile with count`
   );
   for (const expectedCapability of expectedSafetyCapabilities) {
     const matchingCapability = blockedCapabilities.find((capability) => capability.key === expectedCapability.key);

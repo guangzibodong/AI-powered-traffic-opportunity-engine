@@ -2254,6 +2254,8 @@ function LocalAssetEditor({
     { key: "wordpress_draft_creation", label: copy.wordpressBlocked },
     { key: "woocommerce_writes", label: copy.woocommerceBlocked }
   ];
+  const editorBlockedCapabilityCountsReconciled =
+    editorBlockedCapabilities.length === new Set(editorBlockedCapabilities.map((capability) => capability.key)).size;
 
   useEffect(() => {
     setTitle(asset.title);
@@ -2335,6 +2337,7 @@ function LocalAssetEditor({
         aria-label="Asset editor safety"
         className="asset-editor-safety"
         data-asset-editor-blocked-capability-count={editorBlockedCapabilities.length}
+        data-asset-editor-blocked-capability-counts-reconciled={editorBlockedCapabilityCountsReconciled}
         data-asset-editor-safety="blocked"
       >
         {editorBlockedCapabilities.map((capability) => (

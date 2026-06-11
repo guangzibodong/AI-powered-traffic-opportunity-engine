@@ -622,6 +622,10 @@ assert(
   "Local asset editor UI must expose stable blocked capability count diagnostics"
 );
 assert(
+  app.includes("data-asset-editor-blocked-capability-counts-reconciled"),
+  "Local asset editor UI must expose stable blocked capability reconciliation diagnostics"
+);
+assert(
   app.includes("data-asset-editor-blocked-capability-key"),
   "Local asset editor UI must expose stable blocked capability key diagnostics"
 );
