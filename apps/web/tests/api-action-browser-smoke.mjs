@@ -3115,6 +3115,13 @@ async function assertAssetWorkspaceQaAggregateReconciles(page, hiddenQaCheckCoun
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA aggregate reconciliation`);
   const summaryRow = assetPanel.locator("[data-asset-qa-summary='true']");
+  const rootQaCheckCount = Number(await assetPanel.getAttribute("data-asset-qa-check-count"));
+  const rootQaPendingCount = Number(await assetPanel.getAttribute("data-asset-qa-pending-count"));
+  const rootVisibleQaCheckCount = Number(await assetPanel.getAttribute("data-visible-asset-qa-check-count"));
+  const rootHiddenQaCheckCount = Number(await assetPanel.getAttribute("data-hidden-asset-qa-check-count"));
+  const rootVisibleQaPendingCount = Number(await assetPanel.getAttribute("data-visible-asset-qa-pending-count"));
+  const rootHiddenQaPendingCount = Number(await assetPanel.getAttribute("data-hidden-asset-qa-pending-count"));
+  const qaCountsReconciled = await assetPanel.getAttribute("data-asset-qa-counts-reconciled");
   const summaryQaCheckCount = Number(await summaryRow.getAttribute("data-asset-qa-check-count"));
   const summaryQaPendingCount = Number(await summaryRow.getAttribute("data-asset-qa-pending-count"));
   const visibleRows = await assetPanel.locator("[data-asset-id]").all();
@@ -3131,6 +3138,27 @@ async function assertAssetWorkspaceQaAggregateReconciles(page, hiddenQaCheckCoun
   assert(
     visibleQaPendingCount + hiddenQaPendingCount === summaryQaPendingCount,
     `${label} QA aggregate pending count mismatch: visible ${visibleQaPendingCount} + hidden ${hiddenQaPendingCount} != summary ${summaryQaPendingCount}`
+  );
+  assert(
+    qaCountsReconciled === "true",
+    `${label} QA aggregate reconciliation marker must be true, got ${qaCountsReconciled ?? "missing"}`
+  );
+  assert(
+    rootQaCheckCount === summaryQaCheckCount && rootQaPendingCount === summaryQaPendingCount,
+    `${label} QA root and summary counts mismatch: root ${rootQaPendingCount}/${rootQaCheckCount}, summary ${summaryQaPendingCount}/${summaryQaCheckCount}`
+  );
+  assert(
+    rootVisibleQaCheckCount === visibleQaCheckCount && rootHiddenQaCheckCount === hiddenQaCheckCount,
+    `${label} QA root check aggregates mismatch: root visible ${rootVisibleQaCheckCount}, actual visible ${visibleQaCheckCount}, root hidden ${rootHiddenQaCheckCount}, expected hidden ${hiddenQaCheckCount}`
+  );
+  assert(
+    rootVisibleQaPendingCount === visibleQaPendingCount && rootHiddenQaPendingCount === hiddenQaPendingCount,
+    `${label} QA root pending aggregates mismatch: root visible ${rootVisibleQaPendingCount}, actual visible ${visibleQaPendingCount}, root hidden ${rootHiddenQaPendingCount}, expected hidden ${hiddenQaPendingCount}`
+  );
+  assert(
+    rootVisibleQaCheckCount + rootHiddenQaCheckCount === rootQaCheckCount &&
+      rootVisibleQaPendingCount + rootHiddenQaPendingCount === rootQaPendingCount,
+    `${label} QA root aggregate totals do not reconcile`
   );
 }
 

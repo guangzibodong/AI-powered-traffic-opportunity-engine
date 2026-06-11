@@ -507,6 +507,26 @@ assert(
   "Asset workspace UI must expose stable visible asset row count diagnostics"
 );
 assert(
+  app.includes("data-asset-qa-counts-reconciled"),
+  "Asset workspace UI must expose stable QA aggregate reconciliation diagnostics"
+);
+assert(
+  app.includes("data-visible-asset-qa-check-count"),
+  "Asset workspace UI must expose stable visible QA check aggregate diagnostics"
+);
+assert(
+  app.includes("data-hidden-asset-qa-check-count"),
+  "Asset workspace UI must expose stable hidden QA check aggregate diagnostics"
+);
+assert(
+  app.includes("data-visible-asset-qa-pending-count"),
+  "Asset workspace UI must expose stable visible QA pending aggregate diagnostics"
+);
+assert(
+  app.includes("data-hidden-asset-qa-pending-count"),
+  "Asset workspace UI must expose stable hidden QA pending aggregate diagnostics"
+);
+assert(
   app.includes("data-asset-type-counts-reconciled"),
   "Asset workspace UI must expose stable asset type mix reconciliation diagnostics"
 );
