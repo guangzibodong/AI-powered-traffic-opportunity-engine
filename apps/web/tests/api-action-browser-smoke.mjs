@@ -1579,6 +1579,25 @@ async function assertLocalAssetEditorAssetTypeContext(editor, expectedAssetType,
   assert(summaryText.includes(expectedAssetType), `${label} visible editor asset type summary missing ${expectedAssetType}`);
 }
 
+async function assertLocalAssetEditorReviewStateContext(editor, expectedReviewState, label) {
+  const reviewState = await editor.getAttribute("data-asset-editor-review-state");
+  assert(
+    reviewState === expectedReviewState,
+    `${label} editor review state mismatch: expected ${expectedReviewState}, got ${reviewState ?? "missing"}`
+  );
+  const reviewStateSummary = editor.locator("[data-asset-editor-review-state-summary='true']");
+  await expectVisible(reviewStateSummary, `${label} visible editor review-state summary`);
+  assert(
+    (await reviewStateSummary.getAttribute("data-asset-editor-review-state")) === expectedReviewState,
+    `${label} visible editor review-state summary mismatch`
+  );
+  const summaryText = (await reviewStateSummary.textContent()) ?? "";
+  assert(
+    summaryText.includes(expectedReviewState),
+    `${label} visible editor review-state summary missing ${expectedReviewState}`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5192,6 +5211,7 @@ async function runSmoke() {
       "populated asset workspace"
     );
     await assertLocalAssetEditorAssetTypeContext(populatedEditor, "collection_page", "populated asset workspace");
+    await assertLocalAssetEditorReviewStateContext(populatedEditor, "draft_candidate", "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },

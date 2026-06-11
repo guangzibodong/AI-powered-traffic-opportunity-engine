@@ -2578,6 +2578,7 @@ function LocalAssetEditor({
       data-asset-editor-qa-status-count={editorQaStatusEntries.length}
       data-asset-editor-qa-status-counts-reconciled={editorQaStatusCountsReconciled}
       data-asset-editor-qa-status-total-count={editorQaStatusTotal}
+      data-asset-editor-review-state={asset.reviewState}
       data-asset-editor-save-state={editorSaveState}
       data-asset-editor-source-task-id={asset.sourceTaskId}
       data-asset-editor-source-task-status={asset.sourceTaskStatus}
@@ -2626,6 +2627,14 @@ function LocalAssetEditor({
         >
           <span>Asset type</span>
           <strong>{asset.assetType}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-review-state={asset.reviewState}
+          data-asset-editor-review-state-summary="true"
+        >
+          <span>Review state</span>
+          <strong>{asset.reviewState}</strong>
         </div>
         <div className="kv-row">
           <span>{copy.fields}</span>
