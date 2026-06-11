@@ -1894,6 +1894,27 @@ async function assertLocalAssetEditorStockStatusEditClamp(editor, label) {
   );
 }
 
+async function assertLocalAssetEditorProductContentEditClamp(editor, label) {
+  const productContentEditAllowed = await editor.getAttribute("data-asset-editor-product-content-edit-allowed");
+  assert(
+    productContentEditAllowed === "false",
+    `${label} editor product-content edit clamp mismatch: expected false, got ${
+      productContentEditAllowed ?? "missing"
+    }`
+  );
+  const productContentEditSummary = editor.locator("[data-asset-editor-product-content-edit-summary='true']");
+  await expectVisible(productContentEditSummary, `${label} visible editor product-content edit summary`);
+  assert(
+    (await productContentEditSummary.getAttribute("data-asset-editor-product-content-edit-allowed")) === "false",
+    `${label} visible editor product-content edit summary clamp mismatch`
+  );
+  const summaryText = ((await productContentEditSummary.textContent()) ?? "").toLowerCase();
+  assert(
+    summaryText.includes("false") || summaryText.includes("disabled"),
+    `${label} visible editor product-content edit summary missing false/disabled copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5521,6 +5542,7 @@ async function runSmoke() {
     await assertLocalAssetEditorPriceEditClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorInventoryEditClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorStockStatusEditClamp(populatedEditor, "populated asset workspace");
+    await assertLocalAssetEditorProductContentEditClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },
