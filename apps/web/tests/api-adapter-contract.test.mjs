@@ -726,6 +726,18 @@ assert(
 assert(app.includes("data-visible-asset-claim-count"), "Asset workspace UI must expose visible claim count diagnostics");
 assert(app.includes("data-hidden-asset-claim-count"), "Asset workspace UI must expose hidden claim count diagnostics");
 assert(app.includes("Claim ledger"), "Asset workspace UI must expose English claim ledger copy");
+assert(
+  app.includes("data-asset-editor-source-task-id"),
+  "Local asset editor UI must expose stable source task id diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-source-task-status"),
+  "Local asset editor UI must expose stable source task status diagnostics"
+);
+assert(
+  app.includes('data-asset-editor-source-task-summary="true"'),
+  "Local asset editor UI must expose stable visible source task summary diagnostics"
+);
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");

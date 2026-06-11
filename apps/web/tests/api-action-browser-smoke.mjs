@@ -1533,6 +1533,36 @@ async function assertLocalAssetEditorSaveState(editor, expectedState, label) {
   );
 }
 
+async function assertLocalAssetEditorSourceTaskContext(editor, expectedSourceTaskId, expectedSourceTaskStatus, label) {
+  const sourceTaskId = await editor.getAttribute("data-asset-editor-source-task-id");
+  const sourceTaskStatus = await editor.getAttribute("data-asset-editor-source-task-status");
+  assert(
+    sourceTaskId === expectedSourceTaskId,
+    `${label} editor source task id mismatch: expected ${expectedSourceTaskId}, got ${sourceTaskId ?? "missing"}`
+  );
+  assert(
+    sourceTaskStatus === expectedSourceTaskStatus,
+    `${label} editor source task status mismatch: expected ${expectedSourceTaskStatus}, got ${
+      sourceTaskStatus ?? "missing"
+    }`
+  );
+  const sourceTaskSummary = editor.locator("[data-asset-editor-source-task-summary='true']");
+  await expectVisible(sourceTaskSummary, `${label} visible editor source task summary`);
+  assert(
+    (await sourceTaskSummary.getAttribute("data-asset-editor-source-task-id")) === expectedSourceTaskId,
+    `${label} visible editor source task summary id mismatch`
+  );
+  assert(
+    (await sourceTaskSummary.getAttribute("data-asset-editor-source-task-status")) === expectedSourceTaskStatus,
+    `${label} visible editor source task summary status mismatch`
+  );
+  const summaryText = (await sourceTaskSummary.textContent()) ?? "";
+  assert(
+    summaryText.includes(expectedSourceTaskId) && summaryText.includes(expectedSourceTaskStatus),
+    `${label} visible editor source task summary missing id/status copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -4966,6 +4996,7 @@ async function runSmoke() {
               ],
               review_state: "draft_candidate",
               source_task_id: "task_002",
+              source_task_status: "approved",
               title: "Updated local camping espresso draft"
             },
             mode: "asset_draft_workspace",
@@ -5138,6 +5169,12 @@ async function runSmoke() {
         { id: "claim_2", source: "local_evidence", text: "Local claim requires review" }
       ]
     });
+    await assertLocalAssetEditorSourceTaskContext(
+      populatedEditor,
+      "task_002",
+      "approved",
+      "populated asset workspace"
+    );
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },

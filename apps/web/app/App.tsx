@@ -2578,6 +2578,8 @@ function LocalAssetEditor({
       data-asset-editor-qa-status-counts-reconciled={editorQaStatusCountsReconciled}
       data-asset-editor-qa-status-total-count={editorQaStatusTotal}
       data-asset-editor-save-state={editorSaveState}
+      data-asset-editor-source-task-id={asset.sourceTaskId}
+      data-asset-editor-source-task-status={asset.sourceTaskStatus}
       data-asset-id={asset.id}
     >
       <div className="panel-heading">
@@ -2605,6 +2607,17 @@ function LocalAssetEditor({
         ))}
       </div>
       <div className="kv-list" data-asset-editor-field-summary="true">
+        <div
+          className="kv-row"
+          data-asset-editor-source-task-id={asset.sourceTaskId}
+          data-asset-editor-source-task-status={asset.sourceTaskStatus}
+          data-asset-editor-source-task-summary="true"
+        >
+          <span>Source task</span>
+          <strong>
+            {asset.sourceTaskId} / {asset.sourceTaskStatus}
+          </strong>
+        </div>
         <div className="kv-row">
           <span>{copy.fields}</span>
           <strong>
