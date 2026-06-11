@@ -1506,6 +1506,12 @@ function AssetWorkspacePanel({
       return counts;
     }, {})
   ).sort(([left], [right]) => left.localeCompare(right));
+  const assetSourceTaskStatusEntries = Object.entries(
+    assetWorkspace.assets.reduce<Record<string, number>>((counts, asset) => {
+      counts[asset.sourceTaskStatus] = (counts[asset.sourceTaskStatus] ?? 0) + 1;
+      return counts;
+    }, {})
+  ).sort(([left], [right]) => left.localeCompare(right));
   const assetDraftCount = assetWorkspace.assets.length;
   const claimTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.claimCount, 0);
   const visibleClaimTotal = visibleAssets.reduce((sum, asset) => sum + asset.claimCount, 0);
@@ -1527,6 +1533,8 @@ function AssetWorkspacePanel({
   const assetReviewStateCountsReconciled = assetReviewStateTotal === assetDraftCount;
   const assetSourceTaskTotal = assetSourceTaskEntries.reduce((sum, [, count]) => sum + count, 0);
   const assetSourceTaskCountsReconciled = assetSourceTaskTotal === assetDraftCount;
+  const assetSourceTaskStatusTotal = assetSourceTaskStatusEntries.reduce((sum, [, count]) => sum + count, 0);
+  const assetSourceTaskStatusCountsReconciled = assetSourceTaskStatusTotal === assetDraftCount;
   const contentBlockTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.contentBlockCount, 0);
   const visibleContentBlockTotal = visibleAssets.reduce((sum, asset) => sum + asset.contentBlockCount, 0);
   const hiddenContentBlockTotal = contentBlockTotal - visibleContentBlockTotal;
@@ -1597,6 +1605,9 @@ function AssetWorkspacePanel({
       data-asset-source-task-count={assetSourceTaskEntries.length}
       data-asset-source-task-counts-reconciled={assetSourceTaskCountsReconciled}
       data-asset-source-task-total-count={assetSourceTaskTotal}
+      data-asset-source-task-status-count={assetSourceTaskStatusEntries.length}
+      data-asset-source-task-status-counts-reconciled={assetSourceTaskStatusCountsReconciled}
+      data-asset-source-task-status-total-count={assetSourceTaskStatusTotal}
       data-asset-workspace-content-block-count={contentBlockTotal}
       data-asset-workspace-content-block-counts-reconciled={contentBlockCountsReconciled}
       data-asset-workspace-content-block-type-count={contentBlockTypeEntries.length}
@@ -1685,6 +1696,20 @@ function AssetWorkspacePanel({
           >
             <span>Source tasks</span>
             <strong>{assetSourceTaskEntries.map(([sourceTaskId, count]) => `${sourceTaskId} ${count}`).join(" / ")}</strong>
+          </div>
+        )}
+        {assetSourceTaskStatusEntries.length > 0 && (
+          <div
+            className="kv-row"
+            data-asset-source-task-status-count={assetSourceTaskStatusEntries.length}
+            data-asset-source-task-status-counts-reconciled={assetSourceTaskStatusCountsReconciled}
+            data-asset-source-task-status-summary="true"
+            data-asset-source-task-status-total-count={assetSourceTaskStatusTotal}
+          >
+            <span>Source task statuses</span>
+            <strong>
+              {assetSourceTaskStatusEntries.map(([sourceTaskStatus, count]) => `${sourceTaskStatus} ${count}`).join(" / ")}
+            </strong>
           </div>
         )}
         {contentBlockTypeEntries.length > 0 && (
@@ -1816,6 +1841,21 @@ function AssetWorkspacePanel({
           ))}
         </div>
       )}
+      {assetSourceTaskStatusEntries.length > 0 && (
+        <div className="inline-diagnostics" data-asset-source-task-status-list="true">
+          {assetSourceTaskStatusEntries.map(([sourceTaskStatus, count]) => (
+            <span
+              className="pill muted-pill"
+              data-asset-source-task-status-key={sourceTaskStatus}
+              data-asset-source-task-status-row="true"
+              data-asset-source-task-status-row-count={count}
+              key={`asset-source-task-status-${sourceTaskStatus}`}
+            >
+              {sourceTaskStatus} {count}
+            </span>
+          ))}
+        </div>
+      )}
       {contentBlockTypeEntries.length > 0 && (
         <div className="inline-diagnostics" data-asset-workspace-content-block-type-list="true">
           {contentBlockTypeEntries.map(([blockType, count]) => (
@@ -1899,6 +1939,7 @@ function AssetWorkspacePanel({
                 data-asset-qa-pending-count={asset.qaPendingCount}
                 data-asset-review-state={asset.reviewState}
                 data-asset-source-task-id={asset.sourceTaskId}
+                data-asset-source-task-status={asset.sourceTaskStatus}
                 data-asset-row-qa-counts-reconciled={asset.qaChecks.length === asset.qaCheckCount}
                 data-asset-row-qa-detail-count={asset.qaChecks.length}
                 data-asset-row-qa-pending-counts-reconciled={assetQaPendingDetailCount === asset.qaPendingCount}

@@ -3053,6 +3053,56 @@ async function assertAssetWorkspaceSourceTaskDistribution(page, expectedCounts, 
   }
 }
 
+async function assertAssetWorkspaceSourceTaskStatusDistribution(page, expectedCounts, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for source task status diagnostics`);
+  const summaryRow = assetPanel.locator("[data-asset-source-task-status-summary='true']");
+  await expectVisible(summaryRow, `${label} asset source task status summary row`);
+  const expectedEntries = Object.entries(expectedCounts).sort(([left], [right]) => left.localeCompare(right));
+  const expectedTotal = expectedEntries.reduce((sum, [, count]) => sum + count, 0);
+  const statusCount = Number(await summaryRow.getAttribute("data-asset-source-task-status-count"));
+  const totalCount = Number(await summaryRow.getAttribute("data-asset-source-task-status-total-count"));
+  const reconciled = await summaryRow.getAttribute("data-asset-source-task-status-counts-reconciled");
+  const rows = await assetPanel.locator("[data-asset-source-task-status-row='true']").evaluateAll((elements) =>
+    elements.map((element) => ({
+      count: Number(element.getAttribute("data-asset-source-task-status-row-count")),
+      key: element.getAttribute("data-asset-source-task-status-key"),
+      text: element.textContent ?? ""
+    }))
+  );
+  assert(
+    statusCount === expectedEntries.length,
+    `${label} asset source task status count mismatch: expected ${expectedEntries.length}, got ${statusCount}`
+  );
+  assert(
+    totalCount === expectedTotal,
+    `${label} asset source task status total mismatch: expected ${expectedTotal}, got ${totalCount}`
+  );
+  assert(
+    reconciled === "true",
+    `${label} asset source task status reconciliation marker must be true, got ${reconciled ?? "missing"}`
+  );
+  assert(
+    rows.length === expectedEntries.length,
+    `${label} asset source task status row count mismatch: expected ${expectedEntries.length}, got ${rows.length}`
+  );
+  assert(
+    rows.reduce((sum, row) => sum + row.count, 0) === expectedTotal,
+    `${label} asset source task status rows must sum to ${expectedTotal}`
+  );
+  const summaryText = (await summaryRow.textContent()) ?? "";
+  for (const [sourceTaskStatus, count] of expectedEntries) {
+    assert(
+      summaryText.includes(`${sourceTaskStatus} ${count}`),
+      `${label} asset source task status summary missing ${sourceTaskStatus} ${count}`
+    );
+    assert(
+      rows.some((row) => row.key === sourceTaskStatus && row.count === count && row.text.includes(`${sourceTaskStatus} ${count}`)),
+      `${label} asset source task status row missing ${sourceTaskStatus} ${count}`
+    );
+  }
+}
+
 async function assertAssetWorkspaceQaSummary(page, expectedQaCheckCount, expectedQaPendingCount, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA summary diagnostics`);
@@ -4807,6 +4857,7 @@ async function runSmoke() {
                 ],
                 review_state: "draft_candidate",
                 source_task_id: "task_002",
+                source_task_status: "approved",
                 title: "Create camping portable espresso collection page"
               },
               {
@@ -4818,6 +4869,7 @@ async function runSmoke() {
                 qa_checks: [{ key: "schema", status: "pending" }],
                 review_state: "draft_candidate",
                 source_task_id: "task_003",
+                source_task_status: "approved",
                 title: "Draft camping espresso buying guide"
               },
               {
@@ -4836,6 +4888,7 @@ async function runSmoke() {
                 qa_checks: [{ key: "metadata", status: "pending" }],
                 review_state: "draft_candidate",
                 source_task_id: "task_004",
+                source_task_status: "approved",
                 title: "Refresh portable espresso product SEO"
               }
             ],
@@ -5048,6 +5101,11 @@ async function runSmoke() {
     await assertAssetWorkspaceSourceTaskDistribution(
       populatedAssetPage,
       { task_002: 1, task_003: 1, task_004: 1 },
+      "populated asset workspace"
+    );
+    await assertAssetWorkspaceSourceTaskStatusDistribution(
+      populatedAssetPage,
+      { approved: 3 },
       "populated asset workspace"
     );
     await assertAssetWorkspaceQaSummary(populatedAssetPage, 5, 4, "populated asset workspace");

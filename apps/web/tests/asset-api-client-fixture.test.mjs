@@ -94,6 +94,7 @@ await apiClient.updateAsset(
     schema_json: { "@type": "FAQPage" },
     slug: "Camping Espresso Kits",
     source_task_id: "task-unsafe",
+    source_task_status: "published",
     store_id: "store-unsafe",
     sync_run_id: "sync-unsafe",
     title: "Camping espresso kits",
@@ -164,6 +165,7 @@ for (const forbidden of [
   "qa_checks",
   "review_state",
   "source_task_id",
+  "source_task_status",
   "store_id",
   "sync_run_id",
   "wordpress_draft_id"
@@ -215,6 +217,7 @@ const unsafeAssetWorkspacePayload = {
       ],
       review_state: "draft_candidate",
       source_task_id: "task-safe-qa",
+      source_task_status: "published",
       title: "Safe local QA draft"
     }
   ],
@@ -228,6 +231,7 @@ const assetPreviews = adapter.mapApiAssetWorkspaceToPreviews(unsafeAssetWorkspac
 assert(assetPreviews.length === 1, "Asset adapter should map one local asset draft");
 assert(assetPreviews[0].qaCheckCount === 3, "Asset adapter should preserve local QA check counts");
 assert(assetPreviews[0].qaPendingCount === 2, "Asset adapter should count clamped unsafe QA status as pending");
+assert(assetPreviews[0].sourceTaskStatus === "new", "Asset adapter should clamp unsafe source task statuses to new");
 assert(assetPreviews[0].claimCount === 2, "Asset adapter should preserve local claim ledger counts");
 assert(Array.isArray(assetPreviews[0].claimLedger), "Asset adapter should expose safe local claim ledger details");
 assert(assetPreviews[0].claimLedger.length === 2, "Asset adapter should preserve claim ledger detail rows");

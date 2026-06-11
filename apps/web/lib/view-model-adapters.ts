@@ -224,6 +224,7 @@ function mapApiAssetDraftToPreview(
     qaPendingCount: qaChecks.filter((check) => check.status === "pending").length,
     reviewState: asset.review_state,
     sourceTaskId: asset.source_task_id,
+    sourceTaskStatus: mapVisibleTaskStatus(asset.source_task_status ?? "new"),
     title: asset.title
   };
 }

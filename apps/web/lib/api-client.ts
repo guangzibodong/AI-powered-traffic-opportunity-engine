@@ -340,6 +340,7 @@ export type ApiAssetDraft = {
   qa_checks?: unknown[];
   review_state: string;
   source_task_id: string;
+  source_task_status?: string;
   title: string;
 };
 

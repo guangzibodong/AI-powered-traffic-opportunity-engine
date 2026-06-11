@@ -160,6 +160,7 @@ export type AssetDraftPreview = {
   qaPendingCount: number;
   reviewState: string;
   sourceTaskId: string;
+  sourceTaskStatus: VisibleTaskStatus;
   title: string;
 };
 
