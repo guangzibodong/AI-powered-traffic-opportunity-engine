@@ -287,7 +287,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 
 | Blocker | Status | Notes |
 |---|---|---|
-| GitHub HTTPS push | blocked | Local commits are ahead of origin but push is blocked because the repo proxy override `127.0.0.1:7897` is unavailable and direct GitHub HTTPS also failed. Retry push when network/proxy access is restored. |
+| GitHub HTTPS push | resolved | Commits through `ab33914` were pushed to `codex/sprint1-v3-ui` and `main` by overriding the unavailable repo proxy for the push command. Future pushes may still need `-c http.proxy= -c https.proxy=` while `127.0.0.1:7897` is unavailable. |
 | Live integration credentials and boundary approval | blocked | The next non-local Sprint 2 step needs user-approved credentials and a revised boundary for real read-only connection work; current safe loop remains local/import-only. |
 
 ## Agent Findings
