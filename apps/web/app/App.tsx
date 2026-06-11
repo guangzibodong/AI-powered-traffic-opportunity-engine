@@ -1666,6 +1666,9 @@ function AssetWorkspacePanel({
               asset.qaChecks.length === 0 ? "not_applicable" : assetQaPendingDetailCount > 0 ? "pending_qa" : "qa_clear";
             const assetQaReadinessCountsReconciled =
               asset.qaChecks.length === asset.qaCheckCount && assetQaPendingDetailCount === asset.qaPendingCount;
+            const assetBlockedCapabilityCount = asset.blockedCapabilities.length;
+            const assetBlockedCapabilityCountsReconciled =
+              asset.blockedCapabilities.length === assetBlockedCapabilityCount;
             return (
               <div
                 className="mini-card"
@@ -1673,6 +1676,8 @@ function AssetWorkspacePanel({
                 data-asset-content-block-count={asset.contentBlockCount}
                 data-asset-content-block-types={asset.contentBlockTypes.join(",")}
                 data-asset-id={asset.id}
+                data-asset-row-blocked-capability-count={assetBlockedCapabilityCount}
+                data-asset-row-blocked-capability-counts-reconciled={assetBlockedCapabilityCountsReconciled}
                 data-asset-row-content-block-count={asset.contentBlockCount}
                 data-asset-row-content-block-counts-reconciled={assetContentBlockTypeCountsReconciled}
                 data-asset-row-content-block-type-count={assetContentBlockTypeEntries.length}
@@ -1706,6 +1711,20 @@ function AssetWorkspacePanel({
                 {asset.claimCount > 0 ? ` / claims ${asset.claimCount}` : ""}
                 {asset.qaCheckCount > 0 ? ` / qa ${asset.qaPendingCount}/${asset.qaCheckCount} pending` : ""}
               </span>
+              {asset.blockedCapabilities.length > 0 && (
+                <div className="inline-diagnostics" data-asset-row-blocked-capability-list="true">
+                  {asset.blockedCapabilities.map((capability) => (
+                    <span
+                      className="pill muted-pill"
+                      data-asset-row-blocked-capability="true"
+                      data-asset-row-blocked-capability-key={capability}
+                      key={`${asset.id}-blocked-capability-${capability}`}
+                    >
+                      {capability}
+                    </span>
+                  ))}
+                </div>
+              )}
               {asset.qaChecks.length > 0 && (
                 <div
                   className="inline-diagnostics"

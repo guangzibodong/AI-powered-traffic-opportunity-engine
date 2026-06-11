@@ -1079,6 +1079,46 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
         `${label} asset row ${expectedAsset.id} QA readiness summary mismatch: ${qaReadinessText}`
       );
     }
+    if (expectedAsset.blockedCapabilities) {
+      const rowBlockedCapabilityCount = Number(await row.getAttribute("data-asset-row-blocked-capability-count"));
+      const rowBlockedCapabilityCountsReconciled = await row.getAttribute(
+        "data-asset-row-blocked-capability-counts-reconciled"
+      );
+      const rowBlockedCapabilityRows = await row
+        .locator("[data-asset-row-blocked-capability='true']")
+        .evaluateAll((elements) =>
+          elements.map((element) => ({
+            key: element.getAttribute("data-asset-row-blocked-capability-key"),
+            text: element.textContent ?? ""
+          }))
+        );
+      assert(
+        rowBlockedCapabilityCount === expectedAsset.blockedCapabilities.length,
+        `${label} asset row ${expectedAsset.id} blocked capability count mismatch: expected ${
+          expectedAsset.blockedCapabilities.length
+        }, got ${rowBlockedCapabilityCount}`
+      );
+      assert(
+        rowBlockedCapabilityRows.length === expectedAsset.blockedCapabilities.length,
+        `${label} asset row ${expectedAsset.id} blocked capability row count mismatch: expected ${
+          expectedAsset.blockedCapabilities.length
+        }, got ${rowBlockedCapabilityRows.length}`
+      );
+      assert(
+        rowBlockedCapabilityCountsReconciled === "true",
+        `${label} asset row ${expectedAsset.id} blocked capability reconciliation marker must be true, got ${
+          rowBlockedCapabilityCountsReconciled ?? "missing"
+        }`
+      );
+      for (const expectedCapability of expectedAsset.blockedCapabilities) {
+        assert(
+          rowBlockedCapabilityRows.some(
+            (capability) => capability.key === expectedCapability && capability.text.includes(expectedCapability)
+          ),
+          `${label} asset row ${expectedAsset.id} missing blocked capability ${expectedCapability}`
+        );
+      }
+    }
     if (expectedAsset.claimCount !== undefined) {
       assert(
         claimCount === String(expectedAsset.claimCount),
@@ -4527,6 +4567,7 @@ async function runSmoke() {
         contentBlockCount: 3,
         contentBlockTypes: ["answer_summary", "metadata_only", "faq"],
         claimCount: 2,
+        blockedCapabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
         claims: [
           {
             id: "claim_ctr_gap",
@@ -4549,6 +4590,7 @@ async function runSmoke() {
       {
         contentBlockCount: 2,
         contentBlockTypes: ["answer_summary", "faq"],
+        blockedCapabilities: ["wordpress_draft_creation", "wordpress_publish", "woocommerce_writes"],
         id: "asset_task_003",
         qaDetails: [{ key: "schema", status: "pending" }],
         qaCheckCount: 1,

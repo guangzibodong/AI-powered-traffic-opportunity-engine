@@ -160,12 +160,13 @@ Sprint 3 local/demo capabilities completed:
 11. Visible local asset rows include read-only content block type distribution diagnostics that reconcile to safe content block counts without rich text editing, draft creation, publishing, sync, credentials, product edits, or commerce writes.
 12. Visible local asset rows include read-only content block count reconciliation diagnostics that match row-visible type rows to safe content block counts.
 13. Visible local asset rows include read-only QA readiness diagnostics that reconcile row readiness state with safe QA detail counts.
-14. The local asset editor shows read-only content block type distribution diagnostics that reconcile to the selected asset's safe content block count without adding rich text, draft, publish, sync, credential, product edit, or commerce-write controls.
-15. The local asset editor shows read-only content block count reconciliation diagnostics that match editor-visible type rows to the selected asset's safe content block count.
-16. The local asset editor shows read-only QA status distribution diagnostics that reconcile to safe QA detail rows without adding QA mutation, draft, publish, sync, credential, product edit, or commerce-write controls.
-17. The local asset editor shows read-only QA count reconciliation diagnostics that match safe QA detail rows and pending rows without adding QA mutation, draft, publish, sync, credential, product edit, or commerce-write controls.
-18. The local asset editor shows read-only QA readiness reconciliation diagnostics that match readiness state to safe QA detail counts.
-19. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
+14. Visible local asset rows include read-only blocked capability diagnostics that reconcile row safety markers with safe blocked capability lists.
+15. The local asset editor shows read-only content block type distribution diagnostics that reconcile to the selected asset's safe content block count without adding rich text, draft, publish, sync, credential, product edit, or commerce-write controls.
+16. The local asset editor shows read-only content block count reconciliation diagnostics that match editor-visible type rows to the selected asset's safe content block count.
+17. The local asset editor shows read-only QA status distribution diagnostics that reconcile to safe QA detail rows without adding QA mutation, draft, publish, sync, credential, product edit, or commerce-write controls.
+18. The local asset editor shows read-only QA count reconciliation diagnostics that match safe QA detail rows and pending rows without adding QA mutation, draft, publish, sync, credential, product edit, or commerce-write controls.
+19. The local asset editor shows read-only QA readiness reconciliation diagnostics that match readiness state to safe QA detail counts.
+20. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
 
 Current product/engineering ownership:
 
