@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset workspace external-write clamp reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 asset workspace availability reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -290,12 +290,13 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-122 | 256 | done | Frontend Product Engineer / QA Lead | Add asset workspace blocked capability reconciliation diagnostics. | The asset workspace panel exposes read-only blocked capability key rows and a reconciliation marker proving visible workspace-level blocked capability rows match the workspace blocked capability count, without claim editing, QA mutation, external href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls. |
 | TASK-S3-QA-123 | 257 | done | Frontend Product Engineer / QA Lead | Add WordPress draft readiness count reconciliation diagnostics. | The asset workspace WordPress draft readiness row exposes a read-only reconciliation marker proving ready counts do not exceed total local asset draft counts and total readiness counts match local asset draft count, without WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
 | TASK-S3-QA-124 | 258 | done | Frontend Product Engineer / QA Lead | Add asset workspace external-write clamp reconciliation diagnostics. | The asset workspace exposes read-only external-write clamp markers proving root external-write state and the visible external-write row both stay false, without external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
+| TASK-S3-QA-125 | 259 | done | Frontend Product Engineer / QA Lead | Add asset workspace availability reconciliation diagnostics. | The asset workspace exposes read-only availability row and reconciliation markers proving the visible availability state matches the root workspace availability state across empty, ready, and unavailable panels, without external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
 
 ## Blockers
 
 | Blocker | Status | Notes |
 |---|---|---|
-| GitHub HTTPS push | resolved | Commits through `ab33914` were pushed to `codex/sprint1-v3-ui` and `main` by overriding the unavailable repo proxy for the push command. Future pushes may still need `-c http.proxy= -c https.proxy=` while `127.0.0.1:7897` is unavailable. |
+| GitHub HTTPS push | blocked | Local commits through `c1b6d54` are ready, but GitHub HTTPS push is currently blocked because direct `github.com:443` and the repo proxy path both failed to connect. Retry with `-c http.proxy= -c https.proxy=` when network returns. |
 | Live integration credentials and boundary approval | blocked | The next non-local Sprint 2 step needs user-approved credentials and a revised boundary for real read-only connection work; current safe loop remains local/import-only. |
 
 ## Agent Findings
@@ -726,6 +727,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset workspace blocked capability reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing workspace-level blocked capability reconciliation markers, then passed with visible workspace blocked capability key rows matching the workspace blocked capability count, plus full backend/frontend/browser verification and no claim editing, QA mutation, href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls.
 - WordPress draft readiness count reconciliation diagnostics are verified by red-green static and browser coverage that first failed on the missing blocked readiness reconciliation marker, then passed with ready counts bounded by total local asset draft counts and total readiness counts matching the local draft count, plus full backend/frontend/browser verification and no WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
 - Asset workspace external-write clamp reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing external-write clamp markers, then passed with the root external-write state and visible external-write row both staying false, plus full backend/frontend/browser verification and no external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
+- Asset workspace availability reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing availability reconciliation markers, then passed with visible availability rows matching root workspace availability across empty, ready, and unavailable panels, plus full backend/frontend/browser verification and no external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
 
 ## Completion Rule
 

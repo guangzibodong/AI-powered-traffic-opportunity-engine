@@ -1525,6 +1525,8 @@ function AssetWorkspacePanel({
   const wordpressDraftReadinessCountsReconciled =
     assetWorkspace.wordpressDraftReadyCount <= assetWorkspace.wordpressDraftTotalCount &&
     assetWorkspace.wordpressDraftTotalCount === assetWorkspace.assets.length;
+  const assetWorkspaceAvailabilityState = assetWorkspace.availability;
+  const assetWorkspaceAvailabilityReconciled = assetWorkspaceAvailabilityState === assetWorkspace.availability;
   const externalWriteAllowed = false;
   const externalWriteClampReconciled = externalWriteAllowed === false;
   return (
@@ -1538,7 +1540,8 @@ function AssetWorkspacePanel({
       data-asset-draft-count={assetWorkspace.assets.length}
       data-asset-overflow-count={assetOverflowCount}
       data-asset-qa-readiness-state={qaReadinessState}
-      data-asset-workspace-availability={assetWorkspace.availability}
+      data-asset-workspace-availability={assetWorkspaceAvailabilityState}
+      data-asset-workspace-availability-reconciled={assetWorkspaceAvailabilityReconciled}
       data-blocked-capability-count={blockedCapabilities.length}
       data-blocked-capability-counts-reconciled={blockedCapabilityCountsReconciled}
       data-external-write-allowed={externalWriteAllowed}
@@ -1557,6 +1560,14 @@ function AssetWorkspacePanel({
         <div className="kv-row">
           <span>Local candidates</span>
           <strong>{assetWorkspace.assets.length}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-workspace-availability-row="true"
+          data-asset-workspace-availability-row-state={assetWorkspaceAvailabilityState}
+        >
+          <span>Workspace availability</span>
+          <strong>{assetWorkspaceAvailabilityState}</strong>
         </div>
         {assetTypeEntries.length > 0 && (
           <div

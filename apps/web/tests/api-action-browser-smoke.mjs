@@ -876,6 +876,7 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
   await waitForAssetDraftCount(assetPanel, expectedDraftCount, label);
 
   const availability = await assetPanel.getAttribute("data-asset-workspace-availability");
+  const availabilityReconciled = await assetPanel.getAttribute("data-asset-workspace-availability-reconciled");
   const draftCountText = await assetPanel.getAttribute("data-asset-draft-count");
   const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
   const draftCount = Number(draftCountText);
@@ -892,6 +893,19 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
       availability ?? "missing"
     }`
   );
+  assert(
+    availabilityReconciled === "true",
+    `${label} asset workspace availability reconciliation marker must be true, got ${
+      availabilityReconciled ?? "missing"
+    }`
+  );
+  const availabilityRow = assetPanel.locator("[data-asset-workspace-availability-row='true']");
+  await expectVisible(availabilityRow, `${label} visible asset workspace availability row`);
+  assert(
+    (await availabilityRow.getAttribute("data-asset-workspace-availability-row-state")) === expectedAvailability,
+    `${label} visible asset workspace availability row state mismatch`
+  );
+  await expectVisible(availabilityRow.getByText(expectedAvailability), `${label} visible asset workspace availability state`);
   assert(
     externalWriteAllowed === "false",
     `${label} asset workspace must clamp external writes to false, got ${externalWriteAllowed ?? "missing"}`
@@ -1374,11 +1388,25 @@ async function assertAssetWorkspacePanelUnavailable(page, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel`);
   const availability = await assetPanel.getAttribute("data-asset-workspace-availability");
+  const availabilityReconciled = await assetPanel.getAttribute("data-asset-workspace-availability-reconciled");
   const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
   assert(
     availability === "unavailable",
     `${label} asset workspace availability mismatch: expected unavailable, got ${availability ?? "missing"}`
   );
+  assert(
+    availabilityReconciled === "true",
+    `${label} unavailable asset workspace availability reconciliation marker must be true, got ${
+      availabilityReconciled ?? "missing"
+    }`
+  );
+  const availabilityRow = assetPanel.locator("[data-asset-workspace-availability-row='true']");
+  await expectVisible(availabilityRow, `${label} unavailable visible asset workspace availability row`);
+  assert(
+    (await availabilityRow.getAttribute("data-asset-workspace-availability-row-state")) === "unavailable",
+    `${label} unavailable visible asset workspace availability row state mismatch`
+  );
+  await expectVisible(availabilityRow.getByText("unavailable"), `${label} unavailable visible asset workspace availability state`);
   assert(
     externalWriteAllowed === "false",
     `${label} unavailable asset workspace must clamp external writes to false, got ${externalWriteAllowed ?? "missing"}`
