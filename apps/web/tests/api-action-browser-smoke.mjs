@@ -1617,6 +1617,53 @@ async function assertLocalAssetEditorEvidenceSummary(editor, expectedEvidenceCou
   );
 }
 
+async function assertLocalAssetEditorWordPressDraftReadiness(editor, expectedReadyCount, expectedTotalCount, label) {
+  const readiness = await editor.getAttribute("data-asset-editor-wordpress-draft-readiness");
+  const readyCount = await editor.getAttribute("data-asset-editor-wordpress-draft-ready-count");
+  const totalCount = await editor.getAttribute("data-asset-editor-wordpress-draft-total-count");
+  const countsReconciled = await editor.getAttribute("data-asset-editor-wordpress-draft-readiness-counts-reconciled");
+  assert(readiness === "blocked", `${label} editor WordPress draft readiness must stay blocked, got ${readiness}`);
+  assert(
+    readyCount === String(expectedReadyCount),
+    `${label} editor WordPress draft ready count mismatch: expected ${expectedReadyCount}, got ${
+      readyCount ?? "missing"
+    }`
+  );
+  assert(
+    totalCount === String(expectedTotalCount),
+    `${label} editor WordPress draft total count mismatch: expected ${expectedTotalCount}, got ${
+      totalCount ?? "missing"
+    }`
+  );
+  assert(
+    countsReconciled === "true",
+    `${label} editor WordPress draft readiness reconciliation must be true, got ${
+      countsReconciled ?? "missing"
+    }`
+  );
+  const readinessSummary = editor.locator("[data-asset-editor-wordpress-draft-readiness='blocked']");
+  await expectVisible(readinessSummary, `${label} visible editor WordPress draft readiness summary`);
+  assert(
+    (await readinessSummary.getAttribute("data-asset-editor-wordpress-draft-ready-count")) ===
+      String(expectedReadyCount),
+    `${label} visible editor WordPress draft ready count mismatch`
+  );
+  assert(
+    (await readinessSummary.getAttribute("data-asset-editor-wordpress-draft-total-count")) ===
+      String(expectedTotalCount),
+    `${label} visible editor WordPress draft total count mismatch`
+  );
+  assert(
+    (await readinessSummary.getAttribute("data-asset-editor-wordpress-draft-readiness-counts-reconciled")) === "true",
+    `${label} visible editor WordPress draft readiness reconciliation mismatch`
+  );
+  const summaryText = (await readinessSummary.textContent()) ?? "";
+  assert(
+    summaryText.includes(`${expectedReadyCount}/${expectedTotalCount} ready`),
+    `${label} visible editor WordPress draft readiness missing ready ratio copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5232,6 +5279,7 @@ async function runSmoke() {
     await assertLocalAssetEditorAssetTypeContext(populatedEditor, "collection_page", "populated asset workspace");
     await assertLocalAssetEditorReviewStateContext(populatedEditor, "draft_candidate", "populated asset workspace");
     await assertLocalAssetEditorEvidenceSummary(populatedEditor, 2, "populated asset workspace");
+    await assertLocalAssetEditorWordPressDraftReadiness(populatedEditor, 0, 1, "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },

@@ -762,6 +762,22 @@ assert(
   app.includes('data-asset-editor-evidence-summary="true"'),
   "Local asset editor UI must expose stable visible evidence summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-wordpress-draft-readiness"),
+  "Local asset editor UI must expose stable WordPress draft readiness diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-wordpress-draft-ready-count"),
+  "Local asset editor UI must expose stable WordPress draft ready count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-wordpress-draft-total-count"),
+  "Local asset editor UI must expose stable WordPress draft total count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-wordpress-draft-readiness-counts-reconciled"),
+  "Local asset editor UI must expose stable WordPress draft readiness reconciliation diagnostics"
+);
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");

@@ -2510,6 +2510,11 @@ function LocalAssetEditor({
   ];
   const editorBlockedCapabilityCountsReconciled =
     editorBlockedCapabilities.length === new Set(editorBlockedCapabilities.map((capability) => capability.key)).size;
+  const editorWordPressDraftReadiness = "blocked";
+  const editorWordPressDraftReadyCount = 0;
+  const editorWordPressDraftTotalCount = 1;
+  const editorWordPressDraftReadinessCountsReconciled =
+    editorWordPressDraftReadyCount <= editorWordPressDraftTotalCount && editorWordPressDraftTotalCount === 1;
 
   useEffect(() => {
     setTitle(asset.title);
@@ -2583,6 +2588,10 @@ function LocalAssetEditor({
       data-asset-editor-save-state={editorSaveState}
       data-asset-editor-source-task-id={asset.sourceTaskId}
       data-asset-editor-source-task-status={asset.sourceTaskStatus}
+      data-asset-editor-wordpress-draft-readiness={editorWordPressDraftReadiness}
+      data-asset-editor-wordpress-draft-readiness-counts-reconciled={editorWordPressDraftReadinessCountsReconciled}
+      data-asset-editor-wordpress-draft-ready-count={editorWordPressDraftReadyCount}
+      data-asset-editor-wordpress-draft-total-count={editorWordPressDraftTotalCount}
       data-asset-id={asset.id}
     >
       <div className="panel-heading">
@@ -2644,6 +2653,20 @@ function LocalAssetEditor({
         >
           <span>Evidence summary</span>
           <strong>{asset.claimCount} claims</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-wordpress-draft-readiness={editorWordPressDraftReadiness}
+          data-asset-editor-wordpress-draft-readiness-counts-reconciled={
+            editorWordPressDraftReadinessCountsReconciled
+          }
+          data-asset-editor-wordpress-draft-ready-count={editorWordPressDraftReadyCount}
+          data-asset-editor-wordpress-draft-total-count={editorWordPressDraftTotalCount}
+        >
+          <span>WordPress draft readiness</span>
+          <strong>
+            {editorWordPressDraftReadyCount}/{editorWordPressDraftTotalCount} ready
+          </strong>
         </div>
         <div className="kv-row">
           <span>{copy.fields}</span>
