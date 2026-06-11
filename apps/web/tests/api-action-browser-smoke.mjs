@@ -1790,6 +1790,32 @@ async function assertLocalAssetEditorWordPressPageUpdateClamp(editor, label) {
   );
 }
 
+async function assertLocalAssetEditorWordPressDraftCreationClamp(editor, label) {
+  const wordpressDraftCreationAllowed = await editor.getAttribute(
+    "data-asset-editor-wordpress-draft-creation-allowed"
+  );
+  assert(
+    wordpressDraftCreationAllowed === "false",
+    `${label} editor WordPress draft-creation clamp mismatch: expected false, got ${
+      wordpressDraftCreationAllowed ?? "missing"
+    }`
+  );
+  const wordpressDraftCreationSummary = editor.locator(
+    "[data-asset-editor-wordpress-draft-creation-summary='true']"
+  );
+  await expectVisible(wordpressDraftCreationSummary, `${label} visible editor WordPress draft-creation summary`);
+  assert(
+    (await wordpressDraftCreationSummary.getAttribute("data-asset-editor-wordpress-draft-creation-allowed")) ===
+      "false",
+    `${label} visible editor WordPress draft-creation summary clamp mismatch`
+  );
+  const summaryText = ((await wordpressDraftCreationSummary.textContent()) ?? "").toLowerCase();
+  assert(
+    summaryText.includes("false") || summaryText.includes("disabled"),
+    `${label} visible editor WordPress draft-creation summary missing false/disabled copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5412,6 +5438,7 @@ async function runSmoke() {
     await assertLocalAssetEditorSyncExecutionClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorPublishingClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorWordPressPageUpdateClamp(populatedEditor, "populated asset workspace");
+    await assertLocalAssetEditorWordPressDraftCreationClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },
