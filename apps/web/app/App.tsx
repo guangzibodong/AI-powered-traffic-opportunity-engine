@@ -1500,6 +1500,12 @@ function AssetWorkspacePanel({
       return counts;
     }, {})
   ).sort(([left], [right]) => left.localeCompare(right));
+  const assetSourceTaskEntries = Object.entries(
+    assetWorkspace.assets.reduce<Record<string, number>>((counts, asset) => {
+      counts[asset.sourceTaskId] = (counts[asset.sourceTaskId] ?? 0) + 1;
+      return counts;
+    }, {})
+  ).sort(([left], [right]) => left.localeCompare(right));
   const assetDraftCount = assetWorkspace.assets.length;
   const claimTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.claimCount, 0);
   const visibleClaimTotal = visibleAssets.reduce((sum, asset) => sum + asset.claimCount, 0);
@@ -1519,6 +1525,8 @@ function AssetWorkspacePanel({
   const assetTypeCountsReconciled = assetTypeTotal === assetDraftCount;
   const assetReviewStateTotal = assetReviewStateEntries.reduce((sum, [, count]) => sum + count, 0);
   const assetReviewStateCountsReconciled = assetReviewStateTotal === assetDraftCount;
+  const assetSourceTaskTotal = assetSourceTaskEntries.reduce((sum, [, count]) => sum + count, 0);
+  const assetSourceTaskCountsReconciled = assetSourceTaskTotal === assetDraftCount;
   const contentBlockTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.contentBlockCount, 0);
   const visibleContentBlockTotal = visibleAssets.reduce((sum, asset) => sum + asset.contentBlockCount, 0);
   const hiddenContentBlockTotal = contentBlockTotal - visibleContentBlockTotal;
@@ -1586,6 +1594,9 @@ function AssetWorkspacePanel({
       data-asset-review-state-count={assetReviewStateEntries.length}
       data-asset-review-state-counts-reconciled={assetReviewStateCountsReconciled}
       data-asset-review-state-total-count={assetReviewStateTotal}
+      data-asset-source-task-count={assetSourceTaskEntries.length}
+      data-asset-source-task-counts-reconciled={assetSourceTaskCountsReconciled}
+      data-asset-source-task-total-count={assetSourceTaskTotal}
       data-asset-workspace-content-block-count={contentBlockTotal}
       data-asset-workspace-content-block-counts-reconciled={contentBlockCountsReconciled}
       data-asset-workspace-content-block-type-count={contentBlockTypeEntries.length}
@@ -1662,6 +1673,18 @@ function AssetWorkspacePanel({
           >
             <span>Asset review states</span>
             <strong>{assetReviewStateEntries.map(([reviewState, count]) => `${reviewState} ${count}`).join(" / ")}</strong>
+          </div>
+        )}
+        {assetSourceTaskEntries.length > 0 && (
+          <div
+            className="kv-row"
+            data-asset-source-task-count={assetSourceTaskEntries.length}
+            data-asset-source-task-counts-reconciled={assetSourceTaskCountsReconciled}
+            data-asset-source-task-summary="true"
+            data-asset-source-task-total-count={assetSourceTaskTotal}
+          >
+            <span>Source tasks</span>
+            <strong>{assetSourceTaskEntries.map(([sourceTaskId, count]) => `${sourceTaskId} ${count}`).join(" / ")}</strong>
           </div>
         )}
         {contentBlockTypeEntries.length > 0 && (
@@ -1778,6 +1801,21 @@ function AssetWorkspacePanel({
           ))}
         </div>
       )}
+      {assetSourceTaskEntries.length > 0 && (
+        <div className="inline-diagnostics" data-asset-source-task-list="true">
+          {assetSourceTaskEntries.map(([sourceTaskId, count]) => (
+            <span
+              className="pill muted-pill"
+              data-asset-source-task-id={sourceTaskId}
+              data-asset-source-task-row="true"
+              data-asset-source-task-row-count={count}
+              key={`asset-source-task-${sourceTaskId}`}
+            >
+              {sourceTaskId} {count}
+            </span>
+          ))}
+        </div>
+      )}
       {contentBlockTypeEntries.length > 0 && (
         <div className="inline-diagnostics" data-asset-workspace-content-block-type-list="true">
           {contentBlockTypeEntries.map(([blockType, count]) => (
@@ -1860,6 +1898,7 @@ function AssetWorkspacePanel({
                 data-asset-qa-check-count={asset.qaCheckCount}
                 data-asset-qa-pending-count={asset.qaPendingCount}
                 data-asset-review-state={asset.reviewState}
+                data-asset-source-task-id={asset.sourceTaskId}
                 data-asset-row-qa-counts-reconciled={asset.qaChecks.length === asset.qaCheckCount}
                 data-asset-row-qa-detail-count={asset.qaChecks.length}
                 data-asset-row-qa-pending-counts-reconciled={assetQaPendingDetailCount === asset.qaPendingCount}

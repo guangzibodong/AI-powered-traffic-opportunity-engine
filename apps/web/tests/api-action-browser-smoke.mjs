@@ -3006,6 +3006,53 @@ async function assertAssetWorkspaceReviewStateDistribution(page, expectedCounts,
   }
 }
 
+async function assertAssetWorkspaceSourceTaskDistribution(page, expectedCounts, label) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for source task diagnostics`);
+  const summaryRow = assetPanel.locator("[data-asset-source-task-summary='true']");
+  await expectVisible(summaryRow, `${label} asset source task summary row`);
+  const expectedEntries = Object.entries(expectedCounts).sort(([left], [right]) => left.localeCompare(right));
+  const expectedTotal = expectedEntries.reduce((sum, [, count]) => sum + count, 0);
+  const sourceTaskCount = Number(await summaryRow.getAttribute("data-asset-source-task-count"));
+  const totalCount = Number(await summaryRow.getAttribute("data-asset-source-task-total-count"));
+  const reconciled = await summaryRow.getAttribute("data-asset-source-task-counts-reconciled");
+  const rows = await assetPanel.locator("[data-asset-source-task-row='true']").evaluateAll((elements) =>
+    elements.map((element) => ({
+      count: Number(element.getAttribute("data-asset-source-task-row-count")),
+      id: element.getAttribute("data-asset-source-task-id"),
+      text: element.textContent ?? ""
+    }))
+  );
+  assert(
+    sourceTaskCount === expectedEntries.length,
+    `${label} asset source task count mismatch: expected ${expectedEntries.length}, got ${sourceTaskCount}`
+  );
+  assert(totalCount === expectedTotal, `${label} asset source task total mismatch: expected ${expectedTotal}, got ${totalCount}`);
+  assert(
+    reconciled === "true",
+    `${label} asset source task reconciliation marker must be true, got ${reconciled ?? "missing"}`
+  );
+  assert(
+    rows.length === expectedEntries.length,
+    `${label} asset source task row count mismatch: expected ${expectedEntries.length}, got ${rows.length}`
+  );
+  assert(
+    rows.reduce((sum, row) => sum + row.count, 0) === expectedTotal,
+    `${label} asset source task rows must sum to ${expectedTotal}`
+  );
+  const summaryText = (await summaryRow.textContent()) ?? "";
+  for (const [sourceTaskId, count] of expectedEntries) {
+    assert(
+      summaryText.includes(`${sourceTaskId} ${count}`),
+      `${label} asset source task summary missing ${sourceTaskId} ${count}`
+    );
+    assert(
+      rows.some((row) => row.id === sourceTaskId && row.count === count && row.text.includes(`${sourceTaskId} ${count}`)),
+      `${label} asset source task row missing ${sourceTaskId} ${count}`
+    );
+  }
+}
+
 async function assertAssetWorkspaceQaSummary(page, expectedQaCheckCount, expectedQaPendingCount, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA summary diagnostics`);
@@ -4996,6 +5043,11 @@ async function runSmoke() {
     await assertAssetWorkspaceReviewStateDistribution(
       populatedAssetPage,
       { draft_candidate: 3 },
+      "populated asset workspace"
+    );
+    await assertAssetWorkspaceSourceTaskDistribution(
+      populatedAssetPage,
+      { task_002: 1, task_003: 1, task_004: 1 },
       "populated asset workspace"
     );
     await assertAssetWorkspaceQaSummary(populatedAssetPage, 5, 4, "populated asset workspace");

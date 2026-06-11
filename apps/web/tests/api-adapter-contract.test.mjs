@@ -578,6 +578,30 @@ assert(
   app.includes("data-asset-review-state-row-count"),
   "Asset workspace UI must expose stable asset review state row count diagnostics"
 );
+assert(
+  app.includes("data-asset-source-task-count"),
+  "Asset workspace UI must expose stable asset source task count diagnostics"
+);
+assert(
+  app.includes("data-asset-source-task-total-count"),
+  "Asset workspace UI must expose stable asset source task total diagnostics"
+);
+assert(
+  app.includes("data-asset-source-task-counts-reconciled"),
+  "Asset workspace UI must expose stable asset source task reconciliation diagnostics"
+);
+assert(
+  app.includes('data-asset-source-task-row="true"'),
+  "Asset workspace UI must expose stable asset source task rows"
+);
+assert(
+  app.includes("data-asset-source-task-id"),
+  "Asset workspace UI must expose stable asset source task id diagnostics"
+);
+assert(
+  app.includes("data-asset-source-task-row-count"),
+  "Asset workspace UI must expose stable asset source task row count diagnostics"
+);
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
   app.includes("data-asset-workspace-content-block-count"),
