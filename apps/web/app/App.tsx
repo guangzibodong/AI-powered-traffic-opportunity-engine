@@ -2557,6 +2557,7 @@ function LocalAssetEditor({
       data-asset-editor-price-edit-allowed={false}
       data-asset-editor-product-edit-allowed={false}
       data-asset-editor-publishing-allowed={false}
+      data-asset-editor-stock-status-edit-allowed={false}
       data-asset-editor-sync-execution-allowed={false}
       data-asset-editor-wordpress-draft-creation-allowed={false}
       data-asset-editor-wordpress-page-update-allowed={false}
@@ -2756,6 +2757,14 @@ function LocalAssetEditor({
           data-asset-editor-inventory-edit-summary="true"
         >
           <span>Inventory edits</span>
+          <strong>false</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-stock-status-edit-allowed={false}
+          data-asset-editor-stock-status-edit-summary="true"
+        >
+          <span>Stock status edits</span>
           <strong>false</strong>
         </div>
         <div className="kv-row">
