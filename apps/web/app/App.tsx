@@ -1669,6 +1669,8 @@ function AssetWorkspacePanel({
                 data-asset-content-block-count={asset.contentBlockCount}
                 data-asset-content-block-types={asset.contentBlockTypes.join(",")}
                 data-asset-id={asset.id}
+                data-asset-row-content-block-count={asset.contentBlockCount}
+                data-asset-row-content-block-counts-reconciled={assetContentBlockTypeCountsReconciled}
                 data-asset-row-content-block-type-count={assetContentBlockTypeEntries.length}
                 data-asset-row-content-block-type-counts-reconciled={assetContentBlockTypeCountsReconciled}
                 data-asset-row-content-block-type-total-count={assetContentBlockTypeTotal}

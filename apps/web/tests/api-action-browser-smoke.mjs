@@ -956,6 +956,8 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
       const expectedContentBlockTypeEntries = Object.entries(expectedContentBlockTypeDistribution).sort(
         ([left], [right]) => left.localeCompare(right)
       );
+      const rowContentBlockCount = Number(await row.getAttribute("data-asset-row-content-block-count"));
+      const rowContentBlockCountsReconciled = await row.getAttribute("data-asset-row-content-block-counts-reconciled");
       const rowContentBlockTypeCount = Number(await row.getAttribute("data-asset-row-content-block-type-count"));
       const rowContentBlockTypeTotal = Number(await row.getAttribute("data-asset-row-content-block-type-total-count"));
       const rowContentBlockTypeReconciled = await row.getAttribute(
@@ -970,6 +972,18 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
             type: element.getAttribute("data-asset-row-content-block-type-key")
           }))
         );
+      assert(
+        rowContentBlockCount === expectedAsset.contentBlockCount,
+        `${label} asset row ${expectedAsset.id} content block count mismatch: expected ${
+          expectedAsset.contentBlockCount
+        }, got ${rowContentBlockCount}`
+      );
+      assert(
+        rowContentBlockCountsReconciled === "true",
+        `${label} asset row ${expectedAsset.id} content block count reconciliation marker must be true, got ${
+          rowContentBlockCountsReconciled ?? "missing"
+        }`
+      );
       assert(
         rowContentBlockTypeCount === expectedContentBlockTypeEntries.length,
         `${label} asset row ${expectedAsset.id} content block type count mismatch: expected ${
