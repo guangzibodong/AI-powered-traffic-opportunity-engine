@@ -198,7 +198,8 @@ Sprint 3 local/demo capabilities completed:
 49. The local asset editor shows read-only inventory-edit false context without inventory edits, price edits, product edits, WooCommerce writes, drafts, publishing, sync execution, real OAuth, credential collection/storage, or external writes.
 50. The local asset editor shows read-only stock-status edit false context without stock status edits, inventory edits, price edits, product edits, WooCommerce writes, drafts, publishing, sync execution, real OAuth, credential collection/storage, or external writes.
 51. The local asset editor shows read-only product-content edit false context without product content edits, stock status edits, inventory edits, price edits, product edits, WooCommerce writes, drafts, publishing, sync execution, real OAuth, credential collection/storage, or external writes.
-52. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
+52. The local asset editor shows read-only product-delete false context without product deletion, product content edits, stock status edits, inventory edits, price edits, product edits, WooCommerce writes, drafts, publishing, sync execution, real OAuth, credential collection/storage, or external writes.
+53. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
 
 Current product/engineering ownership:
 
