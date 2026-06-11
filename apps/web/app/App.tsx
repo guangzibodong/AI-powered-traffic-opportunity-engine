@@ -2553,6 +2553,7 @@ function LocalAssetEditor({
       data-asset-editor-asset-type={asset.assetType}
       data-asset-editor-commerce-write-allowed={false}
       data-asset-editor-credential-collection-allowed={false}
+      data-asset-editor-publishing-allowed={false}
       data-asset-editor-sync-execution-allowed={false}
       data-asset-editor-claim-count={asset.claimCount}
       data-asset-editor-claim-counts-reconciled={editorClaimCountsReconciled}
@@ -2702,6 +2703,14 @@ function LocalAssetEditor({
           data-asset-editor-sync-execution-summary="true"
         >
           <span>Remote run</span>
+          <strong>false</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-publishing-allowed={false}
+          data-asset-editor-publishing-summary="true"
+        >
+          <span>Public release</span>
           <strong>false</strong>
         </div>
         <div className="kv-row">

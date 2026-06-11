@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset editor sync-execution clamp diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor publishing clamp diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -310,6 +310,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-142 | 276 | done | Frontend Product Engineer / QA Lead | Add local asset editor commerce-write clamp context diagnostics. | The local asset editor exposes read-only commerce-write false context from safe local asset previews, without WooCommerce writes, product edits, price edits, inventory edits, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, or task mutation controls. |
 | TASK-S3-QA-143 | 277 | done | Frontend Product Engineer / QA Lead | Add local asset editor credential-collection clamp diagnostics. | The local asset editor exposes read-only credential-collection false context from safe local asset previews, without collecting or storing credentials, real GSC OAuth, sync, external writes, WordPress draft creation, page updates, publishing, WooCommerce writes, product edits, or task mutation controls. |
 | TASK-S3-QA-144 | 278 | done | Frontend Product Engineer / QA Lead | Add local asset editor sync-execution clamp diagnostics. | The local asset editor exposes read-only sync-execution false context from safe local asset previews, without sync execution, real GSC OAuth, credential collection/storage, external writes, WordPress draft creation, page updates, publishing, WooCommerce writes, product edits, or task mutation controls. |
+| TASK-S3-QA-145 | 279 | done | Frontend Product Engineer / QA Lead | Add local asset editor publishing clamp diagnostics. | The local asset editor exposes read-only publishing false context from safe local asset previews, without publishing, WordPress draft creation, page updates, sync execution, real GSC OAuth, credential collection/storage, external writes, WooCommerce writes, product edits, or task mutation controls. |
 
 ## Blockers
 
@@ -766,6 +767,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local asset editor commerce-write clamp context diagnostics are verified by red-green static and browser coverage that first failed on missing editor commerce-write markers, then passed with visible false diagnostics from the selected safe local asset preview, plus full backend/frontend/browser verification and no WooCommerce writes, product edits, price edits, inventory edits, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, or task mutation controls.
 - Local asset editor credential-collection clamp diagnostics are verified by red-green static and browser coverage that first failed on missing editor credential-collection markers, then passed with visible false diagnostics from the selected safe local asset preview, plus full backend/frontend/browser verification and no credential collection/storage, real GSC OAuth, sync, external writes, WordPress draft creation, page updates, publishing, WooCommerce writes, product edits, or task mutation controls.
 - Local asset editor sync-execution clamp diagnostics are verified by red-green static and browser coverage that first failed on missing editor sync-execution markers, then passed with visible false diagnostics from the selected safe local asset preview, plus full backend/frontend/browser verification and no sync execution, credential collection/storage, real GSC OAuth, external writes, WordPress draft creation, page updates, publishing, WooCommerce writes, product edits, or task mutation controls.
+- Local asset editor publishing clamp diagnostics are verified by red-green static and browser coverage that first failed on missing editor publishing markers, then passed with visible false diagnostics from the selected safe local asset preview, plus full backend/frontend/browser verification and no publishing, WordPress draft creation, page updates, sync execution, credential collection/storage, real GSC OAuth, external writes, WooCommerce writes, product edits, or task mutation controls.
 
 ## Completion Rule
 

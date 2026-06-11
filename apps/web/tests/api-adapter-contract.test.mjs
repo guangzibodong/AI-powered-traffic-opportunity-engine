@@ -810,6 +810,14 @@ assert(
   app.includes('data-asset-editor-sync-execution-summary="true"'),
   "Local asset editor UI must expose stable visible sync-execution summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-publishing-allowed"),
+  "Local asset editor UI must expose stable publishing clamp diagnostics"
+);
+assert(
+  app.includes('data-asset-editor-publishing-summary="true"'),
+  "Local asset editor UI must expose stable visible publishing summary diagnostics"
+);
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");
