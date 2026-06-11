@@ -1511,6 +1511,10 @@ function AssetWorkspacePanel({
   const claimSourceCountsReconciled = claimSourceTotal === claimTotal;
   const assetTypeTotal = assetTypeEntries.reduce((sum, [, count]) => sum + count, 0);
   const assetTypeCountsReconciled = assetTypeTotal === assetDraftCount;
+  const contentBlockTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.contentBlockCount, 0);
+  const visibleContentBlockTotal = visibleAssets.reduce((sum, asset) => sum + asset.contentBlockCount, 0);
+  const hiddenContentBlockTotal = contentBlockTotal - visibleContentBlockTotal;
+  const contentBlockCountsReconciled = visibleContentBlockTotal + hiddenContentBlockTotal === contentBlockTotal;
   const qaCheckTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
   const qaPendingTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaPendingCount, 0);
   const visibleQaCheckTotal = visibleAssets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
@@ -1561,6 +1565,8 @@ function AssetWorkspacePanel({
       data-asset-draft-count={assetDraftCount}
       data-asset-draft-counts-reconciled={assetDraftCountsReconciled}
       data-asset-overflow-count={assetOverflowCount}
+      data-asset-workspace-content-block-count={contentBlockTotal}
+      data-asset-workspace-content-block-counts-reconciled={contentBlockCountsReconciled}
       data-asset-qa-check-count={qaCheckTotal}
       data-asset-qa-counts-reconciled={qaCountsReconciled}
       data-asset-qa-pending-count={qaPendingTotal}
@@ -1577,10 +1583,12 @@ function AssetWorkspacePanel({
       data-external-write-clamp-reconciled={externalWriteClampReconciled}
       data-hidden-asset-count={hiddenAssetCount}
       data-hidden-asset-claim-count={hiddenClaimTotal}
+      data-hidden-asset-content-block-count={hiddenContentBlockTotal}
       data-hidden-asset-qa-check-count={hiddenQaCheckTotal}
       data-hidden-asset-qa-pending-count={hiddenQaPendingTotal}
       data-visible-asset-count={visibleAssetCount}
       data-visible-asset-claim-count={visibleClaimTotal}
+      data-visible-asset-content-block-count={visibleContentBlockTotal}
       data-visible-asset-qa-check-count={visibleQaCheckTotal}
       data-visible-asset-qa-pending-count={visibleQaPendingTotal}
     >

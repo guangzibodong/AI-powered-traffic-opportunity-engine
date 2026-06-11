@@ -556,6 +556,22 @@ assert(
 );
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
+  app.includes("data-asset-workspace-content-block-count"),
+  "Asset workspace UI must expose stable workspace content block count diagnostics"
+);
+assert(
+  app.includes("data-asset-workspace-content-block-counts-reconciled"),
+  "Asset workspace UI must expose stable workspace content block reconciliation diagnostics"
+);
+assert(
+  app.includes("data-visible-asset-content-block-count"),
+  "Asset workspace UI must expose stable visible content block aggregate diagnostics"
+);
+assert(
+  app.includes("data-hidden-asset-content-block-count"),
+  "Asset workspace UI must expose stable hidden content block aggregate diagnostics"
+);
+assert(
   app.includes("data-asset-row-content-block-type-count"),
   "Asset workspace UI must expose stable row-level content block type count diagnostics"
 );

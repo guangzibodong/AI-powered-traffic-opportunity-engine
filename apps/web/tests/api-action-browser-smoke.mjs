@@ -3237,6 +3237,46 @@ async function assertAssetWorkspaceRowAggregateReconciles(page, label) {
   );
 }
 
+async function assertAssetWorkspaceContentBlockAggregateReconciles(
+  page,
+  expectedTotal,
+  expectedVisible,
+  expectedHidden,
+  label
+) {
+  const assetPanel = page.locator(".asset-workspace-panel");
+  await expectVisible(assetPanel, `${label} asset workspace panel for content block aggregate diagnostics`);
+  const totalContentBlockCount = Number(await assetPanel.getAttribute("data-asset-workspace-content-block-count"));
+  const visibleContentBlockCount = Number(await assetPanel.getAttribute("data-visible-asset-content-block-count"));
+  const hiddenContentBlockCount = Number(await assetPanel.getAttribute("data-hidden-asset-content-block-count"));
+  const reconciled = await assetPanel.getAttribute("data-asset-workspace-content-block-counts-reconciled");
+  const visibleRows = await assetPanel.locator("[data-asset-id]").all();
+  let actualVisibleContentBlockCount = 0;
+  for (const row of visibleRows) {
+    actualVisibleContentBlockCount += Number(await row.getAttribute("data-asset-content-block-count"));
+  }
+  assert(
+    totalContentBlockCount === expectedTotal,
+    `${label} content block total mismatch: expected ${expectedTotal}, got ${totalContentBlockCount}`
+  );
+  assert(
+    visibleContentBlockCount === expectedVisible && hiddenContentBlockCount === expectedHidden,
+    `${label} content block visible/hidden mismatch: expected ${expectedVisible}/${expectedHidden}, got ${visibleContentBlockCount}/${hiddenContentBlockCount}`
+  );
+  assert(
+    visibleContentBlockCount === actualVisibleContentBlockCount,
+    `${label} visible content block aggregate mismatch: expected DOM ${actualVisibleContentBlockCount}, got ${visibleContentBlockCount}`
+  );
+  assert(
+    visibleContentBlockCount + hiddenContentBlockCount === totalContentBlockCount,
+    `${label} content block aggregate does not reconcile`
+  );
+  assert(
+    reconciled === "true",
+    `${label} content block aggregate reconciliation marker must be true, got ${reconciled ?? "missing"}`
+  );
+}
+
 async function assertAssetWorkspaceClaimAggregateReconciles(page, expectedTotal, expectedVisible, expectedHidden, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for claim aggregate diagnostics`);
@@ -4871,6 +4911,7 @@ async function runSmoke() {
     await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", 4, 5, "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
+    await assertAssetWorkspaceContentBlockAggregateReconciles(populatedAssetPage, 6, 5, 1, "populated asset workspace");
     await assertAssetWorkspaceClaimAggregateReconciles(populatedAssetPage, 3, 2, 1, "populated asset workspace");
     await assertAssetWorkspaceClaimSourceDistribution(
       populatedAssetPage,
