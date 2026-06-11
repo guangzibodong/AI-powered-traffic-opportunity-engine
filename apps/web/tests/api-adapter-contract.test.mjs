@@ -754,6 +754,14 @@ assert(
   app.includes('data-asset-editor-review-state-summary="true"'),
   "Local asset editor UI must expose stable visible local asset review-state summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-evidence-count"),
+  "Local asset editor UI must expose stable evidence count diagnostics"
+);
+assert(
+  app.includes('data-asset-editor-evidence-summary="true"'),
+  "Local asset editor UI must expose stable visible evidence summary diagnostics"
+);
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");

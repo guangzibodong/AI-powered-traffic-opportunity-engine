@@ -1598,6 +1598,25 @@ async function assertLocalAssetEditorReviewStateContext(editor, expectedReviewSt
   );
 }
 
+async function assertLocalAssetEditorEvidenceSummary(editor, expectedEvidenceCount, label) {
+  const evidenceCount = await editor.getAttribute("data-asset-editor-evidence-count");
+  assert(
+    evidenceCount === String(expectedEvidenceCount),
+    `${label} editor evidence count mismatch: expected ${expectedEvidenceCount}, got ${evidenceCount ?? "missing"}`
+  );
+  const evidenceSummary = editor.locator("[data-asset-editor-evidence-summary='true']");
+  await expectVisible(evidenceSummary, `${label} visible editor evidence summary`);
+  assert(
+    (await evidenceSummary.getAttribute("data-asset-editor-evidence-count")) === String(expectedEvidenceCount),
+    `${label} visible editor evidence summary count mismatch`
+  );
+  const summaryText = (await evidenceSummary.textContent()) ?? "";
+  assert(
+    summaryText.includes(`${expectedEvidenceCount} claims`),
+    `${label} visible editor evidence summary missing claim count copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5212,6 +5231,7 @@ async function runSmoke() {
     );
     await assertLocalAssetEditorAssetTypeContext(populatedEditor, "collection_page", "populated asset workspace");
     await assertLocalAssetEditorReviewStateContext(populatedEditor, "draft_candidate", "populated asset workspace");
+    await assertLocalAssetEditorEvidenceSummary(populatedEditor, 2, "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },

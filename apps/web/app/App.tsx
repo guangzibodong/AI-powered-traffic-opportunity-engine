@@ -2561,6 +2561,7 @@ function LocalAssetEditor({
       data-asset-editor-dirty-field-keys-reconciled={editorDirtyFieldKeysReconciled}
       data-asset-editor-dirty-state={editorDirtyState}
       data-asset-editor-empty-field-count={editorEmptyFieldCount}
+      data-asset-editor-evidence-count={asset.claimCount}
       data-asset-editor-field-count={editorFieldCount}
       data-asset-editor-field-counts-reconciled={editorFieldCountsReconciled}
       data-asset-editor-field-readiness-state={editorFieldReadinessState}
@@ -2635,6 +2636,14 @@ function LocalAssetEditor({
         >
           <span>Review state</span>
           <strong>{asset.reviewState}</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-evidence-count={asset.claimCount}
+          data-asset-editor-evidence-summary="true"
+        >
+          <span>Evidence summary</span>
+          <strong>{asset.claimCount} claims</strong>
         </div>
         <div className="kv-row">
           <span>{copy.fields}</span>
