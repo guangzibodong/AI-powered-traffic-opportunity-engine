@@ -802,6 +802,14 @@ assert(
   app.includes('data-asset-editor-credential-collection-summary="true"'),
   "Local asset editor UI must expose stable visible credential-collection summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-sync-execution-allowed"),
+  "Local asset editor UI must expose stable sync-execution clamp diagnostics"
+);
+assert(
+  app.includes('data-asset-editor-sync-execution-summary="true"'),
+  "Local asset editor UI must expose stable visible sync-execution summary diagnostics"
+);
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");

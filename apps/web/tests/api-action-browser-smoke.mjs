@@ -1727,6 +1727,25 @@ async function assertLocalAssetEditorCredentialCollectionClamp(editor, label) {
   );
 }
 
+async function assertLocalAssetEditorSyncExecutionClamp(editor, label) {
+  const syncExecutionAllowed = await editor.getAttribute("data-asset-editor-sync-execution-allowed");
+  assert(
+    syncExecutionAllowed === "false",
+    `${label} editor sync-execution clamp mismatch: expected false, got ${syncExecutionAllowed ?? "missing"}`
+  );
+  const syncExecutionSummary = editor.locator("[data-asset-editor-sync-execution-summary='true']");
+  await expectVisible(syncExecutionSummary, `${label} visible editor sync-execution summary`);
+  assert(
+    (await syncExecutionSummary.getAttribute("data-asset-editor-sync-execution-allowed")) === "false",
+    `${label} visible editor sync-execution summary clamp mismatch`
+  );
+  const summaryText = ((await syncExecutionSummary.textContent()) ?? "").toLowerCase();
+  assert(
+    summaryText.includes("false") || summaryText.includes("disabled"),
+    `${label} visible editor sync-execution summary missing false/disabled copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5346,6 +5365,7 @@ async function runSmoke() {
     await assertLocalAssetEditorExternalWriteClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorCommerceWriteClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorCredentialCollectionClamp(populatedEditor, "populated asset workspace");
+    await assertLocalAssetEditorSyncExecutionClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },
