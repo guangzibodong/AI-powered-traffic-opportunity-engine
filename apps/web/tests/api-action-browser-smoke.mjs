@@ -1843,6 +1843,28 @@ async function assertLocalAssetEditorCanSave(
       pendingQaRows > 0 ? "pending_qa" : "qa_clear"
     }, got ${editorQaReadinessState}`
   );
+  const editorQaDetailCount = Number(await editor.getAttribute("data-asset-editor-qa-detail-count"));
+  const editorQaPendingDetailCount = Number(await editor.getAttribute("data-asset-editor-qa-pending-detail-count"));
+  const editorQaCountsReconciled = await editor.getAttribute("data-asset-editor-qa-counts-reconciled");
+  const editorQaPendingCountsReconciled = await editor.getAttribute("data-asset-editor-qa-pending-counts-reconciled");
+  assert(
+    editorQaDetailCount === qaDetailRows.length,
+    `${label} editor QA detail count mismatch: expected ${qaDetailRows.length}, got ${editorQaDetailCount}`
+  );
+  assert(
+    editorQaPendingDetailCount === pendingQaRows,
+    `${label} editor QA pending detail count mismatch: expected ${pendingQaRows}, got ${editorQaPendingDetailCount}`
+  );
+  assert(
+    editorQaCountsReconciled === "true",
+    `${label} editor QA count reconciliation marker must be true, got ${editorQaCountsReconciled ?? "missing"}`
+  );
+  assert(
+    editorQaPendingCountsReconciled === "true",
+    `${label} editor QA pending count reconciliation marker must be true, got ${
+      editorQaPendingCountsReconciled ?? "missing"
+    }`
+  );
   const qaSummary = editor.locator("[data-asset-editor-qa-summary='true']");
   await expectVisible(qaSummary, `${label} editor QA aggregate summary`);
   await expectVisible(

@@ -2178,6 +2178,10 @@ function LocalAssetEditor({
   const editorQaPendingCount = asset.qaChecks.filter((check) => check.status === "pending").length;
   const editorQaReadinessState =
     asset.qaChecks.length === 0 ? "not_applicable" : editorQaPendingCount > 0 ? "pending_qa" : "qa_clear";
+  const editorQaDetailCount = asset.qaChecks.length;
+  const editorQaPendingDetailCount = asset.qaChecks.filter((check) => check.status === "pending").length;
+  const editorQaCountsReconciled = editorQaDetailCount === asset.qaChecks.length;
+  const editorQaPendingCountsReconciled = editorQaPendingDetailCount === editorQaPendingCount;
   const editorQaStatusEntries = Object.entries(
     asset.qaChecks.reduce<Record<string, number>>((counts, check) => {
       counts[check.status] = (counts[check.status] ?? 0) + 1;
@@ -2261,7 +2265,11 @@ function LocalAssetEditor({
       data-asset-editor-field-readiness-state={editorFieldReadinessState}
       data-asset-editor-filled-field-count={editorFilledFieldCount}
       data-asset-editor-qa-check-count={asset.qaChecks.length}
+      data-asset-editor-qa-counts-reconciled={editorQaCountsReconciled}
+      data-asset-editor-qa-detail-count={editorQaDetailCount}
       data-asset-editor-qa-pending-count={editorQaPendingCount}
+      data-asset-editor-qa-pending-counts-reconciled={editorQaPendingCountsReconciled}
+      data-asset-editor-qa-pending-detail-count={editorQaPendingDetailCount}
       data-asset-editor-qa-readiness-state={editorQaReadinessState}
       data-asset-editor-qa-status-count={editorQaStatusEntries.length}
       data-asset-editor-qa-status-counts-reconciled={editorQaStatusCountsReconciled}

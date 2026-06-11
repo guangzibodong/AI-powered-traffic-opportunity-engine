@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset editor QA status distribution diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor QA count reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -280,12 +280,13 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-112 | 246 | done | Frontend Product Engineer / QA Lead | Add visible asset row content block type diagnostics. | Each visible asset workspace row exposes read-only content block type count rows and reconciliation markers proving row-level block types match that row's safe content block count, without rich text editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls. |
 | TASK-S3-QA-113 | 247 | done | Frontend Product Engineer / QA Lead | Add local asset editor content block type diagnostics. | The local asset editor exposes read-only content block type count rows and reconciliation markers proving editor-visible block types match the selected asset's safe content block count, without rich text editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls. |
 | TASK-S3-QA-114 | 248 | done | Frontend Product Engineer / QA Lead | Add local asset editor QA status distribution diagnostics. | The local asset editor exposes read-only QA status count rows and reconciliation markers proving editor-visible QA statuses match the selected asset's safe QA detail count, without QA mutation, rich text editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls. |
+| TASK-S3-QA-115 | 249 | done | Frontend Product Engineer / QA Lead | Add local asset editor QA count reconciliation diagnostics. | The local asset editor exposes read-only QA detail count, pending detail count, and reconciliation markers proving rendered safe QA details match the selected asset's QA count and pending count, without QA mutation, rich text editing, external href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls. |
 
 ## Blockers
 
 | Blocker | Status | Notes |
 |---|---|---|
-| GitHub HTTPS push | resolved | Commit `7e86560` was pushed to `codex/sprint1-v3-ui`; future pushes may need the repo proxy override cleared if `127.0.0.1:7897` is not running. |
+| GitHub HTTPS push | blocked | Commit `6ee8657` is committed locally but push is blocked because the repo proxy override `127.0.0.1:7897` is unavailable and direct GitHub HTTPS also failed. Retry push when network/proxy access is restored. |
 | Live integration credentials and boundary approval | blocked | The next non-local Sprint 2 step needs user-approved credentials and a revised boundary for real read-only connection work; current safe loop remains local/import-only. |
 
 ## Agent Findings
@@ -706,6 +707,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Visible asset row content block type diagnostics are verified by red-green static and browser coverage that first failed on missing row-level content block type count markers, then passed with each visible asset row proving block type distribution rows reconcile with that row's safe content block count, plus full backend/frontend/browser verification and no rich text editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls.
 - Local asset editor content block type diagnostics are verified by red-green static and browser coverage that first failed on missing editor-level content block type count markers, then passed with the selected local asset editor proving block type distribution rows reconcile with that asset's safe content block count, plus full backend/frontend/browser verification and no rich text editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls.
 - Local asset editor QA status distribution diagnostics are verified by red-green static and browser coverage that first failed on missing editor-level QA status count markers, then passed with the selected local asset editor proving status distribution rows reconcile with safe QA detail rows, plus full backend/frontend/browser verification and no QA mutation, rich text editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls.
+- Local asset editor QA count reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing editor-level QA detail count markers, then passed with the selected local asset editor proving rendered safe QA detail rows and pending rows match editor QA totals, plus full backend/frontend/browser verification and no QA mutation, rich text editing, href, navigation, WordPress draft, publish, sync, OAuth, credential, product edit, or commerce-write controls.
 
 ## Completion Rule
 

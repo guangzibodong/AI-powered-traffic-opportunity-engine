@@ -470,6 +470,22 @@ assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must 
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");
 assert(
+  app.includes("data-asset-editor-qa-detail-count"),
+  "Local asset editor UI must expose stable QA detail count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-qa-pending-detail-count"),
+  "Local asset editor UI must expose stable QA pending detail count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-qa-counts-reconciled"),
+  "Local asset editor UI must expose stable QA count reconciliation diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-qa-pending-counts-reconciled"),
+  "Local asset editor UI must expose stable QA pending count reconciliation diagnostics"
+);
+assert(
   app.includes("data-asset-editor-qa-status-count"),
   "Local asset editor UI must expose stable QA status count diagnostics"
 );
