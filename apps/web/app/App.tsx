@@ -2555,6 +2555,7 @@ function LocalAssetEditor({
       data-asset-editor-credential-collection-allowed={false}
       data-asset-editor-publishing-allowed={false}
       data-asset-editor-sync-execution-allowed={false}
+      data-asset-editor-wordpress-page-update-allowed={false}
       data-asset-editor-claim-count={asset.claimCount}
       data-asset-editor-claim-counts-reconciled={editorClaimCountsReconciled}
       data-asset-editor-claim-source-count={editorClaimSourceEntries.length}
@@ -2711,6 +2712,14 @@ function LocalAssetEditor({
           data-asset-editor-publishing-summary="true"
         >
           <span>Public release</span>
+          <strong>false</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-wordpress-page-update-allowed={false}
+          data-asset-editor-wordpress-page-update-summary="true"
+        >
+          <span>Page updates</span>
           <strong>false</strong>
         </div>
         <div className="kv-row">

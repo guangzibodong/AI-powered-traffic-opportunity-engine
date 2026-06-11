@@ -818,6 +818,14 @@ assert(
   app.includes('data-asset-editor-publishing-summary="true"'),
   "Local asset editor UI must expose stable visible publishing summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-wordpress-page-update-allowed"),
+  "Local asset editor UI must expose stable WordPress page-update clamp diagnostics"
+);
+assert(
+  app.includes('data-asset-editor-wordpress-page-update-summary="true"'),
+  "Local asset editor UI must expose stable visible WordPress page-update summary diagnostics"
+);
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");
