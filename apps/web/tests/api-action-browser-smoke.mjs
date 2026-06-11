@@ -2771,11 +2771,40 @@ async function assertAssetWorkspaceBlockedCapabilities(page, expectedCapabilitie
       blockedCountText ?? "missing"
     }`
   );
+  const blockedCapabilityCountsReconciled = await assetPanel.getAttribute("data-blocked-capability-counts-reconciled");
+  assert(
+    blockedCapabilityCountsReconciled === "true",
+    `${label} asset workspace blocked capability reconciliation marker must be true, got ${
+      blockedCapabilityCountsReconciled ?? "missing"
+    }`
+  );
+  const blockedCapabilityRows = await assetPanel
+    .locator("[data-blocked-capability-row='true']")
+    .evaluateAll((elements) =>
+      elements.map((element) => ({
+        key: element.getAttribute("data-blocked-capability-key"),
+        text: element.textContent ?? ""
+      }))
+    );
+  assert(
+    blockedCapabilityRows.length === expectedCapabilities.length,
+    `${label} asset workspace blocked capability row count mismatch: expected ${
+      expectedCapabilities.length
+    }, got ${blockedCapabilityRows.length}`
+  );
+  assert(
+    blockedCapabilityRows.length === blockedCount,
+    `${label} asset workspace blocked capability rows must reconcile with count`
+  );
   const panelText = (await assetPanel.textContent()) ?? "";
   for (const capability of expectedCapabilities) {
     assert(
       panelText.includes(capability),
       `${label} asset workspace missing visible blocked capability context: ${capability}`
+    );
+    assert(
+      blockedCapabilityRows.some((row) => row.key === capability && row.text.includes(capability)),
+      `${label} asset workspace missing blocked capability row: ${capability}`
     );
   }
 }

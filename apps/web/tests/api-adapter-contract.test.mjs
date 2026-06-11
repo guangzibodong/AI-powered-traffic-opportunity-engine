@@ -446,6 +446,18 @@ assert(
   app.includes("data-asset-row-blocked-capability-counts-reconciled"),
   "Asset workspace UI must expose stable row-level blocked capability reconciliation diagnostics"
 );
+assert(
+  app.includes("data-blocked-capability-counts-reconciled"),
+  "Asset workspace UI must expose stable workspace-level blocked capability reconciliation diagnostics"
+);
+assert(
+  app.includes('data-blocked-capability-row="true"'),
+  "Asset workspace UI must expose stable workspace-level blocked capability rows"
+);
+assert(
+  app.includes("data-blocked-capability-key"),
+  "Asset workspace UI must expose stable workspace-level blocked capability key diagnostics"
+);
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
   app.includes("data-asset-row-content-block-type-count"),

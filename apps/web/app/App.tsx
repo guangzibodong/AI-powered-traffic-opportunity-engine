@@ -1520,6 +1520,8 @@ function AssetWorkspacePanel({
           : "qa_clear";
   const blockedCapabilities =
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
+  const blockedCapabilityRows = blockedCapabilities.map((capability, index) => ({ capability, index }));
+  const blockedCapabilityCountsReconciled = blockedCapabilityRows.length === blockedCapabilities.length;
   return (
     <section
       className="panel asset-workspace-panel"
@@ -1533,6 +1535,7 @@ function AssetWorkspacePanel({
       data-asset-qa-readiness-state={qaReadinessState}
       data-asset-workspace-availability={assetWorkspace.availability}
       data-blocked-capability-count={blockedCapabilities.length}
+      data-blocked-capability-counts-reconciled={blockedCapabilityCountsReconciled}
       data-external-write-allowed="false"
       data-hidden-asset-claim-count={hiddenClaimTotal}
       data-visible-asset-claim-count={visibleClaimTotal}
@@ -1618,6 +1621,18 @@ function AssetWorkspacePanel({
           <span>Blocked capabilities</span>
           <strong>{blockedCapabilities.join(" / ")}</strong>
         </div>
+      </div>
+      <div className="inline-diagnostics" data-blocked-capability-list="true">
+        {blockedCapabilityRows.map(({ capability, index }) => (
+          <span
+            className="pill muted-pill"
+            data-blocked-capability-key={capability}
+            data-blocked-capability-row="true"
+            key={`asset-workspace-blocked-capability-${capability}-${index}`}
+          >
+            {capability}
+          </span>
+        ))}
       </div>
       {claimSourceEntries.length > 0 && (
         <div className="inline-diagnostics" data-asset-claim-source-list="true">
