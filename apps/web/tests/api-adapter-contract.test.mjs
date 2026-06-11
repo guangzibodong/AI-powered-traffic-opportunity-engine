@@ -435,6 +435,18 @@ assert(
   "Asset workspace UI must expose a stable visible row-level QA readiness summary"
 );
 assert(
+  app.includes("data-asset-qa-readiness-pending-count"),
+  "Asset workspace UI must expose stable workspace-level QA readiness pending count diagnostics"
+);
+assert(
+  app.includes("data-asset-qa-readiness-total-count"),
+  "Asset workspace UI must expose stable workspace-level QA readiness total count diagnostics"
+);
+assert(
+  app.includes("data-asset-qa-readiness-counts-reconciled"),
+  "Asset workspace UI must expose stable workspace-level QA readiness count reconciliation diagnostics"
+);
+assert(
   app.includes("data-asset-row-blocked-capability-count"),
   "Asset workspace UI must expose stable row-level blocked capability count diagnostics"
 );

@@ -1528,6 +1528,13 @@ function AssetWorkspacePanel({
         : qaPendingTotal > 0
           ? "pending_qa"
           : "qa_clear";
+  const qaReadinessCountsReconciled =
+    qaPendingTotal <= qaCheckTotal &&
+    ((assetWorkspace.availability === "unavailable" && qaReadinessState === "unavailable") ||
+      (assetWorkspace.availability !== "unavailable" &&
+        ((qaCheckTotal === 0 && qaPendingTotal === 0 && qaReadinessState === "not_applicable") ||
+          (qaCheckTotal > 0 && qaPendingTotal > 0 && qaReadinessState === "pending_qa") ||
+          (qaCheckTotal > 0 && qaPendingTotal === 0 && qaReadinessState === "qa_clear"))));
   const blockedCapabilities =
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   const blockedCapabilityRows = blockedCapabilities.map((capability, index) => ({ capability, index }));
@@ -1557,7 +1564,10 @@ function AssetWorkspacePanel({
       data-asset-qa-check-count={qaCheckTotal}
       data-asset-qa-counts-reconciled={qaCountsReconciled}
       data-asset-qa-pending-count={qaPendingTotal}
+      data-asset-qa-readiness-counts-reconciled={qaReadinessCountsReconciled}
+      data-asset-qa-readiness-pending-count={qaPendingTotal}
       data-asset-qa-readiness-state={qaReadinessState}
+      data-asset-qa-readiness-total-count={qaCheckTotal}
       data-asset-row-counts-reconciled={assetRowCountsReconciled}
       data-asset-workspace-availability={assetWorkspaceAvailabilityState}
       data-asset-workspace-availability-reconciled={assetWorkspaceAvailabilityReconciled}

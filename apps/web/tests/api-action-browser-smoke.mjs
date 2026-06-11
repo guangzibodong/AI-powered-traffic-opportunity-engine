@@ -3045,13 +3045,32 @@ async function assertWordPressDraftReadinessUnavailable(page, label) {
   assert(readinessRows === 0, `${label} must not render WordPress draft readiness rows when asset workspace is unavailable`);
 }
 
-async function assertAssetWorkspaceQaReadiness(page, expectedReadinessState, label) {
+async function assertAssetWorkspaceQaReadiness(
+  page,
+  expectedReadinessState,
+  expectedPendingCount,
+  expectedTotalCount,
+  label
+) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for QA readiness diagnostics`);
   const readinessState = await assetPanel.getAttribute("data-asset-qa-readiness-state");
+  const readinessPendingCount = Number(await assetPanel.getAttribute("data-asset-qa-readiness-pending-count"));
+  const readinessTotalCount = Number(await assetPanel.getAttribute("data-asset-qa-readiness-total-count"));
+  const readinessCountsReconciled = await assetPanel.getAttribute("data-asset-qa-readiness-counts-reconciled");
   assert(
     readinessState === expectedReadinessState,
     `${label} QA readiness state mismatch: expected ${expectedReadinessState}, got ${readinessState ?? "missing"}`
+  );
+  assert(
+    readinessPendingCount === expectedPendingCount && readinessTotalCount === expectedTotalCount,
+    `${label} QA readiness counts mismatch: expected ${expectedPendingCount}/${expectedTotalCount}, got ${readinessPendingCount}/${readinessTotalCount}`
+  );
+  assert(
+    readinessCountsReconciled === "true",
+    `${label} QA readiness count reconciliation marker must be true, got ${
+      readinessCountsReconciled ?? "missing"
+    }`
   );
   const readinessRow = assetPanel.locator("[data-asset-qa-readiness='true']");
   await expectVisible(readinessRow, `${label} asset QA readiness row`);
@@ -3062,9 +3081,22 @@ async function assertAssetWorkspaceNoQaChecks(page, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for no-QA diagnostics`);
   const readinessState = await assetPanel.getAttribute("data-asset-qa-readiness-state");
+  const readinessPendingCount = Number(await assetPanel.getAttribute("data-asset-qa-readiness-pending-count"));
+  const readinessTotalCount = Number(await assetPanel.getAttribute("data-asset-qa-readiness-total-count"));
+  const readinessCountsReconciled = await assetPanel.getAttribute("data-asset-qa-readiness-counts-reconciled");
   assert(
     readinessState === "not_applicable",
     `${label} no-QA readiness state mismatch: expected not_applicable, got ${readinessState ?? "missing"}`
+  );
+  assert(
+    readinessPendingCount === 0 && readinessTotalCount === 0,
+    `${label} no-QA readiness counts must be 0/0, got ${readinessPendingCount}/${readinessTotalCount}`
+  );
+  assert(
+    readinessCountsReconciled === "true",
+    `${label} no-QA readiness count reconciliation marker must be true, got ${
+      readinessCountsReconciled ?? "missing"
+    }`
   );
   const qaSummaryCount = await assetPanel.locator("[data-asset-qa-summary='true']").count();
   const qaReadinessRowCount = await assetPanel.locator("[data-asset-qa-readiness='true']").count();
@@ -3076,9 +3108,22 @@ async function assertAssetWorkspaceUnavailableQaReadiness(page, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for unavailable QA diagnostics`);
   const readinessState = await assetPanel.getAttribute("data-asset-qa-readiness-state");
+  const readinessPendingCount = Number(await assetPanel.getAttribute("data-asset-qa-readiness-pending-count"));
+  const readinessTotalCount = Number(await assetPanel.getAttribute("data-asset-qa-readiness-total-count"));
+  const readinessCountsReconciled = await assetPanel.getAttribute("data-asset-qa-readiness-counts-reconciled");
   assert(
     readinessState === "unavailable",
     `${label} unavailable QA readiness mismatch: expected unavailable, got ${readinessState ?? "missing"}`
+  );
+  assert(
+    readinessPendingCount === 0 && readinessTotalCount === 0,
+    `${label} unavailable QA readiness counts must be 0/0, got ${readinessPendingCount}/${readinessTotalCount}`
+  );
+  assert(
+    readinessCountsReconciled === "true",
+    `${label} unavailable QA readiness count reconciliation marker must be true, got ${
+      readinessCountsReconciled ?? "missing"
+    }`
   );
   const qaSummaryCount = await assetPanel.locator("[data-asset-qa-summary='true']").count();
   const qaReadinessRowCount = await assetPanel.locator("[data-asset-qa-readiness='true']").count();
@@ -4823,7 +4868,7 @@ async function runSmoke() {
     await assertWordPressDraftReadinessSummary(populatedAssetPage, 0, 3, "populated asset workspace");
     await assertWordPressDraftReadinessReconciles(populatedAssetPage, "populated asset workspace");
     await assertAssetExternalWriteClampReconciles(populatedAssetPage, "populated asset workspace");
-    await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", "populated asset workspace");
+    await assertAssetWorkspaceQaReadiness(populatedAssetPage, "pending_qa", 4, 5, "populated asset workspace");
     await assertAssetWorkspaceQaAggregateReconciles(populatedAssetPage, 1, 1, "populated asset workspace");
     await assertAssetWorkspaceRowAggregateReconciles(populatedAssetPage, "populated asset workspace");
     await assertAssetWorkspaceClaimAggregateReconciles(populatedAssetPage, 3, 2, 1, "populated asset workspace");
@@ -6607,7 +6652,7 @@ async function runSmoke() {
       }
     ]);
     await assertAssetWorkspaceQaSummary(qaClearAssetPage, 3, 1, "QA clamped asset workspace");
-    await assertAssetWorkspaceQaReadiness(qaClearAssetPage, "pending_qa", "QA clamped asset workspace");
+    await assertAssetWorkspaceQaReadiness(qaClearAssetPage, "pending_qa", 1, 3, "QA clamped asset workspace");
     await qaClearAssetPage.close();
 
     const noQaAssetPage = await context.newPage();

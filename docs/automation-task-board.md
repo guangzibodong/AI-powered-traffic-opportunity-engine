@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset workspace QA aggregate reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 asset workspace QA readiness count reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -295,6 +295,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-127 | 261 | done | Frontend Product Engineer / QA Lead | Add asset workspace visible-row overflow reconciliation diagnostics. | The asset workspace exposes read-only visible row count, hidden row count, and reconciliation markers proving visible rows plus hidden overflow rows match the root local asset draft count, without external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
 | TASK-S3-QA-128 | 262 | done | Frontend Product Engineer / QA Lead | Add asset workspace type mix reconciliation diagnostics. | The asset workspace exposes read-only asset type rows and reconciliation markers proving per-type local asset counts sum to the root local asset draft count, without external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
 | TASK-S3-QA-129 | 263 | done | Frontend Product Engineer / QA Lead | Add asset workspace QA aggregate reconciliation diagnostics. | The asset workspace exposes read-only total, visible, hidden, and reconciliation markers proving visible plus hidden QA check and pending counts match the root local asset QA totals, without QA mutation, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
+| TASK-S3-QA-130 | 264 | done | Frontend Product Engineer / QA Lead | Add asset workspace QA readiness count reconciliation diagnostics. | The asset workspace exposes read-only root QA readiness pending/total counts and a reconciliation marker proving readiness state matches safe local QA totals across populated, no-QA, and unavailable states, without QA mutation, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
 
 ## Blockers
 
@@ -736,6 +737,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset workspace visible-row overflow reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing row aggregate reconciliation markers, then passed with visible plus hidden row counts matching the root local asset draft count across empty, ready, and unavailable panels, plus full backend/frontend/browser verification and no external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
 - Asset workspace type mix reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing type mix reconciliation markers, then passed with per-type local asset counts summing to the root local asset draft count, plus full backend/frontend/browser verification and no external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
 - Asset workspace QA aggregate reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing root QA aggregate reconciliation markers, then passed with visible plus hidden QA check and pending counts matching root local asset QA totals, plus targeted browser verification and no QA mutation, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
+- Asset workspace QA readiness count reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing root readiness count markers, then passed with populated, no-QA, and unavailable readiness states reconciling against root safe QA pending/total counts, plus targeted browser verification and no QA mutation, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
 
 ## Completion Rule
 
