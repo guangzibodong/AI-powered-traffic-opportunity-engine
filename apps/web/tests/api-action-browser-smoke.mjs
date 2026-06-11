@@ -2985,12 +2985,25 @@ async function assertAssetExternalWriteClampReconciles(page, label) {
   const assetPanel = page.locator(".asset-workspace-panel");
   await expectVisible(assetPanel, `${label} asset workspace panel for external write clamp`);
   const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
+  const externalWriteClampReconciled = await assetPanel.getAttribute("data-external-write-clamp-reconciled");
   assert(
     externalWriteAllowed === "false",
     `${label} external write clamp mismatch: expected false, got ${externalWriteAllowed ?? "missing"}`
   );
+  assert(
+    externalWriteClampReconciled === "true",
+    `${label} external write clamp reconciliation marker must be true, got ${
+      externalWriteClampReconciled ?? "missing"
+    }`
+  );
   await expectVisible(page.getByText("External writes"), `${label} external writes label`);
-  await expectVisible(assetPanel.locator(".kv-row").filter({ hasText: "External writes" }).getByText("false"), `${label} external writes visible false`);
+  const externalWriteRow = assetPanel.locator("[data-external-write-row='true']");
+  await expectVisible(externalWriteRow, `${label} visible external-write row diagnostic`);
+  assert(
+    (await externalWriteRow.getAttribute("data-external-write-row-value")) === "false",
+    `${label} external write row value must be false`
+  );
+  await expectVisible(externalWriteRow.getByText("false"), `${label} external writes visible false`);
 }
 
 async function assertAssetWorkspaceQaAggregateReconciles(page, hiddenQaCheckCount, hiddenQaPendingCount, label) {

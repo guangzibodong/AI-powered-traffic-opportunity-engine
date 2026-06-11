@@ -462,6 +462,14 @@ assert(
   app.includes("data-wordpress-draft-readiness-counts-reconciled"),
   "Asset workspace UI must expose stable WordPress draft readiness count reconciliation diagnostics"
 );
+assert(
+  app.includes("data-external-write-clamp-reconciled"),
+  "Asset workspace UI must expose stable external-write clamp reconciliation diagnostics"
+);
+assert(
+  app.includes('data-external-write-row="true"'),
+  "Asset workspace UI must expose a stable visible external-write row diagnostic"
+);
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
   app.includes("data-asset-row-content-block-type-count"),

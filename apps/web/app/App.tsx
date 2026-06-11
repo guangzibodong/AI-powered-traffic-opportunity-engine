@@ -1525,6 +1525,8 @@ function AssetWorkspacePanel({
   const wordpressDraftReadinessCountsReconciled =
     assetWorkspace.wordpressDraftReadyCount <= assetWorkspace.wordpressDraftTotalCount &&
     assetWorkspace.wordpressDraftTotalCount === assetWorkspace.assets.length;
+  const externalWriteAllowed = false;
+  const externalWriteClampReconciled = externalWriteAllowed === false;
   return (
     <section
       className="panel asset-workspace-panel"
@@ -1539,7 +1541,8 @@ function AssetWorkspacePanel({
       data-asset-workspace-availability={assetWorkspace.availability}
       data-blocked-capability-count={blockedCapabilities.length}
       data-blocked-capability-counts-reconciled={blockedCapabilityCountsReconciled}
-      data-external-write-allowed="false"
+      data-external-write-allowed={externalWriteAllowed}
+      data-external-write-clamp-reconciled={externalWriteClampReconciled}
       data-hidden-asset-claim-count={hiddenClaimTotal}
       data-visible-asset-claim-count={visibleClaimTotal}
     >
@@ -1617,7 +1620,7 @@ function AssetWorkspacePanel({
             </strong>
           </div>
         )}
-        <div className="kv-row">
+        <div className="kv-row" data-external-write-row="true" data-external-write-row-value={externalWriteAllowed}>
           <span>External writes</span>
           <strong>false</strong>
         </div>
