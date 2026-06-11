@@ -879,6 +879,9 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
   const availabilityReconciled = await assetPanel.getAttribute("data-asset-workspace-availability-reconciled");
   const draftCountText = await assetPanel.getAttribute("data-asset-draft-count");
   const draftCountsReconciled = await assetPanel.getAttribute("data-asset-draft-counts-reconciled");
+  const visibleAssetCount = Number(await assetPanel.getAttribute("data-visible-asset-count"));
+  const hiddenAssetCount = Number(await assetPanel.getAttribute("data-hidden-asset-count"));
+  const rowCountsReconciled = await assetPanel.getAttribute("data-asset-row-counts-reconciled");
   const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
   const draftCount = Number(draftCountText);
   const expectedAvailability = expectedDraftCount > 0 ? "ready" : "empty";
@@ -893,6 +896,16 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
     `${label} asset workspace draft count reconciliation marker must be true, got ${
       draftCountsReconciled ?? "missing"
     }`
+  );
+  assert(
+    rowCountsReconciled === "true",
+    `${label} asset workspace row count reconciliation marker must be true, got ${
+      rowCountsReconciled ?? "missing"
+    }`
+  );
+  assert(
+    visibleAssetCount + hiddenAssetCount === draftCount,
+    `${label} asset workspace root row counts must reconcile: visible ${visibleAssetCount} + hidden ${hiddenAssetCount} != ${draftCount}`
   );
   const draftCountRow = assetPanel.locator("[data-asset-draft-count-row='true']");
   await expectVisible(draftCountRow, `${label} visible asset workspace draft count row`);
@@ -1404,6 +1417,9 @@ async function assertAssetWorkspacePanelUnavailable(page, label) {
   const availability = await assetPanel.getAttribute("data-asset-workspace-availability");
   const availabilityReconciled = await assetPanel.getAttribute("data-asset-workspace-availability-reconciled");
   const draftCountsReconciled = await assetPanel.getAttribute("data-asset-draft-counts-reconciled");
+  const visibleAssetCount = Number(await assetPanel.getAttribute("data-visible-asset-count"));
+  const hiddenAssetCount = Number(await assetPanel.getAttribute("data-hidden-asset-count"));
+  const rowCountsReconciled = await assetPanel.getAttribute("data-asset-row-counts-reconciled");
   const externalWriteAllowed = await assetPanel.getAttribute("data-external-write-allowed");
   assert(
     availability === "unavailable",
@@ -1420,6 +1436,16 @@ async function assertAssetWorkspacePanelUnavailable(page, label) {
     `${label} unavailable asset workspace draft count reconciliation marker must be true, got ${
       draftCountsReconciled ?? "missing"
     }`
+  );
+  assert(
+    rowCountsReconciled === "true",
+    `${label} unavailable asset workspace row count reconciliation marker must be true, got ${
+      rowCountsReconciled ?? "missing"
+    }`
+  );
+  assert(
+    visibleAssetCount === 0 && hiddenAssetCount === 0,
+    `${label} unavailable asset workspace row counts must both be 0: visible ${visibleAssetCount}, hidden ${hiddenAssetCount}`
   );
   const draftCountRow = assetPanel.locator("[data-asset-draft-count-row='true']");
   await expectVisible(draftCountRow, `${label} unavailable visible asset workspace draft count row`);
@@ -3091,8 +3117,19 @@ async function assertAssetWorkspaceRowAggregateReconciles(page, label) {
   await expectVisible(miniList, `${label} asset row aggregate list`);
   const draftCount = Number(await assetPanel.getAttribute("data-asset-draft-count"));
   const overflowCount = Number(await assetPanel.getAttribute("data-asset-overflow-count"));
+  const rootVisibleCount = Number(await assetPanel.getAttribute("data-visible-asset-count"));
+  const rootHiddenCount = Number(await assetPanel.getAttribute("data-hidden-asset-count"));
+  const rowCountsReconciled = await assetPanel.getAttribute("data-asset-row-counts-reconciled");
   const visibleCount = Number(await miniList.getAttribute("data-visible-asset-count"));
   const actualVisibleRows = await miniList.locator("[data-asset-id]").count();
+  assert(
+    rowCountsReconciled === "true",
+    `${label} asset row aggregate reconciliation marker must be true, got ${rowCountsReconciled ?? "missing"}`
+  );
+  assert(
+    rootVisibleCount === visibleCount && rootHiddenCount === overflowCount,
+    `${label} root asset row counts mismatch: root visible ${rootVisibleCount}, row visible ${visibleCount}, root hidden ${rootHiddenCount}, overflow ${overflowCount}`
+  );
   assert(
     Number.isInteger(visibleCount) && visibleCount === actualVisibleRows,
     `${label} visible asset row count mismatch: expected DOM ${actualVisibleRows}, got ${visibleCount}`

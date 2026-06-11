@@ -1524,6 +1524,9 @@ function AssetWorkspacePanel({
   const blockedCapabilityCountsReconciled = blockedCapabilityRows.length === blockedCapabilities.length;
   const assetDraftCount = assetWorkspace.assets.length;
   const assetDraftCountsReconciled = assetDraftCount === assetWorkspace.assets.length;
+  const visibleAssetCount = visibleAssets.length;
+  const hiddenAssetCount = assetOverflowCount;
+  const assetRowCountsReconciled = visibleAssetCount + hiddenAssetCount === assetDraftCount;
   const wordpressDraftReadinessCountsReconciled =
     assetWorkspace.wordpressDraftReadyCount <= assetWorkspace.wordpressDraftTotalCount &&
     assetWorkspace.wordpressDraftTotalCount === assetDraftCount;
@@ -1543,13 +1546,16 @@ function AssetWorkspacePanel({
       data-asset-draft-counts-reconciled={assetDraftCountsReconciled}
       data-asset-overflow-count={assetOverflowCount}
       data-asset-qa-readiness-state={qaReadinessState}
+      data-asset-row-counts-reconciled={assetRowCountsReconciled}
       data-asset-workspace-availability={assetWorkspaceAvailabilityState}
       data-asset-workspace-availability-reconciled={assetWorkspaceAvailabilityReconciled}
       data-blocked-capability-count={blockedCapabilities.length}
       data-blocked-capability-counts-reconciled={blockedCapabilityCountsReconciled}
       data-external-write-allowed={externalWriteAllowed}
       data-external-write-clamp-reconciled={externalWriteClampReconciled}
+      data-hidden-asset-count={hiddenAssetCount}
       data-hidden-asset-claim-count={hiddenClaimTotal}
+      data-visible-asset-count={visibleAssetCount}
       data-visible-asset-claim-count={visibleClaimTotal}
     >
       <div className="panel-heading">
@@ -1675,7 +1681,7 @@ function AssetWorkspacePanel({
         </div>
       )}
       {visibleAssets.length > 0 ? (
-        <div className="mini-list" data-asset-row-aggregate="true" data-visible-asset-count={visibleAssets.length}>
+        <div className="mini-list" data-asset-row-aggregate="true" data-visible-asset-count={visibleAssetCount}>
           {visibleAssets.map((asset) => {
             const assetContentBlockTypeEntries = Object.entries(
               asset.contentBlockTypes.reduce<Record<string, number>>((counts, blockType) => {
