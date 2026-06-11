@@ -2553,6 +2553,7 @@ function LocalAssetEditor({
       data-asset-editor-asset-type={asset.assetType}
       data-asset-editor-commerce-write-allowed={false}
       data-asset-editor-credential-collection-allowed={false}
+      data-asset-editor-inventory-edit-allowed={false}
       data-asset-editor-price-edit-allowed={false}
       data-asset-editor-product-edit-allowed={false}
       data-asset-editor-publishing-allowed={false}
@@ -2747,6 +2748,14 @@ function LocalAssetEditor({
           data-asset-editor-price-edit-summary="true"
         >
           <span>Price edits</span>
+          <strong>false</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-inventory-edit-allowed={false}
+          data-asset-editor-inventory-edit-summary="true"
+        >
+          <span>Inventory edits</span>
           <strong>false</strong>
         </div>
         <div className="kv-row">
