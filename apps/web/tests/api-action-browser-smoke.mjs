@@ -1684,6 +1684,8 @@ async function assertLocalAssetEditorContentBlockTypeDistribution(editor, expect
   }, {});
   const expectedEntries = Object.entries(expectedDistribution).sort(([left], [right]) => left.localeCompare(right));
   const expectedTotal = expectedEntries.reduce((sum, [, count]) => sum + count, 0);
+  const contentBlockCount = Number(await editor.getAttribute("data-asset-editor-content-block-count"));
+  const contentBlockCountsReconciled = await editor.getAttribute("data-asset-editor-content-block-counts-reconciled");
   const typeCount = Number(await editor.getAttribute("data-asset-editor-content-block-type-count"));
   const totalCount = Number(await editor.getAttribute("data-asset-editor-content-block-type-total-count"));
   const reconciled = await editor.getAttribute("data-asset-editor-content-block-type-counts-reconciled");
@@ -1693,6 +1695,16 @@ async function assertLocalAssetEditorContentBlockTypeDistribution(editor, expect
       text: element.textContent ?? "",
       type: element.getAttribute("data-asset-editor-content-block-type-key")
     }))
+  );
+  assert(
+    contentBlockCount === expectedTotal,
+    `${label} editor content block count mismatch: expected ${expectedTotal}, got ${contentBlockCount}`
+  );
+  assert(
+    contentBlockCountsReconciled === "true",
+    `${label} editor content block count reconciliation marker must be true, got ${
+      contentBlockCountsReconciled ?? "missing"
+    }`
   );
   assert(
     typeCount === expectedEntries.length,

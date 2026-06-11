@@ -2252,6 +2252,8 @@ function LocalAssetEditor({
       data-asset-editor-claim-source-count={editorClaimSourceEntries.length}
       data-asset-editor-claim-source-counts-reconciled={editorClaimSourceCountsReconciled}
       data-asset-editor-claim-source-total-count={editorClaimSourceTotal}
+      data-asset-editor-content-block-count={asset.contentBlockCount}
+      data-asset-editor-content-block-counts-reconciled={editorContentBlockTypeCountsReconciled}
       data-asset-editor-content-block-type-count={editorContentBlockTypeEntries.length}
       data-asset-editor-content-block-type-counts-reconciled={editorContentBlockTypeCountsReconciled}
       data-asset-editor-content-block-type-total-count={editorContentBlockTypeTotal}

@@ -522,6 +522,14 @@ assert(
   "Local asset editor UI must expose stable content block type count diagnostics"
 );
 assert(
+  app.includes("data-asset-editor-content-block-count"),
+  "Local asset editor UI must expose stable content block count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-content-block-counts-reconciled"),
+  "Local asset editor UI must expose stable content block count reconciliation diagnostics"
+);
+assert(
   app.includes("data-asset-editor-content-block-type-key"),
   "Local asset editor UI must expose stable content block type key diagnostics"
 );
