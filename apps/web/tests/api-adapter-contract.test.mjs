@@ -578,6 +578,18 @@ assert(
   "Local asset editor UI must expose stable QA readiness diagnostics"
 );
 assert(
+  app.includes("data-asset-editor-qa-readiness-pending-count"),
+  "Local asset editor UI must expose stable QA readiness pending count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-qa-readiness-total-count"),
+  "Local asset editor UI must expose stable QA readiness total count diagnostics"
+);
+assert(
+  app.includes("data-asset-editor-qa-readiness-counts-reconciled"),
+  "Local asset editor UI must expose stable QA readiness count reconciliation diagnostics"
+);
+assert(
   app.includes("data-asset-editor-qa-summary"),
   "Local asset editor UI must expose a stable visible QA aggregate summary"
 );
