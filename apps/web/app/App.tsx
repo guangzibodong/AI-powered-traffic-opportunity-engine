@@ -2545,6 +2545,7 @@ function LocalAssetEditor({
     <section
       className="panel asset-editor-panel"
       data-asset-editor="local-only"
+      data-asset-editor-asset-type={asset.assetType}
       data-asset-editor-claim-count={asset.claimCount}
       data-asset-editor-claim-counts-reconciled={editorClaimCountsReconciled}
       data-asset-editor-claim-source-count={editorClaimSourceEntries.length}
@@ -2617,6 +2618,14 @@ function LocalAssetEditor({
           <strong>
             {asset.sourceTaskId} / {asset.sourceTaskStatus}
           </strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-asset-type={asset.assetType}
+          data-asset-editor-asset-type-summary="true"
+        >
+          <span>Asset type</span>
+          <strong>{asset.assetType}</strong>
         </div>
         <div className="kv-row">
           <span>{copy.fields}</span>

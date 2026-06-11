@@ -182,7 +182,8 @@ Sprint 3 local/demo capabilities completed:
 33. The local asset editor shows read-only QA count reconciliation diagnostics that match safe QA detail rows and pending rows without adding QA mutation, draft, publish, sync, credential, product edit, or commerce-write controls.
 34. The local asset editor shows read-only QA readiness reconciliation diagnostics that match readiness state to safe QA detail counts.
 35. The local asset editor shows read-only source task id/status context without adding task mutation, draft, publish, sync, credential, product edit, or commerce-write controls.
-36. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
+36. The local asset editor shows read-only asset type context without adding asset type mutation, task mutation, draft, publish, sync, credential, product edit, or commerce-write controls.
+37. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
 
 Current product/engineering ownership:
 

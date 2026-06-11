@@ -1563,6 +1563,22 @@ async function assertLocalAssetEditorSourceTaskContext(editor, expectedSourceTas
   );
 }
 
+async function assertLocalAssetEditorAssetTypeContext(editor, expectedAssetType, label) {
+  const assetType = await editor.getAttribute("data-asset-editor-asset-type");
+  assert(
+    assetType === expectedAssetType,
+    `${label} editor asset type mismatch: expected ${expectedAssetType}, got ${assetType ?? "missing"}`
+  );
+  const assetTypeSummary = editor.locator("[data-asset-editor-asset-type-summary='true']");
+  await expectVisible(assetTypeSummary, `${label} visible editor asset type summary`);
+  assert(
+    (await assetTypeSummary.getAttribute("data-asset-editor-asset-type")) === expectedAssetType,
+    `${label} visible editor asset type summary mismatch`
+  );
+  const summaryText = (await assetTypeSummary.textContent()) ?? "";
+  assert(summaryText.includes(expectedAssetType), `${label} visible editor asset type summary missing ${expectedAssetType}`);
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5175,6 +5191,7 @@ async function runSmoke() {
       "approved",
       "populated asset workspace"
     );
+    await assertLocalAssetEditorAssetTypeContext(populatedEditor, "collection_page", "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },

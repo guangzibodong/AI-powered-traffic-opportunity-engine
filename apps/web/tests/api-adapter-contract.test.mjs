@@ -738,6 +738,14 @@ assert(
   app.includes('data-asset-editor-source-task-summary="true"'),
   "Local asset editor UI must expose stable visible source task summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-asset-type"),
+  "Local asset editor UI must expose stable asset type diagnostics"
+);
+assert(
+  app.includes('data-asset-editor-asset-type-summary="true"'),
+  "Local asset editor UI must expose stable visible asset type summary diagnostics"
+);
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");
