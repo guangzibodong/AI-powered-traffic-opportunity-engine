@@ -2914,6 +2914,9 @@ async function assertWordPressDraftReadinessReconciles(page, label) {
   const draftCount = Number(await assetPanel.getAttribute("data-asset-draft-count"));
   const readyCount = Number(await summaryRow.getAttribute("data-wordpress-draft-ready-count"));
   const totalCount = Number(await summaryRow.getAttribute("data-wordpress-draft-total-count"));
+  const readinessCountsReconciled = await summaryRow.getAttribute(
+    "data-wordpress-draft-readiness-counts-reconciled"
+  );
   assert(
     totalCount === draftCount,
     `${label} WordPress draft readiness total mismatch: expected draft count ${draftCount}, got ${totalCount}`
@@ -2921,6 +2924,12 @@ async function assertWordPressDraftReadinessReconciles(page, label) {
   assert(
     readyCount <= totalCount,
     `${label} WordPress draft ready count must not exceed total: ready ${readyCount}, total ${totalCount}`
+  );
+  assert(
+    readinessCountsReconciled === "true",
+    `${label} WordPress draft readiness count reconciliation marker must be true, got ${
+      readinessCountsReconciled ?? "missing"
+    }`
   );
 }
 

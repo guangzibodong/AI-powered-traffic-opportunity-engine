@@ -458,6 +458,10 @@ assert(
   app.includes("data-blocked-capability-key"),
   "Asset workspace UI must expose stable workspace-level blocked capability key diagnostics"
 );
+assert(
+  app.includes("data-wordpress-draft-readiness-counts-reconciled"),
+  "Asset workspace UI must expose stable WordPress draft readiness count reconciliation diagnostics"
+);
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
   app.includes("data-asset-row-content-block-type-count"),

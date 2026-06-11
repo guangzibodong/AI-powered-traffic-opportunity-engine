@@ -1522,6 +1522,9 @@ function AssetWorkspacePanel({
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   const blockedCapabilityRows = blockedCapabilities.map((capability, index) => ({ capability, index }));
   const blockedCapabilityCountsReconciled = blockedCapabilityRows.length === blockedCapabilities.length;
+  const wordpressDraftReadinessCountsReconciled =
+    assetWorkspace.wordpressDraftReadyCount <= assetWorkspace.wordpressDraftTotalCount &&
+    assetWorkspace.wordpressDraftTotalCount === assetWorkspace.assets.length;
   return (
     <section
       className="panel asset-workspace-panel"
@@ -1604,6 +1607,7 @@ function AssetWorkspacePanel({
           <div
             className="kv-row"
             data-wordpress-draft-readiness="blocked"
+            data-wordpress-draft-readiness-counts-reconciled={wordpressDraftReadinessCountsReconciled}
             data-wordpress-draft-ready-count={assetWorkspace.wordpressDraftReadyCount}
             data-wordpress-draft-total-count={assetWorkspace.wordpressDraftTotalCount}
           >
