@@ -2553,6 +2553,7 @@ function LocalAssetEditor({
       data-asset-editor-asset-type={asset.assetType}
       data-asset-editor-commerce-write-allowed={false}
       data-asset-editor-credential-collection-allowed={false}
+      data-asset-editor-product-edit-allowed={false}
       data-asset-editor-publishing-allowed={false}
       data-asset-editor-sync-execution-allowed={false}
       data-asset-editor-wordpress-draft-creation-allowed={false}
@@ -2729,6 +2730,14 @@ function LocalAssetEditor({
           data-asset-editor-wordpress-draft-creation-summary="true"
         >
           <span>Draft creation</span>
+          <strong>false</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-product-edit-allowed={false}
+          data-asset-editor-product-edit-summary="true"
+        >
+          <span>Product edits</span>
           <strong>false</strong>
         </div>
         <div className="kv-row">
