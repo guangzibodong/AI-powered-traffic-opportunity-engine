@@ -842,6 +842,14 @@ assert(
   app.includes('data-asset-editor-product-edit-summary="true"'),
   "Local asset editor UI must expose stable visible product-edit summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-price-edit-allowed"),
+  "Local asset editor UI must expose stable price-edit clamp diagnostics"
+);
+assert(
+  app.includes('data-asset-editor-price-edit-summary="true"'),
+  "Local asset editor UI must expose stable visible price-edit summary diagnostics"
+);
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");
