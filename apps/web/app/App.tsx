@@ -2552,6 +2552,7 @@ function LocalAssetEditor({
       data-asset-editor="local-only"
       data-asset-editor-asset-type={asset.assetType}
       data-asset-editor-commerce-write-allowed={false}
+      data-asset-editor-credential-collection-allowed={false}
       data-asset-editor-claim-count={asset.claimCount}
       data-asset-editor-claim-counts-reconciled={editorClaimCountsReconciled}
       data-asset-editor-claim-source-count={editorClaimSourceEntries.length}
@@ -2684,6 +2685,14 @@ function LocalAssetEditor({
           data-asset-editor-commerce-write-summary="true"
         >
           <span>Commerce writes</span>
+          <strong>false</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-credential-collection-allowed={false}
+          data-asset-editor-credential-collection-summary="true"
+        >
+          <span>Live access</span>
           <strong>false</strong>
         </div>
         <div className="kv-row">

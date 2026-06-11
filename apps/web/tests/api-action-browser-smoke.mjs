@@ -1702,6 +1702,31 @@ async function assertLocalAssetEditorCommerceWriteClamp(editor, label) {
   );
 }
 
+async function assertLocalAssetEditorCredentialCollectionClamp(editor, label) {
+  const credentialCollectionAllowed = await editor.getAttribute(
+    "data-asset-editor-credential-collection-allowed"
+  );
+  assert(
+    credentialCollectionAllowed === "false",
+    `${label} editor credential-collection clamp mismatch: expected false, got ${
+      credentialCollectionAllowed ?? "missing"
+    }`
+  );
+  const credentialCollectionSummary = editor.locator(
+    "[data-asset-editor-credential-collection-summary='true']"
+  );
+  await expectVisible(credentialCollectionSummary, `${label} visible editor credential-collection summary`);
+  assert(
+    (await credentialCollectionSummary.getAttribute("data-asset-editor-credential-collection-allowed")) === "false",
+    `${label} visible editor credential-collection summary clamp mismatch`
+  );
+  const summaryText = ((await credentialCollectionSummary.textContent()) ?? "").toLowerCase();
+  assert(
+    summaryText.includes("false") || summaryText.includes("disabled"),
+    `${label} visible editor credential-collection summary missing false/disabled copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5320,6 +5345,7 @@ async function runSmoke() {
     await assertLocalAssetEditorWordPressDraftReadiness(populatedEditor, 0, 1, "populated asset workspace");
     await assertLocalAssetEditorExternalWriteClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorCommerceWriteClamp(populatedEditor, "populated asset workspace");
+    await assertLocalAssetEditorCredentialCollectionClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },
