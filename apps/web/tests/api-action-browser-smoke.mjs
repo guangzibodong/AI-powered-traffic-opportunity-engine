@@ -1022,6 +1022,18 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
       }
     }
     if (expectedAsset.qaCheckCount !== undefined) {
+      const expectedQaReadinessState =
+        expectedAsset.qaCheckCount === 0
+          ? "not_applicable"
+          : expectedAsset.qaPendingCount > 0
+            ? "pending_qa"
+            : "qa_clear";
+      const rowQaReadinessState = await row.getAttribute("data-asset-row-qa-readiness-state");
+      const rowQaReadinessPendingCount = Number(
+        await row.getAttribute("data-asset-row-qa-readiness-pending-count")
+      );
+      const rowQaReadinessTotalCount = Number(await row.getAttribute("data-asset-row-qa-readiness-total-count"));
+      const rowQaReadinessCountsReconciled = await row.getAttribute("data-asset-row-qa-readiness-counts-reconciled");
       assert(
         qaCheckCount === String(expectedAsset.qaCheckCount),
         `${label} asset row ${expectedAsset.id} QA check count mismatch: expected ${expectedAsset.qaCheckCount}, got ${
@@ -1033,6 +1045,38 @@ async function assertAssetWorkspacePanelIsReadOnly(page, expectedDraftCount, lab
         `${label} asset row ${expectedAsset.id} QA pending count mismatch: expected ${
           expectedAsset.qaPendingCount
         }, got ${qaPendingCount ?? "missing"}`
+      );
+      assert(
+        rowQaReadinessState === expectedQaReadinessState,
+        `${label} asset row ${expectedAsset.id} QA readiness state mismatch: expected ${expectedQaReadinessState}, got ${
+          rowQaReadinessState ?? "missing"
+        }`
+      );
+      assert(
+        rowQaReadinessPendingCount === expectedAsset.qaPendingCount,
+        `${label} asset row ${expectedAsset.id} QA readiness pending count mismatch: expected ${
+          expectedAsset.qaPendingCount
+        }, got ${rowQaReadinessPendingCount}`
+      );
+      assert(
+        rowQaReadinessTotalCount === expectedAsset.qaCheckCount,
+        `${label} asset row ${expectedAsset.id} QA readiness total count mismatch: expected ${
+          expectedAsset.qaCheckCount
+        }, got ${rowQaReadinessTotalCount}`
+      );
+      assert(
+        rowQaReadinessCountsReconciled === "true",
+        `${label} asset row ${expectedAsset.id} QA readiness reconciliation marker must be true, got ${
+          rowQaReadinessCountsReconciled ?? "missing"
+        }`
+      );
+      const qaReadinessRow = row.locator("[data-asset-row-qa-readiness='true']");
+      await expectVisible(qaReadinessRow, `${label} asset row ${expectedAsset.id} QA readiness summary`);
+      const qaReadinessText = (await qaReadinessRow.textContent()) ?? "";
+      assert(
+        qaReadinessText.includes(expectedQaReadinessState) &&
+          qaReadinessText.includes(`${expectedAsset.qaPendingCount}/${expectedAsset.qaCheckCount}`),
+        `${label} asset row ${expectedAsset.id} QA readiness summary mismatch: ${qaReadinessText}`
       );
     }
     if (expectedAsset.claimCount !== undefined) {

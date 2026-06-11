@@ -1662,6 +1662,10 @@ function AssetWorkspacePanel({
             const assetQaStatusTotal = assetQaStatusEntries.reduce((sum, [, count]) => sum + count, 0);
             const assetQaStatusCountsReconciled = assetQaStatusTotal === asset.qaChecks.length;
             const assetQaPendingDetailCount = asset.qaChecks.filter((check) => check.status === "pending").length;
+            const assetQaReadinessState =
+              asset.qaChecks.length === 0 ? "not_applicable" : assetQaPendingDetailCount > 0 ? "pending_qa" : "qa_clear";
+            const assetQaReadinessCountsReconciled =
+              asset.qaChecks.length === asset.qaCheckCount && assetQaPendingDetailCount === asset.qaPendingCount;
             return (
               <div
                 className="mini-card"
@@ -1681,6 +1685,10 @@ function AssetWorkspacePanel({
                 data-asset-row-qa-detail-count={asset.qaChecks.length}
                 data-asset-row-qa-pending-counts-reconciled={assetQaPendingDetailCount === asset.qaPendingCount}
                 data-asset-row-qa-pending-detail-count={assetQaPendingDetailCount}
+                data-asset-row-qa-readiness-counts-reconciled={assetQaReadinessCountsReconciled}
+                data-asset-row-qa-readiness-pending-count={assetQaPendingDetailCount}
+                data-asset-row-qa-readiness-state={assetQaReadinessState}
+                data-asset-row-qa-readiness-total-count={asset.qaChecks.length}
                 data-asset-row-qa-status-count={assetQaStatusEntries.length}
                 data-asset-row-qa-status-counts-reconciled={assetQaStatusCountsReconciled}
                 data-asset-row-qa-status-total-count={assetQaStatusTotal}
@@ -1698,6 +1706,17 @@ function AssetWorkspacePanel({
                 {asset.claimCount > 0 ? ` / claims ${asset.claimCount}` : ""}
                 {asset.qaCheckCount > 0 ? ` / qa ${asset.qaPendingCount}/${asset.qaCheckCount} pending` : ""}
               </span>
+              {asset.qaChecks.length > 0 && (
+                <div
+                  className="inline-diagnostics"
+                  data-asset-row-qa-readiness="true"
+                  data-asset-row-qa-readiness-counts-reconciled={assetQaReadinessCountsReconciled}
+                >
+                  <span className="pill muted-pill">
+                    QA readiness {assetQaReadinessState} {assetQaPendingDetailCount}/{asset.qaChecks.length}
+                  </span>
+                </div>
+              )}
               {asset.claimLedger.length > 0 && (
                 <div className="inline-diagnostics" data-asset-claim-detail-list="true">
                   {asset.claimLedger.map((claim) => (

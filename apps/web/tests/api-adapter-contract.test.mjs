@@ -414,6 +414,26 @@ assert(
   app.includes("data-asset-row-qa-status-counts-reconciled"),
   "Asset workspace UI must expose stable row-level QA status reconciliation diagnostics"
 );
+assert(
+  app.includes("data-asset-row-qa-readiness-state"),
+  "Asset workspace UI must expose stable row-level QA readiness state diagnostics"
+);
+assert(
+  app.includes("data-asset-row-qa-readiness-pending-count"),
+  "Asset workspace UI must expose stable row-level QA readiness pending count diagnostics"
+);
+assert(
+  app.includes("data-asset-row-qa-readiness-total-count"),
+  "Asset workspace UI must expose stable row-level QA readiness total count diagnostics"
+);
+assert(
+  app.includes("data-asset-row-qa-readiness-counts-reconciled"),
+  "Asset workspace UI must expose stable row-level QA readiness count reconciliation diagnostics"
+);
+assert(
+  app.includes('data-asset-row-qa-readiness="true"'),
+  "Asset workspace UI must expose a stable visible row-level QA readiness summary"
+);
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
   app.includes("data-asset-row-content-block-type-count"),
