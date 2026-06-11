@@ -506,6 +506,22 @@ assert(
   app.includes("data-visible-asset-count"),
   "Asset workspace UI must expose stable visible asset row count diagnostics"
 );
+assert(
+  app.includes("data-asset-type-counts-reconciled"),
+  "Asset workspace UI must expose stable asset type mix reconciliation diagnostics"
+);
+assert(
+  app.includes('data-asset-type-row="true"'),
+  "Asset workspace UI must expose stable asset type rows"
+);
+assert(
+  app.includes("data-asset-type-key"),
+  "Asset workspace UI must expose stable asset type key diagnostics"
+);
+assert(
+  app.includes("data-asset-type-row-count"),
+  "Asset workspace UI must expose stable asset type row count diagnostics"
+);
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
   app.includes("data-asset-row-content-block-type-count"),

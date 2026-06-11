@@ -1494,6 +1494,7 @@ function AssetWorkspacePanel({
       return counts;
     }, {})
   ).sort(([left], [right]) => left.localeCompare(right));
+  const assetDraftCount = assetWorkspace.assets.length;
   const claimTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.claimCount, 0);
   const visibleClaimTotal = visibleAssets.reduce((sum, asset) => sum + asset.claimCount, 0);
   const hiddenClaimTotal = claimTotal - visibleClaimTotal;
@@ -1508,6 +1509,8 @@ function AssetWorkspacePanel({
   ).sort(([left], [right]) => left.localeCompare(right));
   const claimSourceTotal = claimSourceEntries.reduce((sum, [, count]) => sum + count, 0);
   const claimSourceCountsReconciled = claimSourceTotal === claimTotal;
+  const assetTypeTotal = assetTypeEntries.reduce((sum, [, count]) => sum + count, 0);
+  const assetTypeCountsReconciled = assetTypeTotal === assetDraftCount;
   const qaCheckTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaCheckCount, 0);
   const qaPendingTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.qaPendingCount, 0);
   const qaReadinessState =
@@ -1522,7 +1525,6 @@ function AssetWorkspacePanel({
     assetWorkspace.blockedCapabilities.length > 0 ? assetWorkspace.blockedCapabilities : ["external_writes_disabled"];
   const blockedCapabilityRows = blockedCapabilities.map((capability, index) => ({ capability, index }));
   const blockedCapabilityCountsReconciled = blockedCapabilityRows.length === blockedCapabilities.length;
-  const assetDraftCount = assetWorkspace.assets.length;
   const assetDraftCountsReconciled = assetDraftCount === assetWorkspace.assets.length;
   const visibleAssetCount = visibleAssets.length;
   const hiddenAssetCount = assetOverflowCount;
@@ -1586,8 +1588,9 @@ function AssetWorkspacePanel({
           <div
             className="kv-row"
             data-asset-type-count={assetTypeEntries.length}
+            data-asset-type-counts-reconciled={assetTypeCountsReconciled}
             data-asset-type-summary="true"
-            data-asset-type-total={assetWorkspace.assets.length}
+            data-asset-type-total={assetTypeTotal}
           >
             <span>Asset type mix</span>
             <strong>{assetTypeEntries.map(([assetType, count]) => `${assetType} ${count}`).join(" / ")}</strong>
@@ -1665,6 +1668,21 @@ function AssetWorkspacePanel({
           </span>
         ))}
       </div>
+      {assetTypeEntries.length > 0 && (
+        <div className="inline-diagnostics" data-asset-type-list="true">
+          {assetTypeEntries.map(([assetType, count]) => (
+            <span
+              className="pill muted-pill"
+              data-asset-type-key={assetType}
+              data-asset-type-row="true"
+              data-asset-type-row-count={count}
+              key={`asset-type-${assetType}`}
+            >
+              {assetType} {count}
+            </span>
+          ))}
+        </div>
+      )}
       {claimSourceEntries.length > 0 && (
         <div className="inline-diagnostics" data-asset-claim-source-list="true">
           {claimSourceEntries.map(([source, count]) => (

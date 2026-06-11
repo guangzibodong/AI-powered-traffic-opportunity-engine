@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 asset workspace visible-row overflow reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 asset workspace type mix reconciliation diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -293,12 +293,13 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-125 | 259 | done | Frontend Product Engineer / QA Lead | Add asset workspace availability reconciliation diagnostics. | The asset workspace exposes read-only availability row and reconciliation markers proving the visible availability state matches the root workspace availability state across empty, ready, and unavailable panels, without external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
 | TASK-S3-QA-126 | 260 | done | Frontend Product Engineer / QA Lead | Add asset workspace draft count reconciliation diagnostics. | The asset workspace exposes read-only local candidate count row and reconciliation markers proving the visible local candidate count matches the root local asset draft count, without external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
 | TASK-S3-QA-127 | 261 | done | Frontend Product Engineer / QA Lead | Add asset workspace visible-row overflow reconciliation diagnostics. | The asset workspace exposes read-only visible row count, hidden row count, and reconciliation markers proving visible rows plus hidden overflow rows match the root local asset draft count, without external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
+| TASK-S3-QA-128 | 262 | done | Frontend Product Engineer / QA Lead | Add asset workspace type mix reconciliation diagnostics. | The asset workspace exposes read-only asset type rows and reconciliation markers proving per-type local asset counts sum to the root local asset draft count, without external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
 
 ## Blockers
 
 | Blocker | Status | Notes |
 |---|---|---|
-| GitHub HTTPS push | blocked | Local commits through `c1b6d54` are ready, but GitHub HTTPS push is currently blocked because direct `github.com:443` and the repo proxy path both failed to connect. Retry with `-c http.proxy= -c https.proxy=` when network returns. |
+| GitHub HTTPS push | resolved | Commits through `2a905b7` were pushed to `codex/sprint1-v3-ui` and `main` after the local proxy on `127.0.0.1:7897` recovered; future pushes may still need the repo proxy when direct `github.com:443` is unavailable. |
 | Live integration credentials and boundary approval | blocked | The next non-local Sprint 2 step needs user-approved credentials and a revised boundary for real read-only connection work; current safe loop remains local/import-only. |
 
 ## Agent Findings
@@ -732,6 +733,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Asset workspace availability reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing availability reconciliation markers, then passed with visible availability rows matching root workspace availability across empty, ready, and unavailable panels, plus full backend/frontend/browser verification and no external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
 - Asset workspace draft count reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing draft count reconciliation markers, then passed with the visible local candidate count matching the root local asset draft count across empty, ready, and unavailable panels, plus full backend/frontend/browser verification and no external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
 - Asset workspace visible-row overflow reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing row aggregate reconciliation markers, then passed with visible plus hidden row counts matching the root local asset draft count across empty, ready, and unavailable panels, plus full backend/frontend/browser verification and no external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
+- Asset workspace type mix reconciliation diagnostics are verified by red-green static and browser coverage that first failed on missing type mix reconciliation markers, then passed with per-type local asset counts summing to the root local asset draft count, plus full backend/frontend/browser verification and no external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
 
 ## Completion Rule
 

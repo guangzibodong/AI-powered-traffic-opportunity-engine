@@ -2917,6 +2917,7 @@ async function assertAssetWorkspaceTypeSummary(page, expectedCounts, label) {
   const expectedEntries = Object.entries(expectedCounts);
   const typeCountText = await summaryRow.getAttribute("data-asset-type-count");
   const totalCountText = await summaryRow.getAttribute("data-asset-type-total");
+  const typeCountsReconciled = await summaryRow.getAttribute("data-asset-type-counts-reconciled");
   const totalCount = expectedEntries.reduce((sum, [, count]) => sum + count, 0);
   assert(
     Number(typeCountText) === expectedEntries.length,
@@ -2926,11 +2927,34 @@ async function assertAssetWorkspaceTypeSummary(page, expectedCounts, label) {
     Number(totalCountText) === totalCount,
     `${label} asset type total mismatch: expected ${totalCount}, got ${totalCountText ?? "missing"}`
   );
+  assert(
+    typeCountsReconciled === "true",
+    `${label} asset type reconciliation marker must be true, got ${typeCountsReconciled ?? "missing"}`
+  );
+  const typeRows = await assetPanel.locator("[data-asset-type-row='true']").evaluateAll((elements) =>
+    elements.map((element) => ({
+      key: element.getAttribute("data-asset-type-key"),
+      count: Number(element.getAttribute("data-asset-type-row-count")),
+      text: element.textContent ?? ""
+    }))
+  );
+  assert(
+    typeRows.length === expectedEntries.length,
+    `${label} asset type row count mismatch: expected ${expectedEntries.length}, got ${typeRows.length}`
+  );
+  assert(
+    typeRows.reduce((sum, row) => sum + row.count, 0) === totalCount,
+    `${label} asset type row counts must sum to ${totalCount}`
+  );
   const summaryText = (await summaryRow.textContent()) ?? "";
   for (const [assetType, count] of expectedEntries) {
     assert(
       summaryText.includes(`${assetType} ${count}`),
       `${label} asset type summary missing ${assetType} ${count}`
+    );
+    assert(
+      typeRows.some((row) => row.key === assetType && row.count === count && row.text.includes(`${assetType} ${count}`)),
+      `${label} asset type row missing ${assetType} ${count}`
     );
   }
 }
