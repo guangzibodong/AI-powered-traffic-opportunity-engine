@@ -1494,6 +1494,12 @@ function AssetWorkspacePanel({
       return counts;
     }, {})
   ).sort(([left], [right]) => left.localeCompare(right));
+  const assetReviewStateEntries = Object.entries(
+    assetWorkspace.assets.reduce<Record<string, number>>((counts, asset) => {
+      counts[asset.reviewState] = (counts[asset.reviewState] ?? 0) + 1;
+      return counts;
+    }, {})
+  ).sort(([left], [right]) => left.localeCompare(right));
   const assetDraftCount = assetWorkspace.assets.length;
   const claimTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.claimCount, 0);
   const visibleClaimTotal = visibleAssets.reduce((sum, asset) => sum + asset.claimCount, 0);
@@ -1511,6 +1517,8 @@ function AssetWorkspacePanel({
   const claimSourceCountsReconciled = claimSourceTotal === claimTotal;
   const assetTypeTotal = assetTypeEntries.reduce((sum, [, count]) => sum + count, 0);
   const assetTypeCountsReconciled = assetTypeTotal === assetDraftCount;
+  const assetReviewStateTotal = assetReviewStateEntries.reduce((sum, [, count]) => sum + count, 0);
+  const assetReviewStateCountsReconciled = assetReviewStateTotal === assetDraftCount;
   const contentBlockTotal = assetWorkspace.assets.reduce((sum, asset) => sum + asset.contentBlockCount, 0);
   const visibleContentBlockTotal = visibleAssets.reduce((sum, asset) => sum + asset.contentBlockCount, 0);
   const hiddenContentBlockTotal = contentBlockTotal - visibleContentBlockTotal;
@@ -1575,6 +1583,9 @@ function AssetWorkspacePanel({
       data-asset-draft-count={assetDraftCount}
       data-asset-draft-counts-reconciled={assetDraftCountsReconciled}
       data-asset-overflow-count={assetOverflowCount}
+      data-asset-review-state-count={assetReviewStateEntries.length}
+      data-asset-review-state-counts-reconciled={assetReviewStateCountsReconciled}
+      data-asset-review-state-total-count={assetReviewStateTotal}
       data-asset-workspace-content-block-count={contentBlockTotal}
       data-asset-workspace-content-block-counts-reconciled={contentBlockCountsReconciled}
       data-asset-workspace-content-block-type-count={contentBlockTypeEntries.length}
@@ -1639,6 +1650,18 @@ function AssetWorkspacePanel({
           >
             <span>Asset type mix</span>
             <strong>{assetTypeEntries.map(([assetType, count]) => `${assetType} ${count}`).join(" / ")}</strong>
+          </div>
+        )}
+        {assetReviewStateEntries.length > 0 && (
+          <div
+            className="kv-row"
+            data-asset-review-state-count={assetReviewStateEntries.length}
+            data-asset-review-state-counts-reconciled={assetReviewStateCountsReconciled}
+            data-asset-review-state-summary="true"
+            data-asset-review-state-total-count={assetReviewStateTotal}
+          >
+            <span>Asset review states</span>
+            <strong>{assetReviewStateEntries.map(([reviewState, count]) => `${reviewState} ${count}`).join(" / ")}</strong>
           </div>
         )}
         {contentBlockTypeEntries.length > 0 && (
@@ -1736,6 +1759,21 @@ function AssetWorkspacePanel({
               key={`asset-type-${assetType}`}
             >
               {assetType} {count}
+            </span>
+          ))}
+        </div>
+      )}
+      {assetReviewStateEntries.length > 0 && (
+        <div className="inline-diagnostics" data-asset-review-state-list="true">
+          {assetReviewStateEntries.map(([reviewState, count]) => (
+            <span
+              className="pill muted-pill"
+              data-asset-review-state-key={reviewState}
+              data-asset-review-state-row="true"
+              data-asset-review-state-row-count={count}
+              key={`asset-review-state-${reviewState}`}
+            >
+              {reviewState} {count}
             </span>
           ))}
         </div>

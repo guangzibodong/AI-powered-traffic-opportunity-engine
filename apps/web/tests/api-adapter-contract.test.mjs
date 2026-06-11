@@ -554,6 +554,30 @@ assert(
   app.includes("data-asset-type-row-count"),
   "Asset workspace UI must expose stable asset type row count diagnostics"
 );
+assert(
+  app.includes("data-asset-review-state-count"),
+  "Asset workspace UI must expose stable asset review state count diagnostics"
+);
+assert(
+  app.includes("data-asset-review-state-total-count"),
+  "Asset workspace UI must expose stable asset review state total diagnostics"
+);
+assert(
+  app.includes("data-asset-review-state-counts-reconciled"),
+  "Asset workspace UI must expose stable asset review state reconciliation diagnostics"
+);
+assert(
+  app.includes('data-asset-review-state-row="true"'),
+  "Asset workspace UI must expose stable asset review state rows"
+);
+assert(
+  app.includes("data-asset-review-state-key"),
+  "Asset workspace UI must expose stable asset review state key diagnostics"
+);
+assert(
+  app.includes("data-asset-review-state-row-count"),
+  "Asset workspace UI must expose stable asset review state row count diagnostics"
+);
 assert(app.includes("data-asset-claim-count"), "Asset workspace UI must expose stable claim count diagnostics");
 assert(
   app.includes("data-asset-workspace-content-block-count"),
