@@ -786,6 +786,14 @@ assert(
   app.includes('data-asset-editor-external-write-summary="true"'),
   "Local asset editor UI must expose stable visible external-write summary diagnostics"
 );
+assert(
+  app.includes("data-asset-editor-commerce-write-allowed"),
+  "Local asset editor UI must expose stable commerce-write clamp diagnostics"
+);
+assert(
+  app.includes('data-asset-editor-commerce-write-summary="true"'),
+  "Local asset editor UI must expose stable visible commerce-write summary diagnostics"
+);
 assert(app.includes("data-asset-editor-qa-detail"), "Local asset editor UI must expose stable QA detail diagnostics");
 assert(app.includes("data-asset-editor-qa-key"), "Local asset editor UI must expose stable QA key diagnostics");
 assert(app.includes("data-asset-editor-qa-status"), "Local asset editor UI must expose stable QA status diagnostics");

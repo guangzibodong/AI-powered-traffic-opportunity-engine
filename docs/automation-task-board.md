@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 This board is the execution source of truth for the current sprint builder loop. Work proceeds from the highest-priority incomplete item that is not blocked.
 
-Current loop: Sprint 3 local asset editor external-write clamp context diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
+Current loop: Sprint 3 local asset editor commerce-write clamp context diagnostics are verified. Live integration work remains blocked on credentials and boundary approval. Scope stays safe: local/demo/imported data only, no real GSC OAuth, no WooCommerce writes, no WordPress drafts or page updates, and no WordPress publishing.
 
 ## Status Legend
 
@@ -307,6 +307,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 | TASK-S3-QA-139 | 273 | done | Frontend Product Engineer / QA Lead | Add local asset editor evidence summary context diagnostics. | The local asset editor exposes read-only evidence/claim summary context from safe local asset previews, without claim editing, task mutation, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls. |
 | TASK-S3-QA-140 | 274 | done | Frontend Product Engineer / QA Lead | Add local asset editor WordPress draft readiness context diagnostics. | The local asset editor exposes read-only WordPress draft readiness context from safe local asset previews, without WordPress draft creation, page updates, publishing, sync, OAuth, credential, task mutation, product edit, or commerce-write controls. |
 | TASK-S3-QA-141 | 275 | done | Frontend Product Engineer / QA Lead | Add local asset editor external-write clamp context diagnostics. | The local asset editor exposes read-only external-write false context from safe local asset previews, without external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, task mutation, product edit, or commerce-write controls. |
+| TASK-S3-QA-142 | 276 | done | Frontend Product Engineer / QA Lead | Add local asset editor commerce-write clamp context diagnostics. | The local asset editor exposes read-only commerce-write false context from safe local asset previews, without WooCommerce writes, product edits, price edits, inventory edits, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, or task mutation controls. |
 
 ## Blockers
 
@@ -760,6 +761,7 @@ These are internal execution-board statuses, not TrafScope product task review s
 - Local asset editor evidence summary context diagnostics are verified by red-green static and browser coverage that first failed on missing editor evidence count markers, then passed with read-only evidence/claim count rows from safe local asset previews, plus full backend/frontend/browser verification and no claim editing, task mutation, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, product edit, or commerce-write controls.
 - Local asset editor WordPress draft readiness context diagnostics are verified by red-green static and browser coverage that first failed on missing editor WordPress draft readiness markers, then passed with blocked `0/1 ready` diagnostics for the selected local asset, plus full backend/frontend/browser verification and no WordPress draft creation, page updates, publishing, sync, OAuth, credential, task mutation, product edit, or commerce-write controls.
 - Local asset editor external-write clamp context diagnostics are verified by red-green static and browser coverage that first failed on missing editor external-write markers, then passed with visible false diagnostics from the selected safe local asset preview, plus full backend/frontend/browser verification and no external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, task mutation, product edit, or commerce-write controls.
+- Local asset editor commerce-write clamp context diagnostics are verified by red-green static and browser coverage that first failed on missing editor commerce-write markers, then passed with visible false diagnostics from the selected safe local asset preview, plus full backend/frontend/browser verification and no WooCommerce writes, product edits, price edits, inventory edits, external writes, WordPress draft creation, page updates, publishing, sync, OAuth, credential, or task mutation controls.
 
 ## Completion Rule
 

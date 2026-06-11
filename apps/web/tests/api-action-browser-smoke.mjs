@@ -1683,6 +1683,25 @@ async function assertLocalAssetEditorExternalWriteClamp(editor, label) {
   );
 }
 
+async function assertLocalAssetEditorCommerceWriteClamp(editor, label) {
+  const commerceWriteAllowed = await editor.getAttribute("data-asset-editor-commerce-write-allowed");
+  assert(
+    commerceWriteAllowed === "false",
+    `${label} editor commerce-write clamp mismatch: expected false, got ${commerceWriteAllowed ?? "missing"}`
+  );
+  const commerceWriteSummary = editor.locator("[data-asset-editor-commerce-write-summary='true']");
+  await expectVisible(commerceWriteSummary, `${label} visible editor commerce-write summary`);
+  assert(
+    (await commerceWriteSummary.getAttribute("data-asset-editor-commerce-write-allowed")) === "false",
+    `${label} visible editor commerce-write summary clamp mismatch`
+  );
+  const summaryText = ((await commerceWriteSummary.textContent()) ?? "").toLowerCase();
+  assert(
+    summaryText.includes("false") || summaryText.includes("disabled"),
+    `${label} visible editor commerce-write summary missing false/disabled copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5300,6 +5319,7 @@ async function runSmoke() {
     await assertLocalAssetEditorEvidenceSummary(populatedEditor, 2, "populated asset workspace");
     await assertLocalAssetEditorWordPressDraftReadiness(populatedEditor, 0, 1, "populated asset workspace");
     await assertLocalAssetEditorExternalWriteClamp(populatedEditor, "populated asset workspace");
+    await assertLocalAssetEditorCommerceWriteClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },
