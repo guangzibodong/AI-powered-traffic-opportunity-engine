@@ -1664,6 +1664,25 @@ async function assertLocalAssetEditorWordPressDraftReadiness(editor, expectedRea
   );
 }
 
+async function assertLocalAssetEditorExternalWriteClamp(editor, label) {
+  const externalWriteAllowed = await editor.getAttribute("data-asset-editor-external-write-allowed");
+  assert(
+    externalWriteAllowed === "false",
+    `${label} editor external-write clamp mismatch: expected false, got ${externalWriteAllowed ?? "missing"}`
+  );
+  const externalWriteSummary = editor.locator("[data-asset-editor-external-write-summary='true']");
+  await expectVisible(externalWriteSummary, `${label} visible editor external-write summary`);
+  assert(
+    (await externalWriteSummary.getAttribute("data-asset-editor-external-write-allowed")) === "false",
+    `${label} visible editor external-write summary clamp mismatch`
+  );
+  const summaryText = ((await externalWriteSummary.textContent()) ?? "").toLowerCase();
+  assert(
+    summaryText.includes("false") || summaryText.includes("disabled"),
+    `${label} visible editor external-write summary missing false/disabled copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5280,6 +5299,7 @@ async function runSmoke() {
     await assertLocalAssetEditorReviewStateContext(populatedEditor, "draft_candidate", "populated asset workspace");
     await assertLocalAssetEditorEvidenceSummary(populatedEditor, 2, "populated asset workspace");
     await assertLocalAssetEditorWordPressDraftReadiness(populatedEditor, 0, 1, "populated asset workspace");
+    await assertLocalAssetEditorExternalWriteClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },

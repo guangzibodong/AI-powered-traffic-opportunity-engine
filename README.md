@@ -186,7 +186,8 @@ Sprint 3 local/demo capabilities completed:
 37. The local asset editor shows read-only local asset review-state context without adding review mutation, task status expansion, draft, publish, sync, credential, product edit, or commerce-write controls.
 38. The local asset editor shows read-only evidence summary context from safe local claim counts without adding claim editing, task mutation, draft, publish, sync, credential, product edit, or commerce-write controls.
 39. The local asset editor shows read-only WordPress draft readiness context as blocked `0/1 ready` diagnostics without creating drafts, updating pages, publishing, syncing, collecting credentials, or writing commerce data.
-40. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
+40. The local asset editor shows read-only external-write false context from safe local asset previews without adding external writes, draft creation, page updates, publishing, sync, credentials, product edits, or commerce writes.
+41. Local demo release handoff keeps live OAuth, credentials, WordPress drafts/page updates/publishing, and WooCommerce writes blocked.
 
 Current product/engineering ownership:
 

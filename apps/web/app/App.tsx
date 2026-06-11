@@ -2567,6 +2567,7 @@ function LocalAssetEditor({
       data-asset-editor-dirty-state={editorDirtyState}
       data-asset-editor-empty-field-count={editorEmptyFieldCount}
       data-asset-editor-evidence-count={asset.claimCount}
+      data-asset-editor-external-write-allowed={asset.externalWriteAllowed}
       data-asset-editor-field-count={editorFieldCount}
       data-asset-editor-field-counts-reconciled={editorFieldCountsReconciled}
       data-asset-editor-field-readiness-state={editorFieldReadinessState}
@@ -2667,6 +2668,14 @@ function LocalAssetEditor({
           <strong>
             {editorWordPressDraftReadyCount}/{editorWordPressDraftTotalCount} ready
           </strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-external-write-allowed={asset.externalWriteAllowed}
+          data-asset-editor-external-write-summary="true"
+        >
+          <span>External writes</span>
+          <strong>{String(asset.externalWriteAllowed)}</strong>
         </div>
         <div className="kv-row">
           <span>{copy.fields}</span>
