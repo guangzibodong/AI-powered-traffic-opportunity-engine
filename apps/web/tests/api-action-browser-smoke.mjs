@@ -1955,6 +1955,27 @@ async function assertLocalAssetEditorProductImageEditClamp(editor, label) {
   );
 }
 
+async function assertLocalAssetEditorProductCategoryEditClamp(editor, label) {
+  const productCategoryEditAllowed = await editor.getAttribute("data-asset-editor-product-category-edit-allowed");
+  assert(
+    productCategoryEditAllowed === "false",
+    `${label} editor product-category edit clamp mismatch: expected false, got ${
+      productCategoryEditAllowed ?? "missing"
+    }`
+  );
+  const productCategoryEditSummary = editor.locator("[data-asset-editor-product-category-edit-summary='true']");
+  await expectVisible(productCategoryEditSummary, `${label} visible editor product-category edit summary`);
+  assert(
+    (await productCategoryEditSummary.getAttribute("data-asset-editor-product-category-edit-allowed")) === "false",
+    `${label} visible editor product-category edit summary clamp mismatch`
+  );
+  const summaryText = ((await productCategoryEditSummary.textContent()) ?? "").toLowerCase();
+  assert(
+    summaryText.includes("false") || summaryText.includes("disabled"),
+    `${label} visible editor product-category edit summary missing false/disabled copy`
+  );
+}
+
 async function assertLocalAssetEditorDirtyState(
   editor,
   expectedState,
@@ -5585,6 +5606,7 @@ async function runSmoke() {
     await assertLocalAssetEditorProductContentEditClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorProductDeleteClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorProductImageEditClamp(populatedEditor, "populated asset workspace");
+    await assertLocalAssetEditorProductCategoryEditClamp(populatedEditor, "populated asset workspace");
     await assertLocalAssetEditorClaimSourceDistribution(
       populatedEditor,
       { gsc_import: 1, local_evidence: 1 },

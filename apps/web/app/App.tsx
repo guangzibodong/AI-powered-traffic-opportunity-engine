@@ -2555,6 +2555,7 @@ function LocalAssetEditor({
       data-asset-editor-credential-collection-allowed={false}
       data-asset-editor-inventory-edit-allowed={false}
       data-asset-editor-price-edit-allowed={false}
+      data-asset-editor-product-category-edit-allowed={false}
       data-asset-editor-product-content-edit-allowed={false}
       data-asset-editor-product-delete-allowed={false}
       data-asset-editor-product-edit-allowed={false}
@@ -2768,6 +2769,14 @@ function LocalAssetEditor({
           data-asset-editor-product-image-edit-summary="true"
         >
           <span>Product image edits</span>
+          <strong>false</strong>
+        </div>
+        <div
+          className="kv-row"
+          data-asset-editor-product-category-edit-allowed={false}
+          data-asset-editor-product-category-edit-summary="true"
+        >
+          <span>Product category edits</span>
           <strong>false</strong>
         </div>
         <div
